@@ -1,0 +1,50 @@
+{
+  "name": "vanzon-website",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "import-reviews": "npx ts-node scripts/import-google-reviews.ts",
+    "get-image-link": "npx ts-node scripts/get-image-link.ts",
+    "update-html-links": "npx ts-node scripts/update-html-links.ts",
+    "get-image-code": "npx ts-node scripts/get-image-code.ts",
+    "import-all-reviews": "npx ts-node scripts/import-all-google-reviews.ts",
+    "publish-all-reviews": "npx ts-node scripts/publish-all-reviews.ts",
+    "sync-reviews": "npx ts-node scripts/sync-google-reviews.ts",
+    "import-manual-reviews": "npx ts-node scripts/google-reviews-data.ts",
+    "export": "next build"
+  },
+  "dependencies": {
+    "@builder.io/react": "^9.1.2",
+    "@builder.io/sdk": "^6.2.1",
+    "@googlemaps/google-maps-services-js": "^3.4.2",
+    "@hookform/resolvers": "^5.2.2",
+    "@sanity/client": "^7.15.0",
+    "@sanity/image-url": "^2.0.3",
+    "@sanity/vision": "^3.99.0",
+    "framer-motion": "^12.34.3",
+    "next": "14.2.35",
+    "next-sanity": "^9.12.3",
+    "react": "^18",
+    "react-dom": "^18",
+    "react-hook-form": "^7.71.2",
+    "react-is": "^19.2.4",
+    "sanity": "^3.99.0",
+    "styled-components": "^6.3.11",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.35",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5"
+  }
+}
