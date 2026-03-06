@@ -43,6 +43,7 @@
     "react-dom": "^18",
     "react-hook-form": "^7.71.2",
     "react-is": "^19.2.4",
+    "recharts": "^3.7.0",
     "sanity": "^3.99.0",
     "stripe": "^20.4.0",
     "styled-components": "^6.3.11",
