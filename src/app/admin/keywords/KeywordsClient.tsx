@@ -2,6 +2,9 @@
 import { useState, useEffect } from "react";
 import { KEYWORDS, KeywordData } from "./data/keywords";
 import { KpiBar } from "./components/KpiBar";
+import { OpportunityMatrix } from "./components/OpportunityMatrix";
+import { SeasonalityChart } from "./components/SeasonalityChart";
+import { KeywordsTable } from "./components/KeywordsTable";
 
 const CACHE_KEY = "vanzon_keywords_research";
 const CACHE_TTL = 24 * 60 * 60 * 1000; // 24h
@@ -94,6 +97,9 @@ export default function KeywordsClient() {
       </div>
 
       <KpiBar keywords={keywords} />
+      <OpportunityMatrix keywords={keywords} />
+      <SeasonalityChart keywords={keywords} />
+      <KeywordsTable keywords={keywords} />
     </div>
   );
 }
