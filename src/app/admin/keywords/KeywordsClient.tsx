@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { KEYWORDS, KeywordData } from "./data/keywords";
+import { KpiBar } from "./components/KpiBar";
 
 const CACHE_KEY = "vanzon_keywords_research";
 const CACHE_TTL = 24 * 60 * 60 * 1000; // 24h
@@ -92,8 +93,7 @@ export default function KeywordsClient() {
         </div>
       </div>
 
-      {/* Placeholder — composants à venir */}
-      <div className="text-slate-400 text-sm">{keywords.length} keywords chargés.</div>
+      <KpiBar keywords={keywords} />
     </div>
   );
 }
