@@ -2,33 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-
-const VANS = [
-  {
-    id: "yoni",
-    name: "Yoni",
-    model: "Renault Trafic III L2H1",
-    year: 2024,
-    mileage: "68 000 km",
-    price: "25 000 €",
-    tag: "Aménagé 2024",
-    image: "https://cdn.sanity.io/images/lewexa74/production/2e9214211ef5a235dcf2aa639d0feafcc867c88f-1080x750.png",
-    highlights: ["Lit fixe 2 pers.", "Cuisine coulissante", "Panneau solaire", "100Ah lithium"],
-    href: "/achat/yoni",
-  },
-  {
-    id: "xalbat",
-    name: "Xalbat",
-    model: "Renault Trafic III L2H1",
-    year: 2025,
-    mileage: "54 000 km",
-    price: "25 000 €",
-    tag: "Aménagé 2025",
-    image: "https://cdn.sanity.io/images/lewexa74/production/e9664378c5fdc652c33ae7342dfc52cc4960c8bf-1080x750.png",
-    highlights: ["Lit fixe 2 pers.", "Cuisine coulissante", "Panneau solaire", "100Ah lithium"],
-    href: "/achat/xalbat",
-  },
-];
+import { VANS_LANDING as VANS } from "@/lib/data/vans";
 
 export default function AchatLanding() {
   return (
