@@ -229,6 +229,17 @@ export const getHeroImageQuery = groq`
 `;
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 11. Site settings (OG image globale, etc.)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+export const getSiteSettingsQuery = groq`
+  *[_type == "siteSettings"][0] {
+    "openGraphImageUrl": openGraphImage.asset->url,
+    "openGraphImageAlt": openGraphImage.alt,
+    twitterHandle
+  }
+`;
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // 10. Hero carousel images (NOUVEAU)
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 export const getHeroCarouselQuery = groq`

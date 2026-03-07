@@ -2,24 +2,23 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import GlassCard from "@/components/ui/GlassCard";
 import FormationHero from "@/components/formation/FormationHero";
-import FormateurCard from "@/components/formation/FormateurCard";
 import ProgrammeAccordion from "@/components/formation/ProgrammeAccordion";
 import MockupSection from "@/components/formation/MockupSection";
 import FormationFAQ from "@/components/formation/FormationFAQ";
 import FormationCTA from "@/components/formation/FormationCTA";
+import ComparisonSection from "@/components/formation/ComparisonSection";
 
 export const metadata: Metadata = {
   title: "Van Business Academy — Formation Vanlife | Vanzon Explorer",
   description:
     "Apprends à aménager ton fourgon et lancer ton business de location de van. Formation complète par Jules & Elio de Vanzon Explorer — de l'achat au premier euro généré.",
   openGraph: {
-    title: "Van Business Academy",
-    description: "De l'achat du fourgon à ton premier euro en location.",
-    images: ["https://iili.io/qFW0c8v.png"],
+    title: "Van Business Academy — Formation Vanlife | Vanzon Explorer",
+    description: "Apprends à aménager ton fourgon et lancer ton business de location de van. Formation complète par Jules & Elio — de l'achat au premier euro généré.",
+    type: "website",
   },
 };
 
-// ── Section 3 — Promesse ──
 const promiseCards = [
   {
     icon: "🚐",
@@ -45,12 +44,11 @@ const promiseCards = [
 ];
 
 const promiseIconBg = {
-  blue: "bg-blue-50 text-blue-600",
-  amber: "bg-amber-50 text-amber-600",
-  teal: "bg-sky-50 text-sky-600",
+  blue:  "bg-blue-50 text-blue-600",
+  amber: "bg-[#F5EDE5] text-[#B9945F]",
+  teal:  "bg-[#F5EDE5] text-[#CDA77B]",
 };
 
-// ── Section 4 — Pour qui ──
 const forYou = [
   "Tu rêves de plus de liberté et de revenus complémentaires",
   "Tu veux voyager plus souvent, autrement, à ton rythme",
@@ -64,7 +62,6 @@ const notForYou = [
   "Tu cherches à faire de l'argent rapidement et facilement",
 ];
 
-// ── Section 7 — Différenciateurs ──
 const differentiators = [
   {
     icon: "🤖",
@@ -104,7 +101,6 @@ const differentiators = [
   },
 ];
 
-// ── Section 8 — Témoignages ──
 const testimonials = [
   {
     stars: 5,
@@ -132,12 +128,9 @@ const testimonials = [
 export default function FormationPage() {
   return (
     <>
-      {/* ━━━ SECTION 1 — Hero ━━━ */}
       <FormationHero />
 
-      
-      {/* ━━━ SECTION 3 — La promesse en détail ━━━ */}
-      <section className="bg-[#F8FAFC] py-20">
+      <section className="py-20" style={{ background: '#FAF6F0' }}>
         <div className="max-w-5xl mx-auto px-6">
           <h2 className="text-3xl md:text-4xl font-bold text-slate-900 text-center">
             Ce qu&apos;on t&apos;apprend à construire
@@ -146,9 +139,7 @@ export default function FormationPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
             {promiseCards.map((card) => (
               <GlassCard key={card.title}>
-                <div
-                  className={`w-12 h-12 rounded-2xl flex items-center justify-center text-2xl ${promiseIconBg[card.color]}`}
-                >
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-2xl ${promiseIconBg[card.color]}`}>
                   {card.icon}
                 </div>
                 <h3 className="text-lg font-semibold text-slate-900 mt-4">
@@ -163,25 +154,18 @@ export default function FormationPage() {
         </div>
       </section>
 
-      {/* ━━━ SECTION 4 — Pour qui ? ━━━ */}
       <section className="bg-white py-20">
         <div className="max-w-5xl mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            {/* Texte */}
             <div>
               <h2 className="text-3xl font-bold text-slate-900">
-                L'accompagnement est fait pour toi si…
+                L&apos;accompagnement est fait pour toi si…
               </h2>
 
               <ul className="space-y-3 mt-6">
                 {forYou.map((item) => (
-                  <li
-                    key={item}
-                    className="flex items-start gap-3 text-slate-600"
-                  >
-                    <span className="text-emerald-500 mt-0.5 flex-shrink-0 font-bold">
-                      ✓
-                    </span>
+                  <li key={item} className="flex items-start gap-3 text-slate-600">
+                    <span className="mt-0.5 flex-shrink-0 font-bold" style={{ color: '#B9945F' }}>✓</span>
                     {item}
                   </li>
                 ))}
@@ -193,13 +177,8 @@ export default function FormationPage() {
                 </p>
                 <ul className="space-y-2">
                   {notForYou.map((item) => (
-                    <li
-                      key={item}
-                      className="flex items-start gap-3 text-slate-400 text-sm"
-                    >
-                      <span className="text-red-400 mt-0.5 flex-shrink-0">
-                        ✗
-                      </span>
+                    <li key={item} className="flex items-start gap-3 text-slate-400 text-sm">
+                      <span className="text-red-400 mt-0.5 flex-shrink-0">✗</span>
                       {item}
                     </li>
                   ))}
@@ -207,10 +186,9 @@ export default function FormationPage() {
               </div>
             </div>
 
-            {/* Image / illustration */}
             <div className="flex justify-center">
               <Image
-                src="https://iili.io/q2Y3F4f.png?v=1"
+                src="https://cdn.sanity.io/images/lewexa74/production/e8d8a66703e846a5bd916e38bd9a488b663ce433-1920x1080.png?v=1"
                 alt="Aménagement intérieur de van - Van Business Academy"
                 width={800}
                 height={600}
@@ -222,7 +200,6 @@ export default function FormationPage() {
         </div>
       </section>
 
-      {/* ━━━ SECTION 5 — Les formateurs ━━━ */}
       <section className="bg-[#F8FAFC] py-20">
         <div className="max-w-5xl mx-auto px-6">
           <div className="text-center mb-12">
@@ -235,36 +212,46 @@ export default function FormationPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-            <FormateurCard
-              name="Jules"
-              role="Président & Co-fondateur"
-              badge="Marketing & Digital"
-              badgeColor="blue"
-              description="Tour du monde à 22 ans, van construit en autodidacte. Aujourd'hui expert en location et transmet son expérience concrète du terrain."
-              tags={["Tour du monde", "Van autodidacte", "Location active"]}
-            />
-            <FormateurCard
-              name="Elio"
-              role="Directeur Général & Co-fondateur"
-              badge="Mécanique & Travaux"
-              badgeColor="amber"
-              description="Mécanicien pro, co-constructeur des vans Vanzon. T'enseigne les gestes techniques, les bons produits et comment éviter les erreurs coûteuses."
-              tags={["Mécanicien pro", "Expert travaux", "Mindset d'acier"]}
-              imageUrl="https://iili.io/qF7VM8X.png"
-            />
+          <div className="grid grid-cols-3 gap-3 md:gap-4 rounded-2xl overflow-hidden">
+            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden">
+              <Image
+                src="https://cdn.sanity.io/images/lewexa74/production/16f9120e659bdd4bba47e663e9df9a1a9293fe3f-1170x2080.jpg"
+                alt="Jules co-fondateur Vanzon Explorer - formateur vanlife et aménagement van Pays Basque"
+                fill
+                className="object-cover hover:scale-105 transition-transform duration-500"
+              />
+            </div>
+            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden">
+              <Image
+                src="https://cdn.sanity.io/images/lewexa74/production/28a2c5acbe2ee16169d4ace1ab0522481c43d356-1170x2080.jpg"
+                alt="Jules et Elio fondateurs Vanzon Explorer - experts location van aménagé Pays Basque"
+                fill
+                className="object-cover hover:scale-105 transition-transform duration-500"
+              />
+            </div>
+            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden">
+              <Image
+                src="https://cdn.sanity.io/images/lewexa74/production/325f3ebf1d68fd890487229864c73cc65bef20d3-1186x1654.png"
+                alt="Elio co-fondateur Vanzon Explorer - expert mécanique et construction van aménagé"
+                fill
+                className="object-cover hover:scale-105 transition-transform duration-500"
+              />
+            </div>
+          </div>
+
+          <div className="mt-8 text-center max-w-2xl mx-auto">
+            <p className="text-slate-600 leading-relaxed">
+              <span className="font-semibold text-slate-900">Jules &amp; Elio</span> — Deux passionnés de vanlife et de liberté. Elio maîtrise la mécanique et l&apos;aménagement. Jules pilote le business et la rentabilité. Ensemble, ils t&apos;accompagnent pour transformer ton van en projet solide et rentable.
+            </p>
           </div>
         </div>
       </section>
 
-      {/* ━━━ SECTION 6 — Programme (9 modules) ━━━ */}
       <ProgrammeAccordion />
 
-      {/* ━━━ SECTION 6.5 — Mockup présentation ━━━ */}
       <MockupSection />
 
-      {/* ━━━ SECTION 7 — Ce qui nous différencie ━━━ */}
-      <section className="bg-[#F8FAFC] py-20">
+      <section className="py-20" style={{ background: '#FAF6F0' }}>
         <div className="max-w-5xl mx-auto px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
@@ -292,7 +279,8 @@ export default function FormationPage() {
         </div>
       </section>
 
-      {/* ━━━ SECTION 8 — Témoignages Trustpilot ━━━ */}
+      <ComparisonSection />
+
       <section className="bg-white py-20">
         <div className="max-w-5xl mx-auto px-6">
           <div className="text-center mb-12">
@@ -305,34 +293,29 @@ export default function FormationPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {testimonials.map((t) => (
               <GlassCard key={t.name}>
-                {/* Étoiles */}
                 <div className="flex gap-0.5 mb-3">
                   {Array.from({ length: t.stars }).map((_, i) => (
-                    <span key={i} className="text-amber-400 text-lg">
-                      ★
-                    </span>
+                    <span key={i} className="text-amber-400 text-lg">★</span>
                   ))}
                 </div>
                 <p className="text-slate-600 text-sm leading-relaxed italic">
                   &ldquo;{t.content}&rdquo;
                 </p>
                 <div className="mt-4 pt-4 border-t border-border-default">
-                  <p className="text-sm font-semibold text-slate-900">
-                    {t.name}
-                  </p>
+                  <p className="text-sm font-semibold text-slate-900">{t.name}</p>
                   <p className="text-xs text-slate-400">{t.age}</p>
                 </div>
               </GlassCard>
             ))}
           </div>
 
-          {/* Lien Trustpilot */}
           <div className="text-center mt-8">
             <a
               href="https://www.trustpilot.com/review/vanzonexplorer.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-accent-blue font-medium hover:underline"
+              className="text-sm font-medium hover:underline"
+              style={{ color: '#B9945F' }}
             >
               Voir tous les avis sur Trustpilot →
             </a>
@@ -340,10 +323,8 @@ export default function FormationPage() {
         </div>
       </section>
 
-      {/* ━━━ SECTION 9 — FAQ ━━━ */}
       <FormationFAQ />
 
-      {/* ━━━ SECTION 10 — CTA Final ━━━ */}
       <FormationCTA />
     </>
   );

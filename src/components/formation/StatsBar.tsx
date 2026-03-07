@@ -15,7 +15,7 @@ export default function StatsBar() {
               key={s.label}
               className="glass-card text-center p-6"
             >
-              <p className="text-3xl md:text-4xl font-black text-amber-500">
+              <p className="text-3xl md:text-4xl font-black" style={{ color: '#CDA77B' }}>
                 {s.value}
               </p>
               <p className="text-sm text-slate-500 mt-2 leading-snug">

@@ -18,7 +18,8 @@ async function checkPublishedTestimonials() {
     
     console.log(`📝 ${publishedTestimonials.length} témoignages publiés trouvés:`);
     
-    publishedTestimonials.forEach((testimonial, index) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    publishedTestimonials.forEach((testimonial: any, index: number) => {
       console.log(`${index + 1}. ${testimonial.name} (${testimonial.rating}⭐) - ${testimonial.role}`);
       console.log(`   ID: ${testimonial._id}`);
       console.log(`   Contenu: "${testimonial.content.substring(0, 100)}..."`);

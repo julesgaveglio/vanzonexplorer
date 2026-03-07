@@ -169,9 +169,8 @@ export default function ProgrammeAccordion() {
   return (
     <section id="programme" className="bg-white py-20">
       <div className="max-w-4xl mx-auto px-6">
-        {/* Badge + titre */}
         <div className="text-center mb-12">
-          <span className="badge-glass !bg-amber-50/80 !border-amber-200/50 !text-amber-700 !px-4 !py-2 text-sm font-medium">
+          <span className="badge-glass !px-4 !py-2 text-sm font-medium" style={{ background: 'rgba(205,167,123,0.12)', border: '1px solid rgba(205,167,123,0.35)', color: '#B9945F' }}>
             Accès immédiat · 9 modules · 50+ vidéos
           </span>
           <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mt-6">
@@ -179,22 +178,17 @@ export default function ProgrammeAccordion() {
           </h2>
         </div>
 
-        {/* Accordion */}
         <div className="space-y-3">
           {modules.map((mod, i) => {
             const isOpen = openIndex === i;
             return (
-              <div
-                key={mod.number}
-                className="glass-card !p-0 overflow-hidden"
-              >
-                {/* Header cliquable */}
+              <div key={mod.number} className="glass-card !p-0 overflow-hidden">
                 <button
                   onClick={() => toggle(i)}
                   className="w-full flex items-center gap-4 px-5 py-4 text-left hover:bg-slate-50/60 transition-colors"
                   aria-expanded={isOpen}
                 >
-                  <span className="flex-shrink-0 w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-sm font-bold">
+                  <span className="flex-shrink-0 w-8 h-8 rounded-lg bg-[#F5EDE5] text-[#B9945F] flex items-center justify-center text-sm font-bold">
                     {mod.number}
                   </span>
                   <span className="text-xl flex-shrink-0">{mod.icon}</span>
@@ -213,7 +207,6 @@ export default function ProgrammeAccordion() {
                   </motion.span>
                 </button>
 
-                {/* Contenu */}
                 <AnimatePresence initial={false}>
                   {isOpen && (
                     <motion.div
@@ -223,16 +216,11 @@ export default function ProgrammeAccordion() {
                       transition={{ duration: 0.25, ease: "easeInOut" }}
                       className="overflow-hidden"
                     >
-                      <div className="px-5 pb-5 pt-1 bg-[#F8FAFC]/60">
+                      <div className="px-5 pb-5 pt-1 bg-[#FAF6F0]/60">
                         <ul className="space-y-2">
                           {mod.lessons.map((lesson, j) => (
-                            <li
-                              key={j}
-                              className="flex items-start gap-2 text-sm text-slate-600"
-                            >
-                              <span className="text-emerald-500 mt-0.5 flex-shrink-0">
-                                ✓
-                              </span>
+                            <li key={j} className="flex items-start gap-2 text-sm text-slate-600">
+                              <span className="mt-0.5 flex-shrink-0" style={{ color: '#B9945F' }}>✓</span>
                               {lesson}
                             </li>
                           ))}

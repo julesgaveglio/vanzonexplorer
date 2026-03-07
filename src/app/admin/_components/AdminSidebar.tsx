@@ -117,7 +117,7 @@ export default function AdminSidebar() {
       <div className="px-5 py-5 border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
         <Link href="/">
           <Image
-            src="https://iili.io/qqaTFkB.png"
+            src="https://cdn.sanity.io/images/lewexa74/production/9de5b0e768fa1fcc5ea5aa6f41ac816c249af9b0-1042x417.png"
             alt="Vanzon Explorer"
             width={140}
             height={40}

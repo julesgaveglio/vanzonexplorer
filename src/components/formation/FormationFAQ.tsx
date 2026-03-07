@@ -40,15 +40,14 @@ const faqs: FAQItem[] = [
       "Le VASP (homologation officielle de ton van en camping-car) implique des démarches avec Qualigaz et la DREAL. C'est un processus de 2 à 6 mois. La formation te donne tous les templates, la checklist Airtable et les vidéos explicatives pour y arriver seul.",
   },
   {
-    question:
-      "Q : Combien coûte la location d'un van aménagé par jour ?",
+    question: "Combien coûte la location d'un van aménagé par jour ?",
     answer:
       "Les tarifs varient selon la saison. Chez Vanzon Explorer au Pays Basque, les prix sont de 65 €/jour en basse saison (janvier, février, novembre), 75 €/jour en moyenne saison (mars à juin, octobre, décembre) et 90 €/jour en haute saison (juillet, août, septembre).",
   },
   {
     question: "Comment fonctionne l'appel de découverte ?",
     answer:
-      "C'est un appel gratuit de 30 minutes avec un membre de l'équipe. On comprend ton projet, on répond à tes questions, et si la formation  toi, on t'explique comment rejoindre la prochaine session.",
+      "C'est un appel gratuit de 30 minutes avec un membre de l'équipe. On comprend ton projet, on répond à tes questions, et si la formation est faite pour toi, on t'explique comment rejoindre la prochaine session.",
   },
 ];
 
@@ -60,7 +59,7 @@ export default function FormationFAQ() {
   };
 
   return (
-    <section className="bg-[#F8FAFC] py-20">
+    <section className="py-20" style={{ background: '#FAF6F0' }}>
       <div className="max-w-3xl mx-auto px-6">
         <h2 className="text-3xl font-bold text-slate-900 text-center mb-12">
           Questions fréquentes

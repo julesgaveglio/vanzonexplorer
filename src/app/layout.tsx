@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Bebas_Neue } from "next/font/google";
+import { ClerkProvider } from "@clerk/nextjs";
+import { frFR } from "@clerk/localizations";
+import { sanityFetch } from "@/lib/sanity/client";
+import { getSiteSettingsQuery } from "@/lib/sanity/queries";
+import CookieBanner from "@/components/ui/CookieBanner";
 import "./globals.css";
 
 const inter = Inter({
@@ -8,20 +13,47 @@ const inter = Inter({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: {
-    default: "Vanzon Explorer — Vanlife au Pays Basque",
-    template: "%s | Vanzon Explorer",
-  },
-  description:
-    "Location de vans aménagés, achat/revente et formation vanlife au Pays Basque. Explorez la côte basque en toute liberté.",
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
-  openGraph: {
-    type: "website",
-    locale: "fr_FR",
-    siteName: "Vanzon Explorer",
-  },
-};
+const bebasNeue = Bebas_Neue({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-bebas-neue",
+  display: "swap",
+});
+
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://vanzonexplorer.com";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await sanityFetch<{
+    openGraphImageUrl?: string;
+    openGraphImageAlt?: string;
+    twitterHandle?: string;
+  }>(getSiteSettingsQuery);
+
+  const ogImages = settings?.openGraphImageUrl
+    ? [{ url: settings.openGraphImageUrl, width: 1200, height: 630, alt: settings.openGraphImageAlt ?? "Vanzon Explorer" }]
+    : [];
+
+  return {
+    title: {
+      default: "Vanzon Explorer — Vanlife au Pays Basque",
+      template: "%s | Vanzon Explorer",
+    },
+    description:
+      "Location de vans amenages, achat/revente et formation vanlife au Pays Basque. Explorez la cote basque en toute liberte.",
+    metadataBase: new URL(BASE_URL),
+    openGraph: {
+      type: "website",
+      locale: "fr_FR",
+      siteName: "Vanzon Explorer",
+      images: ogImages.length > 0 ? ogImages : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      site: settings?.twitterHandle ?? undefined,
+      images: ogImages.length > 0 ? ogImages.map((i) => i.url) : undefined,
+    },
+  };
+}
 
 export default function RootLayout({
   children,
@@ -29,12 +61,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr">
-      <body
-        className={`${inter.variable} font-sans antialiased bg-bg-primary text-text-primary min-h-screen`}
-      >
-        {children}
-      </body>
-    </html>
+    <ClerkProvider localization={frFR} signInUrl="/sign-in" signUpUrl="/sign-up">
+      <html lang="fr">
+        <body
+          className={`${inter.variable} ${bebasNeue.variable} font-sans antialiased bg-bg-primary text-text-primary min-h-screen`}
+        >
+          {children}
+          <CookieBanner />
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

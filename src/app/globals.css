@@ -21,6 +21,10 @@
   --border-active: rgba(59, 130, 246, 0.40);
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   color: var(--text-primary);
   background: var(--bg-primary);
@@ -61,14 +65,15 @@ body {
     border-radius: 12px;
     padding: 12px 24px;
     box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
-    transition: all 0.2s ease;
+    transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
   .btn-primary:hover {
     box-shadow: 0 6px 20px rgba(59, 130, 246, 0.45);
-    transform: translateY(-1px);
+    transform: translateY(-2px);
   }
   .btn-primary:active {
-    transform: translateY(0);
+    transform: translateY(0) scale(0.96);
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
   }
 
   /* Bouton ghost — glass blanc */
@@ -104,4 +109,86 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade-in {
+    animation: fadeIn 0.25s ease-out;
+  }
+
+  /* Shimmer skeleton loader */
+  @keyframes shimmer {
+    0%   { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+  .animate-shimmer {
+    background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+    background-size: 200% auto;
+    animation: shimmer 1.5s linear infinite;
+  }
+
+  /* Smooth underline link */
+  .link-underline {
+    position: relative;
+  }
+  .link-underline::after {
+    content: "";
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: currentColor;
+    transition: width 0.2s ease;
+  }
+  .link-underline:hover::after {
+    width: 100%;
+  }
+
+  /* Ping dot for availability indicator */
+  @keyframes ping-slow {
+    75%, 100% { transform: scale(2); opacity: 0; }
+  }
+  .animate-ping-slow {
+    animation: ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+}
+
+/* ━━━ Club Privé — Variables & Utilities ━━━ */
+:root {
+  --club-border: 268 25% 87%;
+  --radius: 0.75rem;
+}
+
+/* Club marquee animation */
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee 20s linear infinite;
+}
+
+/* Club button gradient overrides */
+.club-layout .bg-rust:is(a, button, span, [role="button"]) {
+  background: linear-gradient(135deg, #883AE2 0%, #8A80E9 100%) !important;
+}
+.club-layout .hover\:bg-rust-dark:is(a, button, span, [role="button"]):hover {
+  background: linear-gradient(135deg, #6B28BB 0%, #7B72D4 100%) !important;
+}
+
+/* Hide Clerk branding everywhere */
+.cl-internal-1dauvpw,
+.cl-internal-b3fm6y,
+[data-localization-key="socialButtonsBlockButton__clerk"],
+.cl-footer,
+.cl-footerAction,
+.cl-badge,
+.cl-devModeWarning,
+[class*="cl-internal"] [class*="badge"],
+[class*="cl-internal"] [class*="branding"],
+[class*="cl-internal"] [class*="devMode"] {
+  display: none !important;
 }

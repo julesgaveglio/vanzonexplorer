@@ -10,25 +10,44 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Backgrounds — thème blanc
+        // ── Site principal — thème blanc ──────────────────
         "bg-primary": "#FFFFFF",
         "bg-secondary": "#F8FAFC",
         "bg-elevated": "#F1F5F9",
         "bg-subtle": "#E2E8F0",
-        // Accents
         "accent-blue": "#3B82F6",
         "accent-teal": "#0EA5E9",
         "accent-gold": "#F59E0B",
         "accent-green": "#10B981",
-        // Texte
         "text-primary": "#0F172A",
         "text-secondary": "#334155",
         "text-muted": "#64748B",
         "text-light": "#94A3B8",
-        // Bordures
         "border-default": "rgba(0,0,0,0.06)",
         "border-glass": "rgba(255,255,255,0.70)",
         "border-active": "rgba(59,130,246,0.40)",
+        // ── Club Privé — thème violet ──────────────────────
+        cream: "#FAF7F2",
+        earth: {
+          DEFAULT: "#1C0A35",
+          light: "#2A1050",
+        },
+        rust: {
+          DEFAULT: "#883AE2",
+          light: "#8A80E9",
+          dark: "#6B28BB",
+        },
+        sage: {
+          DEFAULT: "#8A80E9",
+          light: "#F0E9FD",
+          dark: "#883AE2",
+        },
+        muted: {
+          DEFAULT: "#8C8070",
+          light: "#A89C8E",
+          dark: "#6E6458",
+        },
+        border: "hsl(var(--club-border))",
       },
       backdropBlur: {
         glass: "20px",
@@ -42,12 +61,21 @@ const config: Config = {
       },
       borderRadius: {
         glass: "20px",
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
         sans: ["Inter var", ...defaultTheme.fontFamily.sans],
+        display: ["var(--font-bebas-neue)", "sans-serif"],
+        "club-sans": ["var(--font-dm-sans)", "sans-serif"],
+        "club-mono": ["var(--font-dm-mono)", "monospace"],
+      },
+      letterSpacing: {
+        display: "0.05em",
       },
     },
   },
-  plugins: [],
+  plugins: [require("tailwindcss-animate")],
 };
 export default config;

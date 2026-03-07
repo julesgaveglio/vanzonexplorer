@@ -10,11 +10,8 @@ interface LiquidButtonProps {
   size?: "sm" | "md" | "lg";
   children: React.ReactNode;
   className?: string;
-  /** URL interne ou externe */
   href?: string;
-  /** Ouvre dans un nouvel onglet avec rel="noopener noreferrer" */
   external?: boolean;
-  /** Type du bouton HTML (si pas de href) */
   type?: "button" | "submit" | "reset";
   onClick?: () => void;
   disabled?: boolean;
@@ -24,7 +21,7 @@ interface LiquidButtonProps {
 const variantClasses: Record<Variant, string> = {
   primary: "btn-primary",
   ghost: "btn-ghost",
-  gold: "inline-flex items-center justify-center gap-2 px-6 py-3 font-semibold text-white rounded-full bg-gradient-to-r from-accent-gold to-orange-500",
+  gold: "inline-flex items-center justify-center gap-2 px-6 py-3 font-semibold text-white rounded-full bg-gradient-to-r from-[#CDA77B] to-[#B9945F]",
 };
 
 const sizeClasses: Record<string, string> = {
@@ -47,7 +44,6 @@ export default function LiquidButton({
 }: LiquidButtonProps) {
   const classes = `${variantClasses[variant]} ${sizeClasses[size]} ${className}`;
 
-  // ── Lien externe (nouvel onglet) ──
   if (href && external) {
     return (
       <motion.a
@@ -64,7 +60,6 @@ export default function LiquidButton({
     );
   }
 
-  // ── Lien interne (Next.js Link) ──
   if (href) {
     return (
       <Link href={href} className={classes} aria-label={ariaLabel}>
@@ -73,7 +68,6 @@ export default function LiquidButton({
     );
   }
 
-  // ── Bouton classique ──
   return (
     <motion.button
       type={type}

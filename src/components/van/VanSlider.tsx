@@ -3,30 +3,26 @@
 import { useEffect } from "react";
 
 export default function VanSlider() {
-  
   useEffect(() => {
-    // Gestion des slideshows
-    const slideshowContainers = document.querySelectorAll('.slideshow-container');
-    slideshowContainers.forEach(container => {
+    const intervalIds: NodeJS.Timeout[] = [];
+
+    document.querySelectorAll('.slideshow-container').forEach(container => {
       const slides = container.querySelectorAll('img');
-      const interval = parseInt((container as HTMLElement).dataset.slideshow || '') || 3000;
+      const delay = parseInt((container as HTMLElement).dataset.slideshow || '') || 3000;
       let currentIndex = 0;
-      
-      const intervalId = setInterval(() => {
+
+      intervalIds.push(setInterval(() => {
         slides[currentIndex].classList.remove('active');
         currentIndex = (currentIndex + 1) % slides.length;
         slides[currentIndex].classList.add('active');
-      }, interval);
-
-      return () => clearInterval(intervalId);
+      }, delay));
     });
 
-    // Slider mobile
     const slider = document.getElementById('van-slider');
-    if (!slider) return;
+    if (!slider) return () => intervalIds.forEach(clearInterval);
 
     const cards = Array.from(slider.children);
-    let activeIndex = 0; // Yoni par défaut
+    let activeIndex = 0;
     let isScrolling = false;
 
     const updateActiveCard = () => {
@@ -46,7 +42,6 @@ export default function VanSlider() {
       slider.scrollTo({ left: scrollLeft, behavior: 'smooth' });
     };
 
-    // Centrer Yoni au démarrage et le laisser actif
     setTimeout(() => {
       centerCard(0);
       cards[0]?.classList.add('active');
@@ -66,8 +61,8 @@ export default function VanSlider() {
       isScrolling = false;
     };
 
-    const handleTouchMove = () => { 
-      isScrolling = true; 
+    const handleTouchMove = () => {
+      isScrolling = true;
     };
 
     const handleTouchEnd = (e: TouchEvent) => {
@@ -88,6 +83,7 @@ export default function VanSlider() {
     slider.addEventListener('touchend', handleTouchEnd);
 
     return () => {
+      intervalIds.forEach(clearInterval);
       slider.removeEventListener('scroll', handleScroll);
       slider.removeEventListener('touchstart', handleTouchStart);
       slider.removeEventListener('touchmove', handleTouchMove);
@@ -99,7 +95,6 @@ export default function VanSlider() {
   return (
     <>
       <style jsx>{`
-        /* ===== Section ===== */
         .vans-section {
           padding: 2rem 1rem;
           background: transparent;
@@ -116,7 +111,6 @@ export default function VanSlider() {
           width: 100%;
         }
 
-        /* ===== Card ===== */
         .van-card {
           background: #fff;
           border-radius: 12px;
@@ -132,7 +126,6 @@ export default function VanSlider() {
           box-shadow: 0 5px 14px rgba(0, 0, 0, 0.15);
         }
 
-        /* ===== Image Slideshow ===== */
         .slideshow-container {
           position: relative;
           width: 100%;
@@ -153,12 +146,11 @@ export default function VanSlider() {
           opacity: 1;
         }
 
-        /* ===== Card Content ===== */
         .van-content {
           padding: 1rem 1rem 1.2rem;
           display: flex;
           flex-direction: column;
-          gap: 0.3rem;              
+          gap: 0.3rem;
           flex: 1;
         }
 
@@ -176,14 +168,13 @@ export default function VanSlider() {
           color: #666;
           margin: 0;
           line-height: 1rem;
-          padding-bottom: 0.6rem;         /* espace sous le modèle */
-          border-bottom: 1px solid #eee;  /* ligne fine */
+          padding-bottom: 0.6rem;
+          border-bottom: 1px solid #eee;
         }
 
-        /* ===== Features ===== */
         .van-features {
           list-style: none;
-          margin: 0.8rem 0 0;             /* espace supplémentaire sous la ligne */
+          margin: 0.8rem 0 0;
           padding: 0;
           display: grid;
           gap: 0.4rem;
@@ -200,13 +191,13 @@ export default function VanSlider() {
 
         .van-features svg,
         .van-features img {
-          width: 22px;
-          height: 22px;
+          width: 16px;
+          height: 16px;
           flex-shrink: 0;
         }
 
         .van-features svg {
-          fill: #A6CE39;
+          color: #9CA3AF;
         }
 
         .van-footer {
@@ -223,12 +214,11 @@ export default function VanSlider() {
           margin-bottom: 0.4rem;
         }
 
-        /* ===== Bouton gris très clair ===== */
         .van-btn {
           display: inline-block;
           padding: 0.4rem 0.9rem;
-          background: #f0f0f0;            /* gris très clair */
-          color: #333;                    /* texte foncé */
+          background: #f0f0f0;
+          color: #333;
           font-weight: 600;
           font-size: 0.85rem;
           text-decoration: none;
@@ -238,10 +228,9 @@ export default function VanSlider() {
         }
 
         .van-btn:hover {
-          background: #e0e0e0;            /* gris légèrement plus foncé */
+          background: #e0e0e0;
         }
 
-        /* ===== Mobile Slider ===== */
         @media (max-width: 768px) {
           .vans-section {
             padding: 2rem 0;
@@ -267,11 +256,11 @@ export default function VanSlider() {
             flex: 0 0 300px;
             scroll-snap-align: center;
             scroll-snap-stop: always;
-            opacity: 0.4;                      /* opacité réduite par défaut */
+            opacity: 0.4;
           }
 
           .van-card.active {
-            opacity: 1;                         /* carte active opaque */
+            opacity: 1;
             transform: scale(1.02);
           }
         }
@@ -280,22 +269,21 @@ export default function VanSlider() {
       <section className="vans-section">
         <div className="vans-container" id="van-slider">
 
-          {/* Yoni */}
-          <div className="van-card active">  {/* Yoni est active dès le départ */}
+          <div className="van-card active">
             <div className="slideshow-container" data-slideshow="3000">
-              <img src="https://iili.io/KGOKoq7.png" alt="van aménagé renault trafic III Yoni fermé Vanzon Explorer" className="active" />
-              <img src="https://iili.io/KGOKCsS.png" alt="van aménagé renault trafic III Yoni ouvert Vanzon Explorer" />
-              <img src="https://iili.io/KGeBURn.png" alt="van aménagé renault trafic III Yoni océan Vanzon Explorer" />
+              <img src="https://cdn.sanity.io/images/lewexa74/production/2e9214211ef5a235dcf2aa639d0feafcc867c88f-1080x750.png" alt="van aménagé renault trafic III Yoni fermé Vanzon Explorer" className="active" />
+              <img src="https://cdn.sanity.io/images/lewexa74/production/660105a28e577c33f642a8fdff528d88925642e3-1080x750.png" alt="van aménagé renault trafic III Yoni ouvert Vanzon Explorer" />
+              <img src="https://cdn.sanity.io/images/lewexa74/production/f93fa16ab46d8934dcc3092a8e86fc80ebce4305-1080x750.png" alt="van aménagé renault trafic III Yoni océan Vanzon Explorer" />
             </div>
             <div className="van-content">
               <div className="van-name">Yoni</div>
               <div className="van-model">Renault Trafic III</div>
               <ul className="van-features">
-                <li><img src="https://iili.io/KGvOdtS.png" alt="icone siege auto" />3 sièges</li>
-                <li><img src="https://iili.io/KGvOHAl.png" alt="icone lit" />2+1 couchages</li>
-                <li><img src="https://iili.io/KGvO3o7.png" alt="icone cuisine" />Cuisine coulissante</li>
-                <li><img src="https://iili.io/KGvOJN2.png" alt="icone flocon glacière" />Glacière portative</li>
-                <li><img src="https://iili.io/KGvOFV9.png" alt="icone toilette seche" />Toilette sèche</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>3 sièges</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M2 20v-8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8"/><path d="M4 10V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4"/><path d="M12 4v6"/><path d="M2 18h20"/></svg>2+1 couchages</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>Cuisine coulissante</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><line x1="2" x2="22" y1="12" y2="12"/><line x1="12" x2="12" y1="2" y2="22"/><path d="m20 16-4-4 4-4"/><path d="m4 8 4 4-4 4"/><path d="m16 4-4 4-4-4"/><path d="m8 20 4-4 4 4"/></svg>Glacière portative</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.9C15.5 4.9 20 .4 20 .4s-1.5 12-8.7 17c-1.2.8-2.5 1.3-3.8 1.5"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>Toilette sèche</li>
               </ul>
               <div className="van-footer">
                 <div className="van-price">à partir de 65 € / nuit</div>
@@ -304,22 +292,21 @@ export default function VanSlider() {
             </div>
           </div>
 
-          {/* Xalbat */}
           <div className="van-card">
             <div className="slideshow-container" data-slideshow="3000">
-              <img src="https://iili.io/KGOKqzl.png" alt="van aménagé renault trafic III Xalbat fermé Vanzon Explorer" className="active" />
-              <img src="https://iili.io/KGOKBX2.png" alt="van aménagé renault trafic III Xalbat ouvert Vanzon Explorer" />
-              <img src="https://iili.io/KGeBrDG.png" alt="van aménagé renault trafic III Xalbat montagne Vanzon Explorer" />
+              <img src="https://cdn.sanity.io/images/lewexa74/production/e9664378c5fdc652c33ae7342dfc52cc4960c8bf-1080x750.png" alt="van aménagé renault trafic III Xalbat fermé Vanzon Explorer" className="active" />
+              <img src="https://cdn.sanity.io/images/lewexa74/production/e07cf63507850084bee14fca9a91b4efe5b7d18a-1080x750.png" alt="van aménagé renault trafic III Xalbat ouvert Vanzon Explorer" />
+              <img src="https://cdn.sanity.io/images/lewexa74/production/04d93973d30c5eede51f954d1432a50a5f82ef9b-1080x750.png" alt="van aménagé renault trafic III Xalbat montagne Vanzon Explorer" />
             </div>
             <div className="van-content">
               <div className="van-name">Xalbat</div>
               <div className="van-model">Renault Trafic III</div>
               <ul className="van-features">
-                <li><img src="https://iili.io/KGvOdtS.png" alt="icone siege auto" />3 sièges</li>
-                <li><img src="https://iili.io/KGvOHAl.png" alt="icone lit" />2+1 couchages</li>
-                <li><img src="https://iili.io/KGvO3o7.png" alt="icone cuisine" />Cuisine coulissante</li>
-                <li><img src="https://iili.io/KGvOJN2.png" alt="icone flocon glacière" />Glacière portative</li>
-                <li><img src="https://iili.io/KGvOFV9.png" alt="icone toilette seche" />Toilette sèche</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>3 sièges</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M2 20v-8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8"/><path d="M4 10V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4"/><path d="M12 4v6"/><path d="M2 18h20"/></svg>2+1 couchages</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>Cuisine coulissante</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><line x1="2" x2="22" y1="12" y2="12"/><line x1="12" x2="12" y1="2" y2="22"/><path d="m20 16-4-4 4-4"/><path d="m4 8 4 4-4 4"/><path d="m16 4-4 4-4-4"/><path d="m8 20 4-4 4 4"/></svg>Glacière portative</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.9C15.5 4.9 20 .4 20 .4s-1.5 12-8.7 17c-1.2.8-2.5 1.3-3.8 1.5"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>Toilette sèche</li>
               </ul>
               <div className="van-footer">
                 <div className="van-price">à partir de 65 € / nuit</div>

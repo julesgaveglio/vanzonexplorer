@@ -1,281 +1,439 @@
-import Link from "next/link";
+import type { Metadata } from "next";
 import Image from "next/image";
 import { sanityFetch } from "@/lib/sanity/client";
-import { getFeaturedVansQuery, getAllTestimonialsQuery, getHeroImageQuery, getHeroCarouselQuery } from "@/lib/sanity/queries";
-import { imagePresets } from "@/lib/sanity/client";
-import type { VanCard as VanCardType, Testimonial } from "@/lib/sanity/types";
-import GlassCard from "@/components/ui/GlassCard";
-import LiquidButton from "@/components/ui/LiquidButton";
+import { getAllLocationVansQuery } from "@/lib/sanity/queries";
+import type { VanCard as VanCardType } from "@/lib/sanity/types";
 import VanCard from "@/components/van/VanCard";
 import VanSlider from "@/components/van/VanSlider";
-import TestimonialCarousel from "@/components/testimonials/TestimonialCarousel";
-import HeroCarousel from "@/components/ui/HeroCarousel";
+import { getGooglePlaceStats } from "@/lib/google-places";
+import Reveal from "@/components/ui/Reveal";
 
 export const revalidate = 60;
 
-// ── Sections statiques (offres) ──
-const offers = [
-  {
-    icon: "🚐",
-    title: "Location de vans",
-    description:
-      "Partez à l'aventure au Pays Basque avec nos vans aménagés tout équipés. Réservation simple via nos partenaires.",
-    href: "/location",
-    color: "blue" as const,
-  },
-  {
-    icon: "🔑",
-    title: "Achat / Revente",
-    description:
-      "Trouvez le van de vos rêves ou revendez le vôtre. Accompagnement personnalisé de A à Z.",
-    href: "/achat",
-    color: "gold" as const,
-  },
-  {
-    icon: "🎓",
-    title: "Formation vanlife",
-    description:
-      "Apprenez à vivre sur la route : aménagement, mécanique, spots secrets et business nomade.",
-    href: "/formation",
-    color: "teal" as const,
-  },
-];
-
-const offerBorderColors = {
-  blue: "hover:border-blue-300",
-  gold: "hover:border-amber-300",
-  teal: "hover:border-sky-300",
+export const metadata: Metadata = {
+  title: "Location Van Aménagé Pays Basque — dès 65€/nuit | Vanzon Explorer",
+  description:
+    "Louez un van aménagé au Pays Basque dès 65€/nuit. Biarritz, Bayonne, Hossegor — vans tout équipés, assurance incluse, réservation simple. Surf, montagne, océan — vivez le Pays Basque en liberté.",
 };
-
-const offerIconBg = {
-  blue: "bg-blue-50 text-blue-600",
-  gold: "bg-amber-50 text-amber-600",
-  teal: "bg-sky-50 text-sky-600",
-};
-
-// ── Vans vedettes (hardcoded) ──
-const vanFeatures = [
-  { icon: "https://iili.io/KGvOdtS.png", label: "3 sièges" },
-  { icon: "https://iili.io/KGvOHAl.png", label: "2+1 couchages" },
-  { icon: "https://iili.io/KGvO3o7.png", label: "Cuisine coulissante" },
-  { icon: "https://iili.io/KGvOJN2.png", label: "Glacière portative" },
-  { icon: "https://iili.io/KGvOFV9.png", label: "Toilette sèche" },
-];
-
-
-const stats = [
-  { value: "12+", label: "Vans disponibles" },
-  { value: "250", label: "km de côtes" },
-  { value: "500+", label: "Locataires heureux" },
-  { value: "5", label: "Ans d'expérience" },
-];
 
 export default async function HomePage() {
-  // Fetch Sanity data
-  const [featuredVans, testimonials, heroImage, heroCarousel] = await Promise.all([
-    sanityFetch<VanCardType[]>(getFeaturedVansQuery),
-    sanityFetch<Testimonial[]>(getAllTestimonialsQuery),
-    sanityFetch<{image?: string; alt?: string}>(getHeroImageQuery),
-    sanityFetch<{images?: any[]; isActive?: boolean}>(getHeroCarouselQuery),
+  const [vans, placeStats] = await Promise.all([
+    sanityFetch<VanCardType[]>(getAllLocationVansQuery),
+    getGooglePlaceStats(),
   ]);
 
   return (
     <>
-      {/* ━━━ SECTION 1 — Hero ━━━ */}
-      <section className="relative overflow-hidden min-h-[80vh]">
-        {/* Image de fond avec carousel */}
-        {heroCarousel?.isActive && heroCarousel?.images && heroCarousel.images.length > 0 ? (
-          <HeroCarousel 
-            images={heroCarousel.images} 
-            interval={6000}
+      <section className="relative -mt-16 min-h-screen flex items-end overflow-hidden">
+        <div className="absolute inset-0">
+          <Image
+            src="https://cdn.sanity.io/images/lewexa74/production/d445397965472d300e3dc13d6b1c37503fe8ba25-1920x1080.png?auto=format&fit=max&q=82"
+            alt="Van aménagé au bord de l'océan au Pays Basque"
+            fill
+            className="object-cover object-center sm:object-center object-right"
+            priority
+            unoptimized
           />
-        ) : heroImage?.image ? (
-          // Fallback image fixe si carousel désactivé
-          <div className="absolute inset-0">
-            <Image
-              src={imagePresets.hero(heroImage.image)}
-              alt={heroImage.alt || "Van sur la route avec vue montagne et océan"}
-              fill
-              className="object-cover"
-              priority
-              sizes="100vw"
-            />
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-900/40 to-slate-900/60" />
-          </div>
-        ) : (
-          // Fallback gradient si pas d'image
-          <div
-            className="absolute inset-0"
-            style={{
-              background: "linear-gradient(160deg, #EFF6FF 0%, #F0FDFF 50%, #FFFBEB 100%)",
-            }}
-          />
-        )}
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-900/50 to-slate-900/20" />
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-950/30 via-transparent to-transparent" />
+        </div>
 
-        {/* Contenu fixe au-dessus du carousel */}
-        <div className="absolute inset-0 z-20 flex items-center">
-          <div className="max-w-7xl mx-auto px-6 w-full">
-            <div className="max-w-3xl">
-              <h1 className="text-5xl md:text-7xl font-black text-white leading-[1.05] tracking-tight drop-shadow-lg">
-                Construisez votre{" "}
-                <span className="bg-gradient-to-r from-blue-400 to-sky-300 bg-clip-text text-transparent">
-                  liberté.
-                </span>
-              </h1>
-              <p className="text-xl text-white/90 mt-6 max-w-xl leading-relaxed drop-shadow-md">
-                Location · Achat · Formation — Explorez le Pays Basque en van aménagé, à votre rythme.
-              </p>
-              <div className="flex gap-4 mt-8 flex-wrap">
-                <LiquidButton href="/location">Louer un van</LiquidButton>
-                <LiquidButton variant="ghost" href="/achat">
-                  Acheter un van
-                </LiquidButton>
-              </div>
+        <div className="relative z-10 max-w-7xl mx-auto px-6 pb-20 pt-32 w-full">
+          <div className="max-w-2xl">
+            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-2 mb-6">
+              <span className="text-amber-400">★★★★★</span>
+              <span className="text-white/90 text-sm font-medium">{placeStats.reviewCount} avis Google • {placeStats.ratingDisplay}/5</span>
             </div>
+
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[1.05] mb-6">
+              L&apos;aventure<br />
+              au Pays Basque,<br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4BC3E3] to-[#4D5FEC]">
+                à votre rythme.
+              </span>
+            </h1>
+
+            <p className="text-xl text-white/75 leading-relaxed mb-8 max-w-xl">
+              Louez un van aménagé tout équipé et explorez l&apos;Atlantique,
+              les Pyrénées et les villages basques en totale liberté.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-4">
+              <a
+                href="/location"
+                className="inline-flex items-center justify-center gap-2 bg-white text-slate-900 font-bold px-8 py-4 rounded-xl hover:bg-blue-50 transition-colors text-lg shadow-2xl"
+              >
+                Louer un van
+              </a>
+              <a
+                href="/achat"
+                className="inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-md border border-white/30 text-white font-bold px-8 py-4 rounded-xl hover:bg-white/20 transition-colors text-lg"
+              >
+                Acheter un van →
+              </a>
+            </div>
+          </div>
+
+          <div className="hidden lg:flex gap-4 absolute bottom-20 right-6">
+            {[
+              { value: "65€", label: "/ nuit", sub: "à partir de" },
+              { value: "2", label: "vans", sub: "exclusifs" },
+              { value: `${placeStats.ratingDisplay}★`, label: "Google", sub: `${placeStats.reviewCount} avis` },
+            ].map((stat) => (
+              <div key={stat.label} className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-5 py-4 text-center min-w-[100px]">
+                <div className="text-xs text-white/60 font-medium mb-0.5">{stat.sub}</div>
+                <div className="text-2xl font-black text-white">{stat.value}</div>
+                <div className="text-xs text-white/70 font-medium">{stat.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <a href="#nos-vans" className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 text-white/50 hover:text-white/80 transition-colors animate-bounce">
+          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </a>
+      </section>
+
+      <section className="bg-slate-950 py-5 border-t border-white/5">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="flex flex-wrap justify-center md:justify-between items-center gap-y-4 gap-x-8 text-white/60 text-sm font-medium">
+            {[
+              { icon: "🛡️", text: "Assurance incluse via Yescapa" },
+              { icon: "📍", text: "Basé à Bayonne — Pays Basque" },
+              { icon: "⭐", text: `${placeStats.ratingDisplay}/5 sur ${placeStats.reviewCount} avis Google` },
+              { icon: "🚐", text: "Vans aménagés & entretenus" },
+            ].map((item) => (
+              <div key={item.text} className="flex items-center gap-2">
+                <span>{item.icon}</span>
+                <span>{item.text}</span>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* ━━━ SECTION 2 — 3 Offres ━━━ */}
-      <section className="bg-white py-20">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {offers.map((offer) => (
-              <Link key={offer.href} href={offer.href} className="block">
-                <GlassCard
-                  hover
-                  className={`h-full ${offerBorderColors[offer.color]}`}
-                >
-                  <div
-                    className={`w-12 h-12 rounded-2xl flex items-center justify-center text-2xl ${offerIconBg[offer.color]}`}
-                  >
-                    {offer.icon}
-                  </div>
-                  <h3 className="text-lg font-semibold text-slate-900 mt-4">
-                    {offer.title}
+      <section id="nos-vans" className="py-20 bg-white scroll-mt-20">
+        <div className="max-w-5xl mx-auto px-4">
+          <VanSlider />
+        </div>
+      </section>
+
+      <section className="py-20" style={{ background: "linear-gradient(160deg, #DBF3F9 0%, #EFF6FF 100%)" }}>
+        <div className="max-w-6xl mx-auto px-6">
+          <Reveal className="text-center mb-14">
+            <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-3">
+              Tout est inclus, rien à prévoir
+            </h2>
+            <p className="text-slate-500 text-lg">
+              Nos vans sont équipés pour partir immédiatement, dès la remise des clés.
+            </p>
+          </Reveal>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              { emoji: "🍳", title: "Cuisine coulissante", description: "Réchaud gaz 2 feux, planche à découper, vaisselle complète, rangements intégrés. Cuisinez partout où vous vous arrêtez." },
+              { emoji: "🛏️", title: "Couchage pour 3", description: "Lit fixe 2 personnes + matelas supplémentaire. Literie fournie ou apportez la vôtre. Sommeil garanti même après une longue journée." },
+              { emoji: "🧊", title: "Glacière portative", description: "Conservez vos aliments frais jusqu'à 48h. Idéale pour les pique-niques au bord de l'océan ou après le surf." },
+              { emoji: "🚿", title: "Toilette sèche", description: "Votre intimité à bord, partout. Compatible avec les spots sauvages, les dunes et les sommets." },
+              { emoji: "🛡️", title: "Assurance Yescapa", description: "Vous êtes couverts dès la réservation. Assurance tous risques incluse pour rouler l'esprit tranquille." },
+              { emoji: "🗺️", title: "Conseils locaux offerts", description: "Jules connaît le Pays Basque comme sa poche. Spots de surf secrets, bivouacs légaux, restaurants locaux — tout est partagé." },
+            ].map((item, i) => (
+              <Reveal key={item.title} delay={i * 0.07}>
+                <div className="glass-card p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group h-full">
+                  <div className="text-4xl mb-4">{item.emoji}</div>
+                  <h3 className="font-bold text-slate-900 text-lg mb-2 transition-colors group-hover:text-[#4D5FEC]">
+                    {item.title}
                   </h3>
-                  <p className="text-sm text-slate-500 mt-2 leading-relaxed">
-                    {offer.description}
-                  </p>
-                  <span className="inline-flex items-center gap-1 text-sm font-medium text-accent-blue mt-4">
-                    Découvrir →
-                  </span>
-                </GlassCard>
-              </Link>
+                  <p className="text-slate-500 text-sm leading-relaxed">{item.description}</p>
+                </div>
+              </Reveal>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ━━━ SECTION 3 — Vans vedettes ━━━ */}
-      <section className="bg-bg-secondary py-20">
+      <section className="py-20 bg-white overflow-hidden">
         <div className="max-w-7xl mx-auto px-6">
-          <h2 className="text-3xl font-bold text-slate-900 text-center">
-            Nos vans en vedette
-          </h2>
-          <p className="text-slate-500 text-center mt-2 max-w-lg mx-auto">
-            Découvrez notre sélection de vans aménagés, prêts pour l&apos;aventure au Pays Basque.
-          </p>
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div>
+              <span className="badge-glass !px-4 !py-1.5 text-sm font-semibold mb-5 inline-block" style={{ color: '#4D5FEC' }}>
+                📍 La destination
+              </span>
+              <h2 className="text-4xl font-black text-slate-900 mb-6 leading-tight">
+                Le Pays Basque,<br />
+                terrain de jeu idéal<br />
+                pour le vanlife.
+              </h2>
+              <p className="text-slate-500 text-lg leading-relaxed mb-8">
+                De l&apos;Atlantique aux Pyrénées en moins d&apos;une heure — le Pays Basque
+                concentre tout ce qu&apos;on aime : des vagues parfaites, des villages
+                authentiques, une gastronomie unique et des panoramas à couper le souffle.
+              </p>
 
-          {/* Slider Yoni & Xalbat */}
-          <div className="mt-12">
-            <VanSlider />
-          </div>
-
-          {/* Vans Sanity supplémentaires (si configuré) */}
-          {featuredVans && featuredVans.length > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
-              {featuredVans.map((van) => (
-                <VanCard
-                  key={van._id}
-                  van={van}
-                  mode={van.offerType?.includes("location") ? "location" : "achat"}
-                />
-              ))}
-            </div>
-          )}
-
-          <div className="text-center mt-10">
-            <LiquidButton href="/location" variant="ghost">
-              Voir tous les vans →
-            </LiquidButton>
-          </div>
-        </div>
-      </section>
-
-      {/* ━━━ SECTION 4 — Chiffres clés ━━━ */}
-      <section className="bg-white py-20">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {stats.map((stat) => (
-              <div key={stat.label} className="text-center">
-                <p className="text-4xl font-black text-blue-600">{stat.value}</p>
-                <p className="text-sm text-slate-500 mt-1">{stat.label}</p>
+              <div className="space-y-4">
+                {[
+                  { icon: "🌊", label: "Biarritz & la Côte des Basques", desc: "Les spots de surf les plus célèbres de France" },
+                  { icon: "⛰️", label: "La Rhune & les Pyrénées", desc: "Bivouacs légaux avec vue sur deux pays" },
+                  { icon: "🍷", label: "Saint-Jean-de-Luz & Espelette", desc: "Marchés, pintxos et vins basques" },
+                  { icon: "🌲", label: "Forêt d'Irati", desc: "La plus grande hêtraie d'Europe à votre portée" },
+                ].map((spot) => (
+                  <div key={spot.label} className="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-50 transition-colors">
+                    <span className="text-2xl mt-0.5">{spot.icon}</span>
+                    <div>
+                      <div className="font-semibold text-slate-800">{spot.label}</div>
+                      <div className="text-sm text-slate-500">{spot.desc}</div>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
+
+              <a
+                href="/road-trip-pays-basque-van"
+                className="inline-flex items-center gap-2 mt-6 text-sm font-semibold transition-colors"
+                style={{ color: "#4D5FEC" }}
+              >
+                Voir l&apos;itinéraire road trip 7 jours →
+              </a>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              {/* Panorama pleine largeur */}
+              <div className="relative col-span-2 aspect-[16/7] rounded-3xl overflow-hidden shadow-lg">
+                <Image
+                  src="https://cdn.sanity.io/images/lewexa74/production/0b3f81d08627ba0b4423224029cb5016d0e7ed25-2048x1365.jpg"
+                  alt="Paysage Pays Basque en van"
+                  fill
+                  className="object-cover hover:scale-105 transition-transform duration-700"
+                  unoptimized
+                />
+              </div>
+              {/* 2 images côte à côte */}
+              <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-lg">
+                <Image
+                  src="https://cdn.sanity.io/images/lewexa74/production/7e04357061492ab4193c49d03351310cf245a106-1540x976.png"
+                  alt="Van aménagé Vanzon Explorer"
+                  fill
+                  className="object-cover hover:scale-105 transition-transform duration-700"
+                  unoptimized
+                />
+              </div>
+              <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-lg">
+                <Image
+                  src="https://cdn.sanity.io/images/lewexa74/production/4ee40c1abb03d029487868808a159216a641e3ad-3829x2872.jpg"
+                  alt="Van life Pays Basque"
+                  fill
+                  className="object-cover hover:scale-105 transition-transform duration-700"
+                  unoptimized
+                />
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ━━━ SECTION 5 — Testimonials Carousel ━━━ */}
-      <section className="bg-bg-secondary py-20">
-        <div className="max-w-7xl mx-auto px-6">
-          <h2 className="text-3xl font-bold text-slate-900 text-center mb-12">
-            Ce qu&apos;ils en disent
-            <Link 
+
+      <section className="py-20" style={{ background: "linear-gradient(160deg, #F8FAFC 0%, #EFF6FF 100%)" }}>
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <span className="badge-glass !px-4 !py-1.5 text-sm text-amber-600 font-semibold mb-4 inline-block">
+              ⭐ Avis clients
+            </span>
+            <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-2">
+              Ce qu&apos;ils en disent
+            </h2>
+            <a
               href="https://maps.app.goo.gl/NqyLKueJCSzukQei7"
               target="_blank"
               rel="noopener noreferrer"
-              className="block text-sm font-normal text-blue-600 hover:text-blue-700 mt-2 transition-colors underline"
+              className="text-sm font-medium transition-colors"
+              style={{ color: '#4D5FEC' }}
             >
-              33 avis Google Maps • Voir tous les avis →
-            </Link>
-          </h2>
+              {placeStats.reviewCount} avis Google Maps • Voir tous les avis →
+            </a>
+          </div>
 
-          {testimonials && testimonials.length > 0 ? (
-            <div className="py-12">
-              <TestimonialCarousel testimonials={testimonials} />
-            </div>
-          ) : (
-            <p className="text-center text-slate-400 mt-8">
-              Les témoignages arrivent bientôt !
-            </p>
-          )}
-        </div>
-      </section>
-
-      {/* ━━━ SECTION 6 — Pays Basque teaser ━━━ */}
-      <section className="bg-white py-20">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-3xl font-bold text-slate-900">
-                Le Pays Basque, votre terrain de jeu
-              </h2>
-              <p className="text-slate-500 mt-4 leading-relaxed">
-                Des plages de Biarritz aux montagnes de la Rhune, en passant par
-                les villages colorés d&apos;Espelette et Saint-Jean-de-Luz. Le Pays
-                Basque offre une diversité de paysages unique, parfaite pour
-                l&apos;exploration en van.
-              </p>
-              <p className="text-slate-500 mt-3 leading-relaxed">
-                Surf, randonnée, gastronomie, culture… Chaque jour est une
-                nouvelle aventure.
-              </p>
-              <div className="mt-6">
-                <LiquidButton href="/pays-basque" variant="ghost">
-                  Découvrir les spots →
-                </LiquidButton>
+          <div className="grid md:grid-cols-3 gap-5">
+            {[
+              {
+                name: "Joris Darnanville",
+                detail: "Van super bien équipé, exactement comme décrit. Jules est disponible et de bons conseils. On recommande !",
+                initials: "J",
+                color: "bg-blue-500",
+              },
+              {
+                name: "Mathilde Sehil",
+                detail: "Un weekend parfait au Pays Basque. Le van est propre, bien rangé et très pratique. On a adoré la cuisine coulissante.",
+                initials: "M",
+                color: "bg-purple-500",
+              },
+              {
+                name: "Aurélie CEDELLE",
+                detail: "Tout est optimisé pour un séjour parfait. Rien à redire, on repart l'année prochaine avec les enfants !",
+                initials: "A",
+                color: "bg-teal-500",
+              },
+            ].map((review) => (
+              <div key={review.name} className="glass-card p-6">
+                <div className="flex items-center gap-1 text-amber-400 mb-4">
+                  {[...Array(5)].map((_, i) => <span key={i}>★</span>)}
+                </div>
+                <p className="text-slate-700 font-medium mb-2 text-sm leading-relaxed">
+                  &ldquo;{review.detail}&rdquo;
+                </p>
+                <div className="flex items-center gap-3 mt-4 pt-4 border-t border-slate-100">
+                  <div className={`w-9 h-9 rounded-full ${review.color} flex items-center justify-center text-white font-bold text-sm flex-shrink-0`}>
+                    {review.initials}
+                  </div>
+                  <div>
+                    <div className="font-semibold text-slate-800 text-sm">{review.name}</div>
+                    <div className="text-xs text-slate-400">Client Google Maps</div>
+                  </div>
+                </div>
               </div>
-            </div>
-            <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-bg-elevated">
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-6xl">🏔️</span>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
+
+      {/* ════════════════════════════════════════════════
+          VAN BUSINESS ACADEMY
+      ════════════════════════════════════════════════ */}
+      <section className="bg-white py-20 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+
+            {/* Texte gauche */}
+            <div>
+              <div className="flex items-center gap-3 mb-6">
+                <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest bg-amber-50 border border-amber-200 text-amber-700">
+                  🎓 Formation
+                </span>
+                <span className="text-slate-400 text-xs font-medium">100% en ligne</span>
+              </div>
+
+              <h2 className="text-4xl md:text-5xl font-black text-slate-900 leading-tight mb-4">
+                Van Business<br />
+                <span style={{ color: "#B9945F" }}>
+                  Academy
+                </span>
+              </h2>
+
+              <p className="text-slate-500 text-lg leading-relaxed mb-8 max-w-md">
+                De zéro à la location rentable en 8 semaines. Jules & Elio vous enseignent l&apos;aménagement DIY, l&apos;homologation VASP et comment générer des revenus avec votre van.
+              </p>
+
+              <div className="grid grid-cols-3 gap-4 mb-10">
+                {[
+                  { value: "8", label: "semaines" },
+                  { value: "A→Z", label: "aménagement" },
+                  { value: "100%", label: "en ligne" },
+                ].map((s) => (
+                  <div key={s.label} className="text-center p-4 rounded-2xl bg-slate-50 border border-slate-100">
+                    <div className="text-2xl font-black text-slate-900 leading-none mb-1">{s.value}</div>
+                    <div className="text-xs text-slate-500 font-medium">{s.label}</div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-3">
+                <a
+                  href="/formation"
+                  className="inline-flex items-center justify-center gap-2 font-bold px-8 py-4 rounded-2xl text-base text-white transition-all hover:-translate-y-0.5"
+                  style={{ background: "#B9945F" }}
+                >
+                  Découvrir la formation →
+                </a>
+                <a
+                  href="/formation"
+                  className="inline-flex items-center justify-center gap-2 bg-slate-100 text-slate-700 font-semibold px-6 py-4 rounded-2xl text-sm hover:bg-slate-200 transition-colors"
+                >
+                  Voir le programme
+                </a>
+              </div>
+            </div>
+
+            {/* Image droite */}
+            <div className="relative flex items-center justify-center">
+              <Image
+                src="https://cdn.sanity.io/images/lewexa74/production/e8d8a66703e846a5bd916e38bd9a488b663ce433-1920x1080.png"
+                alt="Van Business Academy — Formation vanlife aménagement"
+                width={960}
+                height={540}
+                className="w-full h-auto"
+                unoptimized
+              />
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <section className="relative py-28 overflow-hidden">
+        <div className="absolute inset-0">
+          <Image
+            src="https://cdn.sanity.io/images/lewexa74/production/e9664378c5fdc652c33ae7342dfc52cc4960c8bf-1080x750.png"
+            alt="Van Xalbat Vanzon Explorer"
+            fill
+            className="object-cover"
+            unoptimized
+          />
+          <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(15,21,58,0.92) 0%, rgba(77,95,236,0.6) 100%)" }} />
+        </div>
+
+        <div className="relative z-10 max-w-3xl mx-auto px-6 text-center">
+          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-2 mb-6">
+            <span className="text-green-400">●</span>
+            <span className="text-white/90 text-sm font-medium">Vans disponibles cet été</span>
+          </div>
+
+          <h2 className="text-4xl md:text-5xl font-black text-white mb-5 leading-tight">
+            Votre prochaine aventure<br />
+            commence ici.
+          </h2>
+          <p className="text-white/70 text-xl mb-10 leading-relaxed">
+            À partir de <strong className="text-white">65€/nuit</strong> — assurance incluse, van tout équipé,
+            Pays Basque à portée de roues.
+          </p>
+
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <a
+              href="https://www.yescapa.fr/campers/89215"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 bg-white text-slate-900 font-bold px-10 py-5 rounded-2xl hover:bg-blue-50 transition-colors text-lg shadow-2xl"
+            >
+              Réserver Yoni — Yescapa
+            </a>
+            <a
+              href="https://www.yescapa.fr/campers/98869"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-md border border-white/30 text-white font-bold px-10 py-5 rounded-2xl hover:bg-white/20 transition-colors text-lg"
+            >
+              Réserver Xalbat — Yescapa
+            </a>
+          </div>
+
+          <p className="text-white/40 text-sm mt-6">
+            Questions ? Contactez Jules directement via la plateforme.
+          </p>
+        </div>
+      </section>
+
+      {vans && vans.length > 0 && (
+        <section className="bg-[#F8FAFC] py-16">
+          <div className="max-w-7xl mx-auto px-6">
+            <h2 className="text-2xl font-bold text-slate-900 mb-8">Plus de vans disponibles</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {vans.map((van) => (
+                <VanCard key={van._id} van={van} mode="location" />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
     </>
   );
 }
