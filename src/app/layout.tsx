@@ -39,7 +39,7 @@ export async function generateMetadata(): Promise<Metadata> {
       template: "%s | Vanzon Explorer",
     },
     description:
-      "Location de vans amenages, achat/revente et formation vanlife au Pays Basque. Explorez la cote basque en toute liberte.",
+      "Location de vans aménagés, achat/revente et formation vanlife au Pays Basque. Explorez la côte basque en toute liberté.",
     metadataBase: new URL(BASE_URL),
     openGraph: {
       type: "website",
