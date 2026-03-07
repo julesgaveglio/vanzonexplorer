@@ -1,3 +1,5 @@
+import type { VanData } from "@/lib/data/vans";
+
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL
   ? `${process.env.NEXT_PUBLIC_SITE_URL}/vanzon`
   : "https://vanzonexplorer.com/vanzon";
@@ -28,6 +30,56 @@ export function LocalBusinessJsonLd() {
     <script
       type="application/ld+json"
       dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  );
+}
+
+export function VanProductJsonLd({ van }: { van: VanData }) {
+  const productSchema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": `${van.name} — ${van.model} aménagé`,
+    "description": van.description,
+    "offers": {
+      "@type": "Offer",
+      "price": van.price,
+      "priceCurrency": "EUR",
+      "availability": "https://schema.org/InStock",
+      "seller": { "@type": "Organization", "name": "Vanzon Explorer" }
+    }
+  };
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+    />
+  );
+}
+
+type ArticleType = {
+  title: string;
+  excerpt: string;
+  publishedAt: string;
+  coverImage?: { url: string } | null;
+  slug: string;
+};
+
+export function ArticleJsonLd({ article }: { article: ArticleType }) {
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": article.title,
+    "description": article.excerpt,
+    "datePublished": article.publishedAt,
+    "author": { "@type": "Organization", "name": "Vanzon Explorer" },
+    "publisher": { "@type": "Organization", "name": "Vanzon Explorer" },
+    "image": article.coverImage?.url,
+    "url": `${process.env.NEXT_PUBLIC_SITE_URL || "https://vanzonexplorer.com"}/articles/${article.slug}`
+  };
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
     />
   );
 }

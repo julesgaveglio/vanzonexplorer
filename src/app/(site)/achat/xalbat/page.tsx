@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import AchatClient from "../AchatClient";
+import { VanProductJsonLd } from "@/components/seo/JsonLd";
+import { VANS } from "@/lib/data/vans";
 
 export const metadata: Metadata = {
   title: "Xalbat — Renault Trafic aménagé 2025 à vendre | Vanzon Explorer",
@@ -18,5 +20,11 @@ export const metadata: Metadata = {
 };
 
 export default function XalbatPage() {
-  return <AchatClient vanId="xalbat" />;
+  const van = VANS.find((v) => v.id === "xalbat")!;
+  return (
+    <>
+      <VanProductJsonLd van={van} />
+      <AchatClient vanId="xalbat" />
+    </>
+  );
 }

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import AchatClient from "../AchatClient";
+import { VanProductJsonLd } from "@/components/seo/JsonLd";
+import { VANS } from "@/lib/data/vans";
 
 export const metadata: Metadata = {
   title: "Yoni — Renault Trafic aménagé 2024 à vendre | Vanzon Explorer",
@@ -18,5 +20,11 @@ export const metadata: Metadata = {
 };
 
 export default function YoniPage() {
-  return <AchatClient vanId="yoni" />;
+  const van = VANS.find((v) => v.id === "yoni")!;
+  return (
+    <>
+      <VanProductJsonLd van={van} />
+      <AchatClient vanId="yoni" />
+    </>
+  );
 }

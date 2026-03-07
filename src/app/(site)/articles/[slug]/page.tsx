@@ -5,6 +5,7 @@ import Link from "next/link";
 import { PortableText } from "@portabletext/react";
 import { sanityFetch } from "@/lib/sanity/client";
 import { getArticleBySlugQuery, getAllArticleSlugsQuery } from "@/lib/sanity/queries";
+import { ArticleJsonLd } from "@/components/seo/JsonLd";
 
 type ArticleDoc = {
   _id: string;
@@ -75,6 +76,7 @@ export default async function ArticleDetailPage({ params }: { params: { slug: st
 
   return (
     <main className="min-h-screen bg-white">
+      <ArticleJsonLd article={article} />
       {/* Cover */}
       {article.coverImage?.url && (
         <div className="relative w-full h-[50vh] min-h-[320px] max-h-[520px] bg-slate-100">
