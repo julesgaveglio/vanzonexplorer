@@ -5,6 +5,7 @@ import { frFR } from "@clerk/localizations";
 import { sanityFetch } from "@/lib/sanity/client";
 import { getSiteSettingsQuery } from "@/lib/sanity/queries";
 import CookieBanner from "@/components/ui/CookieBanner";
+import { LocalBusinessJsonLd } from "@/components/seo/JsonLd";
 import "./globals.css";
 
 const inter = Inter({
@@ -66,6 +67,7 @@ export default function RootLayout({
         <body
           className={`${inter.variable} ${bebasNeue.variable} font-sans antialiased bg-bg-primary text-text-primary min-h-screen`}
         >
+          <LocalBusinessJsonLd />
           {children}
           <CookieBanner />
         </body>
