@@ -14,6 +14,8 @@ export interface VanData {
   ref: string;
   images: string[];
   features: string[];
+  /** Curated 4-item list for the landing page card grid */
+  highlights: string[];
   description: string;
   whatsapp: string;
 }
@@ -47,6 +49,7 @@ export const VANS: VanData[] = [
       "Prises USB & 220V",
       "Rangements sur-mesure",
     ],
+    highlights: ["Lit fixe 2 pers.", "Cuisine coulissante", "Panneau solaire", "100Ah lithium"],
     description:
       "Yoni a été aménagé par nos soins en 2024 — conçu, construit et utilisé dans notre propre flotte de location au Pays Basque. Chaque détail a été pensé pour le confort et la durabilité. Carnet d'entretien complet, historique traçable depuis l'origine, remise en main propre à Cambo-les-Bains.",
     whatsapp:
@@ -80,6 +83,7 @@ export const VANS: VanData[] = [
       "Prises USB & 220V",
       "Rangements sur-mesure",
     ],
+    highlights: ["Lit fixe 2 pers.", "Cuisine coulissante", "Panneau solaire", "100Ah lithium"],
     description:
       "Xalbat est notre dernier aménagement, réalisé par nos soins en 2025. Le van le plus récent de notre flotte, avec le moins de kilomètres. Construit selon les mêmes standards que nos véhicules de location, avec historique complet depuis l'achat. Disponible à Cambo-les-Bains, remise en main propre.",
     whatsapp:
@@ -87,7 +91,7 @@ export const VANS: VanData[] = [
   },
 ];
 
-// Landing page variant — derived from VANS for the card grid on /achat
+// Landing page card grid variant — derived from VANS
 export interface VanLandingData {
   id: string;
   name: string;
@@ -101,29 +105,15 @@ export interface VanLandingData {
   href: string;
 }
 
-export const VANS_LANDING: VanLandingData[] = [
-  {
-    id: "yoni",
-    name: "Yoni",
-    model: "Renault Trafic III L2H1",
-    year: 2024,
-    mileage: "68 000 km",
-    price: "25 000 €",
-    tag: "Aménagé 2024",
-    image: "https://cdn.sanity.io/images/lewexa74/production/2e9214211ef5a235dcf2aa639d0feafcc867c88f-1080x750.png",
-    highlights: ["Lit fixe 2 pers.", "Cuisine coulissante", "Panneau solaire", "100Ah lithium"],
-    href: "/achat/yoni",
-  },
-  {
-    id: "xalbat",
-    name: "Xalbat",
-    model: "Renault Trafic III L2H1",
-    year: 2025,
-    mileage: "54 000 km",
-    price: "25 000 €",
-    tag: "Aménagé 2025",
-    image: "https://cdn.sanity.io/images/lewexa74/production/e9664378c5fdc652c33ae7342dfc52cc4960c8bf-1080x750.png",
-    highlights: ["Lit fixe 2 pers.", "Cuisine coulissante", "Panneau solaire", "100Ah lithium"],
-    href: "/achat/xalbat",
-  },
-];
+export const VANS_LANDING: VanLandingData[] = VANS.map((v) => ({
+  id: v.id,
+  name: v.name,
+  model: v.model,
+  year: v.year,
+  mileage: v.mileage,
+  price: v.price,
+  tag: `Aménagé ${v.year}`,
+  image: v.images[0],
+  highlights: v.highlights,
+  href: `/achat/${v.id}`,
+}));
