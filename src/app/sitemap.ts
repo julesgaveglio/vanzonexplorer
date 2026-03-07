@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { sanityFetch } from "@/lib/sanity/client";
 import { getAllVanSlugsQuery, getAllArticleSlugsQuery } from "@/lib/sanity/queries";
+import { VANS } from "@/lib/data/vans";
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://vanzonexplorer.com";
 
@@ -18,8 +19,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/location/week-end`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },
     { url: `${BASE_URL}/formation`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9 },
     { url: `${BASE_URL}/achat`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
-    { url: `${BASE_URL}/achat/yoni`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
-    { url: `${BASE_URL}/achat/xalbat`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
+    ...VANS.map((v) => ({ url: `${BASE_URL}/achat/${v.id}`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.8 })),
     { url: `${BASE_URL}/club`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },
     { url: `${BASE_URL}/pays-basque`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },
     { url: `${BASE_URL}/road-trip-pays-basque-van`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },

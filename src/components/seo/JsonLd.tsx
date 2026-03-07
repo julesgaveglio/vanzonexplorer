@@ -40,9 +40,11 @@ export function VanProductJsonLd({ van }: { van: VanData }) {
     "@type": "Product",
     "name": `${van.name} — ${van.model} aménagé`,
     "description": van.description,
+    "image": van.images[0],
+    "url": `${BASE_URL}/achat/${van.id}`,
     "offers": {
       "@type": "Offer",
-      "price": van.price,
+      "price": parseFloat(van.price.replace(/[^\d]/g, "")),
       "priceCurrency": "EUR",
       "availability": "https://schema.org/InStock",
       "seller": { "@type": "Organization", "name": "Vanzon Explorer" }
@@ -74,7 +76,7 @@ export function ArticleJsonLd({ article }: { article: ArticleType }) {
     "author": { "@type": "Organization", "name": "Vanzon Explorer" },
     "publisher": { "@type": "Organization", "name": "Vanzon Explorer" },
     "image": article.coverImage?.url,
-    "url": `${process.env.NEXT_PUBLIC_SITE_URL || "https://vanzonexplorer.com"}/articles/${article.slug}`
+    "url": `${BASE_URL}/articles/${article.slug}`
   };
   return (
     <script
