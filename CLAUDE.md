@@ -50,7 +50,7 @@ NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
 **Component organization:**
 - `src/components/formation/` — Formation Van Business Academy page components
 - `src/components/van/` — Van listing/detail components
-- `src/components/ui/` — Shared UI primitives (GlassCard, LiquidButton, Badge, HeroCarousel, ResponsiveImage)
+- `src/components/ui/` — Shared UI primitives (GlassCard, LiquidButton, Badge, HeroCarousel)
 - `src/components/layout/` — Navbar, Footer, FloatingCTA
 
 **Design system:** Glassmorphism aesthetic, Tailwind CSS, Framer Motion animations. Custom Tailwind tokens (`bg-bg-primary`, `text-text-primary`) defined in globals.css. Inter font via `next/font/google`.
