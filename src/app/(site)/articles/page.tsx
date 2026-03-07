@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import ArticlesPageClient from "./_components/ArticlesPageClient";
+import { sanityFetch } from "@/lib/sanity/client";
+import { getAllArticlesQuery } from "@/lib/sanity/queries";
+import type { SanityArticle } from "./types";
 
 export const metadata: Metadata = {
   title: "Guides & Articles Vanlife Pays Basque | Vanzon Explorer",
@@ -20,6 +23,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function ArticlesPage() {
-  return <ArticlesPageClient />;
+export default async function ArticlesPage() {
+  const sanityArticles = await sanityFetch<SanityArticle[]>(getAllArticlesQuery);
+  return <ArticlesPageClient sanityArticles={sanityArticles ?? []} />;
 }

@@ -240,6 +240,58 @@ export const getSiteSettingsQuery = groq`
 `;
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 12. Articles publiés
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+export const getAllArticlesQuery = groq`
+  *[_type == "article"] | order(publishedAt desc) {
+    _id,
+    title,
+    "slug": slug.current,
+    excerpt,
+    category,
+    tag,
+    readTime,
+    publishedAt,
+    featured,
+    "coverImage": coverImage {
+      "url": asset->url,
+      alt,
+      credit
+    }
+  }
+`;
+
+export const getArticleBySlugQuery = groq`
+  *[_type == "article" && slug.current == $slug][0] {
+    _id,
+    title,
+    "slug": slug.current,
+    excerpt,
+    category,
+    tag,
+    readTime,
+    publishedAt,
+    featured,
+    content,
+    seoTitle,
+    seoDescription,
+    "coverImage": coverImage {
+      "url": asset->url,
+      alt,
+      credit,
+      pexelsId,
+      pexelsUrl
+    }
+  }
+`;
+
+export const getAllArticleSlugsQuery = groq`
+  *[_type == "article" && defined(slug.current)] {
+    "slug": slug.current
+  }
+`;
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // 10. Hero carousel images (NOUVEAU)
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 export const getHeroCarouselQuery = groq`

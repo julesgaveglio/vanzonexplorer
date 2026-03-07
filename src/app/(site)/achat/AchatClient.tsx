@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 const VANS = [
   {
@@ -128,7 +129,7 @@ function VanListing({ van, reversed }: { van: (typeof VANS)[0]; reversed?: boole
                   {van.status}
                 </span>
                 <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-100">
-                  Aménagé par nos soins
+                  Non VASP
                 </span>
               </div>
               <h2 className="text-3xl font-black text-slate-900 leading-none">{van.name}</h2>
@@ -199,35 +200,44 @@ function VanListing({ van, reversed }: { van: (typeof VANS)[0]; reversed?: boole
   );
 }
 
-export default function AchatClient() {
+export default function AchatClient({ vanId }: { vanId?: string }) {
+  const displayVans = vanId ? VANS.filter((v) => v.id === vanId) : VANS;
+
   return (
     <div style={{ background: "#F7F6F3", minHeight: "100vh" }}>
       {/* ── HEADER ── */}
       <section className="pt-16 pb-12 px-6">
         <div className="max-w-5xl mx-auto">
+          {/* Back link for detail pages */}
+          {vanId && (
+            <Link href="/achat" className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-[#4D5FEC] transition-colors mb-8 font-medium">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+              </svg>
+              Tous les vans à vendre
+            </Link>
+          )}
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
             <div>
               <div className="flex items-center gap-3 mb-4">
                 <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-white border border-slate-200 text-slate-500 shadow-sm">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  2 véhicules disponibles
+                  {vanId ? "Disponible" : "2 véhicules disponibles"}
                 </span>
               </div>
               <h1 className="text-5xl md:text-6xl font-black text-slate-900 leading-none tracking-tight">
-                Vans à vendre
+                {vanId ? displayVans[0]?.name ?? "Van" : "Vans à vendre"}
               </h1>
               <p className="text-slate-500 text-lg mt-3 max-w-lg leading-relaxed">
-                Deux vans entièrement aménagés par nos soins, issus de notre propre flotte. Historique complet depuis l&apos;origine, entretenus avec soin. Basés au Pays Basque, remise en main propre à Cambo-les-Bains.
+                {vanId
+                  ? `${displayVans[0]?.model} aménagé par nos soins — issu de notre flotte de location au Pays Basque. Historique complet, remise en main propre à Cambo-les-Bains.`
+                  : "Deux vans entièrement aménagés par nos soins, issus de notre propre flotte. Historique complet depuis l'origine. Remise en main propre à Cambo-les-Bains."}
               </p>
             </div>
             <div className="flex gap-3 flex-shrink-0">
               <div className="bg-white rounded-2xl px-5 py-4 text-center border border-slate-100 shadow-sm">
-                <p className="text-2xl font-black text-slate-900">2</p>
-                <p className="text-xs text-slate-400 font-medium">annonces</p>
-              </div>
-              <div className="bg-white rounded-2xl px-5 py-4 text-center border border-slate-100 shadow-sm">
                 <p className="text-2xl font-black text-slate-900">25k€</p>
-                <p className="text-xs text-slate-400 font-medium">chaque van</p>
+                <p className="text-xs text-slate-400 font-medium">prix ferme</p>
               </div>
               <div className="bg-white rounded-2xl px-5 py-4 text-center border border-slate-100 shadow-sm">
                 <p className="text-2xl font-black text-slate-900">64</p>
@@ -253,8 +263,8 @@ export default function AchatClient() {
       {/* ── LISTINGS ── */}
       <section className="pb-16 px-6">
         <div className="max-w-5xl mx-auto flex flex-col gap-8">
-          {VANS.map((van, i) => (
-            <VanListing key={van.id} van={van} reversed={i % 2 === 1} />
+          {displayVans.map((van, i) => (
+            <VanListing key={van.id} van={van} reversed={!vanId && i % 2 === 1} />
           ))}
         </div>
       </section>

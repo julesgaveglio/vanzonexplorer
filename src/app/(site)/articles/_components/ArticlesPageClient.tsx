@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import type { SanityArticle } from "../types";
 
-type Category = "Tous" | "Road Trips" | "Aménagement Van" | "Business Van";
+type Category = "Tous" | "Road Trips" | "Aménagement Van" | "Business Van" | "Achat Van";
 
 type Article = {
   slug: string;
@@ -26,8 +27,8 @@ const articles: Article[] = [
     title: "Road Trip Pays Basque en Van — Itinéraire 7 Jours",
     description: "L'itinéraire complet pour explorer le Pays Basque en van aménagé. De Biarritz à la Forêt d'Irati, étapes jour par jour, spots vanlife secrets, budget au centime près.",
     category: "Road Trips",
-    image: "https://cdn.sanity.io/images/lewexa74/production/f93fa16ab46d8934dcc3092a8e86fc80ebce4305-1080x750.png",
-    imageAlt: "Van aménagé au bord de l'Atlantique - road trip Pays Basque",
+    image: "https://images.pexels.com/photos/6946423/pexels-photo-6946423.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    imageAlt: "Van aménagé sur une route forestière enneigée - road trip Pays Basque",
     readTime: "12 min",
     href: "/road-trip-pays-basque-van",
     status: "live",
@@ -39,8 +40,8 @@ const articles: Article[] = [
     title: "Où dormir en van au Pays Basque ? Les 10 meilleurs spots",
     description: "Aires municipales, bivouacs légaux, forêts et cols pyrénéens — notre sélection des meilleures nuits en van sur la côte basque et en montagne.",
     category: "Road Trips",
-    image: "https://cdn.sanity.io/images/lewexa74/production/04d93973d30c5eede51f954d1432a50a5f82ef9b-1080x750.png",
-    imageAlt: "Van la nuit en montagne au Pays Basque",
+    image: "https://images.pexels.com/photos/35120667/pexels-photo-35120667.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    imageAlt: "Deux vans sous un ciel étoilé en montagne",
     readTime: "8 min",
     href: "/articles/ou-dormir-van-pays-basque",
     status: "coming-soon",
@@ -51,8 +52,8 @@ const articles: Article[] = [
     title: "Surf + Vanlife à Biarritz : les plages incontournables",
     description: "Côte des Basques, Milady, Anglet… Un guide pour combiner van et surf sur la côte basque. Les meilleurs spots selon la marée, le vent et votre niveau.",
     category: "Road Trips",
-    image: "https://cdn.sanity.io/images/lewexa74/production/660105a28e577c33f642a8fdff528d88925642e3-1080x750.png",
-    imageAlt: "Van ouvert face aux vagues à Biarritz",
+    image: "https://images.pexels.com/photos/21706237/pexels-photo-21706237.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    imageAlt: "Surfeur sur une vague de l'océan Atlantique",
     readTime: "7 min",
     href: "/articles/surf-vanlife-biarritz",
     status: "coming-soon",
@@ -63,8 +64,8 @@ const articles: Article[] = [
     title: "Randonner à La Rhune depuis son van : guide pratique",
     description: "La Rhune à pied ou en train à crémaillère ? Le col de Saint-Ignace, les sentiers balisés, le bivouac avec vue sur deux pays — tout ce qu'il faut pour réussir l'ascension.",
     category: "Road Trips",
-    image: "https://cdn.sanity.io/images/lewexa74/production/04d93973d30c5eede51f954d1432a50a5f82ef9b-1080x750.png",
-    imageAlt: "Van au col de Saint-Ignace avant la montée de La Rhune",
+    image: "https://images.pexels.com/photos/35314822/pexels-photo-35314822.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    imageAlt: "Paysage des Pyrénées en Occitanie, France",
     readTime: "6 min",
     href: "/articles/rhune-randonnee-van",
     status: "coming-soon",
@@ -75,8 +76,8 @@ const articles: Article[] = [
     title: "La Forêt d'Irati en van : randonnée, bivouac et nature sauvage",
     description: "La plus grande hêtraie d'Europe s'explore depuis un van. Sentiers, zones de bivouac autorisées, faune sauvage, itinéraires depuis Bayonne — le guide complet.",
     category: "Road Trips",
-    image: "https://cdn.sanity.io/images/lewexa74/production/660105a28e577c33f642a8fdff528d88925642e3-1080x750.png",
-    imageAlt: "Forêt d'Irati - hêtraie basque depuis un van",
+    image: "https://images.pexels.com/photos/10915474/pexels-photo-10915474.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    imageAlt: "Forêt de hêtres baignée de lumière",
     readTime: "7 min",
     href: "/articles/foret-irati-van",
     status: "coming-soon",
@@ -87,8 +88,8 @@ const articles: Article[] = [
     title: "La côte basque espagnole en van : de Hondarribia à Bilbao",
     description: "Passer la frontière et explorer la Euskal Herria côté espagnol. Plages sauvages, pintxos, San Sebastián — le road trip basque ne s'arrête pas à la frontière.",
     category: "Road Trips",
-    image: "https://cdn.sanity.io/images/lewexa74/production/0b3f81d08627ba0b4423224029cb5016d0e7ed25-2048x1365.jpg",
-    imageAlt: "Van sur la côte basque espagnole vers Bilbao",
+    image: "https://images.pexels.com/photos/12983843/pexels-photo-12983843.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    imageAlt: "Vue côtière colorée d'un village espagnol en bord de mer",
     readTime: "9 min",
     href: "/articles/cote-basque-espagne-van",
     status: "coming-soon",
@@ -99,8 +100,8 @@ const articles: Article[] = [
     title: "Quel fourgon choisir pour aménager son van ? Notre guide 2025",
     description: "Renault Trafic, Citroën Jumpy, Volkswagen Transporter, Mercedes Sprinter — on compare les meilleurs fourgons pour une conversion van selon votre budget et vos besoins.",
     category: "Aménagement Van",
-    image: "https://cdn.sanity.io/images/lewexa74/production/f93fa16ab46d8934dcc3092a8e86fc80ebce4305-1080x750.png",
-    imageAlt: "Différents fourgons pour aménager un van vanlife",
+    image: "https://images.pexels.com/photos/15240841/pexels-photo-15240841.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    imageAlt: "Lit confortable à l'intérieur d'un van aménagé",
     readTime: "10 min",
     href: "/articles/choisir-fourgon-van-amenage",
     status: "coming-soon",
@@ -111,8 +112,8 @@ const articles: Article[] = [
     title: "Isolation d'un van : matériaux, méthode et erreurs à éviter",
     description: "Laine de mouton, liège, armaflex — on compare les isolants et on vous guide pas à pas pour une isolation thermique et phonique efficace de votre fourgon.",
     category: "Aménagement Van",
-    image: "https://cdn.sanity.io/images/lewexa74/production/04d93973d30c5eede51f954d1432a50a5f82ef9b-1080x750.png",
-    imageAlt: "Isolation d'un van en cours d'aménagement",
+    image: "https://images.pexels.com/photos/7285975/pexels-photo-7285975.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    imageAlt: "Travaux d'électricité et câblage DIY",
     readTime: "8 min",
     href: "/articles/isolation-van-guide-complet",
     status: "coming-soon",
@@ -123,8 +124,8 @@ const articles: Article[] = [
     title: "Électricité 12V dans un van : batterie, panneau solaire et câblage",
     description: "Comment installer un circuit 12V autonome dans son van ? Calcul de consommation, choix de la batterie lithium, panneau solaire, convertisseur — le guide technique complet.",
     category: "Aménagement Van",
-    image: "https://cdn.sanity.io/images/lewexa74/production/660105a28e577c33f642a8fdff528d88925642e3-1080x750.png",
-    imageAlt: "Installation électrique 12V dans un van aménagé",
+    image: "https://images.pexels.com/photos/8112480/pexels-photo-8112480.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    imageAlt: "Vue aérienne d'un van garé sur un ponton face à l'océan",
     readTime: "12 min",
     href: "/articles/electricite-12v-van-installation",
     status: "coming-soon",
@@ -135,8 +136,8 @@ const articles: Article[] = [
     title: "Aménager une cuisine dans son van : plans, matériaux et astuces",
     description: "Plan de travail, réfrigérateur 12V, réchaud à gaz ou induction, évier — comment créer une cuisine fonctionnelle dans un espace réduit sans se ruiner.",
     category: "Aménagement Van",
-    image: "https://cdn.sanity.io/images/lewexa74/production/e9664378c5fdc652c33ae7342dfc52cc4960c8bf-1080x750.png",
-    imageAlt: "Cuisine aménagée dans un van Renault Trafic",
+    image: "https://images.pexels.com/photos/6946075/pexels-photo-6946075.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    imageAlt: "Couple préparant le petit-déjeuner dans un van aménagé",
     readTime: "7 min",
     href: "/articles/cuisine-van-amenagement",
     status: "coming-soon",
@@ -147,8 +148,8 @@ const articles: Article[] = [
     title: "Homologation VASP : comment transformer son fourgon en véhicule de loisir",
     description: "Tout sur la réception à titre isolé (RTI) et le passage en VASP pour un van aménagé. Démarches DREAL, coût, délais et ce qu'on peut faire soi-même.",
     category: "Aménagement Van",
-    image: "https://cdn.sanity.io/images/lewexa74/production/0b3f81d08627ba0b4423224029cb5016d0e7ed25-2048x1365.jpg",
-    imageAlt: "Document homologation VASP fourgon aménagé van",
+    image: "https://images.pexels.com/photos/6946001/pexels-photo-6946001.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    imageAlt: "Couple en road trip dans un van vert classique en forêt",
     readTime: "9 min",
     href: "/articles/homologation-vasp-van",
     status: "coming-soon",
@@ -159,8 +160,8 @@ const articles: Article[] = [
     title: "Mettre son van en location sur Yescapa : le guide de départ",
     description: "Comment créer son activité de location de van ? Statut juridique, assurance, tarification, contrat — tout ce qu'il faut savoir pour démarrer sereinement sur Yescapa.",
     category: "Business Van",
-    image: "https://cdn.sanity.io/images/lewexa74/production/f93fa16ab46d8934dcc3092a8e86fc80ebce4305-1080x750.png",
-    imageAlt: "Van aménagé disponible à la location sur Yescapa Pays Basque",
+    image: "https://images.pexels.com/photos/8230951/pexels-photo-8230951.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    imageAlt: "Couple souriant devant leur van bleu iconique en road trip",
     readTime: "11 min",
     href: "/articles/mettre-van-en-location-yescapa",
     status: "coming-soon",
@@ -171,8 +172,8 @@ const articles: Article[] = [
     title: "Tarification van sur Yescapa : comment fixer le bon prix ?",
     description: "Tarif basse/haute saison, week-end, semaine complète — les stratégies de prix qui maximisent revenus et taux d'occupation pour un van de location au Pays Basque.",
     category: "Business Van",
-    image: "https://cdn.sanity.io/images/lewexa74/production/04d93973d30c5eede51f954d1432a50a5f82ef9b-1080x750.png",
-    imageAlt: "Tableau de bord Yescapa - tarification location van",
+    image: "https://images.pexels.com/photos/7947998/pexels-photo-7947998.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    imageAlt: "Vue aérienne de rapports financiers et d'une calculatrice",
     readTime: "7 min",
     href: "/articles/tarification-van-location-yescapa",
     status: "coming-soon",
@@ -183,8 +184,8 @@ const articles: Article[] = [
     title: "Créer une annonce Yescapa qui convertit : photos, titre, description",
     description: "Les annonces qui bookent vraiment ont des caractéristiques en commun. On analyse les meilleures annonces et vous donne notre checklist pour maximiser vos réservations.",
     category: "Business Van",
-    image: "https://cdn.sanity.io/images/lewexa74/production/660105a28e577c33f642a8fdff528d88925642e3-1080x750.png",
-    imageAlt: "Annonce Yescapa van aménagé Pays Basque location",
+    image: "https://images.pexels.com/photos/6946001/pexels-photo-6946001.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    imageAlt: "Van classique en forêt enneigée - photo d'annonce",
     readTime: "6 min",
     href: "/articles/creer-annonce-yescapa-convertir",
     status: "coming-soon",
@@ -195,8 +196,8 @@ const articles: Article[] = [
     title: "Déclarer ses revenus de location de van aux impôts",
     description: "Micro-BIC, régime réel, location meublée non professionnelle — quel régime fiscal choisir pour la location de votre van ? Les règles 2025 expliquées simplement.",
     category: "Business Van",
-    image: "https://cdn.sanity.io/images/lewexa74/production/0b3f81d08627ba0b4423224029cb5016d0e7ed25-2048x1365.jpg",
-    imageAlt: "Déclaration revenus location van impôts France",
+    image: "https://images.pexels.com/photos/7111529/pexels-photo-7111529.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    imageAlt: "Calculatrice et note tax season sur un bureau",
     readTime: "8 min",
     href: "/articles/declarer-revenus-location-van-impots",
     status: "coming-soon",
@@ -207,12 +208,85 @@ const articles: Article[] = [
     title: "Optimiser le taux d'occupation de son van : stratégies avancées",
     description: "Réservations de dernière minute, offres saison creuse, messages automatiques, avis clients — les leviers concrets pour louer son van plus de 150 jours par an.",
     category: "Business Van",
-    image: "https://cdn.sanity.io/images/lewexa74/production/e9664378c5fdc652c33ae7342dfc52cc4960c8bf-1080x750.png",
-    imageAlt: "Calendrier location van optimisé taux occupation Yescapa",
+    image: "https://images.pexels.com/photos/29509513/pexels-photo-29509513.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    imageAlt: "Calendrier de réservations van en gros plan",
     readTime: "9 min",
     href: "/articles/optimiser-taux-occupation-van-location",
     status: "coming-soon",
     tag: "Optimisation",
+  },
+  // ── Achat Van ──────────────────────────────────────────────
+  {
+    slug: "acheter-van-amenage-occasion-guide",
+    title: "Acheter un van aménagé d'occasion : le guide complet 2025",
+    description: "Que vérifier avant d'acheter un fourgon aménagé ? Inspection mécanique, aménagement, documents, prix du marché — tout ce qu'il faut savoir pour ne pas se tromper.",
+    category: "Achat Van",
+    image: "https://images.pexels.com/photos/6946001/pexels-photo-6946001.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    imageAlt: "Van vert sur une route forestière enneigée",
+    readTime: "10 min",
+    href: "/articles/acheter-van-amenage-occasion-guide",
+    status: "coming-soon",
+    tag: "Guide achat",
+  },
+  {
+    slug: "prix-van-amenage-2025",
+    title: "Prix d'un van aménagé en 2025 : ce que ça coûte vraiment",
+    description: "Budget d'achat, coût d'un aménagement DIY vs clé en main, frais d'entretien, assurance — une estimation réaliste pour acheter ou construire votre van.",
+    category: "Achat Van",
+    image: "https://images.pexels.com/photos/10356910/pexels-photo-10356910.png?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    imageAlt: "Van garé dans la nature avec lumière du soir",
+    readTime: "8 min",
+    href: "/articles/prix-van-amenage-2025",
+    status: "coming-soon",
+    tag: "Budget",
+  },
+  {
+    slug: "renault-trafic-amenage-notre-retour",
+    title: "Renault Trafic aménagé : notre retour d'expérience après 2 ans",
+    description: "Pourquoi on a choisi le Trafic III pour notre flotte de location ? Fiabilité, espace, coût d'entretien, pannes rencontrées — un retour d'expérience honnête.",
+    category: "Achat Van",
+    image: "https://images.pexels.com/photos/4391469/pexels-photo-4391469.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    imageAlt: "Renault Trafic blanc garé dans une rue",
+    readTime: "7 min",
+    href: "/articles/renault-trafic-amenage-notre-retour",
+    status: "coming-soon",
+    tag: "Retour d'expérience",
+  },
+  {
+    slug: "van-amenage-pour-deux-personnes-criteres",
+    title: "Van aménagé pour 2 personnes : les critères essentiels",
+    description: "Lit fixe ou convertible, espace de vie, cuisine fonctionnelle, rangements — comment choisir ou construire un van confortable pour deux sans se retrouver à l'étroit.",
+    category: "Achat Van",
+    image: "https://images.pexels.com/photos/8231247/pexels-photo-8231247.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    imageAlt: "Couple heureux à côté de leur van au coucher du soleil",
+    readTime: "6 min",
+    href: "/articles/van-amenage-pour-deux-personnes-criteres",
+    status: "coming-soon",
+    tag: "Couple",
+  },
+  {
+    slug: "acheter-van-amenage-pays-basque",
+    title: "Acheter un van aménagé au Pays Basque : ce qu'il faut savoir",
+    description: "Le marché du van aménagé d'occasion au Pays Basque — où chercher, les prix pratiqués, les particularités locales et pourquoi acheter directement à un propriétaire.",
+    category: "Achat Van",
+    image: "https://images.pexels.com/photos/32823206/pexels-photo-32823206.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    imageAlt: "Van garé dans un village de montagne",
+    readTime: "6 min",
+    href: "/articles/acheter-van-amenage-pays-basque",
+    status: "coming-soon",
+    tag: "Pays Basque",
+  },
+  {
+    slug: "van-cle-en-main-vs-conversion",
+    title: "Van clé en main ou auto-conversion : lequel choisir ?",
+    description: "Acheter un van déjà aménagé ou construire le sien de zéro ? On compare les deux approches en termes de budget, temps, qualité et revenabilité pour vous aider à décider.",
+    category: "Achat Van",
+    image: "https://images.pexels.com/photos/8082327/pexels-photo-8082327.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    imageAlt: "Intérieur moderne d'un van aménagé en bois clair",
+    readTime: "8 min",
+    href: "/articles/van-cle-en-main-vs-conversion",
+    status: "coming-soon",
+    tag: "Comparatif",
   },
 ];
 
@@ -221,12 +295,14 @@ const categories: { label: Category; icon: string }[] = [
   { label: "Road Trips", icon: "🗺️" },
   { label: "Aménagement Van", icon: "🔧" },
   { label: "Business Van", icon: "💼" },
+  { label: "Achat Van", icon: "🔑" },
 ];
 
 const categoryColorMap: Record<string, string> = {
   "Road Trips": "bg-blue-50 text-blue-700",
   "Aménagement Van": "bg-emerald-50 text-emerald-700",
   "Business Van": "bg-amber-50 text-amber-700",
+  "Achat Van": "bg-violet-50 text-violet-700",
 };
 
 function ArticleCard({ article, index }: { article: Article; index: number }) {
@@ -273,18 +349,41 @@ function ArticleCard({ article, index }: { article: Article; index: number }) {
   );
 }
 
-export default function ArticlesPageClient() {
+export default function ArticlesPageClient({ sanityArticles = [] }: { sanityArticles: SanityArticle[] }) {
   const [activeCategory, setActiveCategory] = useState<Category>("Tous");
 
-  const featuredArticle = articles.find((a) => a.featured);
+  // Merge: Sanity articles override hardcoded articles with the same slug, then append remaining hardcoded
+  const mergedArticles = useMemo<Article[]>(() => {
+    const sanityMapped: Article[] = sanityArticles.map((a) => ({
+      slug: a.slug,
+      title: a.title,
+      description: a.excerpt,
+      category: a.category,
+      image: a.coverImage?.url ?? "https://cdn.sanity.io/images/lewexa74/production/f93fa16ab46d8934dcc3092a8e86fc80ebce4305-1080x750.png",
+      imageAlt: a.coverImage?.alt ?? a.title,
+      readTime: a.readTime ?? "5 min",
+      href: `/articles/${a.slug}`,
+      status: "live" as const,
+      featured: a.featured,
+      tag: a.tag,
+    }));
+    const sanitySlugSet = new Set(sanityArticles.map((a) => a.slug));
+    const hardcodedRemaining = articles.filter((a) => !sanitySlugSet.has(a.slug));
+    // Featured Sanity articles first, then remaining Sanity articles, then hardcoded
+    const sanityFeatured = sanityMapped.filter((a) => a.featured);
+    const sanityOthers = sanityMapped.filter((a) => !a.featured);
+    return [...sanityFeatured, ...sanityOthers, ...hardcodedRemaining];
+  }, [sanityArticles]);
+
+  const featuredArticle = mergedArticles.find((a) => a.featured);
   const showFeaturedSection = activeCategory === "Tous";
   const filteredArticles = activeCategory === "Tous"
-    ? articles.filter((a) => !a.featured)
-    : articles.filter((a) => a.category === activeCategory);
+    ? mergedArticles.filter((a) => !a.featured)
+    : mergedArticles.filter((a) => a.category === activeCategory);
 
-  const liveCount = articles.filter((a) => a.status === "live").length;
-  const comingSoonCount = articles.filter((a) => a.status === "coming-soon").length;
-  const countByCategory = (cat: Category) => cat === "Tous" ? articles.length : articles.filter((a) => a.category === cat).length;
+  const liveCount = mergedArticles.filter((a) => a.status === "live").length;
+  const comingSoonCount = mergedArticles.filter((a) => a.status === "coming-soon").length;
+  const countByCategory = (cat: Category) => cat === "Tous" ? mergedArticles.length : mergedArticles.filter((a) => a.category === cat).length;
 
   return (
     <>
