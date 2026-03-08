@@ -1,9 +1,11 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
+const isAdminRoute = createRouteMatcher(["/admin(.*)"]);
+const isAdminLogin = createRouteMatcher(["/admin/login"]);
+
 const isProtectedRoute = createRouteMatcher([
   "/dashboard(.*)",
   "/user(.*)",
-  "/admin(.*)",
   // Club Privé — toutes les pages membres (sauf la landing /club)
   "/club/deals(.*)",
   "/club/marques(.*)",
@@ -13,6 +15,15 @@ const isProtectedRoute = createRouteMatcher([
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
+  // Admin login page is public
+  if (isAdminLogin(req)) return;
+
+  // Admin routes redirect to dedicated admin login page when unauthenticated
+  if (isAdminRoute(req)) {
+    await auth.protect({ unauthenticatedUrl: "/admin/login" });
+    return;
+  }
+
   if (isProtectedRoute(req)) {
     await auth.protect();
   }

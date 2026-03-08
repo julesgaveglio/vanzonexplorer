@@ -11,7 +11,7 @@ export const metadata = {
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const { userId } = await auth();
-  if (!userId) redirect("/sign-in");
+  if (!userId) redirect("/admin/login");
 
   const user = await currentUser();
   const email = user?.emailAddresses?.[0]?.emailAddress;
