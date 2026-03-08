@@ -1,0 +1,28 @@
+name: Weekly SEO Check
+on:
+  schedule:
+    - cron: '0 9 * * 1'   # Lundi 9h UTC
+  workflow_dispatch:
+
+jobs:
+  seo-audit:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci
+      - run: npx tsx scripts/agents/seo-checker.ts
+        env:
+          DATAFORSEO_LOGIN: ${{ secrets.DATAFORSEO_LOGIN }}
+          DATAFORSEO_PASSWORD: ${{ secrets.DATAFORSEO_PASSWORD }}
+      - name: Commit queue update
+        run: |
+          git config user.email "bot@vanzonexplorer.com"
+          git config user.name "Vanzon SEO Bot"
+          git add scripts/data/article-queue.json
+          git diff --staged --quiet || git commit -m "chore: seo-check [skip ci]"
+          git push
