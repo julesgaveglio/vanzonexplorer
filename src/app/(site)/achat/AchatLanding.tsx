@@ -138,7 +138,7 @@ export default function AchatLanding() {
                 href="https://wa.me/33618476378?text=Bonjour%20Jules%2C%20je%20cherche%20un%20van%20am%C3%A9nag%C3%A9%20et%20j%27aimerais%20un%20accompagnement."
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 bg-white text-slate-900 font-bold px-8 py-4 rounded-2xl hover:bg-slate-100 transition-colors text-sm"
+                className="btn-shine inline-flex items-center justify-center gap-2 bg-white text-slate-900 font-bold px-8 py-4 rounded-2xl hover:bg-slate-100 transition-colors text-sm"
               >
                 Parler à Jules
               </a>

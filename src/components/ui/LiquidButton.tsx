@@ -21,7 +21,7 @@ interface LiquidButtonProps {
 const variantClasses: Record<Variant, string> = {
   primary: "btn-primary",
   ghost: "btn-ghost",
-  gold: "inline-flex items-center justify-center gap-2 px-6 py-3 font-semibold text-white rounded-full bg-gradient-to-r from-[#CDA77B] to-[#B9945F]",
+  gold: "btn-gold inline-flex items-center justify-center gap-2 px-6 py-3 font-semibold text-white rounded-full bg-gradient-to-r from-[#CDA77B] to-[#B9945F]",
 };
 
 const sizeClasses: Record<string, string> = {

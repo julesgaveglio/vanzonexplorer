@@ -61,7 +61,7 @@ export default async function HomePage() {
             <div className="flex flex-col sm:flex-row gap-4">
               <a
                 href="/location"
-                className="inline-flex items-center justify-center gap-2 bg-white text-slate-900 font-bold px-8 py-4 rounded-xl hover:bg-blue-50 transition-colors text-lg shadow-2xl"
+                className="btn-shine inline-flex items-center justify-center gap-2 bg-white text-slate-900 font-bold px-8 py-4 rounded-xl hover:bg-blue-50 transition-colors text-lg shadow-2xl"
               >
                 Louer un van
               </a>
@@ -340,7 +340,7 @@ export default async function HomePage() {
               <div className="flex flex-col sm:flex-row gap-3">
                 <a
                   href="/formation"
-                  className="inline-flex items-center justify-center gap-2 font-bold px-8 py-4 rounded-2xl text-base text-white transition-all hover:-translate-y-0.5"
+                  className="btn-gold inline-flex items-center justify-center gap-2 font-bold px-8 py-4 rounded-2xl text-base text-white transition-all hover:-translate-y-0.5"
                   style={{ background: "#B9945F" }}
                 >
                   Découvrir la formation →
@@ -402,7 +402,7 @@ export default async function HomePage() {
               href="https://www.yescapa.fr/campers/89215"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 bg-white text-slate-900 font-bold px-10 py-5 rounded-2xl hover:bg-blue-50 transition-colors text-lg shadow-2xl"
+              className="btn-shine inline-flex items-center justify-center gap-2 bg-white text-slate-900 font-bold px-10 py-5 rounded-2xl hover:bg-blue-50 transition-colors text-lg shadow-2xl"
             >
               Réserver Yoni — Yescapa
             </a>
