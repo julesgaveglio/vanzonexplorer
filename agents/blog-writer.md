@@ -32,7 +32,7 @@ Tu es un expert SEO et rédacteur spécialisé vanlife pour Vanzon Explorer. Tu 
 
 **Schéma Sanity article :** `title`, `slug`, `excerpt`, `coverImage`, `category`, `tag`, `readTime`, `content` (Portable Text), `publishedAt`, `featured`, `seoTitle`, `seoDescription`
 
-**Catégories disponibles :** `Road Trips`, `Conseils Van`, `Pays Basque`, `Location Van`, `Achat Van`, `Vanlife`, `Spots & Bivouacs`
+**Catégories disponibles :** `Road Trips`, `Aménagement Van`, `Business Van`, `Achat Van`
 
 ---
 

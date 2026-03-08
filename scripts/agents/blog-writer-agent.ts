@@ -56,7 +56,7 @@ interface ArticleQueueItem {
 interface PortableTextBlock {
   _type: "block";
   _key: string;
-  style: "normal" | "h1" | "h2" | "h3" | "h4" | "blockquote";
+  style: "normal" | "h2" | "h3" | "blockquote";
   children: Array<{
     _type: "span";
     _key: string;
@@ -72,7 +72,7 @@ interface GeneratedContent {
   seoDescription: string;
   excerpt: string;
   content: PortableTextBlock[];
-  faqItems: Array<{ question: string; answer: string }>;
+  faqItems?: Array<{ question: string; answer: string }>;
 }
 
 interface KeywordData {
@@ -293,14 +293,11 @@ Retourne UNIQUEMENT un objet JSON valide (sans markdown, sans code fences) avec 
       "children": [{"_type": "span", "_key": "key", "text": "Texte du paragraphe", "marks": []}],
       "markDefs": []
     }
-  ],
-  "faqItems": [
-    { "question": "string", "answer": "string" }
   ]
 }
 
 Notes sur le format content (Portable Text Sanity):
-- style "h1" pour le titre principal (premier bloc)
+- Le tableau content commence APRÈS le titre H1 (déjà stocké dans le champ title). Use h2 for main sections, h3 for subsections, normal for paragraphs.
 - style "h2" pour les titres de sections
 - style "h3" pour les sous-titres FAQ
 - style "normal" pour les paragraphes
@@ -340,7 +337,7 @@ Notes sur le format content (Portable Text Sanity):
   parsed.content = ensureUniqueKeys(parsed.content);
 
   console.log(
-    `  Article generated: "${parsed.title}" (${parsed.content.length} blocks, ${parsed.faqItems.length} FAQ items)`
+    `  Article generated: "${parsed.title}" (${parsed.content.length} blocks)`
   );
   return parsed;
 }
