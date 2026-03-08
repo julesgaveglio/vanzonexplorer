@@ -8,7 +8,12 @@
     "tag": "Guide complet",
     "readTime": "12 min",
     "targetKeyword": "road trip pays basque van",
-    "secondaryKeywords": ["itinéraire van pays basque", "vanlife pays basque", "road trip biarritz van", "forêt irati van"],
+    "secondaryKeywords": [
+      "itinéraire van pays basque",
+      "vanlife pays basque",
+      "road trip biarritz van",
+      "forêt irati van"
+    ],
     "status": "published",
     "priority": 0,
     "sanityId": null,
@@ -25,11 +30,16 @@
     "tag": "Top 10",
     "readTime": "8 min",
     "targetKeyword": "bivouac van pays basque",
-    "secondaryKeywords": ["dormir van pays basque", "aire camping-car pays basque", "spots vanlife côte basque", "nuit van montagne pyrénées"],
-    "status": "pending",
+    "secondaryKeywords": [
+      "dormir van pays basque",
+      "aire camping-car pays basque",
+      "spots vanlife côte basque",
+      "nuit van montagne pyrénées"
+    ],
+    "status": "published",
     "priority": 1,
-    "sanityId": null,
-    "publishedAt": null,
+    "sanityId": "ZmD4bDml5YUDnLxxrJsxZN",
+    "publishedAt": "2026-03-08T17:40:40.933Z",
     "lastSeoCheck": null,
     "seoPosition": null
   },
@@ -42,7 +52,12 @@
     "tag": "Surf",
     "readTime": "7 min",
     "targetKeyword": "surf vanlife biarritz",
-    "secondaryKeywords": ["plages surf biarritz van", "vanlife côte basque surf", "spots surf anglet van", "van surf atlantique"],
+    "secondaryKeywords": [
+      "plages surf biarritz van",
+      "vanlife côte basque surf",
+      "spots surf anglet van",
+      "van surf atlantique"
+    ],
     "status": "pending",
     "priority": 2,
     "sanityId": null,
@@ -59,7 +74,12 @@
     "tag": "Randonnée",
     "readTime": "6 min",
     "targetKeyword": "randonnée la rhune van",
-    "secondaryKeywords": ["la rhune van aménagé", "bivouac la rhune", "col saint-ignace van", "randonnée pays basque van"],
+    "secondaryKeywords": [
+      "la rhune van aménagé",
+      "bivouac la rhune",
+      "col saint-ignace van",
+      "randonnée pays basque van"
+    ],
     "status": "pending",
     "priority": 3,
     "sanityId": null,
@@ -76,7 +96,12 @@
     "tag": "Nature",
     "readTime": "7 min",
     "targetKeyword": "forêt irati van",
-    "secondaryKeywords": ["bivouac forêt irati", "randonnée irati van aménagé", "hêtraie irati vanlife", "nature pyrénées van"],
+    "secondaryKeywords": [
+      "bivouac forêt irati",
+      "randonnée irati van aménagé",
+      "hêtraie irati vanlife",
+      "nature pyrénées van"
+    ],
     "status": "pending",
     "priority": 4,
     "sanityId": null,
@@ -93,7 +118,12 @@
     "tag": "Transfrontalier",
     "readTime": "9 min",
     "targetKeyword": "côte basque espagnole van road trip",
-    "secondaryKeywords": ["van hondarribia bilbao", "road trip pays basque espagne", "san sebastián vanlife", "euskal herria van"],
+    "secondaryKeywords": [
+      "van hondarribia bilbao",
+      "road trip pays basque espagne",
+      "san sebastián vanlife",
+      "euskal herria van"
+    ],
     "status": "pending",
     "priority": 5,
     "sanityId": null,
@@ -110,7 +140,12 @@
     "tag": "Guide achat",
     "readTime": "10 min",
     "targetKeyword": "quel fourgon choisir aménagement van",
-    "secondaryKeywords": ["meilleur fourgon conversion van", "fourgon aménager 2025", "choisir base van aménagé", "comparatif fourgons vanlife"],
+    "secondaryKeywords": [
+      "meilleur fourgon conversion van",
+      "fourgon aménager 2025",
+      "choisir base van aménagé",
+      "comparatif fourgons vanlife"
+    ],
     "status": "pending",
     "priority": 6,
     "sanityId": null,
@@ -127,7 +162,12 @@
     "tag": "Isolation",
     "readTime": "8 min",
     "targetKeyword": "isolation van fourgon guide",
-    "secondaryKeywords": ["matériaux isolation van", "isolant van thermique phonique", "armaflex van aménagement", "isolation fourgon DIY"],
+    "secondaryKeywords": [
+      "matériaux isolation van",
+      "isolant van thermique phonique",
+      "armaflex van aménagement",
+      "isolation fourgon DIY"
+    ],
     "status": "pending",
     "priority": 7,
     "sanityId": null,
@@ -144,7 +184,12 @@
     "tag": "Électricité",
     "readTime": "12 min",
     "targetKeyword": "électricité 12v van installation",
-    "secondaryKeywords": ["batterie lithium van", "panneau solaire van aménagé", "câblage 12v fourgon", "installation électrique van DIY"],
+    "secondaryKeywords": [
+      "batterie lithium van",
+      "panneau solaire van aménagé",
+      "câblage 12v fourgon",
+      "installation électrique van DIY"
+    ],
     "status": "pending",
     "priority": 8,
     "sanityId": null,
@@ -161,7 +206,12 @@
     "tag": "Cuisine",
     "readTime": "7 min",
     "targetKeyword": "aménager cuisine van",
-    "secondaryKeywords": ["cuisine van fourgon plans", "réfrigérateur 12v van", "réchaud van aménagé", "plan cuisine fourgon DIY"],
+    "secondaryKeywords": [
+      "cuisine van fourgon plans",
+      "réfrigérateur 12v van",
+      "réchaud van aménagé",
+      "plan cuisine fourgon DIY"
+    ],
     "status": "pending",
     "priority": 9,
     "sanityId": null,
@@ -178,7 +228,12 @@
     "tag": "Administratif",
     "readTime": "9 min",
     "targetKeyword": "homologation VASP van fourgon",
-    "secondaryKeywords": ["réception titre isolé RTI van", "DREAL fourgon aménagé", "démarches VASP véhicule loisir", "conversion fourgon légale"],
+    "secondaryKeywords": [
+      "réception titre isolé RTI van",
+      "DREAL fourgon aménagé",
+      "démarches VASP véhicule loisir",
+      "conversion fourgon légale"
+    ],
     "status": "pending",
     "priority": 10,
     "sanityId": null,
@@ -195,7 +250,12 @@
     "tag": "Démarrage",
     "readTime": "11 min",
     "targetKeyword": "mettre van location yescapa",
-    "secondaryKeywords": ["location van yescapa guide", "créer activité location van", "assurance van location yescapa", "démarrer location fourgon"],
+    "secondaryKeywords": [
+      "location van yescapa guide",
+      "créer activité location van",
+      "assurance van location yescapa",
+      "démarrer location fourgon"
+    ],
     "status": "pending",
     "priority": 11,
     "sanityId": null,
@@ -212,7 +272,12 @@
     "tag": "Pricing",
     "readTime": "7 min",
     "targetKeyword": "tarification van yescapa prix",
-    "secondaryKeywords": ["fixer prix location van", "tarif van yescapa saison", "pricing van location pays basque", "revenus location van"],
+    "secondaryKeywords": [
+      "fixer prix location van",
+      "tarif van yescapa saison",
+      "pricing van location pays basque",
+      "revenus location van"
+    ],
     "status": "pending",
     "priority": 12,
     "sanityId": null,
@@ -229,7 +294,12 @@
     "tag": "Marketing",
     "readTime": "6 min",
     "targetKeyword": "créer annonce yescapa convertir",
-    "secondaryKeywords": ["annonce van yescapa photos", "optimiser annonce location van", "réservations van yescapa", "marketing location van"],
+    "secondaryKeywords": [
+      "annonce van yescapa photos",
+      "optimiser annonce location van",
+      "réservations van yescapa",
+      "marketing location van"
+    ],
     "status": "pending",
     "priority": 13,
     "sanityId": null,
@@ -246,7 +316,12 @@
     "tag": "Fiscalité",
     "readTime": "8 min",
     "targetKeyword": "déclarer revenus location van impôts",
-    "secondaryKeywords": ["fiscalité location van micro-BIC", "impôts location fourgon", "régime fiscal location van 2025", "LMNP van location"],
+    "secondaryKeywords": [
+      "fiscalité location van micro-BIC",
+      "impôts location fourgon",
+      "régime fiscal location van 2025",
+      "LMNP van location"
+    ],
     "status": "pending",
     "priority": 14,
     "sanityId": null,
@@ -263,7 +338,12 @@
     "tag": "Optimisation",
     "readTime": "9 min",
     "targetKeyword": "optimiser taux occupation van location",
-    "secondaryKeywords": ["louer van plus souvent", "réservations dernière minute van", "stratégie location van saison creuse", "augmenter revenus location van"],
+    "secondaryKeywords": [
+      "louer van plus souvent",
+      "réservations dernière minute van",
+      "stratégie location van saison creuse",
+      "augmenter revenus location van"
+    ],
     "status": "pending",
     "priority": 15,
     "sanityId": null,
@@ -280,7 +360,12 @@
     "tag": "Guide achat",
     "readTime": "10 min",
     "targetKeyword": "acheter van aménagé occasion",
-    "secondaryKeywords": ["guide achat van d'occasion", "vérifier fourgon aménagé occasion", "prix van aménagé occasion", "achat fourgon aménagé 2025"],
+    "secondaryKeywords": [
+      "guide achat van d'occasion",
+      "vérifier fourgon aménagé occasion",
+      "prix van aménagé occasion",
+      "achat fourgon aménagé 2025"
+    ],
     "status": "pending",
     "priority": 16,
     "sanityId": null,
@@ -297,7 +382,12 @@
     "tag": "Budget",
     "readTime": "8 min",
     "targetKeyword": "prix van aménagé 2025",
-    "secondaryKeywords": ["coût aménagement van DIY", "budget van aménagé achat", "van clé en main prix", "tarif fourgon aménagé neuf occasion"],
+    "secondaryKeywords": [
+      "coût aménagement van DIY",
+      "budget van aménagé achat",
+      "van clé en main prix",
+      "tarif fourgon aménagé neuf occasion"
+    ],
     "status": "pending",
     "priority": 17,
     "sanityId": null,
@@ -314,7 +404,12 @@
     "tag": "Retour d'expérience",
     "readTime": "7 min",
     "targetKeyword": "renault trafic aménagé vanlife",
-    "secondaryKeywords": ["trafic III aménagement van", "fiabilité renault trafic fourgon", "renault trafic location van", "avis renault trafic van aménagé"],
+    "secondaryKeywords": [
+      "trafic III aménagement van",
+      "fiabilité renault trafic fourgon",
+      "renault trafic location van",
+      "avis renault trafic van aménagé"
+    ],
     "status": "pending",
     "priority": 18,
     "sanityId": null,
@@ -331,7 +426,12 @@
     "tag": "Couple",
     "readTime": "6 min",
     "targetKeyword": "van aménagé deux personnes couple",
-    "secondaryKeywords": ["van pour couple critères", "lit fixe van deux personnes", "fourgon aménagé 2 personnes", "choisir van couple voyage"],
+    "secondaryKeywords": [
+      "van pour couple critères",
+      "lit fixe van deux personnes",
+      "fourgon aménagé 2 personnes",
+      "choisir van couple voyage"
+    ],
     "status": "pending",
     "priority": 19,
     "sanityId": null,
@@ -348,7 +448,12 @@
     "tag": "Pays Basque",
     "readTime": "6 min",
     "targetKeyword": "acheter van aménagé pays basque",
-    "secondaryKeywords": ["marché van occasion pays basque", "vendre van aménagé pays basque", "fourgon aménagé bayonne biarritz", "van particulier pays basque"],
+    "secondaryKeywords": [
+      "marché van occasion pays basque",
+      "vendre van aménagé pays basque",
+      "fourgon aménagé bayonne biarritz",
+      "van particulier pays basque"
+    ],
     "status": "pending",
     "priority": 20,
     "sanityId": null,
@@ -365,7 +470,12 @@
     "tag": "Comparatif",
     "readTime": "8 min",
     "targetKeyword": "van clé en main vs auto-conversion",
-    "secondaryKeywords": ["construire van soi-même vs achat", "comparatif van clé en main DIY", "auto-conversion fourgon budget", "van aménagé neuf vs fait maison"],
+    "secondaryKeywords": [
+      "construire van soi-même vs achat",
+      "comparatif van clé en main DIY",
+      "auto-conversion fourgon budget",
+      "van aménagé neuf vs fait maison"
+    ],
     "status": "pending",
     "priority": 21,
     "sanityId": null,

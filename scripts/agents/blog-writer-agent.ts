@@ -11,7 +11,7 @@
  *   npx tsx scripts/agents/blog-writer-agent.ts next      # explicit "next" mode
  *
  * Required env vars:
- *   ANTHROPIC_API_KEY
+ *   GEMINI_API_KEY
  *   SANITY_API_WRITE_TOKEN
  *   PEXELS_API_KEY
  *   DATAFORSEO_LOGIN
@@ -22,7 +22,6 @@
 
 import path from "path";
 import { createClient } from "@sanity/client";
-import Anthropic from "@anthropic-ai/sdk";
 import { searchPexelsPhoto, downloadPexelsPhoto, buildPexelsCredit } from "../../src/lib/pexels";
 import type { PexelsPhoto } from "../../src/lib/pexels";
 
@@ -64,6 +63,14 @@ interface PortableTextBlock {
     marks: string[];
   }>;
   markDefs: unknown[];
+}
+
+interface GeminiRawContent {
+  title: string;
+  seoTitle: string;
+  seoDescription: string;
+  excerpt: string;
+  body: string;
 }
 
 interface GeneratedContent {
@@ -154,6 +161,47 @@ function ensureUniqueKeys(blocks: PortableTextBlock[]): PortableTextBlock[] {
   }));
 }
 
+// ── Markdown → Portable Text converter ────────────────────────────────────────
+function markdownToPortableText(markdown: string): PortableTextBlock[] {
+  const blocks: PortableTextBlock[] = [];
+  const lines = markdown.split("\n");
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+
+    let style: PortableTextBlock["style"] = "normal";
+    let text = trimmed;
+
+    if (trimmed.startsWith("### ")) {
+      style = "h3";
+      text = trimmed.slice(4);
+    } else if (trimmed.startsWith("## ")) {
+      style = "h2";
+      text = trimmed.slice(3);
+    } else if (trimmed.startsWith("> ")) {
+      style = "blockquote";
+      text = trimmed.slice(2);
+    } else if (trimmed.startsWith("# ")) {
+      // Skip H1 — already stored in title field
+      continue;
+    }
+
+    // Strip remaining markdown bold/italic markers for plain text
+    text = text.replace(/\*\*(.*?)\*\*/g, "$1").replace(/\*(.*?)\*/g, "$1");
+
+    blocks.push({
+      _type: "block",
+      _key: randomKey(),
+      style,
+      children: [{ _type: "span", _key: randomKey(), text, marks: [] }],
+      markDefs: [],
+    });
+  }
+
+  return blocks;
+}
+
 // ── Step 1: Get keyword data from DataForSEO ───────────────────────────────────
 async function getKeywordData(keyword: string): Promise<KeywordData> {
   console.log(`  Fetching keyword data for: "${keyword}"...`);
@@ -220,125 +268,145 @@ async function getPAAQuestions(keyword: string): Promise<string[]> {
   }
 }
 
-// ── Step 3: Generate article with Claude ───────────────────────────────────────
+// ── Gemini helper ──────────────────────────────────────────────────────────────
+async function callGemini(
+  apiKey: string,
+  prompt: string,
+  opts: { json?: boolean; maxTokens?: number; noThinking?: boolean } = {}
+): Promise<string> {
+  const res = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: {
+          maxOutputTokens: opts.maxTokens ?? 4096,
+          temperature: 0.7,
+          // Disable thinking to avoid token consumption on reasoning overhead
+          ...(opts.noThinking ? { thinkingConfig: { thinkingBudget: 0 } } : {}),
+          ...(opts.json ? { responseMimeType: "application/json" } : {}),
+        },
+      }),
+    }
+  );
+
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`Gemini API error ${res.status}: ${errText}`);
+  }
+
+  const json = await res.json() as {
+    candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
+  };
+
+  const text = json.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+  if (!text) throw new Error("Gemini returned empty response");
+  return text;
+}
+
+// ── Step 3: Generate article with Gemini ───────────────────────────────────────
+// Two-call strategy: metadata as JSON (small, safe) + body as plain markdown text.
+// Avoids JSON encoding corruption for long French text with apostrophes/newlines.
 async function generateArticle(
   article: ArticleQueueItem,
   keywordData: KeywordData,
   paaQuestions: string[]
 ): Promise<GeneratedContent> {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
-    throw new Error("ANTHROPIC_API_KEY env var is required");
+    throw new Error("GEMINI_API_KEY env var is required");
   }
-
-  console.log(`  Calling Claude API (claude-sonnet-4-6)...`);
-  const anthropic = new Anthropic({ apiKey });
 
   const paaBlock =
     paaQuestions.length > 0
       ? paaQuestions.map((q, i) => `${i + 1}. ${q}`).join("\n")
       : "Aucune question PAA disponible — génère 5 questions pertinentes sur le sujet.";
 
-  const prompt = `Tu es expert SEO et rédacteur vanlife pour Vanzon Explorer (location/vente van aménagé au Pays Basque).
-
-Données keywords pour "${article.targetKeyword}":
-Volume mensuel: ${keywordData.search_volume ?? "N/A"}
-Concurrence: ${keywordData.competition_level ?? "N/A"}
-CPC: ${keywordData.cpc ?? "N/A"}
-
-Questions PAA (People Also Ask):
+  const context = `
+Contexte:
+- Site: Vanzon Explorer (location/vente van aménagé au Pays Basque)
+- Keyword cible: "${article.targetKeyword}"
+- Volume mensuel: ${keywordData.search_volume ?? "N/A"}
+- Concurrence: ${keywordData.competition_level ?? "N/A"}
+- Mots-clés secondaires: ${article.secondaryKeywords.join(", ")}
+- Questions PAA:
 ${paaBlock}
+`.trim();
 
-Mots-clés secondaires: ${article.secondaryKeywords.join(", ")}
+  // ── Call 1: metadata only (small JSON, no encoding issues) ──────────────────
+  console.log(`  [Gemini 1/2] Generating metadata...`);
+  const metaPrompt = `${context}
 
-Rédige un article de 2000-2500 mots sur "${article.title}" ciblant "${article.targetKeyword}".
+Génère les métadonnées SEO pour l'article "${article.title}".
 
-Structure OBLIGATOIRE:
-H1: [Titre exact optimisé — reprend le keyword principal]
-[Introduction 150 mots — intègre keyword principal, accroche émotionnelle, annonce du plan]
+Réponds UNIQUEMENT avec ce JSON (pas d'explication):
+{"title":"H1 exact optimisé avec keyword principal","seoTitle":"max 60 caractères","seoDescription":"max 155 caractères accrocheur","excerpt":"résumé 200-250 caractères"}`;
 
-H2: [Section 1 — informationnel/éducatif]
-[400 mots — données concrètes, liste numérotée ou à puces, conseils pratiques]
-
-H2: [Section 2 — pratique/actionnable]
-[400 mots — étapes concrètes, exemples, données terrain]
-
-H2: [Section 3 — Pays Basque + Vanzon]
-[300 mots — spécifique Pays Basque, lien naturel vers le service Vanzon Explorer]
-
-H2: FAQ — Questions fréquentes
-H3: [Question 1 tirée du PAA]
-[Réponse 80-120 mots — directe, complète, optimisée pour les featured snippets]
-H3: [Question 2]
-H3: [Question 3]
-H3: [Question 4]
-H3: [Question 5]
-
-H2: Conclusion
-[100 mots — récapitulatif, CTA naturel vers vanzonexplorer.com/location ou /achat]
-
-TON: professionnel mais chaleureux, expert terrain, données concrètes, pas de formules génériques
-
-Retourne UNIQUEMENT un objet JSON valide (sans markdown, sans code fences) avec cette structure exacte:
-{
-  "title": "string — le H1 exact",
-  "seoTitle": "string — 60 caractères max, inclut le keyword principal",
-  "seoDescription": "string — 155 caractères max, accrocheur et descriptif",
-  "excerpt": "string — 200-250 caractères, résumé accrocheur",
-  "content": [
-    {
-      "_type": "block",
-      "_key": "unique_key",
-      "style": "normal",
-      "children": [{"_type": "span", "_key": "key", "text": "Texte du paragraphe", "marks": []}],
-      "markDefs": []
-    }
-  ]
-}
-
-Notes sur le format content (Portable Text Sanity):
-- Le tableau content commence APRÈS le titre H1 (déjà stocké dans le champ title). Use h2 for main sections, h3 for subsections, normal for paragraphs.
-- style "h2" pour les titres de sections
-- style "h3" pour les sous-titres FAQ
-- style "normal" pour les paragraphes
-- style "blockquote" pour les citations
-- Chaque bloc a un _key unique (chaîne aléatoire 7 caractères)
-- Le tableau content doit contenir tous les blocs de l'article complet`;
-
-  const message = await anthropic.messages.create({
-    model: "claude-sonnet-4-6",
-    max_tokens: 8192,
-    messages: [
-      {
-        role: "user",
-        content: prompt,
-      },
-    ],
-  });
-
-  const rawText = message.content
-    .filter((block) => block.type === "text")
-    .map((block) => (block as { type: "text"; text: string }).text)
-    .join("");
-
-  let parsed: GeneratedContent;
+  const metaText = await callGemini(apiKey, metaPrompt, { json: true, maxTokens: 2048, noThinking: true });
+  let meta: Pick<GeminiRawContent, "title" | "seoTitle" | "seoDescription" | "excerpt">;
   try {
-    parsed = JSON.parse(rawText) as GeneratedContent;
+    // Strip code fences if present
+    const cleaned = metaText.replace(/^```(?:json)?\s*/i, "").replace(/\s*```\s*$/, "").trim();
+    meta = JSON.parse(cleaned);
   } catch {
-    // Attempt to extract JSON if Claude added any surrounding text
-    const jsonMatch = rawText.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      throw new Error("Claude did not return valid JSON. Raw response:\n" + rawText.slice(0, 500));
+    // Try to extract JSON object with regex
+    const match = metaText.match(/\{[\s\S]*\}/);
+    if (!match) {
+      throw new Error("Gemini metadata call returned invalid JSON:\n" + metaText.slice(0, 400));
     }
-    parsed = JSON.parse(jsonMatch[0]) as GeneratedContent;
+    try {
+      meta = JSON.parse(match[0]);
+    } catch {
+      throw new Error("Gemini metadata call returned invalid JSON:\n" + metaText.slice(0, 400));
+    }
   }
 
-  // Ensure all blocks have unique keys
-  parsed.content = ensureUniqueKeys(parsed.content);
+  // ── Call 2: article body as plain markdown (no JSON wrapping) ───────────────
+  console.log(`  [Gemini 2/2] Generating article body (${2000}-2500 mots)...`);
+  const bodyPrompt = `${context}
 
-  console.log(
-    `  Article generated: "${parsed.title}" (${parsed.content.length} blocks)`
-  );
+Rédige le corps complet d'un article de 2000-2500 mots sur "${article.title}".
+
+Structure OBLIGATOIRE (utilise ## pour H2, ### pour H3, pas de # H1):
+## [Section 1 — informationnel/éducatif]
+[400 mots — données concrètes, liste numérotée ou à puces, conseils pratiques]
+
+## [Section 2 — pratique/actionnable]
+[400 mots — étapes concrètes, exemples, données terrain]
+
+## [Section 3 — Pays Basque + Vanzon]
+[300 mots — spécifique Pays Basque, lien naturel vers le service Vanzon Explorer]
+
+## FAQ — Questions fréquentes
+### [Question 1 tirée du PAA]
+[Réponse 80-120 mots]
+### [Question 2]
+### [Question 3]
+### [Question 4]
+### [Question 5]
+
+## Conclusion
+[100 mots — récapitulatif, CTA vers vanzonexplorer.com/location ou /achat]
+
+TON: professionnel mais chaleureux, expert terrain, données concrètes.
+Réponds UNIQUEMENT avec le texte markdown de l'article, sans JSON, sans balises, sans explication.`;
+
+  const body = await callGemini(apiKey, bodyPrompt, { json: false, maxTokens: 8192 });
+
+  // Convert markdown body to Portable Text blocks
+  const content = markdownToPortableText(body);
+
+  const parsed: GeneratedContent = {
+    title: meta.title,
+    seoTitle: meta.seoTitle,
+    seoDescription: meta.seoDescription,
+    excerpt: meta.excerpt,
+    content,
+  };
+
+  console.log(`  Article generated: "${parsed.title}" (${parsed.content.length} blocks)`);
   return parsed;
 }
 
@@ -420,7 +488,7 @@ async function createSanityArticle(
 async function main(): Promise<void> {
   // Validate required env vars
   const missingVars: string[] = [];
-  if (!process.env.ANTHROPIC_API_KEY) missingVars.push("ANTHROPIC_API_KEY");
+  if (!process.env.GEMINI_API_KEY) missingVars.push("GEMINI_API_KEY");
   if (!process.env.SANITY_API_WRITE_TOKEN) missingVars.push("SANITY_API_WRITE_TOKEN");
   if (!process.env.PEXELS_API_KEY) missingVars.push("PEXELS_API_KEY");
   if (!process.env.DATAFORSEO_LOGIN) missingVars.push("DATAFORSEO_LOGIN");
