@@ -124,17 +124,17 @@ export default async function HomePage() {
         <div className="max-w-6xl mx-auto px-6">
           <Reveal className="text-center mb-14">
             <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-3">
-              Tout est inclus, rien à prévoir
+              Tout l&apos;essentiel est à bord
             </h2>
             <p className="text-slate-500 text-lg">
-              Nos vans sont équipés pour partir immédiatement, dès la remise des clés.
+              Cuisine, couchage, autonomie — le van est prêt à partir dès la remise des clés.
             </p>
           </Reveal>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               { emoji: "🍳", title: "Cuisine coulissante", description: "Réchaud gaz 2 feux, planche à découper, vaisselle complète, rangements intégrés. Cuisinez partout où vous vous arrêtez." },
-              { emoji: "🛏️", title: "Couchage pour 3", description: "Lit fixe 2 personnes + matelas supplémentaire. Literie fournie ou apportez la vôtre. Sommeil garanti même après une longue journée." },
+              { emoji: "🛏️", title: "Couchage pour 3", description: "Lit fixe 2 personnes + matelas supplémentaire. Apportez votre linge de maison — propre, personnel, comme dans un gîte. Sommeil garanti même après une longue journée." },
               { emoji: "🧊", title: "Glacière portative", description: "Conservez vos aliments frais jusqu'à 48h. Idéale pour les pique-niques au bord de l'océan ou après le surf." },
               { emoji: "🚿", title: "Toilette sèche", description: "Votre intimité à bord, partout. Compatible avec les spots sauvages, les dunes et les sommets." },
               { emoji: "🛡️", title: "Assurance Yescapa", description: "Vous êtes couverts dès la réservation. Assurance tous risques incluse pour rouler l'esprit tranquille." },
