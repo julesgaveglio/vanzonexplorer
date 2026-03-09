@@ -24,6 +24,8 @@ jobs:
           NEXT_PUBLIC_SANITY_DATASET: production
           DATAFORSEO_LOGIN: ${{ secrets.DATAFORSEO_LOGIN }}
           DATAFORSEO_PASSWORD: ${{ secrets.DATAFORSEO_PASSWORD }}
+          SERPAPI_KEY: ${{ secrets.SERPAPI_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       - name: Commit queue update
         run: |
           git config user.email "bot@vanzonexplorer.com"

@@ -272,7 +272,13 @@ export const getArticleBySlugQuery = groq`
     readTime,
     publishedAt,
     featured,
-    content,
+    content[] {
+      ...,
+      _type == "image" => {
+        ...,
+        "asset": asset-> { _id, url, metadata { dimensions } }
+      }
+    },
     seoTitle,
     seoDescription,
     "coverImage": coverImage {

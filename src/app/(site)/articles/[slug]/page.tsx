@@ -161,6 +161,42 @@ export async function generateMetadata({
 
 function makePortableComponents(headingIds: Map<string, string>) {
   return {
+    types: {
+      image: ({
+        value,
+      }: {
+        value?: {
+          alt?: string;
+          asset?: { url?: string; metadata?: { dimensions?: { width?: number; height?: number } } };
+        };
+      }) => {
+        const src = value?.asset?.url;
+        if (!src) return null;
+        const dims = value?.asset?.metadata?.dimensions;
+        const aspectClass = dims && dims.width && dims.height
+          ? dims.width / dims.height > 1.5 ? "aspect-[16/9]" : "aspect-[4/3]"
+          : "aspect-[16/9]";
+        return (
+          <figure className="my-10 not-prose">
+            <div className={`relative w-full ${aspectClass} rounded-2xl overflow-hidden bg-slate-100`}>
+              <Image
+                src={src}
+                alt={value?.alt ?? ""}
+                fill
+                className="object-cover"
+                unoptimized
+                loading="lazy"
+              />
+            </div>
+            {value?.alt && (
+              <figcaption className="text-center text-xs text-slate-400 mt-2.5 italic">
+                {value.alt}
+              </figcaption>
+            )}
+          </figure>
+        );
+      },
+    },
     block: {
       h2: ({
         children,

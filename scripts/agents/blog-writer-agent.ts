@@ -425,6 +425,130 @@ Réponds UNIQUEMENT avec le texte markdown de l'article, sans JSON, sans balises
   return parsed;
 }
 
+// ── Step 3.5: SERP image search + upload ──────────────────────────────────────
+// 1 API call per article → stays well within the 250/month quota.
+// Non-fatal: article publishes normally even if SERP fails.
+
+interface SerpImageResult {
+  url: string;
+  alt: string;
+  sanityId: string;
+}
+
+async function searchAndUploadSerpImages(
+  keyword: string,
+  articleTitle: string,
+  maxImages = 3
+): Promise<SerpImageResult[]> {
+  const apiKey = process.env.SERPAPI_KEY;
+  if (!apiKey) {
+    console.log("  SERPAPI_KEY not set — skipping inline images.");
+    return [];
+  }
+
+  // ── 1 API call: fetch top 8 images, keep best 3 ──────────────────────────
+  const query = `${keyword} pays basque`;
+  const url =
+    `https://serpapi.com/search.json` +
+    `?engine=google_images` +
+    `&q=${encodeURIComponent(query)}` +
+    `&api_key=${apiKey}` +
+    `&hl=fr&gl=fr&num=8&safe=active`;
+
+  console.log(`  [SERP] Searching images for: "${query}" (1 call, quota: 250/mois)...`);
+
+  let candidates: Array<{ original?: string; title?: string }> = [];
+  try {
+    const res = await fetch(url);
+    if (!res.ok) {
+      console.warn(`  [SERP] API returned ${res.status} — skipping inline images.`);
+      return [];
+    }
+    const json = await res.json() as { images_results?: typeof candidates };
+    candidates = json.images_results ?? [];
+    console.log(`  [SERP] ${candidates.length} images found.`);
+  } catch (err) {
+    console.warn(`  [SERP] Fetch error: ${(err as Error).message} — skipping.`);
+    return [];
+  }
+
+  // ── Upload valid images to Sanity (up to maxImages) ───────────────────────
+  const results: SerpImageResult[] = [];
+
+  for (const candidate of candidates) {
+    if (results.length >= maxImages) break;
+    if (!candidate.original) continue;
+
+    try {
+      const imgRes = await fetch(candidate.original, { signal: AbortSignal.timeout(8000) });
+      if (!imgRes.ok) continue;
+
+      const contentType = imgRes.headers.get("content-type") ?? "image/jpeg";
+      if (!contentType.startsWith("image/")) continue;
+
+      const buffer = Buffer.from(await imgRes.arrayBuffer());
+      if (buffer.length < 10_000) continue; // skip tiny/broken images
+
+      const ext = contentType.includes("png") ? "png" : contentType.includes("webp") ? "webp" : "jpg";
+      const asset = await sanity.assets.upload("image", buffer, {
+        filename: `serp-${randomKey()}.${ext}`,
+        contentType,
+      });
+
+      const alt = candidate.title ?? articleTitle;
+      results.push({ url: candidate.original, alt, sanityId: asset._id });
+      console.log(`  [SERP] Uploaded image ${results.length}/${maxImages}: ${asset._id}`);
+    } catch {
+      // Skip this image silently and try the next
+    }
+  }
+
+  console.log(`  [SERP] ${results.length} image(s) ready to insert in article.`);
+  return results;
+}
+
+/** Insert Sanity image blocks at strategic positions in the content (after H2 sections). */
+function injectImagesIntoContent(
+  blocks: PortableTextBlock[],
+  images: SerpImageResult[]
+): Array<PortableTextBlock | Record<string, unknown>> {
+  if (images.length === 0) return blocks;
+
+  const result: Array<PortableTextBlock | Record<string, unknown>> = [];
+  let h2Count = 0;
+  let imageIndex = 0;
+  // Insert after the content of 1st, 3rd, and 5th H2 (i.e., after a few paragraphs)
+  const insertAfterH2Numbers = new Set([1, 3, 5]);
+  let blocksAfterH2 = 0;
+
+  for (let i = 0; i < blocks.length; i++) {
+    const block = blocks[i];
+    result.push(block);
+
+    if (block.style === "h2") {
+      h2Count++;
+      blocksAfterH2 = 0;
+      continue;
+    }
+
+    if (insertAfterH2Numbers.has(h2Count) && imageIndex < images.length) {
+      blocksAfterH2++;
+      // Insert image after 3 content blocks following the H2
+      if (blocksAfterH2 === 3) {
+        const img = images[imageIndex++];
+        result.push({
+          _type: "image",
+          _key: randomKey(),
+          asset: { _type: "reference", _ref: img.sanityId },
+          alt: img.alt,
+        });
+      }
+    }
+  }
+
+  return result;
+}
+
 // ── Step 4 & 5: Fetch + upload cover image ─────────────────────────────────────
 async function uploadCoverImage(
   article: ArticleQueueItem
@@ -572,16 +696,30 @@ async function main(): Promise<void> {
     console.log("\n[2/5] Fetching PAA questions from SERP...");
     const paaQuestions = await getPAAQuestions(article.targetKeyword);
 
-    // Step 6: Generate article with Claude
-    console.log("\n[3/5] Generating article with Claude...");
+    // Step 6: Generate article with Gemini
+    console.log("\n[3/6] Generating article with Gemini...");
     const generatedContent = await generateArticle(article, keywordData, paaQuestions);
 
+    // Step 6.5: SERP images — 1 API call, inject into content body
+    console.log("\n[4/6] Fetching inline images via SERP API...");
+    const serpImages = await searchAndUploadSerpImages(
+      article.targetKeyword,
+      generatedContent.title
+    );
+    if (serpImages.length > 0) {
+      generatedContent.content = injectImagesIntoContent(
+        generatedContent.content,
+        serpImages
+      ) as PortableTextBlock[];
+      console.log(`  ${serpImages.length} image(s) injected into article content.`);
+    }
+
     // Step 7: Pexels cover image
-    console.log("\n[4/5] Fetching and uploading cover image...");
+    console.log("\n[5/6] Fetching and uploading cover image (Pexels)...");
     const { imageAsset, photo } = await uploadCoverImage(article);
 
     // Step 8: Create Sanity document
-    console.log("\n[5/5] Publishing to Sanity...");
+    console.log("\n[6/6] Publishing to Sanity...");
     const sanityId = await createSanityArticle(article, generatedContent, imageAsset, photo);
 
     // Step 9: Update queue — mark as published
