@@ -13,15 +13,15 @@ export const dynamic = "force-dynamic";
 export default async function ClubPage() {
   const { userId } = await auth();
 
-  const [previewProducts, trustedBrands] = await Promise.all([
+  const [previewProducts, partnerBrands] = await Promise.all([
     getFeaturedProducts(),
-    getBrands({ trustedOnly: true }),
+    getBrands({ partnerOnly: true }),
   ]);
 
   return (
     <ClubLandingPage
       previewProducts={previewProducts}
-      brands={trustedBrands}
+      brands={partnerBrands}
       isLoggedIn={!!userId}
     />
   );

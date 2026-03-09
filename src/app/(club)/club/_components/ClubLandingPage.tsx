@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Lock, Tag, RefreshCw, ShieldCheck } from "lucide-react";
 import type { Product, Brand } from "@/lib/club/types";
+import OtherServices from "@/components/ui/OtherServices";
 
 const ease = [0.25, 0.1, 0.25, 1] as const;
 const fadeUp   = { hidden: { opacity: 0, y: 28 },  visible: { opacity: 1, y: 0,  transition: { duration: 0.6, ease } } };
@@ -19,9 +20,79 @@ interface ClubLandingPageProps {
   isLoggedIn?: boolean;
 }
 
+const FALLBACK_PRODUCTS: Product[] = [
+  {
+    id: "fallback-1",
+    name: "Kit isolation thermique premium van",
+    slug: "kit-isolation-thermique",
+    brand: { id: "b1", name: "Isover", slug: "isover", logo: "", logoPng: "", description: "", website: "", isPartner: true, isTrusted: true, activeOffers: 1, categories: [] },
+    category: { id: "c1", name: "Isolation", slug: "isolation", icon: "Layers", description: "", productCount: 1 },
+    description: "Kit isolation complet pour van aménagé",
+    longDescription: "",
+    whyThisDeal: "",
+    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=450&fit=crop",
+    gallery: [],
+    originalPrice: 289,
+    promoPrice: 199,
+    discount: 31,
+    promoCode: "VANZON31",
+    offerType: "code_promo",
+    affiliateUrl: "",
+    isFeatured: true,
+    isActive: true,
+    createdAt: "",
+    expiresAt: null,
+  },
+  {
+    id: "fallback-2",
+    name: "Panneau solaire monocristallin 200W",
+    slug: "panneau-solaire-200w",
+    brand: { id: "b2", name: "Renogy", slug: "renogy", logo: "", logoPng: "", description: "", website: "", isPartner: true, isTrusted: true, activeOffers: 1, categories: [] },
+    category: { id: "c2", name: "Énergie", slug: "energie", icon: "Zap", description: "", productCount: 1 },
+    description: "Panneau solaire flexible haute performance",
+    longDescription: "",
+    whyThisDeal: "",
+    image: "https://images.unsplash.com/photo-1509391366360-2e959784a276?w=600&h=450&fit=crop",
+    gallery: [],
+    originalPrice: 319,
+    promoPrice: 229,
+    discount: 28,
+    promoCode: "VANZON28",
+    offerType: "code_promo",
+    affiliateUrl: "",
+    isFeatured: true,
+    isActive: true,
+    createdAt: "",
+    expiresAt: null,
+  },
+  {
+    id: "fallback-3",
+    name: "Batterie lithium 100Ah LiFePO4",
+    slug: "batterie-lithium-100ah",
+    brand: { id: "b3", name: "Battle Born", slug: "battle-born", logo: "", logoPng: "", description: "", website: "", isPartner: true, isTrusted: true, activeOffers: 1, categories: [] },
+    category: { id: "c3", name: "Énergie", slug: "energie", icon: "Battery", description: "", productCount: 1 },
+    description: "Batterie lithium longue durée pour van",
+    longDescription: "",
+    whyThisDeal: "",
+    image: "https://images.unsplash.com/photo-1620714223084-8fcacc2dbed5?w=600&h=450&fit=crop",
+    gallery: [],
+    originalPrice: 699,
+    promoPrice: 549,
+    discount: 21,
+    promoCode: "VANZON21",
+    offerType: "code_promo",
+    affiliateUrl: "",
+    isFeatured: true,
+    isActive: true,
+    createdAt: "",
+    expiresAt: null,
+  },
+];
+
 export default function ClubLandingPage({ previewProducts, brands, isLoggedIn = false }: ClubLandingPageProps) {
   const ctaHref  = isLoggedIn ? "/club/deals" : "/sign-up";
   const ctaLabel = isLoggedIn ? "Accéder aux deals" : "Commencer";
+  const displayProducts = previewProducts.length > 0 ? previewProducts : FALLBACK_PRODUCTS;
 
   const calcRef    = useRef(null);
   const dealsRef   = useRef(null);
@@ -106,50 +177,40 @@ export default function ClubLandingPage({ previewProducts, brands, isLoggedIn = 
               )}
             </motion.div>
 
-            {/* Stats inline */}
-            <motion.div variants={fadeUp} className="mt-16 flex flex-wrap gap-x-10 gap-y-5">
-              {[
-                { value: "9,99€", label: "par mois" },
-                { value: "50+",   label: "marques partenaires" },
-                { value: "-40%",  label: "de réduction max" },
-                { value: "∞",     label: "deals actifs" },
-              ].map((s) => (
-                <div key={s.label} className="flex flex-col">
-                  <span className="font-display text-3xl leading-none tracking-wide text-cream">{s.value}</span>
-                  <span className="mt-1.5 text-xs text-cream/35">{s.label}</span>
+            {/* Ticker marques partenaires */}
+            <motion.div variants={fadeUp} className="mt-16 -mx-6">
+              <p className="px-6 mb-4 text-[10px] font-semibold uppercase tracking-[0.2em] text-cream/20">
+                Marques partenaires
+              </p>
+              <div className="relative overflow-hidden">
+                <div className="absolute bottom-0 left-0 top-0 z-10 w-16 bg-gradient-to-r from-earth to-transparent" />
+                <div className="absolute bottom-0 right-0 top-0 z-10 w-16 bg-gradient-to-l from-earth to-transparent" />
+                <div className="flex animate-marquee items-center gap-12">
+                  {Array.from({ length: 6 }, () => brands).flat().map((brand, i) => {
+                    const src = brand.logoPng?.startsWith("http") ? brand.logoPng : (brand.logo?.startsWith("http") ? brand.logo : null);
+                    return (
+                      <div key={`${brand.id}-${i}`} className="flex h-8 flex-shrink-0 items-center">
+                        {src ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={src}
+                            alt={brand.name}
+                            className="h-5 w-auto max-w-[100px] object-contain brightness-0 invert opacity-25 hover:opacity-50 transition-opacity duration-300"
+                          />
+                        ) : (
+                          <span className="text-[11px] font-semibold uppercase tracking-widest text-cream/20 hover:text-cream/40 transition-colors duration-300">
+                            {brand.name}
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
-              ))}
+              </div>
             </motion.div>
           </motion.div>
         </div>
       </section>
-
-      {/* ════════════════════════════════════════════════
-          MARQUEE — marques partenaires
-      ════════════════════════════════════════════════ */}
-      {brands.length > 0 && (
-        <section className="overflow-hidden border-y border-earth/8 bg-cream py-5">
-          <div className="relative">
-            <div className="absolute bottom-0 left-0 top-0 z-10 w-20 bg-gradient-to-r from-cream to-transparent" />
-            <div className="absolute bottom-0 right-0 top-0 z-10 w-20 bg-gradient-to-l from-cream to-transparent" />
-            <div className="flex animate-marquee items-center gap-14">
-              {Array.from({ length: 8 }, () => brands).flat().map((brand, i) => {
-                const src = brand.logoPng.startsWith("http") ? brand.logoPng : null;
-                return (
-                  <div key={`${brand.id}-${i}`} className="flex h-10 flex-shrink-0 items-center">
-                    {src ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={src} alt={brand.name} className="h-6 w-auto max-w-[110px] object-contain opacity-30 grayscale transition-all duration-300 hover:opacity-60 hover:grayscale-0" />
-                    ) : (
-                      <span className="text-xs font-semibold uppercase tracking-widest text-earth/20">{brand.name}</span>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-      )}
 
       {/* ════════════════════════════════════════════════
           LE CALCUL EST SIMPLE — cream, asymétrique
@@ -260,19 +321,19 @@ export default function ClubLandingPage({ previewProducts, brands, isLoggedIn = 
             animate={dealsInView ? "visible" : "hidden"}
             className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
           >
-            {previewProducts.slice(0, 3).map((product) => (
+            {displayProducts.slice(0, 3).map((product) => (
               <motion.div
                 key={product.id}
                 variants={cardIn}
-                className="group relative cursor-default overflow-hidden rounded-2xl border border-cream/8 bg-earth/60"
+                className="group relative cursor-default overflow-hidden rounded-2xl bg-white"
               >
-                {/* Image */}
+                {/* ── Image pleine largeur ── */}
                 <div className="relative aspect-[4/3] overflow-hidden">
                   <Image
                     src={product.image || "/placeholder.svg"}
                     alt={product.name}
                     fill
-                    className="object-cover transition-all duration-500 group-hover:scale-105 group-hover:brightness-40"
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   />
                   {product.discount > 0 && (
@@ -280,36 +341,35 @@ export default function ClubLandingPage({ previewProducts, brands, isLoggedIn = 
                       -{product.discount}%
                     </span>
                   )}
+                  {/* Hover overlay — flou + scrim sombre */}
+                  <div className="absolute inset-0 z-20 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-md bg-black/65">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full border border-white/25 bg-white/10 mb-3">
+                      <Lock className="h-5 w-5 text-white" />
+                    </div>
+                    <p className="text-sm font-semibold text-white">Réservé aux membres</p>
+                    <p className="mt-0.5 text-xs text-white/60">9,99€/mois</p>
+                    <Link
+                      href={ctaHref}
+                      className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-rust px-5 py-2 text-xs font-semibold text-white transition-colors hover:bg-rust-dark active:scale-95"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {isLoggedIn ? "Accéder" : "S'inscrire"}
+                      <ArrowRight className="h-3 w-3" />
+                    </Link>
+                  </div>
                 </div>
 
-                {/* Info */}
-                <div className="border-t border-cream/6 p-4">
-                  <p className="text-xs font-medium uppercase tracking-wider text-cream/35">{product.brand.name}</p>
-                  <h3 className="mt-1 text-sm font-medium text-cream/75 leading-snug">{product.name}</h3>
-                  <div className="mt-3 flex items-baseline gap-2">
-                    <span className="text-lg font-bold text-rust">{product.promoPrice}€</span>
-                    <span className="text-sm text-cream/25 line-through">{product.originalPrice}€</span>
-                    <span className="ml-auto text-xs font-semibold text-sage">
-                      -{product.originalPrice - product.promoPrice}€
+                {/* ── Barre d'info blanche ── */}
+                <div className="bg-white px-4 py-3">
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">{product.brand.name}</p>
+                  <h3 className="mt-0.5 text-sm font-semibold text-gray-900 leading-snug">{product.name}</h3>
+                  <div className="mt-2 flex items-baseline gap-2">
+                    <span className="text-base font-bold text-violet-600">{product.promoPrice.toFixed(2)}€</span>
+                    <span className="text-xs text-red-500 line-through">{product.originalPrice.toFixed(2)}€</span>
+                    <span className="ml-auto text-xs font-semibold text-emerald-500">
+                      -{(product.originalPrice - product.promoPrice).toFixed(2)}€
                     </span>
                   </div>
-                </div>
-
-                {/* Lock overlay au hover */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-250">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full border border-cream/20 bg-cream/10 backdrop-blur-sm mb-3">
-                    <Lock className="h-5 w-5 text-cream" />
-                  </div>
-                  <p className="text-sm font-semibold text-cream">Réservé aux membres</p>
-                  <p className="mt-0.5 text-xs text-cream/45">9,99€/mois</p>
-                  <Link
-                    href={ctaHref}
-                    className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-rust px-5 py-2 text-xs font-semibold text-cream transition-colors hover:bg-rust-dark active:scale-95"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    {isLoggedIn ? "Accéder" : "S'inscrire"}
-                    <ArrowRight className="h-3 w-3" />
-                  </Link>
                 </div>
               </motion.div>
             ))}
@@ -411,6 +471,8 @@ export default function ClubLandingPage({ previewProducts, brands, isLoggedIn = 
           <p className="mt-5 text-xs text-cream/20">Sans engagement · Résiliation en 1 clic</p>
         </motion.div>
       </section>
+
+      <OtherServices current="club" bgColor="#F8FAFC" />
     </>
   );
 }

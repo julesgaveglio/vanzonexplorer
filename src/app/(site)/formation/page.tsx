@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import GlassCard from "@/components/ui/GlassCard";
+import OtherServices from "@/components/ui/OtherServices";
 import FormationHero from "@/components/formation/FormationHero";
 import ProgrammeAccordion from "@/components/formation/ProgrammeAccordion";
 import MockupSection from "@/components/formation/MockupSection";
@@ -326,6 +327,8 @@ export default function FormationPage() {
       <FormationFAQ />
 
       <FormationCTA />
+
+      <OtherServices current="formation" bgColor="#FAF6F0" />
     </>
   );
 }

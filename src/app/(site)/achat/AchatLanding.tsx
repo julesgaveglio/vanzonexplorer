@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { VANS_LANDING as VANS } from "@/lib/data/vans";
+import OtherServices from "@/components/ui/OtherServices";
 
 export default function AchatLanding() {
   return (
@@ -152,6 +153,8 @@ export default function AchatLanding() {
           </div>
         </div>
       </section>
+
+      <OtherServices current="achat" bgColor="#F7F6F3" />
     </div>
   );
 }
