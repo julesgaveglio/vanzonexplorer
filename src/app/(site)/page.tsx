@@ -405,7 +405,7 @@ export default async function HomePage() {
               rel="noopener noreferrer"
               className="btn-shine inline-flex items-center justify-center gap-2 bg-white text-slate-900 font-bold px-10 py-5 rounded-2xl hover:bg-blue-50 transition-colors text-lg shadow-2xl"
             >
-              Réserver Yoni — Yescapa
+              Louer un van
             </a>
             <a
               href="https://www.yescapa.fr/campers/98869"
@@ -413,7 +413,7 @@ export default async function HomePage() {
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-md border border-white/30 text-white font-bold px-10 py-5 rounded-2xl hover:bg-white/20 transition-colors text-lg"
             >
-              Réserver Xalbat — Yescapa
+              Acheter un van
             </a>
           </div>
 
