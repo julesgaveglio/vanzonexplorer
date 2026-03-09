@@ -39,6 +39,9 @@ export async function generateMetadata(): Promise<Metadata> {
       default: "Vanzon Explorer — Vanlife au Pays Basque",
       template: "%s | Vanzon Explorer",
     },
+    verification: {
+      google: "WUpCcy6a6xeSOeV0P4FAdWxz-Yf5XAHz4JGr84HswC8",
+    },
     icons: {
       icon: "https://cdn.sanity.io/images/lewexa74/production/1f483103ef15ee3549eab14ba2801d11b32a9055-313x313.png?v=2",
       apple: "https://cdn.sanity.io/images/lewexa74/production/1f483103ef15ee3549eab14ba2801d11b32a9055-313x313.png?v=2",
