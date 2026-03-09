@@ -357,14 +357,6 @@ function formatDate(iso: string) {
   });
 }
 
-// ── "Coming soon" articles (from queue — static) ───────────────────────────────
-
-const COMING_SOON = [
-  { title: "Entretien van aménagé : le guide complet", slug: "entretien-van-amenage" },
-  { title: "Douche et eau chaude dans un van", slug: "douche-eau-chaude-van" },
-  { title: "Cuisine dans un van : équipements essentiels", slug: "cuisine-van-amenage" },
-];
-
 // ── Page ───────────────────────────────────────────────────────────────────────
 
 export default async function ArticleDetailPage({
@@ -498,49 +490,27 @@ export default async function ArticleDetailPage({
             <p className="text-slate-400 italic">Contenu de l&apos;article à venir.</p>
           )}
 
-          {/* ── Internal links panel ── */}
-          <div className="mt-16 pt-12 border-t border-slate-100 grid sm:grid-cols-2 gap-8">
-
-            {/* Related published articles */}
-            {relatedArticles && relatedArticles.length > 0 && (
-              <div>
-                <h2 className="text-sm font-bold uppercase tracking-widest text-slate-400 mb-4">
-                  Articles similaires
-                </h2>
-                <ul className="space-y-3">
-                  {relatedArticles.map((a) => (
-                    <li key={a._id}>
-                      <Link
-                        href={`/articles/${a.slug}`}
-                        className="group flex items-start gap-3 text-sm text-slate-600 hover:text-[#4D5FEC] transition-colors"
-                      >
-                        <span className="mt-0.5 w-1.5 h-1.5 rounded-full bg-[#4D5FEC]/40 flex-shrink-0 group-hover:bg-[#4D5FEC] transition-colors" />
-                        {a.title}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {/* Coming soon articles */}
-            <div>
+          {/* ── Articles similaires ── */}
+          {relatedArticles && relatedArticles.length > 0 && (
+            <div className="mt-16 pt-12 border-t border-slate-100">
               <h2 className="text-sm font-bold uppercase tracking-widest text-slate-400 mb-4">
-                Prochainement sur le blog
+                Articles similaires
               </h2>
               <ul className="space-y-3">
-                {COMING_SOON.map((a) => (
-                  <li key={a.slug} className="flex items-start gap-3 text-sm text-slate-400">
-                    <span className="mt-0.5 w-1.5 h-1.5 rounded-full bg-slate-200 flex-shrink-0" />
-                    <span>
-                      {a.title}{" "}
-                      <span className="text-xs text-slate-300 font-medium">— bientôt</span>
-                    </span>
+                {relatedArticles.map((a) => (
+                  <li key={a._id}>
+                    <Link
+                      href={`/articles/${a.slug}`}
+                      className="group flex items-start gap-3 text-sm text-slate-600 hover:text-[#4D5FEC] transition-colors"
+                    >
+                      <span className="mt-0.5 w-1.5 h-1.5 rounded-full bg-[#4D5FEC]/40 flex-shrink-0 group-hover:bg-[#4D5FEC] transition-colors" />
+                      {a.title}
+                    </Link>
                   </li>
                 ))}
               </ul>
             </div>
-          </div>
+          )}
 
           {/* ── Footer CTA ── */}
           <div className="mt-12 pt-10 border-t border-slate-100">
