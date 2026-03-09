@@ -7,6 +7,7 @@ import ProgrammeAccordion from "@/components/formation/ProgrammeAccordion";
 import FormationFAQ from "@/components/formation/FormationFAQ";
 import FormationCTA from "@/components/formation/FormationCTA";
 import ComparisonSection from "@/components/formation/ComparisonSection";
+import SylvainTestimonial from "@/components/formation/SylvainTestimonial";
 
 export const metadata: Metadata = {
   title: "Van Business Academy — Formation Vanlife | Vanzon Explorer",
@@ -101,29 +102,6 @@ const differentiators = [
   },
 ];
 
-const testimonials = [
-  {
-    stars: 5,
-    content:
-      "Je suis parti de zéro, sans jamais avoir bricolé de ma vie. Grâce à Jules et Elio, j'ai construit mon van en 3 mois et il est en location depuis juillet. Incroyable.",
-    name: "Thomas K.",
-    age: "28 ans",
-  },
-  {
-    stars: 5,
-    content:
-      "La partie VASP m'a sauvé. Les templates Airtable et les vidéos sur la DREAL sont une mine d'or. J'ai été homologué du premier coup.",
-    name: "Camille R.",
-    age: "31 ans",
-  },
-  {
-    stars: 5,
-    content:
-      "Ce qui m'a convaincu c'est le côté moderne — les outils IA, les prompts ChatGPT pour les annonces Leboncoin... On est vraiment dans 2024, pas dans une formation des années 2010.",
-    name: "Alexandre M.",
-    age: "25 ans",
-  },
-];
 
 export default function FormationPage() {
   return (
@@ -288,24 +266,7 @@ export default function FormationPage() {
             <p className="text-slate-500 mt-2">Avis vérifiés sur Trustpilot</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {testimonials.map((t) => (
-              <GlassCard key={t.name}>
-                <div className="flex gap-0.5 mb-3">
-                  {Array.from({ length: t.stars }).map((_, i) => (
-                    <span key={i} className="text-amber-400 text-lg">★</span>
-                  ))}
-                </div>
-                <p className="text-slate-600 text-sm leading-relaxed italic">
-                  &ldquo;{t.content}&rdquo;
-                </p>
-                <div className="mt-4 pt-4 border-t border-border-default">
-                  <p className="text-sm font-semibold text-slate-900">{t.name}</p>
-                  <p className="text-xs text-slate-400">{t.age}</p>
-                </div>
-              </GlassCard>
-            ))}
-          </div>
+          <SylvainTestimonial />
 
           <div className="text-center mt-8">
             <a
