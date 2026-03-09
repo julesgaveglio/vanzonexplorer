@@ -29,7 +29,7 @@ type MappedArticle = {
   category: Exclude<Category, "Tous">;
   image: string;
   imageAlt: string;
-  readTime: string;
+  readTime: string | null;
   href: string;
   featured: boolean;
   tag?: string;
@@ -59,9 +59,11 @@ function ArticleCard({ article, index }: { article: MappedArticle; index: number
               </span>
             )}
           </div>
-          <div className="absolute bottom-3 right-3 text-xs font-medium text-white/90 bg-black/30 backdrop-blur-sm px-2.5 py-1 rounded-full">
-            {article.readTime} de lecture
-          </div>
+          {article.readTime && (
+            <div className="absolute bottom-3 right-3 text-xs font-medium text-white/90 bg-black/30 backdrop-blur-sm px-2.5 py-1 rounded-full">
+              {article.readTime} de lecture
+            </div>
+          )}
         </div>
 
         {/* Content */}
@@ -98,7 +100,7 @@ export default function ArticlesPageClient({ sanityArticles = [] }: { sanityArti
       category: a.category,
       image: a.coverImage?.url ?? "https://cdn.sanity.io/images/lewexa74/production/f93fa16ab46d8934dcc3092a8e86fc80ebce4305-1080x750.png",
       imageAlt: a.coverImage?.alt ?? a.title,
-      readTime: a.readTime ?? "5 min",
+      readTime: a.readTime ?? null,
       href: `/articles/${a.slug}`,
       featured: a.featured ?? false,
       tag: a.tag,
@@ -195,7 +197,9 @@ export default function ArticlesPageClient({ sanityArticles = [] }: { sanityArti
                           {featuredArticle.tag}
                         </span>
                       )}
-                      <span className="text-xs text-slate-400">{featuredArticle.readTime} de lecture</span>
+                      {featuredArticle.readTime && (
+                        <span className="text-xs text-slate-400">{featuredArticle.readTime} de lecture</span>
+                      )}
                     </div>
                     <h2 className="text-2xl md:text-3xl font-black text-slate-900 leading-snug mb-4 group-hover:text-[#4D5FEC] transition-colors duration-200">
                       {featuredArticle.title}
