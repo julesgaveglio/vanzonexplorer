@@ -199,13 +199,43 @@ function makePortableComponents(headingIds: Map<string, string>) {
         );
       },
       blockquote: ({ children }: { children?: React.ReactNode }) => (
-        <blockquote className="my-8 pl-6 border-l-4 border-[#4D5FEC] bg-blue-50/50 py-4 pr-4 rounded-r-xl italic text-slate-600 text-[17px] leading-relaxed">
+        <blockquote className="my-8 pl-5 border-l-4 border-[#4D5FEC] bg-blue-50/50 py-4 pr-5 rounded-r-xl italic text-slate-600 text-[17px] leading-relaxed">
           {children}
         </blockquote>
       ),
-      normal: ({ children }: { children?: React.ReactNode }) => (
-        <p className="text-[17px] text-slate-600 leading-[1.75] mb-6">{children}</p>
-      ),
+      normal: ({ children, value }: { children?: React.ReactNode; value?: PortableBlock }) => {
+        const text = value ? getBlockText(value) : "";
+        const isWarning = text.startsWith("⚠️") || text.startsWith("🚫");
+        const isTip = text.startsWith("💡") || text.startsWith("✅");
+        const isInfo = text.startsWith("ℹ️") || text.startsWith("📋");
+
+        if (isWarning) {
+          return (
+            <div className="my-6 flex gap-3 p-4 bg-amber-50 border border-amber-200 rounded-xl text-[15px] text-amber-800 leading-relaxed">
+              <span className="flex-shrink-0 text-lg">⚠️</span>
+              <p>{text.replace(/^⚠️\s*|^🚫\s*/, "")}</p>
+            </div>
+          );
+        }
+        if (isTip) {
+          return (
+            <div className="my-6 flex gap-3 p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-[15px] text-emerald-800 leading-relaxed">
+              <span className="flex-shrink-0 text-lg">{text.startsWith("💡") ? "💡" : "✅"}</span>
+              <p>{text.replace(/^💡\s*|^✅\s*/, "")}</p>
+            </div>
+          );
+        }
+        if (isInfo) {
+          return (
+            <div className="my-6 flex gap-3 p-4 bg-blue-50 border border-blue-200 rounded-xl text-[15px] text-blue-800 leading-relaxed">
+              <span className="flex-shrink-0 text-lg">{text.startsWith("ℹ️") ? "ℹ️" : "📋"}</span>
+              <p>{text.replace(/^ℹ️\s*|^📋\s*/, "")}</p>
+            </div>
+          );
+        }
+
+        return <p className="text-[17px] text-slate-600 leading-[1.75] mb-6">{children}</p>;
+      },
     },
     marks: {
       strong: ({ children }: { children?: React.ReactNode }) => (
@@ -238,16 +268,18 @@ function makePortableComponents(headingIds: Map<string, string>) {
 
 const SECTION_CTAS = [
   {
-    label: "Louer un van aménagé au Pays Basque",
-    sub: "Disponible dès 65€/nuit — livraison possible",
+    label: "Louer un van pour ce road trip",
+    sub: "Disponible dès 65€/nuit — livraison Pays Basque possible",
     href: "/location",
+    cta: "Voir les vans disponibles →",
     accent: "bg-[#4D5FEC] hover:bg-[#3B4FD4]",
     icon: "🚐",
   },
   {
-    label: "Trouver votre van idéal",
-    sub: "Achat & accompagnement personnalisé avec Jules",
+    label: "Votre propre van aménagé",
+    sub: "Accompagnement personnalisé pour trouver et aménager votre van",
     href: "/achat",
+    cta: "Parler à Jules →",
     accent: "bg-slate-900 hover:bg-slate-800",
     icon: "🔑",
   },
@@ -266,7 +298,7 @@ function SectionCTA({ index }: { index: number }) {
         href={cta.href}
         className={`btn-shine flex-shrink-0 inline-flex items-center justify-center gap-2 text-white font-bold px-6 py-3 rounded-xl transition-colors text-sm relative overflow-hidden ${cta.accent}`}
       >
-        Découvrir →
+        {cta.cta}
       </Link>
     </div>
   );
@@ -394,6 +426,23 @@ export default async function ArticleDetailPage({
               {article.excerpt}
             </p>
           </div>
+
+          {/* Inline TOC — visible after intro on all screens */}
+          {headings.filter(h => h.level === 2).length > 1 && (
+            <nav aria-label="Sommaire" className="my-8 p-5 rounded-2xl border border-slate-100 bg-slate-50/60">
+              <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">📋 Dans cet article</p>
+              <ol className="space-y-2">
+                {headings.filter(h => h.level === 2).map((h, i) => (
+                  <li key={h.id} className="flex items-start gap-3">
+                    <span className="text-xs font-bold text-[#4D5FEC]/60 mt-0.5 flex-shrink-0 w-5">{i + 1}.</span>
+                    <a href={`#${h.id}`} className="text-sm text-slate-600 hover:text-[#4D5FEC] transition-colors leading-snug">
+                      {h.text}
+                    </a>
+                  </li>
+                ))}
+              </ol>
+            </nav>
+          )}
 
           {/* ── Article body with CTA injection ── */}
           {content.length > 0 ? (

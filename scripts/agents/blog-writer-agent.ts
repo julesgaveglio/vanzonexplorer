@@ -391,6 +391,21 @@ Structure OBLIGATOIRE (utilise ## pour H2, ### pour H3, pas de # H1):
 [100 mots — récapitulatif, CTA vers vanzonexplorer.com/location ou /achat]
 
 TON: professionnel mais chaleureux, expert terrain, données concrètes.
+
+IMPORTANT pour les listes de spots/lieux:
+- Chaque spot/lieu doit être un ### avec le nom géographique précis: "### 1. Plage d'Erretegia à Bidart : Le paradis des surfeurs"
+- Inclure systématiquement la commune (Bidart, Biarritz, Saint-Jean-de-Luz, etc.) dans le titre H3
+
+Pour les règlements et avertissements, utilise des blocs callout:
+⚠️ [Texte d'avertissement légal/règlement important]
+💡 [Conseil pratique ou astuce]
+✅ [Bonne pratique recommandée]
+
+Maillage externe obligatoire (à inclure dans le corps de l'article):
+- Cite et lie vers "Tourisme Pays Basque" (tourisme.euskadi.eus ou tourisme64.com) pour les données officielles
+- Cite le Conservatoire du Littoral pour les zones protégées
+- Ces sources augmentent la crédibilité aux yeux de Google
+
 Réponds UNIQUEMENT avec le texte markdown de l'article, sans JSON, sans balises, sans explication.`;
 
   const body = await callGemini(apiKey, bodyPrompt, { json: false, maxTokens: 8192 });
