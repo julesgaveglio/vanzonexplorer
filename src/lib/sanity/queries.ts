@@ -291,6 +291,16 @@ export const getAllArticleSlugsQuery = groq`
   }
 `;
 
+export const getRelatedArticlesQuery = groq`
+  *[_type == "article" && slug.current != $slug] | order(publishedAt desc) [0..2] {
+    _id,
+    title,
+    "slug": slug.current,
+    category,
+    readTime
+  }
+`;
+
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // 10. Hero carousel images (NOUVEAU)
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

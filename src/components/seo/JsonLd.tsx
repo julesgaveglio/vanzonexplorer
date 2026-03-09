@@ -64,24 +64,84 @@ type ArticleType = {
   publishedAt: string;
   coverImage?: { url: string } | null;
   slug: string;
+  seoDescription?: string;
 };
 
-export function ArticleJsonLd({ article }: { article: ArticleType }) {
+export type FAQItem = { question: string; answer: string };
+
+export function ArticleJsonLd({
+  article,
+  faqItems = [],
+}: {
+  article: ArticleType;
+  faqItems?: FAQItem[];
+}) {
+  const articleUrl = `${BASE_URL}/articles/${article.slug}`;
+
   const articleSchema = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     "headline": article.title,
-    "description": article.excerpt,
+    "description": article.seoDescription ?? article.excerpt,
     "datePublished": article.publishedAt,
-    "author": { "@type": "Organization", "name": "Vanzon Explorer" },
-    "publisher": { "@type": "Organization", "name": "Vanzon Explorer" },
+    "author": {
+      "@type": "Organization",
+      "name": "Vanzon Explorer",
+      "url": BASE_URL,
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Vanzon Explorer",
+      "logo": {
+        "@type": "ImageObject",
+        "url": `${BASE_URL}/logo.png`,
+      },
+    },
     "image": article.coverImage?.url,
-    "url": `${BASE_URL}/articles/${article.slug}`
+    "url": articleUrl,
+    "mainEntityOfPage": { "@type": "WebPage", "@id": articleUrl },
+    "inLanguage": "fr-FR",
   };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Accueil", "item": BASE_URL },
+      { "@type": "ListItem", "position": 2, "name": "Articles", "item": `${BASE_URL}/articles` },
+      { "@type": "ListItem", "position": 3, "name": article.title, "item": articleUrl },
+    ],
+  };
+
+  const faqSchema =
+    faqItems.length > 0
+      ? {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": faqItems.map(({ question, answer }) => ({
+            "@type": "Question",
+            "name": question,
+            "acceptedAnswer": { "@type": "Answer", "text": answer },
+          })),
+        }
+      : null;
+
   return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      {faqSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        />
+      )}
+    </>
   );
 }
