@@ -4,7 +4,6 @@ import GlassCard from "@/components/ui/GlassCard";
 import OtherServices from "@/components/ui/OtherServices";
 import FormationHero from "@/components/formation/FormationHero";
 import ProgrammeAccordion from "@/components/formation/ProgrammeAccordion";
-import MockupSection from "@/components/formation/MockupSection";
 import FormationFAQ from "@/components/formation/FormationFAQ";
 import FormationCTA from "@/components/formation/FormationCTA";
 import ComparisonSection from "@/components/formation/ComparisonSection";
@@ -249,8 +248,6 @@ export default function FormationPage() {
       </section>
 
       <ProgrammeAccordion />
-
-      <MockupSection />
 
       <section className="py-20" style={{ background: '#FAF6F0' }}>
         <div className="max-w-5xl mx-auto px-6">

@@ -11,6 +11,8 @@ import {
 } from "@/lib/sanity/queries";
 import { ArticleJsonLd, type FAQItem } from "@/components/seo/JsonLd";
 import ArticleTOC, { type TOCHeading } from "./_components/ArticleTOC";
+import ReadingProgressBar from "./_components/ReadingProgressBar";
+import ArticleFAQ from "./_components/ArticleFAQ";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -110,6 +112,19 @@ function extractFAQ(content: PortableBlock[]): FAQItem[] {
   return items;
 }
 
+/** Retourne uniquement les blocs AVANT le premier H2 "faq"/"question".
+ *  Évite le doublon FAQ dans le corps + le composant ArticleFAQ. */
+function contentBeforeFAQ(content: PortableBlock[]): PortableBlock[] {
+  const idx = content.findIndex(
+    (b) =>
+      b._type === "block" &&
+      b.style === "h2" &&
+      (getBlockText(b).toLowerCase().includes("faq") ||
+        getBlockText(b).toLowerCase().includes("question"))
+  );
+  return idx === -1 ? content : content.slice(0, idx);
+}
+
 /** Split content at each H2 to enable CTA injection between sections */
 function splitBySections(content: PortableBlock[]): PortableBlock[][] {
   const sections: PortableBlock[][] = [];
@@ -143,9 +158,15 @@ export async function generateMetadata({
     slug: params.slug,
   });
   if (!article) return {};
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
+    ? `${process.env.NEXT_PUBLIC_SITE_URL}/vanzon`
+    : "https://vanzonexplorer.com/vanzon";
   return {
     title: article.seoTitle ?? `${article.title} | Vanzon Explorer`,
     description: article.seoDescription ?? article.excerpt,
+    alternates: {
+      canonical: `${siteUrl}/articles/${article.slug}`,
+    },
     openGraph: {
       title: article.title,
       description: article.seoDescription ?? article.excerpt,
@@ -270,7 +291,7 @@ function makePortableComponents(headingIds: Map<string, string>) {
           );
         }
 
-        return <p className="text-[17px] text-slate-600 leading-[1.75] mb-6">{children}</p>;
+        return <p className="text-[18px] text-slate-600 leading-[1.75] mb-6">{children}</p>;
       },
     },
     marks: {
@@ -374,7 +395,8 @@ export default async function ArticleDetailPage({
   const content = article.content ?? [];
   const headings = extractHeadings(content);
   const faqItems = extractFAQ(content);
-  const sections = splitBySections(content);
+  const contentForBody = contentBeforeFAQ(content);
+  const sections = splitBySections(contentForBody);
 
   // Map heading text → id for the portable text renderer
   const headingIds = new Map(headings.map((h) => [h.text, h.id]));
@@ -382,6 +404,7 @@ export default async function ArticleDetailPage({
 
   return (
     <main className="min-h-screen bg-white">
+      <ReadingProgressBar />
       {/* JSON-LD: Article + BreadcrumbList + FAQPage */}
       <ArticleJsonLd article={article} faqItems={faqItems} />
 
@@ -409,7 +432,7 @@ export default async function ArticleDetailPage({
       <div className="max-w-[1120px] mx-auto px-4 sm:px-6 py-12 lg:grid lg:grid-cols-[1fr_272px] lg:gap-16 lg:items-start">
 
         {/* ── Main content ── */}
-        <article className="min-w-0">
+        <article className="min-w-0 max-w-[750px]">
 
           {/* Breadcrumb */}
           <nav aria-label="Fil d'Ariane" className="flex items-center gap-2 text-sm text-slate-400 mb-8">
@@ -489,6 +512,9 @@ export default async function ArticleDetailPage({
           ) : (
             <p className="text-slate-400 italic">Contenu de l&apos;article à venir.</p>
           )}
+
+          {/* ── FAQ accordion ── */}
+          <ArticleFAQ faqItems={faqItems} />
 
           {/* ── Articles similaires ── */}
           {relatedArticles && relatedArticles.length > 0 && (

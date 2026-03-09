@@ -253,6 +253,7 @@ export const getAllArticlesQuery = groq`
     readTime,
     publishedAt,
     featured,
+    "hasContent": defined(content) && length(content) > 0,
     "coverImage": coverImage {
       "url": asset->url,
       alt,

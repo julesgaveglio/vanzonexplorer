@@ -40,8 +40,8 @@ export async function generateMetadata(): Promise<Metadata> {
       template: "%s | Vanzon Explorer",
     },
     icons: {
-      icon: "https://cdn.sanity.io/images/lewexa74/production/1f483103ef15ee3549eab14ba2801d11b32a9055-313x313.png",
-      apple: "https://cdn.sanity.io/images/lewexa74/production/1f483103ef15ee3549eab14ba2801d11b32a9055-313x313.png",
+      icon: "https://cdn.sanity.io/images/lewexa74/production/1f483103ef15ee3549eab14ba2801d11b32a9055-313x313.png?v=2",
+      apple: "https://cdn.sanity.io/images/lewexa74/production/1f483103ef15ee3549eab14ba2801d11b32a9055-313x313.png?v=2",
     },
     description:
       "Location de vans aménagés, achat/revente et formation vanlife au Pays Basque. Explorez la côte basque en toute liberté.",

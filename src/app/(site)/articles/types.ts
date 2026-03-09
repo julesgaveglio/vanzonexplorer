@@ -8,5 +8,6 @@ export type SanityArticle = {
   readTime?: string;
   publishedAt: string;
   featured: boolean;
+  hasContent: boolean;
   coverImage?: { url: string; alt?: string; credit?: string } | null;
 };

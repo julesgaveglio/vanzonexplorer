@@ -32,68 +32,377 @@ type MappedArticle = {
   readTime: string | null;
   href: string;
   featured: boolean;
+  hasContent: boolean;
   tag?: string;
 };
 
 function ArticleCard({ article, index }: { article: MappedArticle; index: number }) {
-  return (
-    <div className="animate-fade-in" style={{ animationDelay: `${index * 40}ms`, animationFillMode: "both" }}>
-      <Link
-        href={article.href}
-        className="group relative flex flex-col rounded-2xl overflow-hidden border border-slate-100 bg-white hover:border-[#4D5FEC]/30 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
-      >
-        {/* Image */}
-        <div className="relative aspect-[16/9] overflow-hidden bg-slate-100">
-          <Image
-            src={article.image}
-            alt={article.imageAlt}
-            fill
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-            unoptimized
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent" />
-          <div className="absolute top-3 left-3 flex gap-2">
-            {article.tag && (
+  const isComing = !article.hasContent;
+
+  const cardInner = (
+    <>
+      {/* Image */}
+      <div className="relative aspect-[16/9] overflow-hidden bg-slate-100">
+        <Image
+          src={article.image}
+          alt={article.imageAlt}
+          fill
+          className={`object-cover transition-transform duration-500 ${isComing ? "grayscale-[30%]" : "group-hover:scale-105"}`}
+          unoptimized
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent" />
+        <div className="absolute top-3 left-3 flex gap-2">
+          {isComing ? (
+            <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-slate-900/70 text-white backdrop-blur-sm">
+              Bientôt
+            </span>
+          ) : (
+            article.tag && (
               <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-white/95 text-slate-800 backdrop-blur-sm">
                 {article.tag}
               </span>
-            )}
-          </div>
-          {article.readTime && (
-            <div className="absolute bottom-3 right-3 text-xs font-medium text-white/90 bg-black/30 backdrop-blur-sm px-2.5 py-1 rounded-full">
-              {article.readTime} de lecture
-            </div>
+            )
           )}
         </div>
+        {!isComing && article.readTime && (
+          <div className="absolute bottom-3 right-3 text-xs font-medium text-white/90 bg-black/30 backdrop-blur-sm px-2.5 py-1 rounded-full">
+            {article.readTime} de lecture
+          </div>
+        )}
+      </div>
 
-        {/* Content */}
-        <div className="flex flex-col flex-1 p-5">
-          <span className={`self-start text-xs font-semibold px-2.5 py-1 rounded-full mb-3 ${CATEGORY_COLOR[article.category]}`}>
-            {article.category}
+      {/* Content */}
+      <div className="flex flex-col flex-1 p-5">
+        <span className={`self-start text-xs font-semibold px-2.5 py-1 rounded-full mb-3 ${CATEGORY_COLOR[article.category]}`}>
+          {article.category}
+        </span>
+        <h3 className={`font-black text-base leading-snug mb-2 flex-1 transition-colors duration-200 ${isComing ? "text-slate-500" : "text-slate-900 group-hover:text-[#4D5FEC]"}`}>
+          {article.title}
+        </h3>
+        <p className="text-slate-500 text-sm leading-relaxed line-clamp-2 mb-4">
+          {article.description}
+        </p>
+        {isComing ? (
+          <span className="inline-flex items-center gap-1.5 text-sm font-semibold mt-auto text-slate-400">
+            Disponible prochainement
           </span>
-          <h3 className="font-black text-slate-900 text-base leading-snug mb-2 flex-1 group-hover:text-[#4D5FEC] transition-colors duration-200">
-            {article.title}
-          </h3>
-          <p className="text-slate-500 text-sm leading-relaxed line-clamp-2 mb-4">
-            {article.description}
-          </p>
+        ) : (
           <span className="inline-flex items-center gap-1.5 text-sm font-semibold mt-auto transition-all" style={{ color: "#4D5FEC" }}>
             Lire l&apos;article
             <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
               <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
             </svg>
           </span>
+        )}
+      </div>
+    </>
+  );
+
+  return (
+    <div className="animate-fade-in" style={{ animationDelay: `${index * 40}ms`, animationFillMode: "both" }}>
+      {isComing ? (
+        <div className="relative flex flex-col rounded-2xl overflow-hidden border border-slate-100 bg-white cursor-default opacity-80">
+          {cardInner}
         </div>
-      </Link>
+      ) : (
+        <Link
+          href={article.href}
+          className="group relative flex flex-col rounded-2xl overflow-hidden border border-slate-100 bg-white hover:border-[#4D5FEC]/30 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+        >
+          {cardInner}
+        </Link>
+      )}
     </div>
   );
 }
 
+// ── Articles "Bientôt" hardcodés ─────────────────────────────────────────────
+const COMING_SOON: MappedArticle[] = [
+  // Road Trips
+  {
+    slug: "ou-dormir-van-pays-basque",
+    title: "Où dormir en van au Pays Basque ? Les 10 meilleurs spots",
+    description: "Aires municipales, bivouacs légaux, forêts et cols pyrénéens — notre sélection des meilleures nuits en van sur la côte basque et en montagne.",
+    category: "Road Trips",
+    image: "https://images.pexels.com/photos/35120667/pexels-photo-35120667.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    imageAlt: "Deux vans sous un ciel étoilé en montagne",
+    readTime: null,
+    href: "/articles/ou-dormir-van-pays-basque",
+    featured: false,
+    hasContent: false,
+    tag: "Top 10",
+  },
+  {
+    slug: "surf-vanlife-biarritz",
+    title: "Surf + Vanlife à Biarritz : les plages incontournables",
+    description: "Côte des Basques, Milady, Anglet… Un guide pour combiner van et surf sur la côte basque. Les meilleurs spots selon la marée, le vent et votre niveau.",
+    category: "Road Trips",
+    image: "https://images.pexels.com/photos/21706237/pexels-photo-21706237.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    imageAlt: "Surfeur sur une vague de l'océan Atlantique",
+    readTime: null,
+    href: "/articles/surf-vanlife-biarritz",
+    featured: false,
+    hasContent: false,
+    tag: "Surf",
+  },
+  {
+    slug: "rhune-randonnee-van",
+    title: "Randonner à La Rhune depuis son van : guide pratique",
+    description: "La Rhune à pied ou en train à crémaillère ? Le col de Saint-Ignace, les sentiers balisés, le bivouac avec vue sur deux pays — tout ce qu'il faut pour réussir l'ascension.",
+    category: "Road Trips",
+    image: "https://images.pexels.com/photos/35314822/pexels-photo-35314822.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    imageAlt: "Paysage des Pyrénées en Occitanie, France",
+    readTime: null,
+    href: "/articles/rhune-randonnee-van",
+    featured: false,
+    hasContent: false,
+    tag: "Randonnée",
+  },
+  {
+    slug: "foret-irati-van",
+    title: "La Forêt d'Irati en van : randonnée, bivouac et nature sauvage",
+    description: "La plus grande hêtraie d'Europe s'explore depuis un van. Sentiers, zones de bivouac autorisées, faune sauvage, itinéraires depuis Bayonne — le guide complet.",
+    category: "Road Trips",
+    image: "https://images.pexels.com/photos/10915474/pexels-photo-10915474.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    imageAlt: "Forêt de hêtres baignée de lumière",
+    readTime: null,
+    href: "/articles/foret-irati-van",
+    featured: false,
+    hasContent: false,
+    tag: "Nature",
+  },
+  {
+    slug: "cote-basque-espagne-van",
+    title: "La côte basque espagnole en van : de Hondarribia à Bilbao",
+    description: "Passer la frontière et explorer la Euskal Herria côté espagnol. Plages sauvages, pintxos, San Sebastián — le road trip basque ne s'arrête pas à la frontière.",
+    category: "Road Trips",
+    image: "https://images.pexels.com/photos/12983843/pexels-photo-12983843.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    imageAlt: "Vue côtière colorée d'un village espagnol en bord de mer",
+    readTime: null,
+    href: "/articles/cote-basque-espagne-van",
+    featured: false,
+    hasContent: false,
+    tag: "Transfrontalier",
+  },
+  // Aménagement Van
+  {
+    slug: "choisir-fourgon-van-amenage",
+    title: "Quel fourgon choisir pour aménager son van ? Notre guide 2025",
+    description: "Renault Trafic, Citroën Jumpy, Volkswagen Transporter, Mercedes Sprinter — on compare les meilleurs fourgons pour une conversion van selon votre budget et vos besoins.",
+    category: "Aménagement Van",
+    image: "https://images.pexels.com/photos/15240841/pexels-photo-15240841.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    imageAlt: "Lit confortable à l'intérieur d'un van aménagé",
+    readTime: null,
+    href: "/articles/choisir-fourgon-van-amenage",
+    featured: false,
+    hasContent: false,
+    tag: "Guide achat",
+  },
+  {
+    slug: "isolation-van-guide-complet",
+    title: "Isolation d'un van : matériaux, méthode et erreurs à éviter",
+    description: "Laine de mouton, liège, armaflex — on compare les isolants et on vous guide pas à pas pour une isolation thermique et phonique efficace de votre fourgon.",
+    category: "Aménagement Van",
+    image: "https://images.pexels.com/photos/7285975/pexels-photo-7285975.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    imageAlt: "Travaux d'électricité et câblage DIY",
+    readTime: null,
+    href: "/articles/isolation-van-guide-complet",
+    featured: false,
+    hasContent: false,
+    tag: "Isolation",
+  },
+  {
+    slug: "electricite-12v-van-installation",
+    title: "Électricité 12V dans un van : batterie, panneau solaire et câblage",
+    description: "Comment installer un circuit 12V autonome dans son van ? Calcul de consommation, choix de la batterie lithium, panneau solaire, convertisseur — le guide technique complet.",
+    category: "Aménagement Van",
+    image: "https://images.pexels.com/photos/8112480/pexels-photo-8112480.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    imageAlt: "Vue aérienne d'un van garé sur un ponton face à l'océan",
+    readTime: null,
+    href: "/articles/electricite-12v-van-installation",
+    featured: false,
+    hasContent: false,
+    tag: "Électricité",
+  },
+  {
+    slug: "cuisine-van-amenagement",
+    title: "Aménager une cuisine dans son van : plans, matériaux et astuces",
+    description: "Plan de travail, réfrigérateur 12V, réchaud à gaz ou induction, évier — comment créer une cuisine fonctionnelle dans un espace réduit sans se ruiner.",
+    category: "Aménagement Van",
+    image: "https://images.pexels.com/photos/6946075/pexels-photo-6946075.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    imageAlt: "Couple préparant le petit-déjeuner dans un van aménagé",
+    readTime: null,
+    href: "/articles/cuisine-van-amenagement",
+    featured: false,
+    hasContent: false,
+    tag: "Cuisine",
+  },
+  {
+    slug: "homologation-vasp-van",
+    title: "Homologation VASP : comment transformer son fourgon en véhicule de loisir",
+    description: "Tout sur la réception à titre isolé (RTI) et le passage en VASP pour un van aménagé. Démarches DREAL, coût, délais et ce qu'on peut faire soi-même.",
+    category: "Aménagement Van",
+    image: "https://images.pexels.com/photos/6946001/pexels-photo-6946001.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    imageAlt: "Couple en road trip dans un van vert classique en forêt",
+    readTime: null,
+    href: "/articles/homologation-vasp-van",
+    featured: false,
+    hasContent: false,
+    tag: "Administratif",
+  },
+  // Business Van
+  {
+    slug: "mettre-van-en-location-yescapa",
+    title: "Mettre son van en location sur Yescapa : le guide de départ",
+    description: "Comment créer son activité de location de van ? Statut juridique, assurance, tarification, contrat — tout ce qu'il faut savoir pour démarrer sereinement sur Yescapa.",
+    category: "Business Van",
+    image: "https://images.pexels.com/photos/8230951/pexels-photo-8230951.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    imageAlt: "Couple souriant devant leur van bleu iconique en road trip",
+    readTime: null,
+    href: "/articles/mettre-van-en-location-yescapa",
+    featured: false,
+    hasContent: false,
+    tag: "Démarrage",
+  },
+  {
+    slug: "tarification-van-location-yescapa",
+    title: "Tarification van sur Yescapa : comment fixer le bon prix ?",
+    description: "Tarif basse/haute saison, week-end, semaine complète — les stratégies de prix qui maximisent revenus et taux d'occupation pour un van de location au Pays Basque.",
+    category: "Business Van",
+    image: "https://images.pexels.com/photos/7947998/pexels-photo-7947998.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    imageAlt: "Vue aérienne de rapports financiers et d'une calculatrice",
+    readTime: null,
+    href: "/articles/tarification-van-location-yescapa",
+    featured: false,
+    hasContent: false,
+    tag: "Pricing",
+  },
+  {
+    slug: "creer-annonce-yescapa-convertir",
+    title: "Créer une annonce Yescapa qui convertit : photos, titre, description",
+    description: "Les annonces qui bookent vraiment ont des caractéristiques en commun. On analyse les meilleures annonces et vous donne notre checklist pour maximiser vos réservations.",
+    category: "Business Van",
+    image: "https://images.pexels.com/photos/6946001/pexels-photo-6946001.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    imageAlt: "Van classique en forêt enneigée - photo d'annonce",
+    readTime: null,
+    href: "/articles/creer-annonce-yescapa-convertir",
+    featured: false,
+    hasContent: false,
+    tag: "Marketing",
+  },
+  {
+    slug: "declarer-revenus-location-van-impots",
+    title: "Déclarer ses revenus de location de van aux impôts",
+    description: "Micro-BIC, régime réel, location meublée non professionnelle — quel régime fiscal choisir pour la location de votre van ? Les règles 2025 expliquées simplement.",
+    category: "Business Van",
+    image: "https://images.pexels.com/photos/7111529/pexels-photo-7111529.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    imageAlt: "Calculatrice et note tax season sur un bureau",
+    readTime: null,
+    href: "/articles/declarer-revenus-location-van-impots",
+    featured: false,
+    hasContent: false,
+    tag: "Fiscalité",
+  },
+  {
+    slug: "optimiser-taux-occupation-van-location",
+    title: "Optimiser le taux d'occupation de son van : stratégies avancées",
+    description: "Réservations de dernière minute, offres saison creuse, messages automatiques, avis clients — les leviers concrets pour louer son van plus de 150 jours par an.",
+    category: "Business Van",
+    image: "https://images.pexels.com/photos/29509513/pexels-photo-29509513.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    imageAlt: "Calendrier de réservations van en gros plan",
+    readTime: null,
+    href: "/articles/optimiser-taux-occupation-van-location",
+    featured: false,
+    hasContent: false,
+    tag: "Optimisation",
+  },
+  // Achat Van
+  {
+    slug: "acheter-van-amenage-occasion-guide",
+    title: "Acheter un van aménagé d'occasion : le guide complet 2025",
+    description: "Que vérifier avant d'acheter un fourgon aménagé ? Inspection mécanique, aménagement, documents, prix du marché — tout ce qu'il faut savoir pour ne pas se tromper.",
+    category: "Achat Van",
+    image: "https://images.pexels.com/photos/6946001/pexels-photo-6946001.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    imageAlt: "Van vert sur une route forestière enneigée",
+    readTime: null,
+    href: "/articles/acheter-van-amenage-occasion-guide",
+    featured: false,
+    hasContent: false,
+    tag: "Guide achat",
+  },
+  {
+    slug: "prix-van-amenage-2025",
+    title: "Prix d'un van aménagé en 2025 : ce que ça coûte vraiment",
+    description: "Budget d'achat, coût d'un aménagement DIY vs clé en main, frais d'entretien, assurance — une estimation réaliste pour acheter ou construire votre van.",
+    category: "Achat Van",
+    image: "https://images.pexels.com/photos/10356910/pexels-photo-10356910.png?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    imageAlt: "Van garé dans la nature avec lumière du soir",
+    readTime: null,
+    href: "/articles/prix-van-amenage-2025",
+    featured: false,
+    hasContent: false,
+    tag: "Budget",
+  },
+  {
+    slug: "renault-trafic-amenage-notre-retour",
+    title: "Renault Trafic aménagé : notre retour d'expérience après 2 ans",
+    description: "Pourquoi on a choisi le Trafic III pour notre flotte de location ? Fiabilité, espace, coût d'entretien, pannes rencontrées — un retour d'expérience honnête.",
+    category: "Achat Van",
+    image: "https://images.pexels.com/photos/4391469/pexels-photo-4391469.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    imageAlt: "Renault Trafic blanc garé dans une rue",
+    readTime: null,
+    href: "/articles/renault-trafic-amenage-notre-retour",
+    featured: false,
+    hasContent: false,
+    tag: "Retour d'expérience",
+  },
+  {
+    slug: "van-amenage-pour-deux-personnes-criteres",
+    title: "Van aménagé pour 2 personnes : les critères essentiels",
+    description: "Lit fixe ou convertible, espace de vie, cuisine fonctionnelle, rangements — comment choisir ou construire un van confortable pour deux sans se retrouver à l'étroit.",
+    category: "Achat Van",
+    image: "https://images.pexels.com/photos/8231247/pexels-photo-8231247.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    imageAlt: "Couple heureux à côté de leur van au coucher du soleil",
+    readTime: null,
+    href: "/articles/van-amenage-pour-deux-personnes-criteres",
+    featured: false,
+    hasContent: false,
+    tag: "Couple",
+  },
+  {
+    slug: "acheter-van-amenage-pays-basque",
+    title: "Acheter un van aménagé au Pays Basque : ce qu'il faut savoir",
+    description: "Le marché du van aménagé d'occasion au Pays Basque — où chercher, les prix pratiqués, les particularités locales et pourquoi acheter directement à un propriétaire.",
+    category: "Achat Van",
+    image: "https://images.pexels.com/photos/32823206/pexels-photo-32823206.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    imageAlt: "Van garé dans un village de montagne",
+    readTime: null,
+    href: "/articles/acheter-van-amenage-pays-basque",
+    featured: false,
+    hasContent: false,
+    tag: "Pays Basque",
+  },
+  {
+    slug: "van-cle-en-main-vs-conversion",
+    title: "Van clé en main ou auto-conversion : lequel choisir ?",
+    description: "Acheter un van déjà aménagé ou construire le sien de zéro ? On compare les deux approches en termes de budget, temps, qualité et revenabilité pour vous aider à décider.",
+    category: "Achat Van",
+    image: "https://images.pexels.com/photos/8082327/pexels-photo-8082327.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    imageAlt: "Intérieur moderne d'un van aménagé en bois clair",
+    readTime: null,
+    href: "/articles/van-cle-en-main-vs-conversion",
+    featured: false,
+    hasContent: false,
+    tag: "Comparatif",
+  },
+];
+
 export default function ArticlesPageClient({ sanityArticles = [] }: { sanityArticles: SanityArticle[] }) {
   const [activeCategory, setActiveCategory] = useState<Category>("Tous");
 
-  const articles = useMemo<MappedArticle[]>(() =>
-    sanityArticles.map((a) => ({
+  const articles = useMemo<MappedArticle[]>(() => {
+    // Sanity articles = live (hasContent: true)
+    const sanityMapped: MappedArticle[] = sanityArticles.map((a) => ({
       slug: a.slug,
       title: a.title,
       description: a.excerpt,
@@ -103,10 +412,16 @@ export default function ArticlesPageClient({ sanityArticles = [] }: { sanityArti
       readTime: a.readTime ?? null,
       href: `/articles/${a.slug}`,
       featured: a.featured ?? false,
+      hasContent: true,
       tag: a.tag,
-    })),
-    [sanityArticles]
-  );
+    }));
+    // Hardcoded coming-soon articles not yet in Sanity
+    const sanitySlugSet = new Set(sanityArticles.map((a) => a.slug));
+    const remaining = COMING_SOON.filter((a) => !sanitySlugSet.has(a.slug));
+    const sanityFeatured = sanityMapped.filter((a) => a.featured);
+    const sanityOthers = sanityMapped.filter((a) => !a.featured);
+    return [...sanityFeatured, ...sanityOthers, ...remaining];
+  }, [sanityArticles]);
 
   const featuredArticle = articles.find((a) => a.featured);
 
@@ -197,7 +512,7 @@ export default function ArticlesPageClient({ sanityArticles = [] }: { sanityArti
                           {featuredArticle.tag}
                         </span>
                       )}
-                      {featuredArticle.readTime && (
+                      {featuredArticle.hasContent && featuredArticle.readTime && (
                         <span className="text-xs text-slate-400">{featuredArticle.readTime} de lecture</span>
                       )}
                     </div>

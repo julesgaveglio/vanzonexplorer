@@ -7,6 +7,7 @@ import VanCard from "@/components/van/VanCard";
 import VanSlider from "@/components/van/VanSlider";
 import { getGooglePlaceStats } from "@/lib/google-places";
 import Reveal from "@/components/ui/Reveal";
+import OtherServices from "@/components/ui/OtherServices";
 
 export const revalidate = 60;
 
@@ -434,6 +435,8 @@ export default async function HomePage() {
           </div>
         </section>
       )}
+
+      <OtherServices current="location" bgColor="#F8FAFC" />
     </>
   );
 }
