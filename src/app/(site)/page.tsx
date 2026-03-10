@@ -171,7 +171,7 @@ export default async function HomePage() {
               <p className="text-slate-500 text-lg leading-relaxed mb-8">
                 De l&apos;Atlantique aux Pyrénées en moins d&apos;une heure — le Pays Basque
                 concentre tout ce qu&apos;on aime : des vagues parfaites, des villages
-                authentiques, une gastronomie unique et des panoramas à couper le souffle.
+                authentiques, une gastronomie unique et des paysages magnifiques.
               </p>
 
               <div className="space-y-4">
