@@ -181,16 +181,11 @@ export default async function AProposPage() {
                   C&apos;est à ce moment qu&apos;il rencontre <strong className="text-slate-800">Elio</strong>, déjà propriétaire de son propre van. Une passion commune, deux compétences complémentaires. Ensemble, ils investissent dans un second fourgon et posent les bases de Vanzon Explorer.
                 </p>
                 <p>
-                  Le nom de l&apos;entreprise porte une signification profonde. Il est né après le décès de <strong className="text-slate-800">Manon, la mère de Jules</strong>, grande passionnée de voyage. En néerlandais, <em>zon</em> signifie <strong className="text-slate-800">soleil</strong> — et c&apos;est exactement ce que représentait Manon. Associer <em>van</em> et <em>zon</em> pour former <strong className="text-slate-800">Vanzon</strong> s&apos;est imposé comme une évidence : un hommage lumineux, gravé dans le nom même de l&apos;entreprise.
+                  Le nom de l&apos;entreprise porte une signification profonde. En néerlandais, <em>zon</em> signifie <strong className="text-slate-800">soleil</strong>. Associer <em>van</em> et <em>zon</em> pour former <strong className="text-slate-800">Vanzon</strong> s&apos;est imposé comme une évidence — un nom lumineux, qui dit tout de l&apos;esprit dans lequel l&apos;aventure a été lancée.
                 </p>
-                <blockquote className="border-l-2 border-blue-200 pl-4">
-                  <p className="text-slate-500 italic">
-                    &ldquo;Rendre accessible à tous le goût de la liberté.&rdquo;
-                  </p>
-                  <footer className="mt-1 text-xs font-semibold text-slate-400 uppercase tracking-widest">
-                    — Manon
-                  </footer>
-                </blockquote>
+                <p className="text-slate-500 italic border-l-2 border-blue-200 pl-4">
+                  &ldquo;Rendre accessible à tous le goût de la liberté.&rdquo;
+                </p>
               </div>
             </div>
 
@@ -364,7 +359,7 @@ export default async function AProposPage() {
             {/* Jules */}
             <div className="bg-white rounded-2xl p-8 border border-slate-100 shadow-sm">
               <div className="flex items-center gap-4 mb-6">
-                <div className="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center text-2xl">🚀</div>
+                <div className="w-12 h-12 rounded-2xl bg-blue-600 flex items-center justify-center text-white font-black text-xl flex-shrink-0">J</div>
                 <div>
                   <h3 className="text-xl font-bold text-slate-900">Jules</h3>
                   <span className="text-sm text-blue-600 font-medium">Président &amp; Co-fondateur</span>
@@ -387,7 +382,7 @@ export default async function AProposPage() {
             {/* Elio */}
             <div className="bg-white rounded-2xl p-8 border border-slate-100 shadow-sm">
               <div className="flex items-center gap-4 mb-6">
-                <div className="w-12 h-12 rounded-2xl bg-amber-50 flex items-center justify-center text-2xl">🔧</div>
+                <div className="w-12 h-12 rounded-2xl bg-amber-500 flex items-center justify-center text-white font-black text-xl flex-shrink-0">E</div>
                 <div>
                   <h3 className="text-xl font-bold text-slate-900">Elio</h3>
                   <span className="text-sm text-amber-600 font-medium">Directeur Général &amp; Co-fondateur</span>
