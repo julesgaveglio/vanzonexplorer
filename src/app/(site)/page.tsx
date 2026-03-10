@@ -4,7 +4,6 @@ import { sanityFetch } from "@/lib/sanity/client";
 import { getAllLocationVansQuery } from "@/lib/sanity/queries";
 import type { VanCard as VanCardType } from "@/lib/sanity/types";
 import VanCard from "@/components/van/VanCard";
-import VanSlider from "@/components/van/VanSlider";
 import { getGooglePlaceStats } from "@/lib/google-places";
 import Reveal from "@/components/ui/Reveal";
 import OtherServices from "@/components/ui/OtherServices";
@@ -116,8 +115,28 @@ export default async function HomePage() {
       </section>
 
       <section id="nos-vans" className="py-20 bg-white scroll-mt-20">
-        <div className="max-w-5xl mx-auto px-4">
-          <VanSlider />
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <span className="badge-glass !px-4 !py-1.5 text-sm font-semibold mb-4 inline-block" style={{ color: "#3B82F6" }}>
+              🚐 Nos vans
+            </span>
+            <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-3">
+              Deux vans, une liberté totale
+            </h2>
+            <p className="text-slate-500 text-lg">
+              Choisissez votre compagnon de route pour explorer le Pays Basque.
+            </p>
+          </div>
+
+          {vans && vans.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {vans.map((van) => (
+                <VanCard key={van._id} van={van} mode="location" />
+              ))}
+            </div>
+          ) : (
+            <p className="text-center text-slate-400">Vans bientôt disponibles.</p>
+          )}
         </div>
       </section>
 
@@ -341,8 +360,7 @@ export default async function HomePage() {
               <div className="flex flex-col sm:flex-row gap-3">
                 <a
                   href="/formation"
-                  className="btn-gold inline-flex items-center justify-center gap-2 font-bold px-8 py-4 rounded-2xl text-base text-white transition-all hover:-translate-y-0.5"
-                  style={{ background: "#B9945F" }}
+                  className="btn-gold inline-flex items-center justify-center gap-2 font-bold px-8 py-4 rounded-2xl text-base text-white"
                 >
                   Découvrir la formation →
                 </a>
