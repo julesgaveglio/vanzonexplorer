@@ -9,6 +9,7 @@ import EquipmentGrid from "@/components/van/EquipmentGrid";
 import BookingButton from "@/components/van/BookingButton";
 import PriceDisplay from "@/components/van/PriceDisplay";
 import Badge from "@/components/ui/Badge";
+import YescapaReassurance from "@/components/van/YescapaReassurance";
 
 export const revalidate = 60;
 
@@ -51,6 +52,8 @@ export default async function LocationVanPage({
     van.mainImage,
     ...(van.gallery || []),
   ].filter(Boolean);
+
+  const achatHref = van.offerType?.includes("achat") ? `/achat/${van.slug}` : undefined;
 
   return (
     <>
@@ -217,8 +220,11 @@ export default async function LocationVanPage({
                   url={van.externalBookingUrl}
                   platform={van.externalBookingPlatform}
                   insuranceIncluded={van.insuranceIncluded}
+                  achatHref={achatHref}
                 />
               )}
+
+              <YescapaReassurance />
             </div>
           </div>
         </div>
