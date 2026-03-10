@@ -358,12 +358,9 @@ export default async function AProposPage() {
 
             {/* Jules */}
             <div className="bg-white rounded-2xl p-8 border border-slate-100 shadow-sm">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-12 h-12 rounded-2xl bg-blue-600 flex items-center justify-center text-white font-black text-xl flex-shrink-0">J</div>
-                <div>
-                  <h3 className="text-xl font-bold text-slate-900">Jules</h3>
-                  <span className="text-sm text-blue-600 font-medium">Président &amp; Co-fondateur</span>
-                </div>
+              <div className="mb-6">
+                <h3 className="text-xl font-bold text-slate-900">Jules</h3>
+                <span className="text-sm text-blue-600 font-medium">Président &amp; Co-fondateur</span>
               </div>
               <p className="text-slate-600 leading-relaxed">
                 Jules est tourné vers la stratégie et l&apos;innovation.{" "}
@@ -381,12 +378,9 @@ export default async function AProposPage() {
 
             {/* Elio */}
             <div className="bg-white rounded-2xl p-8 border border-slate-100 shadow-sm">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-12 h-12 rounded-2xl bg-amber-500 flex items-center justify-center text-white font-black text-xl flex-shrink-0">E</div>
-                <div>
-                  <h3 className="text-xl font-bold text-slate-900">Elio</h3>
-                  <span className="text-sm text-amber-600 font-medium">Directeur Général &amp; Co-fondateur</span>
-                </div>
+              <div className="mb-6">
+                <h3 className="text-xl font-bold text-slate-900">Elio</h3>
+                <span className="text-sm text-amber-600 font-medium">Directeur Général &amp; Co-fondateur</span>
               </div>
               <p className="text-slate-600 leading-relaxed">
                 Elio est le spécialiste du concret et surtout de la mécanique. C&apos;est lui qui t&apos;aide à{" "}
