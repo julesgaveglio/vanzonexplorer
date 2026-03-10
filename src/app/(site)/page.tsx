@@ -5,7 +5,6 @@ import { getAllLocationVansQuery } from "@/lib/sanity/queries";
 import type { VanCard as VanCardType } from "@/lib/sanity/types";
 import VanCard from "@/components/van/VanCard";
 import { getGooglePlaceStats } from "@/lib/google-places";
-import Reveal from "@/components/ui/Reveal";
 import OtherServices from "@/components/ui/OtherServices";
 
 export const revalidate = 60;
@@ -140,36 +139,18 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="py-20" style={{ background: "linear-gradient(160deg, #DBF3F9 0%, #EFF6FF 100%)" }}>
-        <div className="max-w-6xl mx-auto px-6">
-          <Reveal className="text-center mb-14">
-            <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-3">
-              Tout l&apos;essentiel est à bord
-            </h2>
-            <p className="text-slate-500 text-lg">
-              Cuisine, couchage, autonomie — le van est prêt à partir dès la remise des clés.
-            </p>
-          </Reveal>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              { emoji: "🍳", title: "Cuisine coulissante", description: "Réchaud gaz 2 feux, planche à découper, vaisselle complète, rangements intégrés. Cuisinez partout où vous vous arrêtez." },
-              { emoji: "🛏️", title: "Couchage pour 3", description: "Lit fixe 2 personnes + matelas supplémentaire. Apportez votre linge de maison — propre, personnel, comme dans un gîte. Sommeil garanti même après une longue journée." },
-              { emoji: "🧊", title: "Glacière portative", description: "Conservez vos aliments frais jusqu'à 48h. Idéale pour les pique-niques au bord de l'océan ou après le surf." },
-              { emoji: "🚿", title: "Toilette sèche", description: "Votre intimité à bord, partout. Compatible avec les spots sauvages, les dunes et les sommets." },
-              { emoji: "🛡️", title: "Assurance Yescapa", description: "Vous êtes couverts dès la réservation. Assurance tous risques incluse pour rouler l'esprit tranquille." },
-              { emoji: "🗺️", title: "Conseils locaux offerts", description: "Jules connaît le Pays Basque comme sa poche. Spots de surf secrets, bivouacs légaux, restaurants locaux — tout est partagé." },
-            ].map((item, i) => (
-              <Reveal key={item.title} delay={i * 0.07}>
-                <div className="glass-card p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group h-full">
-                  <div className="text-4xl mb-4">{item.emoji}</div>
-                  <h3 className="font-bold text-slate-900 text-lg mb-2 transition-colors group-hover:text-[#4D5FEC]">
-                    {item.title}
-                  </h3>
-                  <p className="text-slate-500 text-sm leading-relaxed">{item.description}</p>
-                </div>
-              </Reveal>
-            ))}
+      <section className="py-10 bg-white">
+        <div className="max-w-3xl mx-auto px-6">
+          <div className="glass-card p-6 flex items-start gap-5 border-l-4" style={{ borderLeftColor: "#E8436C" }}>
+            <div className="flex-shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center text-2xl" style={{ background: "rgba(232,67,108,0.10)" }}>
+              🛡️
+            </div>
+            <div>
+              <h3 className="font-bold text-slate-900 text-base mb-1">Assurance tous risques</h3>
+              <p className="text-slate-500 text-sm leading-relaxed">
+                Vous êtes couverts dès la réservation avec l&apos;assurance de la plateforme Yescapa — assurance tous risques incluse pour rouler l&apos;esprit tranquille, sans frais cachés.
+              </p>
+            </div>
           </div>
         </div>
       </section>

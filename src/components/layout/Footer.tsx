@@ -48,7 +48,16 @@ const socials = [
 ];
 
 export default function Footer() {
-  const currentYear = new Date().getFullYear();
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const lastUpdated = now.toLocaleDateString("fr-FR", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "Europe/Paris",
+  });
 
   return (
     <footer className="bg-bg-secondary border-t border-border-default mt-24">
@@ -134,9 +143,15 @@ export default function Footer() {
         </div>
 
         <div className="mt-14 pt-8 border-t border-border-default flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-text-light">
-            © {currentYear} Vanzon Explorer · Bayonne, Pays Basque
-          </p>
+          <div className="flex flex-col sm:flex-row items-center gap-3">
+            <p className="text-xs text-text-light">
+              © {currentYear} Vanzon Explorer · Bayonne, Pays Basque
+            </p>
+            <span className="hidden sm:block text-text-light text-xs">·</span>
+            <p className="text-xs text-text-light opacity-60">
+              Mis à jour le {lastUpdated}
+            </p>
+          </div>
           <div className="flex gap-6">
             <Link href="/mentions-legales" className="text-xs text-text-light hover:text-text-muted transition-colors">
               Mentions légales
