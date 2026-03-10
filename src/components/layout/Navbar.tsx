@@ -209,6 +209,23 @@ export default function Navbar() {
                   </>
                 )}
               </div>
+
+              <div className="mt-2 px-1 flex flex-col gap-0.5 border-t border-slate-100 pt-2">
+                <Link
+                  href="/a-propos"
+                  onClick={() => setMobileOpen(false)}
+                  className="block px-4 py-2.5 text-sm text-text-muted rounded-xl transition-colors hover:text-text-primary hover:bg-slate-50"
+                >
+                  À propos
+                </Link>
+                <Link
+                  href="/contact"
+                  onClick={() => setMobileOpen(false)}
+                  className="block px-4 py-2.5 text-sm text-text-muted rounded-xl transition-colors hover:text-text-primary hover:bg-slate-50"
+                >
+                  Contactez-nous
+                </Link>
+              </div>
             </div>
           </motion.div>
         )}

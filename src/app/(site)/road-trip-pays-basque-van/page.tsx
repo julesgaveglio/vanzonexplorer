@@ -18,11 +18,11 @@ export const metadata: Metadata = {
 const itinerary = [
   {
     day: "Jour 1",
-    location: "Bayonne → Biarritz",
+    location: "Cambo-les-Bains → Biarritz",
     emoji: "🌊",
     highlight: "Côte des Basques",
     description:
-      "Départ de Bayonne, récupération du van. Cap sur Biarritz — installez-vous au parking de la Côte des Basques pour le coucher de soleil. Dîner de pintxos en vieille ville.",
+      "Départ de Cambo-les-Bains, récupération du van. Cap sur Biarritz — installez-vous au parking de la Côte des Basques pour le coucher de soleil. Dîner de pintxos en vieille ville.",
     sleep: "Parking Côte des Basques (gratuit hors saison)",
     tip: "Arrivée avant 18h pour profiter de la plage.",
   },
@@ -78,7 +78,7 @@ const itinerary = [
   },
   {
     day: "Jour 7",
-    location: "Retour à Bayonne",
+    location: "Retour à Cambo-les-Bains",
     emoji: "🏁",
     highlight: "Marché des Halles & dernier pintxo",
     description:
@@ -86,15 +86,6 @@ const itinerary = [
     sleep: "—",
     tip: "Nettoyez le van la veille au soir pour profiter du dernier matin.",
   },
-];
-
-const budgetItems = [
-  { item: "Location van Vanzon Explorer", cost: "65€/nuit × 7", total: "455€", note: "Assurance incluse" },
-  { item: "Carburant (1000 km environ)", cost: "≈ 110L de diesel", total: "160–180€", note: "~16L/100 km" },
-  { item: "Alimentation (courses + marchés)", cost: "20–30€/j × 7", total: "140–210€", note: "Cuisine dans le van" },
-  { item: "Restaurants & pintxos", cost: "15–25€/repas × 7", total: "100–175€", note: "3–4 vrais repas" },
-  { item: "Nuits (aires, campings)", cost: "0–10€/nuit × 7", total: "0–70€", note: "Bivouac majoritaire" },
-  { item: "Activités (surf, train Rhune…)", cost: "Variable", total: "50–120€", note: "Selon envies" },
 ];
 
 const faqItems = [
@@ -126,7 +117,7 @@ const faqItems = [
   {
     question: "Où peut-on récupérer et rendre le van ?",
     answer:
-      "Les vans se récupèrent et se rendent à Bayonne. Une livraison sur demande est possible dans les communes proches (Biarritz, Anglet, Saint-Jean-de-Luz). Contactez Jules directement via la plateforme Yescapa pour organiser la logistique.",
+      "Les vans se récupèrent et se rendent à Cambo-les-Bains. Une livraison sur demande est possible dans les communes proches (Biarritz, Anglet, Saint-Jean-de-Luz). Contactez Jules directement via la plateforme Yescapa pour organiser la logistique.",
   },
 ];
 
@@ -244,9 +235,7 @@ export default function RoadTripPaysBasquePage() {
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[1.05] mb-6">
               Road Trip<br />
               Pays Basque<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4BC3E3] to-[#4D5FEC]">
-                en van.
-              </span>
+              en van.
             </h1>
 
             <p className="text-xl text-white/75 leading-relaxed mb-8 max-w-2xl">
@@ -260,10 +249,7 @@ export default function RoadTripPaysBasquePage() {
                 href="/location"
                 className="inline-flex items-center justify-center gap-2 bg-white text-slate-900 font-bold px-8 py-4 rounded-xl hover:bg-blue-50 transition-colors text-lg shadow-2xl"
               >
-                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect width="20" height="8" x="2" y="13" rx="2" /><path d="M6 13V8a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v5" />
-                </svg>
-                Louer un van aménagé au Pays Basque
+                Louer un van
               </Link>
               <a
                 href="#itineraire"
@@ -340,11 +326,12 @@ export default function RoadTripPaysBasquePage() {
               </div>
             </div>
 
+            {/* 4 photos grid */}
             <div className="grid grid-cols-2 gap-3">
               <div className="relative aspect-[3/4] rounded-2xl overflow-hidden row-span-2">
                 <Image
-                  src="https://cdn.sanity.io/images/lewexa74/production/04d93973d30c5eede51f954d1432a50a5f82ef9b-1080x750.png"
-                  alt="Van Xalbat en montagne au Pays Basque - road trip"
+                  src="https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&w=800&q=80"
+                  alt="Randonnée en montagne au Pays Basque"
                   fill
                   className="object-cover hover:scale-105 transition-transform duration-700"
                   unoptimized
@@ -352,8 +339,8 @@ export default function RoadTripPaysBasquePage() {
               </div>
               <div className="relative aspect-square rounded-2xl overflow-hidden">
                 <Image
-                  src="https://cdn.sanity.io/images/lewexa74/production/660105a28e577c33f642a8fdff528d88925642e3-1080x750.png"
-                  alt="Van Yoni ouvert sur la côte basque"
+                  src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=800&q=80"
+                  alt="Maisons typiques basques à colombages rouges"
                   fill
                   className="object-cover hover:scale-105 transition-transform duration-700"
                   unoptimized
@@ -361,8 +348,8 @@ export default function RoadTripPaysBasquePage() {
               </div>
               <div className="relative aspect-square rounded-2xl overflow-hidden">
                 <Image
-                  src="https://cdn.sanity.io/images/lewexa74/production/0b3f81d08627ba0b4423224029cb5016d0e7ed25-2048x1365.jpg"
-                  alt="Paysage basque depuis un van"
+                  src="https://images.unsplash.com/photo-1505118380757-91f5f5632de0?auto=format&fit=crop&w=800&q=80"
+                  alt="Vagues de l'Atlantique au Pays Basque"
                   fill
                   className="object-cover hover:scale-105 transition-transform duration-700"
                   unoptimized
@@ -392,13 +379,11 @@ export default function RoadTripPaysBasquePage() {
           </div>
 
           <div className="relative">
-            {/* Ligne verticale */}
             <div className="absolute left-8 top-0 bottom-0 w-px bg-gradient-to-b from-[#4BC3E3]/30 via-[#4D5FEC]/60 to-[#4BC3E3]/30 hidden md:block" />
 
             <div className="space-y-6">
               {itinerary.map((day, idx) => (
                 <div key={day.day} className="relative flex gap-6">
-                  {/* Numéro de jour */}
                   <div className="hidden md:flex flex-shrink-0 w-16 h-16 rounded-2xl items-center justify-center font-black text-white text-sm z-10"
                     style={{ background: `linear-gradient(135deg, #4BC3E3, #4D5FEC)` }}>
                     J{idx + 1}
@@ -512,146 +497,6 @@ export default function RoadTripPaysBasquePage() {
       </section>
 
       {/* ══════════════════════════════════════════
-          OÙ DORMIR EN VAN
-      ══════════════════════════════════════════ */}
-      <section className="py-20 text-white" style={{ background: "#0F153A" }}>
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="text-center mb-14">
-            <span className="inline-block text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "#4BC3E3" }}>
-              Conseils pratiques
-            </span>
-            <h2 className="text-3xl md:text-4xl font-black text-white mb-3">
-              Où dormir en van au Pays Basque ?
-            </h2>
-            <p className="text-white/60 text-lg max-w-xl mx-auto">
-              Le Pays Basque offre de nombreuses options pour passer la nuit en van —
-              du bivouac sauvage à l&apos;aire aménagée.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            {[
-              {
-                icon: "🌿",
-                title: "Bivouac naturel",
-                items: [
-                  "Col de Saint-Ignace (La Rhune)",
-                  "Forêt d'Irati (zones balisées)",
-                  "Cols des Pyrénées Atlantiques",
-                  "Forêt landaise (Hossegor)",
-                ],
-                cost: "Gratuit",
-                note: "Arriver tard, partir tôt. Zéro déchet.",
-                gradient: "from-emerald-500 to-teal-600",
-              },
-              {
-                icon: "🏕️",
-                title: "Aires camping-cars",
-                items: [
-                  "Aire Saint-Jean-de-Luz (7€/nuit)",
-                  "Aire Biarritz - Milady (10€/nuit)",
-                  "Aire Hendaye (5€/nuit)",
-                  "Aire Bayonne (8€/nuit)",
-                ],
-                cost: "5–12€/nuit",
-                note: "Eau, électricité, vidange incluses.",
-                gradient: "from-blue-500 to-indigo-600",
-              },
-              {
-                icon: "⛺",
-                title: "Campings nature",
-                items: [
-                  "Camping Oyam (Bidart) — vue mer",
-                  "Camping Ibarron (St-Pée-sur-Nivelle)",
-                  "Camping Irati (forêt d'Irati)",
-                  "Camping La Ferme Landaise",
-                ],
-                cost: "15–25€/nuit",
-                note: "Idéal en haute saison — réservez à l'avance.",
-                gradient: "from-amber-500 to-orange-600",
-              },
-            ].map((option) => (
-              <div key={option.title} className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-6">
-                <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${option.gradient} flex items-center justify-center text-2xl mb-4`}>
-                  {option.icon}
-                </div>
-                <h3 className="font-bold text-white text-lg mb-1">{option.title}</h3>
-                <p className="text-[#4BC3E3] font-semibold text-sm mb-4">{option.cost}</p>
-                <ul className="space-y-2 mb-4">
-                  {option.items.map((item) => (
-                    <li key={item} className="flex items-center gap-2 text-white/70 text-sm">
-                      <span className="w-1.5 h-1.5 rounded-full bg-white/30 flex-shrink-0" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-                <p className="text-xs text-white/40 mt-3 italic">{option.note}</p>
-              </div>
-            ))}
-          </div>
-
-          <p className="text-center text-white/50 text-sm mt-10 max-w-2xl mx-auto">
-            Jules, fondateur de Vanzon Explorer, partage personnellement ses spots secrets avec chaque locataire.
-            Des bivouacs légaux et confidentiels que seuls les locaux connaissent.
-          </p>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════
-          BUDGET
-      ══════════════════════════════════════════ */}
-      <section className="py-20" style={{ background: "linear-gradient(160deg, #EFF6FF 0%, #F0FDFF 100%)" }}>
-        <div className="max-w-4xl mx-auto px-6">
-          <div className="text-center mb-12">
-            <span className="badge-glass !px-4 !py-1.5 text-sm font-semibold mb-4 inline-block" style={{ color: "#4D5FEC" }}>
-              Budget estimé
-            </span>
-            <h2 className="text-4xl font-black text-slate-900 mb-3">
-              Combien coûte un road trip<br />Pays Basque en van ?
-            </h2>
-            <p className="text-slate-500 text-lg">Budget pour 2 personnes sur 7 jours</p>
-          </div>
-
-          <div className="glass-card overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-slate-100">
-                    <th className="text-left p-4 text-xs font-semibold uppercase tracking-wider text-slate-400">Poste</th>
-                    <th className="text-right p-4 text-xs font-semibold uppercase tracking-wider text-slate-400">Détail</th>
-                    <th className="text-right p-4 text-xs font-semibold uppercase tracking-wider text-slate-400">Total</th>
-                    <th className="text-right p-4 text-xs font-semibold uppercase tracking-wider text-slate-400 hidden md:table-cell">Note</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-50">
-                  {budgetItems.map((row) => (
-                    <tr key={row.item} className="hover:bg-slate-50/50 transition-colors">
-                      <td className="p-4 text-sm font-medium text-slate-800">{row.item}</td>
-                      <td className="p-4 text-sm text-slate-500 text-right">{row.cost}</td>
-                      <td className="p-4 text-sm font-bold text-slate-900 text-right">{row.total}</td>
-                      <td className="p-4 text-xs text-slate-400 text-right hidden md:table-cell">{row.note}</td>
-                    </tr>
-                  ))}
-                </tbody>
-                <tfoot>
-                  <tr className="border-t-2 border-slate-200 bg-slate-50/80">
-                    <td className="p-4 font-black text-slate-900">Total estimé</td>
-                    <td className="p-4" />
-                    <td className="p-4 font-black text-xl text-right" style={{ color: "#4D5FEC" }}>900–1 200€</td>
-                    <td className="p-4 text-xs text-slate-400 text-right hidden md:table-cell">450–600€ / pers.</td>
-                  </tr>
-                </tfoot>
-              </table>
-            </div>
-          </div>
-
-          <p className="text-center text-slate-400 text-sm mt-6">
-            Cuisine dans le van = économies de 30 à 50% sur la restauration. Le poste le plus variable est les activités.
-          </p>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════
           CTA — LOUER UN VAN
       ══════════════════════════════════════════ */}
       <section className="relative py-28 overflow-hidden">
@@ -686,10 +531,7 @@ export default function RoadTripPaysBasquePage() {
               href="/location"
               className="inline-flex items-center justify-center gap-2 bg-white text-slate-900 font-bold px-10 py-5 rounded-2xl hover:bg-blue-50 transition-colors text-lg shadow-2xl"
             >
-              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <rect width="20" height="8" x="2" y="13" rx="2" /><path d="M6 13V8a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v5" />
-              </svg>
-              Louer un van aménagé au Pays Basque
+              Louer un van
             </Link>
             <Link
               href="/pays-basque"
@@ -756,7 +598,7 @@ export default function RoadTripPaysBasquePage() {
               {
                 emoji: "🚐",
                 title: "Louer un van aménagé",
-                desc: "Yoni et Xalbat, deux Renault Trafic tout équipés au départ de Bayonne.",
+                desc: "Yoni et Xalbat, deux Renault Trafic tout équipés au départ de Cambo-les-Bains.",
                 href: "/location",
                 cta: "Voir les vans",
               },
