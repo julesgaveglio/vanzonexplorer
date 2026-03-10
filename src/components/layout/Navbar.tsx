@@ -15,6 +15,7 @@ const navLinks = [
   { label: "Pays Basque", href: "/pays-basque", desc: "Vantrips & spots", emoji: "🏄" },
   { label: "Articles", href: "/articles", desc: "Guides vanlife", emoji: "📖" },
   { label: "À propos", href: "/a-propos", desc: "Notre histoire", emoji: "👋" },
+  { label: "Contactez-nous", href: "/contact", desc: "Nous écrire", emoji: "✉️" },
 ];
 
 const LOGOS: { path: string; src: string }[] = [
@@ -210,22 +211,6 @@ export default function Navbar() {
                 )}
               </div>
 
-              <div className="mt-2 px-1 flex flex-col gap-0.5 border-t border-slate-100 pt-2">
-                <Link
-                  href="/a-propos"
-                  onClick={() => setMobileOpen(false)}
-                  className="block px-4 py-2.5 text-sm text-text-muted rounded-xl transition-colors hover:text-text-primary hover:bg-slate-50"
-                >
-                  À propos
-                </Link>
-                <Link
-                  href="/contact"
-                  onClick={() => setMobileOpen(false)}
-                  className="block px-4 py-2.5 text-sm text-text-muted rounded-xl transition-colors hover:text-text-primary hover:bg-slate-50"
-                >
-                  Contactez-nous
-                </Link>
-              </div>
             </div>
           </motion.div>
         )}
