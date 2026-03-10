@@ -8,23 +8,6 @@ export const metadata: Metadata = {
     "Découvrez les meilleurs spots et vantrips au Pays Basque avec Vanzon Explorer. Côte atlantique, montagnes, villages basques — les itinéraires arrivent bientôt.",
 };
 
-const timeline = [
-  {
-    num: "1",
-    title: "Spots vanlife",
-    description: "Aires officielles, bivouacs légaux, spots secrets — une carte interactive des meilleures nuits en van sur la côte basque et en montagne.",
-  },
-  {
-    num: "2",
-    title: "Itinéraires van",
-    description: "Des vantrips clés en main de 3 à 10 jours : étapes jour par jour, points GPS, durée de route et bons plans locaux.",
-  },
-  {
-    num: "3",
-    title: "Guide activités",
-    description: "Surf, randonnée, gastronomie basque, fêtes locales — tout ce qu'il faut pour vivre le Pays Basque comme un local.",
-  },
-];
 
 export default function PaysBasquePage() {
   return (
@@ -46,10 +29,7 @@ export default function PaysBasquePage() {
             Vanzon Explorer
           </span>
           <h1 className="text-5xl md:text-7xl font-black text-white leading-tight">
-            Le Pays Basque,{" "}
-            <span className="bg-gradient-to-r from-blue-400 to-sky-300 bg-clip-text text-transparent">
-              en van.
-            </span>
+            Le Pays Basque, en van.
           </h1>
           <p className="text-lg text-white/80 mt-4 max-w-xl">
             Des plages de Biarritz aux sommets de la Rhune — explorez l&apos;une
@@ -99,45 +79,6 @@ export default function PaysBasquePage() {
             </div>
           </div>
 
-          <div className="flex items-center justify-between flex-wrap gap-4 mb-10">
-            <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
-                Ce qui arrive
-              </h2>
-              <p className="text-slate-500 mt-2 max-w-lg leading-relaxed">
-                Notre équipe prépare les meilleures ressources pour explorer le Pays Basque en van.
-              </p>
-            </div>
-            <span className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full bg-blue-50 text-blue-600 border border-blue-100 flex-shrink-0">
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
-              En préparation
-            </span>
-          </div>
-
-          <div className="relative">
-            {/* Ligne verticale */}
-            <div className="absolute left-6 top-0 bottom-0 w-px bg-slate-100 hidden md:block" />
-
-            <div className="flex flex-col gap-6">
-              {timeline.map((item) => (
-                <div key={item.num} className="relative md:pl-16">
-                  {/* Numéro */}
-                  <div className="hidden md:flex absolute left-0 w-12 h-12 rounded-full border-2 border-slate-200 bg-white items-center justify-center font-black text-slate-400 text-lg">
-                    {item.num}
-                  </div>
-                  <div className="rounded-2xl border border-slate-100 bg-white p-7 hover:border-blue-200 transition-colors">
-                    <div className="flex items-center gap-3 mb-2">
-                      <span className="md:hidden inline-flex w-7 h-7 rounded-full border border-slate-200 bg-slate-50 items-center justify-center font-black text-slate-400 text-sm flex-shrink-0">
-                        {item.num}
-                      </span>
-                      <h3 className="text-lg font-semibold text-slate-900">{item.title}</h3>
-                    </div>
-                    <p className="text-sm text-slate-500 leading-relaxed">{item.description}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
       </section>
 
@@ -148,19 +89,19 @@ export default function PaysBasquePage() {
           background: "linear-gradient(160deg, #EFF6FF 0%, #F0FDFF 100%)",
         }}
       >
-        <div className="max-w-3xl mx-auto px-6 text-center">
+        <div className="max-w-3xl mx-auto px-4 text-center">
           <span className="text-4xl mb-6 block">🚐</span>
-          <h2 className="text-3xl font-bold text-slate-900">
+          <h2 className="text-2xl md:text-3xl font-bold text-slate-900 leading-snug">
             Prêt à partir maintenant ?
           </h2>
-          <p className="text-slate-500 mt-3 max-w-md mx-auto leading-relaxed">
+          <p className="text-slate-500 mt-3 max-w-md mx-auto leading-relaxed text-sm md:text-base">
             Nos vans aménagés sont disponibles dès aujourd&apos;hui pour
             explorer le Pays Basque à votre rythme.
           </p>
-          <div className="flex gap-4 mt-8 justify-center flex-wrap">
+          <div className="flex gap-3 mt-8 justify-center flex-wrap">
             <LiquidButton href="/location">Louer un van</LiquidButton>
-            <LiquidButton variant="ghost" href="/">
-              Retour à l&apos;accueil
+            <LiquidButton variant="ghost" href="/achat">
+              Acheter un van
             </LiquidButton>
           </div>
         </div>
