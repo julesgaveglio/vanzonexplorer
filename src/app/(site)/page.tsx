@@ -117,7 +117,7 @@ export default async function HomePage() {
       <section id="nos-vans" className="py-20 bg-white scroll-mt-20">
         <div className="max-w-5xl mx-auto px-6">
           <div className="text-center mb-12">
-            <span className="badge-glass !px-4 !py-1.5 text-sm font-semibold mb-4 inline-block" style={{ color: "#3B82F6" }}>
+            <span className="badge-glass !px-4 !py-1.5 text-sm font-semibold mb-4 inline-block text-blue-500">
               🚐 Nos vans
             </span>
             <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-3">
