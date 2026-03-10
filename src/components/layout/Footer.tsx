@@ -142,16 +142,14 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-14 pt-8 border-t border-border-default flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex flex-col sm:flex-row items-center gap-3">
-            <p className="text-xs text-text-light">
-              © {currentYear} Vanzon Explorer · Bayonne, Pays Basque
-            </p>
-            <span className="hidden sm:block text-text-light text-xs">·</span>
-            <p className="text-xs text-text-light opacity-60">
-              Mis à jour le {lastUpdated}
-            </p>
-          </div>
+        <p className="text-xs text-text-light opacity-50 text-center mb-6">
+          Mis à jour le {lastUpdated}
+        </p>
+
+        <div className="pt-6 border-t border-border-default flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-xs text-text-light">
+            © {currentYear} Vanzon Explorer · Bayonne, Pays Basque
+          </p>
           <div className="flex gap-6">
             <Link href="/mentions-legales" className="text-xs text-text-light hover:text-text-muted transition-colors">
               Mentions légales
