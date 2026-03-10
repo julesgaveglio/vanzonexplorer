@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Contact | Vanzon Explorer",
@@ -20,7 +19,7 @@ export default function ContactPage() {
             Contactez-nous
           </h1>
           <p className="text-lg text-slate-500 mt-4 max-w-xl mx-auto leading-relaxed">
-            Une question sur la location, la formation ou l&apos;achat de van ? Jules vous repond directement.
+            Une question sur la location, la formation ou l&apos;achat de van ? Nous vous répondons directement.
           </p>
         </div>
       </section>
@@ -69,33 +68,6 @@ export default function ContactPage() {
                 <p className="text-slate-400 text-xs mt-2">Reponse rapide, 7j/7</p>
               </div>
             </a>
-          </div>
-
-          {/* Info localisation */}
-          <div className="mt-8 flex items-start gap-4 p-6 rounded-2xl bg-slate-50 border border-slate-100">
-            <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center flex-shrink-0">
-              <svg className="w-5 h-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-slate-700">Bayonne, Pays Basque (64100)</p>
-              <p className="text-slate-400 text-sm mt-0.5">Remise des vans sur place — 20 min de Biarritz</p>
-            </div>
-          </div>
-
-          {/* Question reservation */}
-          <div className="mt-6 p-5 rounded-2xl border border-amber-100 bg-amber-50">
-            <p className="text-sm font-semibold text-amber-800 mb-1">Question sur une reservation ?</p>
-            <p className="text-sm text-amber-700 leading-relaxed">
-              Les reservations de vans se font via Yescapa. Pour toute question relative a une reservation existante, contactez-nous directement par WhatsApp.
-            </p>
-            <Link
-              href="/location"
-              className="inline-block mt-3 text-sm font-semibold text-amber-700 hover:text-amber-900 transition-colors"
-            >
-              Voir nos vans disponibles
-            </Link>
           </div>
         </div>
       </section>
