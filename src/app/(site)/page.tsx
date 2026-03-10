@@ -129,7 +129,7 @@ export default async function HomePage() {
           </div>
 
           {vans && vans.length > 0 ? (
-            <div className="grid grid-cols-2 gap-3 md:gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
               {vans.map((van) => (
                 <VanCard key={van._id} van={van} mode="location" />
               ))}

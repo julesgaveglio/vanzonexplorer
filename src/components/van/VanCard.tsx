@@ -45,25 +45,25 @@ export default function VanCard({ van, mode }: VanCardProps) {
       </div>
 
       {/* ── Corps ── */}
-      <div className="p-3 md:p-5">
+      <div className="p-5">
         {/* Nom */}
-        <h3 className="font-semibold text-slate-900 text-sm md:text-lg leading-tight">
+        <h3 className="font-semibold text-slate-900 text-lg leading-tight">
           {van.name}
         </h3>
 
         {/* Badges équipements */}
         {visibleEquipments.length > 0 && (
-          <div className="flex flex-wrap gap-1 mt-2 md:gap-1.5 md:mt-3">
+          <div className="flex flex-wrap gap-1.5 mt-3">
             {visibleEquipments.map((eq) => (
-              <span key={eq.key} className="badge-glass !text-[10px] !px-1.5 !py-0.5 md:!text-xs md:!px-2.5 md:!py-1">
-                <span className="hidden sm:inline">{eq.icon} </span>{eq.label}
+              <span key={eq.key} className="badge-glass">
+                {eq.icon} {eq.label}
               </span>
             ))}
           </div>
         )}
 
         {/* Prix */}
-        <div className="mt-3 md:mt-4">
+        <div className="mt-4">
           {mode === "location" && van.startingPricePerNight ? (
             <PriceDisplay
               startingPrice={van.startingPricePerNight}
@@ -71,7 +71,7 @@ export default function VanCard({ van, mode }: VanCardProps) {
               size="sm"
             />
           ) : mode === "achat" && van.salePrice ? (
-            <span className="text-blue-600 font-bold text-base md:text-xl">
+            <span className="text-blue-600 font-bold text-xl">
               {van.salePrice.toLocaleString("fr-FR")} €
             </span>
           ) : null}
@@ -80,7 +80,7 @@ export default function VanCard({ van, mode }: VanCardProps) {
         {/* CTA */}
         <Link
           href={href}
-          className="btn-ghost w-full text-center text-xs md:text-sm mt-3 md:mt-4 block !py-2 md:!py-2.5"
+          className="btn-ghost w-full text-center text-sm mt-4 block"
         >
           Voir ce van
         </Link>
