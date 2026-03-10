@@ -456,8 +456,7 @@ export default function ArticlesPageClient({ sanityArticles = [] }: { sanityArti
               <span className="text-white/70 text-xs font-semibold uppercase tracking-widest">Vanzon Explorer · Magazine</span>
             </div>
             <h1 className="text-5xl md:text-6xl font-black text-white leading-tight mb-5">
-              Guides & Articles<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4BC3E3] to-[#4D5FEC]">Vanlife &amp; Pays Basque</span>
+              Articles vanlife
             </h1>
             <p className="text-white/60 text-xl leading-relaxed max-w-xl mb-8">
               Itinéraires, spots secrets, conseils pratiques et culture basque — tout ce qu&apos;il faut pour vivre le Pays Basque en van comme un local.
