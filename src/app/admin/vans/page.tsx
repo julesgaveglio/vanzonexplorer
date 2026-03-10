@@ -55,9 +55,7 @@ export default async function AdminVansPage() {
           </p>
         </div>
         <a
-          href="/studio/structure/van;new"
-          target="_blank"
-          rel="noopener noreferrer"
+          href="/admin/vans/nouveau"
           className="inline-flex items-center gap-2 font-semibold text-white text-sm px-5 py-2.5 rounded-xl transition-all"
           style={{ background: "linear-gradient(135deg, #3B82F6 0%, #0EA5E9 100%)", boxShadow: "0 4px 14px rgba(59,130,246,0.35)" }}
         >
@@ -160,9 +158,7 @@ function VanTable({ title, vans, accent }: { title: string; vans: Van[]; accent:
                   {/* Actions */}
                   <td className="px-4 py-4">
                     <a
-                      href={`/studio/structure/van;${van._id}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      href={`/admin/vans/${van._id}`}
                       className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-blue-600 transition-colors bg-slate-50 hover:bg-blue-50 px-3 py-1.5 rounded-lg"
                     >
                       <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">

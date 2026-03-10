@@ -78,6 +78,7 @@ export interface VanCard {
   offerType: ("location" | "achat")[];
   tagline?: string;
   mainImage: SanityImage;
+  gallery?: SanityImage[];
   vanType?: string;
   capacity?: number;
   startingPricePerNight?: number;

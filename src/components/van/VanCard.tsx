@@ -1,7 +1,7 @@
-import Image from "next/image";
 import Link from "next/link";
 import type { VanCard as VanCardType } from "@/lib/sanity/types";
 import PriceDisplay from "./PriceDisplay";
+import VanImageCarousel from "./VanImageCarousel";
 
 // Équipements à afficher en priorité sur la card
 const equipmentBadges: { key: keyof VanCardType; label: string; icon: string }[] = [
@@ -30,6 +30,12 @@ interface VanCardProps {
 export default function VanCard({ van, mode }: VanCardProps) {
   const href = mode === "location" ? `/location/${van.slug}` : `/achat/${van.slug}`;
 
+  // Toutes les images : mainImage + gallery
+  const slides = [
+    ...(van.mainImage?.url ? [{ url: van.mainImage.url, alt: van.mainImage.alt || van.name }] : []),
+    ...(van.gallery?.filter((g) => g?.url).map((g) => ({ url: g.url, alt: g.alt || van.name })) ?? []),
+  ];
+
   // Badges équipements présents (max 4)
   const activeEquipments = equipmentBadges.filter(
     (eq) => van[eq.key as keyof VanCardType]
@@ -39,33 +45,14 @@ export default function VanCard({ van, mode }: VanCardProps) {
 
   return (
     <article className="glass-card glass-card-hover overflow-hidden group">
-      {/* ── Image ── */}
+      {/* ── Carousel images ── */}
       <div className="relative aspect-[4/3] overflow-hidden">
-        {van.mainImage?.url ? (
-          <Image
-            src={van.mainImage.url}
-            alt={van.mainImage.alt || van.name}
-            fill
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          />
-        ) : (
-          <div className="w-full h-full bg-bg-elevated flex items-center justify-center">
-            <span className="text-4xl">🚐</span>
-          </div>
-        )}
+        <VanImageCarousel slides={slides} name={van.name} />
 
         {/* Badge statut — top left */}
-        <span className="absolute top-3 left-3 badge-glass !bg-white/90 !text-slate-700 shadow-sm">
+        <span className="absolute top-3 left-3 z-30 badge-glass !bg-white/90 !text-slate-700 shadow-sm">
           Disponible
         </span>
-
-        {/* Badge coup de coeur — top right */}
-        {van.featured && (
-          <span className="absolute top-3 right-3 badge-glass !bg-blue-500 !text-white !border-blue-500/20 shadow-sm">
-            Coup de coeur
-          </span>
-        )}
       </div>
 
       {/* ── Corps ── */}

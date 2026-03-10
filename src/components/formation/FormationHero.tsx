@@ -19,7 +19,7 @@ export default function FormationHero() {
     >
       <div className="absolute top-20 -left-40 w-[500px] h-[500px] rounded-full opacity-[0.12] blur-3xl" style={{ background: '#CDA77B' }} />
       <div className="absolute top-60 right-0 w-96 h-96 rounded-full opacity-[0.10] blur-3xl" style={{ background: '#B9945F' }} />
-      <div className="absolute bottom-0 left-1/2 w-80 h-80 rounded-full opacity-[0.08] blur-3xl" style={{ background: '#FCF6B8' }} />
+      <div className="absolute bottom-0 left-1/2 w-80 h-80 rounded-full opacity-[0.08] blur-3xl" style={{ background: '#E4D398' }} />
 
       <div className="relative max-w-5xl mx-auto px-6 py-24 md:py-36 text-center">
         <span className="inline-flex items-center gap-2 badge-glass !px-5 !py-2 text-sm font-medium mb-8" style={{ background: 'rgba(205,167,123,0.12)', border: '1px solid rgba(205,167,123,0.35)', color: '#B9945F' }}>

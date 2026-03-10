@@ -13,7 +13,7 @@ export default function FormationCTA() {
     <section id="reserver" className="bg-white py-20 relative">
       <div
         className="absolute top-0 left-0 right-0 h-1"
-        style={{ background: "linear-gradient(90deg, #FCF6B8, #CDA77B, #B9945F)" }}
+        style={{ background: "linear-gradient(90deg, #E4D398, #B9945F)" }}
       />
 
       <div className="max-w-3xl mx-auto px-6 text-center">

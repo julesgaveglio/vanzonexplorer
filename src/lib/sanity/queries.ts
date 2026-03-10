@@ -14,6 +14,7 @@ const vanCardProjection = `{
   offerType,
   tagline,
   "mainImage": mainImage ${imageProjection},
+  "gallery": gallery[] ${imageProjection},
   vanType,
   capacity,
   startingPricePerNight,

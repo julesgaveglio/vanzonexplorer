@@ -3,55 +3,170 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 type CTAConfig = {
-  text: string;
   btnLabel: string;
   href: string;
-  btnColor: string;
+  gradient: string;
+  glow: string;
 };
 
-function getCTAConfig(pathname: string): CTAConfig | null {
+// ── Palettes dégradés Vanzon ───────────────────────────────────────────────
+const PALETTE = {
+  // Bleu — Location & Achat
+  blue: {
+    gradient: "linear-gradient(135deg, #3B82F6 0%, #0EA5E9 100%)",
+    glow: "0 4px 18px rgba(59, 130, 246, 0.50), 0 1px 4px rgba(14, 165, 233, 0.30)",
+  },
+  // Doré — Formation (#B9945F foncé → #FCF6B8 clair)
+  gold: {
+    gradient: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
+    glow: "0 4px 18px rgba(185, 148, 95, 0.55), 0 1px 4px rgba(228, 211, 152, 0.30)",
+  },
+  // Violet — Club Privé
+  purple: {
+    gradient: "linear-gradient(135deg, #883AE2 0%, #8A80E9 100%)",
+    glow: "0 4px 18px rgba(136, 58, 226, 0.50), 0 1px 4px rgba(138, 128, 233, 0.30)",
+  },
+};
+
+function getCTAConfig(pathname: string): CTAConfig {
+  // Formation — doré
   if (pathname.startsWith("/formation")) {
     return {
-      text: "Formation van life",
       btnLabel: "Réserver un appel",
       href: "/formation#reserver",
-      btnColor: "#7c5038",
+      ...PALETTE.gold,
     };
   }
+
+  // Club Privé — violet
   if (pathname.startsWith("/club")) {
     return {
-      text: "Accès membres exclusif",
-      btnLabel: "Rejoindre",
+      btnLabel: "Rejoindre le Club",
       href: "/club#rejoindre",
-      btnColor: "#7C3AED",
+      ...PALETTE.purple,
     };
   }
-  if (pathname.startsWith("/articles")) {
-    return null;
+
+  // Achat — fiche van spécifique
+  if (pathname.startsWith("/achat/")) {
+    return {
+      btnLabel: "Nous contacter",
+      href: "/contact",
+      ...PALETTE.blue,
+    };
   }
+
+  // Achat — page principale
+  if (pathname.startsWith("/achat")) {
+    return {
+      btnLabel: "Demander un devis",
+      href: "/contact",
+      ...PALETTE.blue,
+    };
+  }
+
+  // Location — fiche van spécifique
+  if (pathname.startsWith("/location/")) {
+    return {
+      btnLabel: "Réserver ce van",
+      href: "/location",
+      ...PALETTE.blue,
+    };
+  }
+
+  // Location — page liste
+  if (pathname.startsWith("/location")) {
+    return {
+      btnLabel: "Voir les vans",
+      href: "/location#vans",
+      ...PALETTE.blue,
+    };
+  }
+
+  // Pays Basque & road trip
   if (
-    pathname === "/" ||
-    pathname.startsWith("/location") ||
     pathname.startsWith("/pays-basque") ||
-    pathname.startsWith("/achat") ||
-    pathname.startsWith("/a-propos")
+    pathname.startsWith("/road-trip-pays-basque-van")
   ) {
     return {
-      text: "Partez à l'aventure",
       btnLabel: "Louer un van",
       href: "/location",
-      btnColor: "#2563EB",
+      ...PALETTE.blue,
     };
   }
-  return null;
+
+  // Articles
+  if (pathname.startsWith("/articles")) {
+    return {
+      btnLabel: "Louer un van",
+      href: "/location",
+      ...PALETTE.blue,
+    };
+  }
+
+  // À propos
+  if (pathname.startsWith("/a-propos")) {
+    return {
+      btnLabel: "Nous contacter",
+      href: "/contact",
+      ...PALETTE.blue,
+    };
+  }
+
+  // Contact
+  if (pathname.startsWith("/contact")) {
+    return {
+      btnLabel: "Louer un van",
+      href: "/location",
+      ...PALETTE.blue,
+    };
+  }
+
+  // Dashboard / espace perso
+  if (pathname.startsWith("/dashboard") || pathname.startsWith("/user")) {
+    return {
+      btnLabel: "Louer un van",
+      href: "/location",
+      ...PALETTE.blue,
+    };
+  }
+
+  // Pages légales
+  if (
+    pathname.startsWith("/mentions-legales") ||
+    pathname.startsWith("/confidentialite")
+  ) {
+    return {
+      btnLabel: "Retour à l'accueil",
+      href: "/",
+      ...PALETTE.blue,
+    };
+  }
+
+  // Auth pages
+  if (pathname.startsWith("/sign-in") || pathname.startsWith("/sign-up")) {
+    return {
+      btnLabel: "Découvrir Vanzon",
+      href: "/",
+      ...PALETTE.blue,
+    };
+  }
+
+  // Homepage & fallback
+  return {
+    btnLabel: "Louer un van",
+    href: "/location",
+    ...PALETTE.blue,
+  };
 }
 
 export default function FloatingCTA() {
   const [visible, setVisible] = useState(true);
   const pathname = usePathname();
+  const router = useRouter();
 
   useEffect(() => {
     const footer = document.querySelector("footer");
@@ -66,7 +181,6 @@ export default function FloatingCTA() {
   }, []);
 
   const config = getCTAConfig(pathname);
-  if (!config) return null;
 
   return (
     <AnimatePresence>
@@ -83,13 +197,33 @@ export default function FloatingCTA() {
             className="glass-card flex items-center justify-between gap-3 px-4 py-3"
             style={{ boxShadow: "0 4px 24px rgba(0,0,0,0.10)" }}
           >
-            <p className="text-sm font-medium text-slate-700 truncate min-w-0">
-              {config.text}
-            </p>
+            <button
+              onClick={() => router.back()}
+              className="flex items-center gap-1.5 text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors flex-shrink-0"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M15 18l-6-6 6-6" />
+              </svg>
+              Retour
+            </button>
+
             <Link
               href={config.href}
-              className="text-sm font-semibold px-4 py-2 rounded-full flex-shrink-0 whitespace-nowrap transition-opacity hover:opacity-90"
-              style={{ backgroundColor: config.btnColor, color: "#fff" }}
+              className="btn-shine relative text-sm font-semibold px-4 py-2 rounded-full flex-shrink-0 whitespace-nowrap text-white active:scale-95 transition-transform"
+              style={{
+                background: config.gradient,
+                boxShadow: config.glow,
+              }}
             >
               {config.btnLabel}
             </Link>
