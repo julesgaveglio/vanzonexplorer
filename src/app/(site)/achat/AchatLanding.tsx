@@ -128,26 +128,18 @@ export default function AchatLanding() {
             <div className="max-w-lg">
               <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">Service accompagnement</p>
               <h2 className="text-2xl md:text-3xl font-black text-white mb-3 leading-tight">
-                Vous cherchez un autre van ?
+                Vous aimeriez construire votre propre van ?
               </h2>
               <p className="text-slate-400 leading-relaxed text-sm">
-                Jules vous accompagne pour trouver le fourgon qui correspond à votre projet — sélection, inspection mécanique, négociation et démarches de A à Z.
+                Nous vous accompagnons pour trouver le fourgon qui correspond à votre projet — aménagement de A à Z, homologation et démarches administratives.
               </p>
             </div>
             <div className="flex flex-col gap-3 flex-shrink-0 w-full md:w-auto">
               <a
-                href="https://wa.me/33618476378?text=Bonjour%20Jules%2C%20je%20cherche%20un%20van%20am%C3%A9nag%C3%A9%20et%20j%27aimerais%20un%20accompagnement."
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/formation"
                 className="btn-shine inline-flex items-center justify-center gap-2 bg-white text-slate-900 font-bold px-8 py-4 rounded-2xl hover:bg-slate-100 transition-colors text-sm"
               >
-                Parler à Jules
-              </a>
-              <a
-                href="/formation"
-                className="inline-flex items-center justify-center gap-2 bg-white/10 border border-white/15 text-white font-semibold px-8 py-4 rounded-2xl hover:bg-white/15 transition-colors text-sm"
-              >
-                Découvrir la formation →
+                Découvrir la formation
               </a>
             </div>
           </div>
