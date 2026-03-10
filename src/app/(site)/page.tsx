@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { sanityFetch } from "@/lib/sanity/client";
 import { getAllLocationVansQuery } from "@/lib/sanity/queries";
 import type { VanCard as VanCardType } from "@/lib/sanity/types";
@@ -393,23 +394,18 @@ export default async function HomePage() {
             commence ici.
           </h2>
           <p className="text-white/70 text-xl mb-10 leading-relaxed">
-            À partir de <strong className="text-white">65€/nuit</strong> — assurance incluse, van tout équipé,
-            Pays Basque à portée de roues.
+            À partir de <strong className="text-white">65€/nuit</strong> — assurance incluse, van tout équipé.
           </p>
 
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <a
-              href="https://www.yescapa.fr/campers/89215"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/location"
               className="btn-shine inline-flex items-center justify-center gap-2 bg-white text-slate-900 font-bold px-10 py-5 rounded-2xl hover:bg-blue-50 transition-colors text-lg shadow-2xl"
             >
               Louer un van
             </a>
             <a
-              href="https://www.yescapa.fr/campers/98869"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/achat"
               className="inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-md border border-white/30 text-white font-bold px-10 py-5 rounded-2xl hover:bg-white/20 transition-colors text-lg"
             >
               Acheter un van
@@ -417,7 +413,7 @@ export default async function HomePage() {
           </div>
 
           <p className="text-white/40 text-sm mt-6">
-            Questions ? Contactez Jules directement via la plateforme.
+            Questions ? <Link href="/contact" className="text-white/60 hover:text-white underline underline-offset-2 transition-colors">Contactez-nous ici</Link>
           </p>
         </div>
       </section>
