@@ -14,12 +14,6 @@ const equipmentBadges: { key: keyof VanCardType; label: string; icon: string }[]
   { key: "eq_toilet", label: "WC", icon: "🚽" },
 ];
 
-const vanTypeLabels: Record<string, string> = {
-  fourgon: "Fourgon",
-  "camping-car": "Camping-car",
-  combi: "Combi",
-  utilitaire: "Utilitaire",
-};
 
 interface VanCardProps {
   van: VanCardType;
@@ -57,25 +51,10 @@ export default function VanCard({ van, mode }: VanCardProps) {
 
       {/* ── Corps ── */}
       <div className="p-5">
-        {/* Nom + tagline */}
+        {/* Nom */}
         <h3 className="font-semibold text-slate-900 text-lg leading-tight">
           {van.name}
         </h3>
-        {van.tagline && (
-          <p className="text-sm text-slate-500 mt-1 line-clamp-1">{van.tagline}</p>
-        )}
-
-        {/* Infos rapides */}
-        <div className="flex items-center gap-3 mt-3 text-sm text-slate-500">
-          {van.capacity && (
-            <span className="flex items-center gap-1">
-              🛏 {van.capacity} pers.
-            </span>
-          )}
-          {van.vanType && (
-            <span>{vanTypeLabels[van.vanType] || van.vanType}</span>
-          )}
-        </div>
 
         {/* Badges équipements */}
         {visibleEquipments.length > 0 && (
