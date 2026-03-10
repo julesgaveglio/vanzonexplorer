@@ -10,6 +10,7 @@ type CTAConfig = {
   href: string;
   gradient: string;
   glow: string;
+  scrollTarget?: string;
 };
 
 // ── Palettes dégradés Vanzon ───────────────────────────────────────────────
@@ -159,6 +160,7 @@ function getCTAConfig(pathname: string): CTAConfig {
   return {
     btnLabel: "Louer un van",
     href: "/location",
+    scrollTarget: pathname === "/" ? "nos-vans" : undefined,
     ...PALETTE.blue,
   };
 }
@@ -217,16 +219,25 @@ export default function FloatingCTA() {
               Retour
             </button>
 
-            <Link
-              href={config.href}
-              className="btn-shine relative text-sm font-semibold px-4 py-2 rounded-full flex-shrink-0 whitespace-nowrap text-white active:scale-95 transition-transform"
-              style={{
-                background: config.gradient,
-                boxShadow: config.glow,
-              }}
-            >
-              {config.btnLabel}
-            </Link>
+            {config.scrollTarget ? (
+              <button
+                onClick={() => {
+                  document.getElementById(config.scrollTarget!)?.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="btn-shine relative text-sm font-semibold px-4 py-2 rounded-full flex-shrink-0 whitespace-nowrap text-white active:scale-95 transition-transform"
+                style={{ background: config.gradient, boxShadow: config.glow }}
+              >
+                {config.btnLabel}
+              </button>
+            ) : (
+              <Link
+                href={config.href}
+                className="btn-shine relative text-sm font-semibold px-4 py-2 rounded-full flex-shrink-0 whitespace-nowrap text-white active:scale-95 transition-transform"
+                style={{ background: config.gradient, boxShadow: config.glow }}
+              >
+                {config.btnLabel}
+              </Link>
+            )}
           </div>
         </motion.div>
       )}

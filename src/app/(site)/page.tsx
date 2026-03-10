@@ -120,7 +120,7 @@ export default async function HomePage() {
               🚐 Nos vans
             </span>
             <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-3">
-              Deux vans, une liberté totale
+              Une liberté totale
             </h2>
             <p className="text-slate-500 text-lg">
               Choisissez votre compagnon de route pour explorer le Pays Basque.
@@ -141,7 +141,7 @@ export default async function HomePage() {
 
       <section className="py-10 bg-white">
         <div className="max-w-3xl mx-auto px-6">
-          <div className="glass-card p-6 flex items-start gap-5 border-l-4" style={{ borderLeftColor: "#E8436C" }}>
+          <div className="glass-card p-6 flex items-start gap-5">
             <div className="flex-shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center text-2xl" style={{ background: "rgba(232,67,108,0.10)" }}>
               🛡️
             </div>
