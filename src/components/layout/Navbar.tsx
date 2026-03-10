@@ -15,7 +15,7 @@ const navLinks = [
   { label: "Pays Basque", href: "/pays-basque", desc: "Vantrips & spots", emoji: "🏄" },
   { label: "Articles", href: "/articles", desc: "Guides vanlife", emoji: "📖" },
   { label: "À propos", href: "/a-propos", desc: "Notre histoire", emoji: "👋" },
-  { label: "Contactez-nous", href: "/contact", desc: "Nous écrire", emoji: "✉️" },
+  { label: "Contactez-nous", href: "/contact", desc: "Contact", emoji: "✉️" },
 ];
 
 const LOGOS: { path: string; src: string }[] = [

@@ -92,6 +92,9 @@ export interface VanCard {
   eq_shower?: boolean;
   eq_toilet?: boolean;
   eq_kitchen?: boolean;
+  eq_solar?: boolean;
+  eq_outdoor_chairs?: boolean;
+  eq_usb_ports?: boolean;
   eq_wifi?: boolean;
   eq_surf_rack?: boolean;
   eq_outdoor_awning?: boolean;

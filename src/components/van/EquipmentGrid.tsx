@@ -29,15 +29,15 @@ const categories: EquipmentCategory[] = [
     icon: "🚿",
     title: "Sanitaires",
     items: [
-      { key: "eq_shower", label: "Douche", detailKey: "eq_shower_type" },
-      { key: "eq_toilet", label: "Toilettes", detailKey: "eq_toilet_type" },
+      { key: "eq_shower", label: "Douche solaire", detailKey: "eq_shower_type" },
+      { key: "eq_toilet", label: "Toilettes sèches", detailKey: "eq_toilet_type" },
     ],
   },
   {
     icon: "🍳",
     title: "Cuisine",
     items: [
-      { key: "eq_kitchen", label: "Cuisine", detailKey: "eq_stove_type" },
+      { key: "eq_kitchen", label: "Cuisine coulissante", detailKey: "eq_stove_type" },
       { key: "eq_fridge", label: "Réfrigérateur", detailKey: "eq_fridge_liters", suffix: "L" },
       { key: "eq_freezer", label: "Congélateur" },
     ],
@@ -61,7 +61,7 @@ const categories: EquipmentCategory[] = [
     title: "Extérieur & Sport",
     items: [
       { key: "eq_outdoor_awning", label: "Auvent / Store" },
-      { key: "eq_outdoor_chairs", label: "Chaises & table" },
+      { key: "eq_outdoor_chairs", label: "Chaise de camping" },
       { key: "eq_outdoor_bbq", label: "Barbecue" },
       { key: "eq_surf_rack", label: "Porte-surf" },
       { key: "eq_bike_rack", label: "Porte-vélos" },

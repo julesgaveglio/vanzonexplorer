@@ -3,15 +3,14 @@ import type { VanCard as VanCardType } from "@/lib/sanity/types";
 import PriceDisplay from "./PriceDisplay";
 import VanImageCarousel from "./VanImageCarousel";
 
-// Équipements à afficher en priorité sur la card
+// Équipements à afficher sur la card
 const equipmentBadges: { key: keyof VanCardType; label: string; icon: string }[] = [
-  { key: "eq_shower", label: "Douche", icon: "🚿" },
-  { key: "eq_kitchen", label: "Cuisine", icon: "🍳" },
-  { key: "eq_wifi", label: "Wi-Fi", icon: "📶" },
-  { key: "eq_surf_rack", label: "Surf rack", icon: "🏄" },
-  { key: "eq_outdoor_awning", label: "Auvent", icon: "⛺" },
-  { key: "eq_bike_rack", label: "Porte-vélos", icon: "🚲" },
-  { key: "eq_toilet", label: "WC", icon: "🚽" },
+  { key: "eq_kitchen", label: "Cuisine coulissante", icon: "🍳" },
+  { key: "eq_toilet", label: "Toilettes sèches", icon: "🚽" },
+  { key: "eq_solar", label: "Électricité", icon: "⚡" },
+  { key: "eq_shower", label: "Douche solaire", icon: "🚿" },
+  { key: "eq_outdoor_chairs", label: "Chaise de camping", icon: "🪑" },
+  { key: "eq_usb_ports", label: "Port USB", icon: "🔌" },
 ];
 
 
@@ -30,12 +29,9 @@ export default function VanCard({ van, mode }: VanCardProps) {
     ...(van.gallery?.filter((g) => g?.url).map((g) => ({ url: g.url, alt: g.alt || van.name })) ?? []),
   ];
 
-  // Badges équipements présents (max 4)
-  const activeEquipments = equipmentBadges.filter(
+  const visibleEquipments = equipmentBadges.filter(
     (eq) => van[eq.key as keyof VanCardType]
   );
-  const visibleEquipments = activeEquipments.slice(0, 4);
-  const extraCount = activeEquipments.length - 4;
 
   return (
     <article className="glass-card glass-card-hover overflow-hidden group">
@@ -64,9 +60,6 @@ export default function VanCard({ van, mode }: VanCardProps) {
                 {eq.icon} {eq.label}
               </span>
             ))}
-            {extraCount > 0 && (
-              <span className="badge-glass">+{extraCount}</span>
-            )}
           </div>
         )}
 
