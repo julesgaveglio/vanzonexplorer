@@ -98,9 +98,7 @@ export default async function LocationVanPage({
                     {vanTypeLabels[van.vanType] || van.vanType}
                   </Badge>
                 )}
-                {van.capacity && (
-                  <Badge>🛏 {van.capacity} couchages</Badge>
-                )}
+
                 {van.length && (
                   <Badge>📏 {van.length}m</Badge>
                 )}
@@ -194,12 +192,7 @@ export default async function LocationVanPage({
 
               {/* Infos rapides */}
               <div className="space-y-2 text-sm text-slate-600 border-t border-border-default pt-4">
-                {van.capacity && (
-                  <div className="flex justify-between">
-                    <span className="text-slate-400">Couchages</span>
-                    <span className="font-medium">{van.capacity} personnes</span>
-                  </div>
-                )}
+
                 {van.vanType && (
                   <div className="flex justify-between">
                     <span className="text-slate-400">Type</span>
