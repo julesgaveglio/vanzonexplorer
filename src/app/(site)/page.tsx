@@ -323,7 +323,7 @@ export default async function HomePage() {
               </h2>
 
               <p className="text-slate-500 text-lg leading-relaxed mb-8 max-w-md">
-                De zéro à la location rentable en 8 semaines. Jules & Elio vous enseignent l&apos;aménagement DIY, l&apos;homologation VASP et comment générer des revenus avec votre van.
+                De zéro à la location rentable. Jules et Elio vous accompagnent dans l&apos;achat du fourgon, l&apos;aménagement, l&apos;homologation VASP et comment gérer des revenus avec votre van.
               </p>
 
               <div className="grid grid-cols-3 gap-4 mb-10">
