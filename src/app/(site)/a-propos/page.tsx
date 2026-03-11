@@ -228,76 +228,6 @@ export default async function AProposPage() {
       </section>
 
       {/* ══════════════════════════════════════════════
-          NOS 4 SERVICES
-      ══════════════════════════════════════════════ */}
-      <section className="bg-slate-50 py-20 md:py-28">
-        <div className="mx-auto max-w-5xl px-6">
-          <div className="text-center mb-14">
-            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-500 mb-4 block">
-              L&apos;écosystème
-            </span>
-            <h2 className="text-3xl md:text-4xl font-black text-slate-900">
-              Un service pour chaque projet
-            </h2>
-            <p className="mt-4 text-slate-500 max-w-xl mx-auto">
-              Louer, acheter, se former ou économiser sur son aménagement — on a pensé à tout.
-            </p>
-          </div>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {SERVICES.map((s) => (
-              <Link
-                key={s.label}
-                href={s.href}
-                className={`group relative bg-white rounded-2xl p-6 border border-slate-100 shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 ${s.border}`}
-              >
-                <div className={`inline-flex items-center justify-center w-11 h-11 rounded-xl text-xl mb-4 ${s.color.split(" ")[0]}`}>
-                  {s.icon}
-                </div>
-                <p className={`text-xs font-bold uppercase tracking-widest mb-1 ${s.color.split(" ")[1]}`}>
-                  {s.label}
-                </p>
-                <h3 className="text-sm font-bold text-slate-900 leading-snug mb-2">{s.title}</h3>
-                <p className="text-xs text-slate-500 leading-relaxed">{s.desc}</p>
-                <div className="mt-4 flex items-center justify-between">
-                  <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
-                    {s.zone}
-                  </span>
-                  <span className={`text-xs font-semibold transition-transform duration-200 group-hover:translate-x-0.5 ${s.color.split(" ")[1]}`}>
-                    →
-                  </span>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════
-          NOS VALEURS
-      ══════════════════════════════════════════════ */}
-      <section className="bg-white py-20 md:py-28">
-        <div className="mx-auto max-w-5xl px-6">
-          <div className="text-center mb-14">
-            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-500 mb-4 block">
-              Ce qu&apos;on défend
-            </span>
-            <h2 className="text-3xl md:text-4xl font-black text-slate-900">Nos engagements</h2>
-          </div>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {VALUES.map((v) => (
-              <div key={v.title} className="flex flex-col">
-                <span className="text-2xl mb-3">{v.icon}</span>
-                <h3 className="text-base font-bold text-slate-900 mb-2">{v.title}</h3>
-                <p className="text-sm text-slate-500 leading-relaxed">{v.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════
           SÉPARATEUR
       ══════════════════════════════════════════════ */}
       <div className="bg-slate-50 py-10">
@@ -311,7 +241,7 @@ export default async function AProposPage() {
       </div>
 
       {/* ══════════════════════════════════════════════
-          JULES & ELIO — sections existantes
+          JULES & ELIO
       ══════════════════════════════════════════════ */}
 
       {/* Photos */}
@@ -419,6 +349,76 @@ export default async function AProposPage() {
               📅 Réserver un appel gratuit →
             </LiquidButton>
             <LiquidButton variant="ghost" href="/location">Louer un van</LiquidButton>
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════
+          NOS 4 SERVICES
+      ══════════════════════════════════════════════ */}
+      <section className="bg-slate-50 py-20 md:py-28">
+        <div className="mx-auto max-w-5xl px-6">
+          <div className="text-center mb-14">
+            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-500 mb-4 block">
+              L&apos;écosystème
+            </span>
+            <h2 className="text-3xl md:text-4xl font-black text-slate-900">
+              Un service pour chaque projet
+            </h2>
+            <p className="mt-4 text-slate-500 max-w-xl mx-auto">
+              Louer, acheter, se former ou économiser sur son aménagement — on a pensé à tout.
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {SERVICES.map((s) => (
+              <Link
+                key={s.label}
+                href={s.href}
+                className={`group relative bg-white rounded-2xl p-6 border border-slate-100 shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 ${s.border}`}
+              >
+                <div className={`inline-flex items-center justify-center w-11 h-11 rounded-xl text-xl mb-4 ${s.color.split(" ")[0]}`}>
+                  {s.icon}
+                </div>
+                <p className={`text-xs font-bold uppercase tracking-widest mb-1 ${s.color.split(" ")[1]}`}>
+                  {s.label}
+                </p>
+                <h3 className="text-sm font-bold text-slate-900 leading-snug mb-2">{s.title}</h3>
+                <p className="text-xs text-slate-500 leading-relaxed">{s.desc}</p>
+                <div className="mt-4 flex items-center justify-between">
+                  <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+                    {s.zone}
+                  </span>
+                  <span className={`text-xs font-semibold transition-transform duration-200 group-hover:translate-x-0.5 ${s.color.split(" ")[1]}`}>
+                    →
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════
+          NOS VALEURS
+      ══════════════════════════════════════════════ */}
+      <section className="bg-white py-20 md:py-28">
+        <div className="mx-auto max-w-5xl px-6">
+          <div className="text-center mb-14">
+            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-500 mb-4 block">
+              Ce qu&apos;on défend
+            </span>
+            <h2 className="text-3xl md:text-4xl font-black text-slate-900">Nos engagements</h2>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {VALUES.map((v) => (
+              <div key={v.title} className="flex flex-col">
+                <span className="text-2xl mb-3">{v.icon}</span>
+                <h3 className="text-base font-bold text-slate-900 mb-2">{v.title}</h3>
+                <p className="text-sm text-slate-500 leading-relaxed">{v.desc}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
