@@ -23,7 +23,6 @@
 import path from "path";
 import { createClient } from "@sanity/client";
 import { searchPexelsPhoto, downloadPexelsPhoto, buildPexelsCredit } from "../../src/lib/pexels";
-import type { PexelsPhoto } from "../../src/lib/pexels";
 
 // ── Constants ──────────────────────────────────────────────────────────────────
 // scripts/agents/ → project root is two directories up
@@ -161,6 +160,58 @@ function ensureUniqueKeys(blocks: PortableTextBlock[]): PortableTextBlock[] {
   }));
 }
 
+// ── Inline markdown parser (bold, italic, links) ──────────────────────────────
+function parseInlineMarkdown(text: string): {
+  children: Array<{ _type: "span"; _key: string; text: string; marks: string[] }>;
+  markDefs: Array<{ _type: string; _key: string; href: string; blank: boolean }>;
+} {
+  const children: Array<{ _type: "span"; _key: string; text: string; marks: string[] }> = [];
+  const markDefs: Array<{ _type: string; _key: string; href: string; blank: boolean }> = [];
+
+  // Match **bold**, *italic*, [text](url) — order matters (bold before italic)
+  const regex = /\*\*([^*\n]+?)\*\*|\*([^*\n]+?)\*|\[([^\]\n]+?)\]\((https?:\/\/[^)\n]+|\/[^)\n]*)\)/g;
+
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = regex.exec(text)) !== null) {
+    // Plain text before match
+    if (match.index > lastIndex) {
+      const plain = text.slice(lastIndex, match.index);
+      if (plain) children.push({ _type: "span", _key: randomKey(), text: plain, marks: [] });
+    }
+
+    if (match[1] !== undefined) {
+      // **bold**
+      children.push({ _type: "span", _key: randomKey(), text: match[1], marks: ["strong"] });
+    } else if (match[2] !== undefined) {
+      // *italic*
+      children.push({ _type: "span", _key: randomKey(), text: match[2], marks: ["em"] });
+    } else if (match[3] !== undefined && match[4] !== undefined) {
+      // [text](url)
+      const linkKey = `lnk${randomKey()}`;
+      const isExternal = match[4].startsWith("http");
+      markDefs.push({ _type: "link", _key: linkKey, href: match[4], blank: isExternal });
+      children.push({ _type: "span", _key: randomKey(), text: match[3], marks: [linkKey] });
+    }
+
+    lastIndex = match.index + match[0].length;
+  }
+
+  // Remaining text
+  if (lastIndex < text.length) {
+    const remaining = text.slice(lastIndex);
+    if (remaining) children.push({ _type: "span", _key: randomKey(), text: remaining, marks: [] });
+  }
+
+  // Fallback: whole text as one span
+  if (children.length === 0) {
+    children.push({ _type: "span", _key: randomKey(), text, marks: [] });
+  }
+
+  return { children, markDefs };
+}
+
 // ── Markdown → Portable Text converter ────────────────────────────────────────
 function markdownToPortableText(markdown: string): PortableTextBlock[] {
   const blocks: PortableTextBlock[] = [];
@@ -168,34 +219,45 @@ function markdownToPortableText(markdown: string): PortableTextBlock[] {
 
   for (const line of lines) {
     const trimmed = line.trim();
-    if (!trimmed) continue;
+    if (!trimmed || trimmed === "---") continue;
 
     let style: PortableTextBlock["style"] = "normal";
-    let text = trimmed;
+    let rawText = trimmed;
 
     if (trimmed.startsWith("### ")) {
       style = "h3";
-      text = trimmed.slice(4);
+      rawText = trimmed.slice(4);
     } else if (trimmed.startsWith("## ")) {
       style = "h2";
-      text = trimmed.slice(3);
+      rawText = trimmed.slice(3);
     } else if (trimmed.startsWith("> ")) {
       style = "blockquote";
-      text = trimmed.slice(2);
+      rawText = trimmed.slice(2);
     } else if (trimmed.startsWith("# ")) {
-      // Skip H1 — already stored in title field
+      continue; // Skip H1 — stored in title field
+    }
+
+    // For headings and blockquotes, strip inline marks for simplicity
+    if (style === "h2" || style === "h3" || style === "blockquote") {
+      const plainText = rawText.replace(/\*\*(.*?)\*\*/g, "$1").replace(/\*(.*?)\*/g, "$1").replace(/\[([^\]]+)\]\([^)]+\)/g, "$1");
+      blocks.push({
+        _type: "block",
+        _key: randomKey(),
+        style,
+        children: [{ _type: "span", _key: randomKey(), text: plainText, marks: [] }],
+        markDefs: [],
+      });
       continue;
     }
 
-    // Strip remaining markdown bold/italic markers for plain text
-    text = text.replace(/\*\*(.*?)\*\*/g, "$1").replace(/\*(.*?)\*/g, "$1");
-
+    // Normal paragraphs: parse inline bold/italic/links
+    const { children, markDefs } = parseInlineMarkdown(rawText);
     blocks.push({
       _type: "block",
       _key: randomKey(),
       style,
-      children: [{ _type: "span", _key: randomKey(), text, marks: [] }],
-      markDefs: [],
+      children,
+      markDefs,
     });
   }
 
@@ -364,47 +426,92 @@ Réponds UNIQUEMENT avec ce JSON (pas d'explication):
   }
 
   // ── Call 2: article body as plain markdown (no JSON wrapping) ───────────────
-  console.log(`  [Gemini 2/2] Generating article body (${2000}-2500 mots)...`);
+  console.log(`  [Gemini 2/2] Generating article body (2000-2500 mots)...`);
   const bodyPrompt = `${context}
 
 Rédige le corps complet d'un article de 2000-2500 mots sur "${article.title}".
 
-Structure OBLIGATOIRE (utilise ## pour H2, ### pour H3, pas de # H1):
-## [Section 1 — informationnel/éducatif]
-[400 mots — données concrètes, liste numérotée ou à puces, conseils pratiques]
+═══════════════════════════════════════
+STRUCTURE OBLIGATOIRE
+═══════════════════════════════════════
+(utilise ## pour H2, ### pour H3, jamais de # H1)
 
-## [Section 2 — pratique/actionnable]
-[400 mots — étapes concrètes, exemples, données terrain]
+## [Section 1 — informationnel/éducatif, 400-500 mots]
+### [Sous-section 1a]
+[150-200 mots avec données concrètes]
+### [Sous-section 1b]
+[150-200 mots]
 
-## [Section 3 — Pays Basque + Vanzon]
-[300 mots — spécifique Pays Basque, lien naturel vers le service Vanzon Explorer]
+## [Section 2 — pratique/actionnable, 400-500 mots]
+### [Sous-section 2a]
+[150-200 mots — étapes concrètes]
+### [Sous-section 2b]
+[150-200 mots]
+
+## [Section 3 — données chiffrées / comparatif, 300-350 mots]
+[Inclure un tableau comparatif si pertinent — max 4 colonnes]
+
+## [Section 4 — Pays Basque & expérience terrain, 300-350 mots]
+[Ancrage local fort — mentions de lieux précis du Pays Basque]
 
 ## FAQ — Questions fréquentes
 ### [Question 1 tirée du PAA]
-[Réponse 80-120 mots]
+[Réponse directe 80-120 mots — optimisé featured snippet]
 ### [Question 2]
+[80-120 mots]
 ### [Question 3]
+[80-120 mots]
 ### [Question 4]
+[80-120 mots]
 ### [Question 5]
+[80-120 mots]
 
 ## Conclusion
-[100 mots — récapitulatif, CTA vers vanzonexplorer.com/location ou /achat]
+[100-130 mots — récapitulatif 3 points clés, CTA naturel]
 
-TON: professionnel mais chaleureux, expert terrain, données concrètes.
+═══════════════════════════════════════
+MISE EN FORME OBLIGATOIRE
+═══════════════════════════════════════
 
-IMPORTANT pour les listes de spots/lieux:
-- Chaque spot/lieu doit être un ### avec le nom géographique précis: "### 1. Plage d'Erretegia à Bidart : Le paradis des surfeurs"
-- Inclure systématiquement la commune (Bidart, Biarritz, Saint-Jean-de-Luz, etc.) dans le titre H3
+TEXTE ENRICHI — utilise dans chaque section:
+- **texte en gras** pour les mots-clés importants, données chiffrées, lieux précis
+- *texte en italique* pour les termes techniques, citations, mots basques
+- Listes à puces (- item) pour les éléments parallèles (3+ items)
 
-Pour les règlements et avertissements, utilise des blocs callout:
-⚠️ [Texte d'avertissement légal/règlement important]
-💡 [Conseil pratique ou astuce]
+CALLOUTS — utilise au minimum 1 par section H2:
+⚠️ [Avertissement ou point de vigilance important]
+💡 [Conseil pratique ou astuce terrain Vanzon]
+📍 [Spot ou lieu précis avec contexte]
 ✅ [Bonne pratique recommandée]
 
-Maillage externe obligatoire (à inclure dans le corps de l'article):
-- Cite et lie vers "Tourisme Pays Basque" (tourisme.euskadi.eus ou tourisme64.com) pour les données officielles
-- Cite le Conservatoire du Littoral pour les zones protégées
-- Ces sources augmentent la crédibilité aux yeux de Google
+═══════════════════════════════════════
+LIENS À INTÉGRER (OBLIGATOIRE)
+═══════════════════════════════════════
+
+LIENS INTERNES VANZON (2-3 liens, placés naturellement dans le texte):
+Utilise le format markdown: [texte ancre descriptif](/vanzon/page)
+Pages disponibles:
+- /vanzon/location → louer un van au Pays Basque
+- /vanzon/achat → acheter un van avec Vanzon Explorer
+- /vanzon/pays-basque → guide et spots Pays Basque
+- /vanzon/articles/road-trip-pays-basque-van → itinéraire road trip Pays Basque
+- /vanzon/articles/ou-dormir-van-pays-basque → spots pour dormir en van
+
+LIENS EXTERNES AUTORITÉ (1 à 3 liens max):
+RÈGLE ABSOLUE: N'utilise QUE des URLs que tu connais avec CERTITUDE depuis ta formation.
+Préfère: sites officiels (.gouv.fr, mairies, offices de tourisme officiels), Wikipedia, grandes fédérations reconnues (ffrandonnee.fr, ffc.fr, etc.), sites de référence du domaine.
+Format: [texte ancre](https://url-complete-et-certaine)
+⚠️ Si tu as le moindre doute sur l'existence d'une URL → NE L'INCLUS PAS. Mieux vaut 1 lien certain que 3 liens douteux.
+
+═══════════════════════════════════════
+TON & STYLE
+═══════════════════════════════════════
+- Expert terrain Vanzon Explorer au Pays Basque
+- Chaleureux, tutoiement pour les vanlifers
+- Données concrètes: distances en km, prix réels, durées précises
+- Ancrage local: noms de lieux basques précis (Biarritz, Bidart, Ascain, etc.)
+- Jamais de superlatifs vides ("incroyable", "parfait", "révolutionnaire")
+- Jamais d'ouvertures clichées ("Dans un monde où...", "De nos jours...")
 
 Réponds UNIQUEMENT avec le texte markdown de l'article, sans JSON, sans balises, sans explication.`;
 
@@ -549,42 +656,69 @@ function injectImagesIntoContent(
   return result;
 }
 
-// ── Step 4 & 5: Fetch + upload cover image ─────────────────────────────────────
+// ── Cover image via SerpAPI (primary) or Pexels (fallback) ────────────────────
 async function uploadCoverImage(
   article: ArticleQueueItem
-): Promise<{ imageAsset: { _id: string }; photo: PexelsPhoto }> {
-  const searchQuery = article.targetKeyword;
-  console.log(`  Searching Pexels for: "${searchQuery}"...`);
+): Promise<{ imageAsset: { _id: string }; credit: string }> {
+  const serpApiKey = process.env.SERPAPI_KEY;
 
-  const photo = await searchPexelsPhoto(searchQuery);
-  if (!photo) {
-    // Fallback: try with the article title
-    const fallbackQuery = article.title;
-    console.log(`  No results, trying fallback: "${fallbackQuery}"...`);
-    const fallbackPhoto = await searchPexelsPhoto(fallbackQuery);
-    if (!fallbackPhoto) {
-      throw new Error(`No Pexels photo found for "${searchQuery}" or "${fallbackQuery}"`);
+  // ── Try SerpAPI first (more relevant images) ───────────────────────────────
+  if (serpApiKey) {
+    const query = `${article.targetKeyword} pays basque`;
+    const url =
+      `https://serpapi.com/search.json` +
+      `?engine=google_images` +
+      `&q=${encodeURIComponent(query)}` +
+      `&api_key=${serpApiKey}` +
+      `&hl=fr&gl=fr&num=10&safe=active&imgtype=photo&imgsize=large`;
+
+    console.log(`  [Cover] Searching SerpAPI images for: "${query}"...`);
+    try {
+      const res = await fetch(url);
+      if (res.ok) {
+        const json = await res.json() as { images_results?: Array<{ original?: string; title?: string; source?: string }> };
+        const candidates = json.images_results ?? [];
+
+        for (const candidate of candidates) {
+          if (!candidate.original) continue;
+          try {
+            const imgRes = await fetch(candidate.original, { signal: AbortSignal.timeout(8000) });
+            if (!imgRes.ok) continue;
+            const contentType = imgRes.headers.get("content-type") ?? "image/jpeg";
+            if (!contentType.startsWith("image/")) continue;
+            const buffer = Buffer.from(await imgRes.arrayBuffer());
+            if (buffer.length < 50_000) continue; // skip small/broken images
+            const ext = contentType.includes("png") ? "png" : contentType.includes("webp") ? "webp" : "jpg";
+            const asset = await sanity.assets.upload("image", buffer, {
+              filename: `cover-serp-${randomKey()}.${ext}`,
+              contentType,
+            });
+            const credit = candidate.source ? `Photo via ${candidate.source}` : "Photo via Google Images";
+            console.log(`  [Cover] SerpAPI image uploaded: ${asset._id}`);
+            return { imageAsset: asset, credit };
+          } catch {
+            continue;
+          }
+        }
+      }
+    } catch (err) {
+      console.warn(`  [Cover] SerpAPI failed: ${(err as Error).message} — falling back to Pexels`);
     }
-    console.log(`  Found photo #${fallbackPhoto.id} by ${fallbackPhoto.photographer}`);
-    const buffer = await downloadPexelsPhoto(fallbackPhoto);
-    console.log(`  Uploading image to Sanity...`);
-    const imageAsset = await sanity.assets.upload("image", buffer, {
-      filename: `pexels-${fallbackPhoto.id}.jpg`,
-      contentType: "image/jpeg",
-    });
-    console.log(`  Image asset uploaded: ${imageAsset._id}`);
-    return { imageAsset, photo: fallbackPhoto };
   }
 
-  console.log(`  Found photo #${photo.id} by ${photo.photographer}`);
+  // ── Fallback: Pexels ───────────────────────────────────────────────────────
+  console.log(`  [Cover] Falling back to Pexels for: "${article.targetKeyword}"...`);
+  const photo = await searchPexelsPhoto(article.targetKeyword) ?? await searchPexelsPhoto(article.title);
+  if (!photo) throw new Error(`No cover image found for "${article.targetKeyword}"`);
+
+  console.log(`  [Cover] Pexels photo #${photo.id} by ${photo.photographer}`);
   const buffer = await downloadPexelsPhoto(photo);
-  console.log(`  Uploading image to Sanity...`);
   const imageAsset = await sanity.assets.upload("image", buffer, {
-    filename: `pexels-${photo.id}.jpg`,
+    filename: `cover-pexels-${photo.id}.jpg`,
     contentType: "image/jpeg",
   });
-  console.log(`  Image asset uploaded: ${imageAsset._id}`);
-  return { imageAsset, photo };
+  console.log(`  [Cover] Pexels image uploaded: ${imageAsset._id}`);
+  return { imageAsset, credit: buildPexelsCredit(photo) };
 }
 
 // ── Step 6: Create Sanity article document ─────────────────────────────────────
@@ -592,7 +726,7 @@ async function createSanityArticle(
   article: ArticleQueueItem,
   generatedContent: GeneratedContent,
   imageAsset: { _id: string },
-  photo: PexelsPhoto
+  credit: string
 ): Promise<string> {
   const doc = {
     _type: "article",
@@ -607,10 +741,8 @@ async function createSanityArticle(
     coverImage: {
       _type: "image",
       asset: { _type: "reference", _ref: imageAsset._id },
-      alt: photo.alt || article.title,
-      credit: buildPexelsCredit(photo),
-      pexelsId: photo.id,
-      pexelsUrl: photo.url,
+      alt: article.title,
+      credit,
     },
     content: generatedContent.content,
     seoTitle: generatedContent.seoTitle,
@@ -714,13 +846,13 @@ async function main(): Promise<void> {
       console.log(`  ${serpImages.length} image(s) injected into article content.`);
     }
 
-    // Step 7: Pexels cover image
-    console.log("\n[5/6] Fetching and uploading cover image (Pexels)...");
-    const { imageAsset, photo } = await uploadCoverImage(article);
+    // Step 7: Cover image (SerpAPI → Pexels fallback)
+    console.log("\n[5/6] Fetching and uploading cover image...");
+    const { imageAsset, credit } = await uploadCoverImage(article);
 
     // Step 8: Create Sanity document
     console.log("\n[6/6] Publishing to Sanity...");
-    const sanityId = await createSanityArticle(article, generatedContent, imageAsset, photo);
+    const sanityId = await createSanityArticle(article, generatedContent, imageAsset, credit);
 
     // Step 9: Update queue — mark as published
     const publishedAt = new Date().toISOString();
@@ -738,7 +870,7 @@ async function main(): Promise<void> {
     console.log(`  Slug:       /articles/${article.slug}`);
     console.log(`  Sanity ID:  ${sanityId}`);
     console.log(`  SEO title:  ${generatedContent.seoTitle}`);
-    console.log(`  Cover:      Photo by ${photo.photographer} on Pexels`);
+    console.log(`  Cover:      ${credit}`);
     console.log(`  Published:  ${publishedAt}`);
     console.log("=".repeat(60));
     console.log(`\nView in Studio: https://vanzon.sanity.studio/desk/article`);

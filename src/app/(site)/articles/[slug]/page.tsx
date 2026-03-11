@@ -125,6 +125,24 @@ function contentBeforeFAQ(content: PortableBlock[]): PortableBlock[] {
   return idx === -1 ? content : content.slice(0, idx);
 }
 
+/** Retourne les blocs APRÈS la section FAQ (Conclusion typiquement). */
+function contentAfterFAQ(content: PortableBlock[]): PortableBlock[] {
+  const faqIdx = content.findIndex(
+    (b) =>
+      b._type === "block" &&
+      b.style === "h2" &&
+      (getBlockText(b).toLowerCase().includes("faq") ||
+        getBlockText(b).toLowerCase().includes("question"))
+  );
+  if (faqIdx === -1) return [];
+  for (let i = faqIdx + 1; i < content.length; i++) {
+    if (content[i]._type === "block" && content[i].style === "h2") {
+      return content.slice(i);
+    }
+  }
+  return [];
+}
+
 /** Split content at each H2 to enable CTA injection between sections */
 function splitBySections(content: PortableBlock[]): PortableBlock[][] {
   const sections: PortableBlock[][] = [];
@@ -396,7 +414,12 @@ export default async function ArticleDetailPage({
   const headings = extractHeadings(content);
   const faqItems = extractFAQ(content);
   const contentForBody = contentBeforeFAQ(content);
+  const conclusionContent = contentAfterFAQ(content);
   const sections = splitBySections(contentForBody);
+
+  const faqHeading = headings.find(
+    (h) => h.text.toLowerCase().includes("faq") || h.text.toLowerCase().includes("question")
+  );
 
   // Map heading text → id for the portable text renderer
   const headingIds = new Map(headings.map((h) => [h.text, h.id]));
@@ -513,8 +536,19 @@ export default async function ArticleDetailPage({
             <p className="text-slate-400 italic">Contenu de l&apos;article à venir.</p>
           )}
 
-          {/* ── FAQ accordion ── */}
+          {/* ── FAQ accordion — ancre pour TOC ── */}
+          {faqHeading && (
+            <div id={faqHeading.id} className="scroll-mt-24" />
+          )}
           <ArticleFAQ faqItems={faqItems} />
+
+          {/* ── Conclusion (contenu après FAQ) ── */}
+          {conclusionContent.length > 0 && (
+            <div>
+              {/* @ts-expect-error portabletext generic types */}
+              <PortableText value={conclusionContent} components={portableComponents} />
+            </div>
+          )}
 
           {/* ── Articles similaires ── */}
           {relatedArticles && relatedArticles.length > 0 && (

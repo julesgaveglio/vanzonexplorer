@@ -80,10 +80,10 @@
       "col saint-ignace van",
       "randonnée pays basque van"
     ],
-    "status": "published",
+    "status": "pending",
     "priority": 3,
-    "sanityId": "yVmACaj2YBC4SKOKyz6QLQ",
-    "publishedAt": "2026-03-10T20:01:55.473Z",
+    "sanityId": null,
+    "publishedAt": null,
     "lastSeoCheck": null,
     "seoPosition": null
   },

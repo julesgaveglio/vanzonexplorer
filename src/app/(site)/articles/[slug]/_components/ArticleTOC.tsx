@@ -36,7 +36,7 @@ export default function ArticleTOC({ headings }: { headings: TOCHeading[] }) {
   if (headings.length === 0) return null;
 
   return (
-    <aside aria-label="Table des matières" className="sticky top-24 space-y-6">
+    <aside aria-label="Table des matières" className="hidden lg:block sticky top-24 space-y-6">
       <nav>
         <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-4">
           Dans cet article
