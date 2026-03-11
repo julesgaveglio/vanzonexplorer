@@ -45,176 +45,234 @@ export default function Navbar() {
     setMobileOpen(false);
   }, [pathname]);
 
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = "hidden";
+      document.body.style.touchAction = "none";
+    } else {
+      document.body.style.overflow = "";
+      document.body.style.touchAction = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+      document.body.style.touchAction = "";
+    };
+  }, [mobileOpen]);
+
   return (
-    <header className="fixed top-0 left-0 right-0 z-50">
-      <nav
-        className="border-b"
-        style={{
-          background: "rgba(255, 255, 255, 0.88)",
-          backdropFilter: "blur(24px) saturate(200%)",
-          WebkitBackdropFilter: "blur(24px) saturate(200%)",
-          borderColor: "rgba(0, 0, 0, 0.06)",
-          boxShadow: "0 1px 12px rgba(0, 0, 0, 0.04)",
-        }}
-      >
-        <div className="mx-auto max-w-7xl flex items-center justify-between px-6 py-3">
-          <Link href="/" className="flex items-center group">
-            <Image
-              src={logoSrc}
-              alt="Vanzon Explorer"
-              width={140}
-              height={40}
-              className="h-9 w-auto transition-opacity duration-200 group-hover:opacity-75"
-              priority
-              unoptimized
-            />
-          </Link>
-
-          <ul className="hidden lg:flex items-center gap-1">
-            {navLinks.map((link) => {
-              const active = pathname.startsWith(link.href);
-              return (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className={`relative flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all duration-150 ${
-                      active
-                        ? "text-accent-blue bg-blue-50"
-                        : "text-text-muted hover:text-text-primary hover:bg-slate-50"
-                    }`}
-                  >
-                    {link.label}
-                    {active && (
-                      <motion.span
-                        layoutId="nav-underline"
-                        className="absolute bottom-0 left-2 right-2 h-0.5 bg-accent-blue rounded-full"
-                      />
-                    )}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-
-          <div className="hidden lg:flex items-center gap-2">
-            {isSignedIn ? (
-              <>
-                <Link
-                  href="/dashboard"
-                  className="text-sm font-medium text-text-muted hover:text-text-primary transition-colors px-3 py-2 rounded-lg hover:bg-slate-50"
-                >
-                  Mon espace
-                </Link>
-                <UserButton />
-              </>
-            ) : (
-              <>
-                <Link
-                  href="/sign-in"
-                  className="text-sm font-medium text-text-muted hover:text-text-primary transition-colors px-3 py-2 rounded-lg hover:bg-slate-50"
-                >
-                  Se connecter
-                </Link>
-                <Link
-                  href="/sign-up"
-                  className="btn-primary text-sm !py-2.5 !px-5 active:scale-95 transition-transform"
-                >
-                  S&apos;inscrire
-                </Link>
-              </>
-            )}
-          </div>
-
-          <button
-            onClick={() => setMobileOpen(!mobileOpen)}
-            className="lg:hidden flex flex-col gap-1.5 p-2 rounded-lg hover:bg-slate-50 transition-colors active:scale-95"
-            aria-label={mobileOpen ? "Fermer le menu" : "Ouvrir le menu"}
-          >
-            <motion.span
-              animate={mobileOpen ? { rotate: 45, y: 6 } : { rotate: 0, y: 0 }}
-              transition={{ duration: 0.18 }}
-              className="block w-6 h-0.5 bg-slate-700 rounded-full"
-            />
-            <motion.span
-              animate={mobileOpen ? { opacity: 0, scaleX: 0 } : { opacity: 1, scaleX: 1 }}
-              transition={{ duration: 0.18 }}
-              className="block w-6 h-0.5 bg-slate-700 rounded-full"
-            />
-            <motion.span
-              animate={mobileOpen ? { rotate: -45, y: -6 } : { rotate: 0, y: 0 }}
-              transition={{ duration: 0.18 }}
-              className="block w-6 h-0.5 bg-slate-700 rounded-full"
-            />
-          </button>
-        </div>
-      </nav>
-
+    <>
+      {/* Backdrop — covers full screen behind menu, closes on tap */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.18, ease: "easeOut" }}
-            className="lg:hidden mx-4 mt-2"
-          >
-            <div className="glass-card p-3">
-              <div className="flex flex-col gap-0.5">
-                {navLinks.map((link) => {
-                  const active = pathname.startsWith(link.href);
-                  return (
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-[2px] lg:hidden"
+            onClick={() => setMobileOpen(false)}
+            aria-hidden="true"
+          />
+        )}
+      </AnimatePresence>
+
+      <header className="fixed top-0 left-0 right-0 z-50">
+        <nav
+          className="border-b"
+          style={{
+            background: "rgba(255, 255, 255, 0.88)",
+            backdropFilter: "blur(24px) saturate(200%)",
+            WebkitBackdropFilter: "blur(24px) saturate(200%)",
+            borderColor: "rgba(0, 0, 0, 0.06)",
+            boxShadow: "0 1px 12px rgba(0, 0, 0, 0.04)",
+          }}
+        >
+          <div className="mx-auto max-w-7xl flex items-center justify-between px-6 py-3">
+            <Link href="/" className="flex items-center group">
+              <Image
+                src={logoSrc}
+                alt="Vanzon Explorer"
+                width={140}
+                height={40}
+                className="h-9 w-auto transition-opacity duration-200 group-hover:opacity-75"
+                priority
+                unoptimized
+              />
+            </Link>
+
+            <ul className="hidden lg:flex items-center gap-1">
+              {navLinks.map((link) => {
+                const active = pathname.startsWith(link.href);
+                return (
+                  <li key={link.href}>
                     <Link
-                      key={link.href}
                       href={link.href}
-                      onClick={() => setMobileOpen(false)}
-                      className={`flex items-center gap-3 px-4 py-2.5 rounded-xl transition-colors duration-150 ${
+                      className={`relative flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all duration-150 ${
                         active
                           ? "text-accent-blue bg-blue-50"
                           : "text-text-muted hover:text-text-primary hover:bg-slate-50"
                       }`}
                     >
-                      <div>
-                        <span className="text-sm font-medium block">{link.label}</span>
-                        <span className="text-xs text-text-muted block">{link.desc}</span>
-                      </div>
+                      {link.label}
+                      {active && (
+                        <motion.span
+                          layoutId="nav-underline"
+                          className="absolute bottom-0 left-2 right-2 h-0.5 bg-accent-blue rounded-full"
+                        />
+                      )}
                     </Link>
-                  );
-                })}
-              </div>
+                  </li>
+                );
+              })}
+            </ul>
 
-              <div className="mt-3 px-1 flex flex-col gap-2 border-t border-slate-100 pt-3">
-                {isSignedIn ? (
+            <div className="hidden lg:flex items-center gap-2">
+              {isSignedIn ? (
+                <>
                   <Link
                     href="/dashboard"
-                    onClick={() => setMobileOpen(false)}
-                    className="block px-4 py-3 text-sm font-medium text-text-muted rounded-xl transition-colors hover:text-text-primary hover:bg-slate-50 text-center"
+                    className="text-sm font-medium text-text-muted hover:text-text-primary transition-colors px-3 py-2 rounded-lg hover:bg-slate-50"
                   >
                     Mon espace
                   </Link>
-                ) : (
-                  <>
-                    <Link
-                      href="/sign-in"
-                      onClick={() => setMobileOpen(false)}
-                      className="block px-4 py-3 text-sm font-medium text-text-muted rounded-xl transition-colors hover:text-text-primary hover:bg-slate-50 text-center"
-                    >
-                      Se connecter
-                    </Link>
-                    <Link
-                      href="/sign-up"
-                      onClick={() => setMobileOpen(false)}
-                      className="btn-primary text-sm w-full text-center block active:scale-95"
-                    >
-                      S&apos;inscrire
-                    </Link>
-                  </>
-                )}
-              </div>
-
+                  <UserButton />
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/sign-in"
+                    className="text-sm font-medium text-text-muted hover:text-text-primary transition-colors px-3 py-2 rounded-lg hover:bg-slate-50"
+                  >
+                    Se connecter
+                  </Link>
+                  <Link
+                    href="/sign-up"
+                    className="btn-primary text-sm !py-2.5 !px-5 active:scale-95 transition-transform"
+                  >
+                    S&apos;inscrire
+                  </Link>
+                </>
+              )}
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </header>
+
+            {/* Hamburger — zone de clic 44×44px minimum (standard iOS/Android) */}
+            <button
+              onClick={() => setMobileOpen(!mobileOpen)}
+              className="lg:hidden flex items-center justify-center w-11 h-11 -mr-1 rounded-xl hover:bg-slate-100 active:bg-slate-200 transition-colors"
+              aria-label={mobileOpen ? "Fermer le menu" : "Ouvrir le menu"}
+              aria-expanded={mobileOpen}
+            >
+              <span className="flex flex-col gap-[5px]">
+                <motion.span
+                  animate={mobileOpen ? { rotate: 45, y: 7 } : { rotate: 0, y: 0 }}
+                  transition={{ duration: 0.2, ease: "easeInOut" }}
+                  className="block w-6 h-0.5 bg-slate-700 rounded-full origin-center"
+                />
+                <motion.span
+                  animate={mobileOpen ? { opacity: 0, scaleX: 0 } : { opacity: 1, scaleX: 1 }}
+                  transition={{ duration: 0.15 }}
+                  className="block w-6 h-0.5 bg-slate-700 rounded-full"
+                />
+                <motion.span
+                  animate={mobileOpen ? { rotate: -45, y: -7 } : { rotate: 0, y: 0 }}
+                  transition={{ duration: 0.2, ease: "easeInOut" }}
+                  className="block w-6 h-0.5 bg-slate-700 rounded-full origin-center"
+                />
+              </span>
+            </button>
+          </div>
+        </nav>
+
+        {/* Mobile menu panel */}
+        <AnimatePresence>
+          {mobileOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.18, ease: "easeOut" }}
+              className="lg:hidden mx-3 mt-2"
+            >
+              <div
+                className="rounded-2xl overflow-hidden shadow-xl"
+                style={{
+                  background: "rgba(255,255,255,0.97)",
+                  backdropFilter: "blur(24px)",
+                  WebkitBackdropFilter: "blur(24px)",
+                  border: "1px solid rgba(0,0,0,0.07)",
+                }}
+              >
+                {/* Nav links */}
+                <div className="p-2">
+                  {navLinks.map((link, i) => {
+                    const active = pathname.startsWith(link.href);
+                    return (
+                      <motion.div
+                        key={link.href}
+                        initial={{ opacity: 0, x: -8 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: i * 0.03, duration: 0.15 }}
+                      >
+                        <Link
+                          href={link.href}
+                          onClick={() => setMobileOpen(false)}
+                          className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors duration-150 ${
+                            active
+                              ? "text-accent-blue bg-blue-50"
+                              : "text-slate-700 hover:text-slate-900 hover:bg-slate-50 active:bg-slate-100"
+                          }`}
+                        >
+                          <span className="text-lg leading-none w-7 text-center flex-shrink-0">
+                            {link.emoji}
+                          </span>
+                          <div>
+                            <span className="text-sm font-semibold block">{link.label}</span>
+                            <span className="text-xs text-slate-400 block">{link.desc}</span>
+                          </div>
+                          {active && (
+                            <span className="ml-auto w-1.5 h-1.5 rounded-full bg-accent-blue flex-shrink-0" />
+                          )}
+                        </Link>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+
+                {/* Auth section */}
+                <div className="px-2 pb-2 pt-1 border-t border-slate-100">
+                  {isSignedIn ? (
+                    <Link
+                      href="/dashboard"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-slate-600 rounded-xl hover:bg-slate-50 active:bg-slate-100 transition-colors"
+                    >
+                      Mon espace
+                    </Link>
+                  ) : (
+                    <div className="flex gap-2">
+                      <Link
+                        href="/sign-in"
+                        onClick={() => setMobileOpen(false)}
+                        className="flex-1 flex items-center justify-center px-4 py-3 text-sm font-medium text-slate-600 rounded-xl hover:bg-slate-50 active:bg-slate-100 transition-colors border border-slate-200"
+                      >
+                        Se connecter
+                      </Link>
+                      <Link
+                        href="/sign-up"
+                        onClick={() => setMobileOpen(false)}
+                        className="flex-1 btn-primary text-sm text-center block active:scale-95 transition-transform"
+                      >
+                        S&apos;inscrire
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </header>
+    </>
   );
 }
