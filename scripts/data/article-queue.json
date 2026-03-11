@@ -14,6 +14,8 @@
       "road trip biarritz van",
       "forêt irati van"
     ],
+    "targetWordCount": 2000,
+    "wordCountNote": "Itinéraire 7 jours = article pilier de la catégorie Road Trips, couvre plusieurs requêtes secondaires",
     "status": "published",
     "priority": 0,
     "sanityId": null,
@@ -36,6 +38,8 @@
       "spots vanlife côte basque",
       "nuit van montagne pyrénées"
     ],
+    "targetWordCount": 1200,
+    "wordCountNote": "Liste Top 10 spots — chaque spot ~80 mots, pas de remplissage",
     "status": "published",
     "priority": 1,
     "sanityId": "ZmD4bDml5YUDnLxxrJsxZN",
@@ -58,6 +62,8 @@
       "spots surf anglet van",
       "van surf atlantique"
     ],
+    "targetWordCount": 1100,
+    "wordCountNote": "Article spots — 4-5 plages couvertes, conseils marée/vent, pas de remplissage",
     "status": "published",
     "priority": 2,
     "sanityId": "E7tNRsBrV71KHuBYKuxUKb",
@@ -80,6 +86,8 @@
       "col saint-ignace van",
       "randonnée pays basque van"
     ],
+    "targetWordCount": 1100,
+    "wordCountNote": "Guide randonnée spécifique — itinéraires, parking, bivouac. Pas un guide complet du Pays Basque.",
     "status": "published",
     "priority": 3,
     "sanityId": "LQIXpVyMC2AzA4WEYmiFBu",
@@ -102,6 +110,8 @@
       "hêtraie irati vanlife",
       "nature pyrénées van"
     ],
+    "targetWordCount": 1200,
+    "wordCountNote": "Spot nature spécifique — accès, sentiers, bivouac autorisé, faune. Dense et concret.",
     "status": "pending",
     "priority": 4,
     "sanityId": null,
@@ -124,6 +134,8 @@
       "san sebastián vanlife",
       "euskal herria van"
     ],
+    "targetWordCount": 1400,
+    "wordCountNote": "Itinéraire transfrontalier — couvre plusieurs villes et étapes, justifie 1400 mots",
     "status": "pending",
     "priority": 5,
     "sanityId": null,
@@ -146,6 +158,8 @@
       "choisir base van aménagé",
       "comparatif fourgons vanlife"
     ],
+    "targetWordCount": 2200,
+    "wordCountNote": "Guide comparatif multi-modèles — tableau de comparaison + critères détaillés. Article pilier aménagement.",
     "status": "pending",
     "priority": 6,
     "sanityId": null,
@@ -168,6 +182,8 @@
       "armaflex van aménagement",
       "isolation fourgon DIY"
     ],
+    "targetWordCount": 2000,
+    "wordCountNote": "Guide technique complet — comparatif matériaux + méthode pas à pas + erreurs courantes",
     "status": "pending",
     "priority": 7,
     "sanityId": null,
@@ -190,6 +206,8 @@
       "câblage 12v fourgon",
       "installation électrique van DIY"
     ],
+    "targetWordCount": 2500,
+    "wordCountNote": "Sujet technique complexe, requête compétitive. Calculs, schémas de câblage, comparatifs. Article pilier électricité.",
     "status": "pending",
     "priority": 8,
     "sanityId": null,
@@ -212,6 +230,8 @@
       "réchaud van aménagé",
       "plan cuisine fourgon DIY"
     ],
+    "targetWordCount": 1500,
+    "wordCountNote": "Guide pratique ciblé — 3-4 éléments clés (plan de travail, frigo, réchaud, évier) détaillés sans remplissage",
     "status": "pending",
     "priority": 9,
     "sanityId": null,
@@ -234,6 +254,8 @@
       "démarches VASP véhicule loisir",
       "conversion fourgon légale"
     ],
+    "targetWordCount": 2200,
+    "wordCountNote": "Sujet administratif dense — RTI, DREAL, Qualigaz, délais, coûts. Lecteur cherche exhaustivité.",
     "status": "pending",
     "priority": 10,
     "sanityId": null,
@@ -256,6 +278,8 @@
       "assurance van location yescapa",
       "démarrer location fourgon"
     ],
+    "targetWordCount": 2000,
+    "wordCountNote": "Guide de démarrage business — statut, assurance, tarif, annonce. Article pilier catégorie Business Van.",
     "status": "pending",
     "priority": 11,
     "sanityId": null,
@@ -278,6 +302,8 @@
       "pricing van location pays basque",
       "revenus location van"
     ],
+    "targetWordCount": 1300,
+    "wordCountNote": "Article tactique ciblé — grilles de prix, saisonnalité, règles simples. Dense, pas de remplissage.",
     "status": "pending",
     "priority": 12,
     "sanityId": null,
@@ -300,6 +326,8 @@
       "réservations van yescapa",
       "marketing location van"
     ],
+    "targetWordCount": 1100,
+    "wordCountNote": "Guide checklist — photos, titre, description, prix affiché. Actionnable, court, sans remplissage.",
     "status": "pending",
     "priority": 13,
     "sanityId": null,
@@ -322,6 +350,8 @@
       "régime fiscal location van 2025",
       "LMNP van location"
     ],
+    "targetWordCount": 1600,
+    "wordCountNote": "Sujet fiscal — micro-BIC vs régime réel, seuils, déclaration pratique. Besoin de clarté et précision.",
     "status": "pending",
     "priority": 14,
     "sanityId": null,
@@ -344,6 +374,8 @@
       "stratégie location van saison creuse",
       "augmenter revenus location van"
     ],
+    "targetWordCount": 1400,
+    "wordCountNote": "Article tactiques — liste de leviers concrets. Chaque tactique courte et directement applicable.",
     "status": "pending",
     "priority": 15,
     "sanityId": null,
@@ -366,6 +398,8 @@
       "prix van aménagé occasion",
       "achat fourgon aménagé 2025"
     ],
+    "targetWordCount": 2200,
+    "wordCountNote": "Article pilier achat van — requête très cherchée, checklist complète, inspection mécanique + aménagement",
     "status": "pending",
     "priority": 16,
     "sanityId": null,
@@ -388,6 +422,8 @@
       "van clé en main prix",
       "tarif fourgon aménagé neuf occasion"
     ],
+    "targetWordCount": 1600,
+    "wordCountNote": "Article chiffres — tableaux de prix, fourchettes réalistes. Dense en données, pas de prose inutile.",
     "status": "pending",
     "priority": 17,
     "sanityId": null,
@@ -410,6 +446,8 @@
       "renault trafic location van",
       "avis renault trafic van aménagé"
     ],
+    "targetWordCount": 1200,
+    "wordCountNote": "Retour d'expérience terrain — honnête, concret, chiffres réels. Pas un guide exhaustif.",
     "status": "pending",
     "priority": 18,
     "sanityId": null,
@@ -432,6 +470,8 @@
       "fourgon aménagé 2 personnes",
       "choisir van couple voyage"
     ],
+    "targetWordCount": 1000,
+    "wordCountNote": "Article critères — liste courte et directe (lit, cuisine, rangements, taille). Pas de remplissage.",
     "status": "pending",
     "priority": 19,
     "sanityId": null,
@@ -454,6 +494,8 @@
       "fourgon aménagé bayonne biarritz",
       "van particulier pays basque"
     ],
+    "targetWordCount": 1000,
+    "wordCountNote": "Article local ciblé — marché local, où chercher, prix pratiqués. Court et directement utile.",
     "status": "pending",
     "priority": 20,
     "sanityId": null,
@@ -476,6 +518,8 @@
       "auto-conversion fourgon budget",
       "van aménagé neuf vs fait maison"
     ],
+    "targetWordCount": 1600,
+    "wordCountNote": "Comparatif structuré — tableau avantages/inconvénients + cas d'usage. Dense mais pas exhaustif.",
     "status": "pending",
     "priority": 21,
     "sanityId": null,

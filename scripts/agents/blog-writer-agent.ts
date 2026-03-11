@@ -43,6 +43,8 @@ interface ArticleQueueItem {
   readTime: string;
   targetKeyword: string;
   secondaryKeywords: string[];
+  targetWordCount?: number; // target word count — drives structure & prompt constraints
+  wordCountNote?: string;   // rationale (for humans reading the queue)
   status: "pending" | "writing" | "published" | "needs-improvement";
   priority: number;
   sanityId: string | null;
@@ -557,10 +559,87 @@ async function generateArticle(
 
   const { paaQuestions, topResults } = serpAnalysis;
 
+  // ── Word count & structure based on article type ─────────────────────────────
+  const targetWords = article.targetWordCount ?? 1400;
+  const tolerance = Math.round(targetWords * 0.1);
+  const wordCountInstruction = `**LONGUEUR CIBLE : ${targetWords} mots (±${tolerance} mots maximum — pas un mot de plus).**
+Chaque phrase doit apporter une valeur concrète. Zéro remplissage, zéro répétition, zéro transition creuse.`;
+
+  // Dynamic structure based on word count
+  let structureBlock: string;
+  const faqCount = targetWords <= 1200 ? 3 : targetWords <= 1800 ? 4 : 5;
+
+  if (targetWords <= 1200) {
+    structureBlock = `## Introduction (100-150 mots)
+Accroche directe. Pose le problème, annonce la solution. Keyword dans les 80 premiers mots.
+
+## [Section 1 — Essentiel, 300-350 mots]
+### [Sous-section A — 150 mots]
+### [Sous-section B — 150 mots]
+
+## [Section 2 — Pratique, 300-350 mots]
+Conseils terrain, données concrètes, liste si pertinent.
+
+## FAQ — Questions fréquentes (${faqCount} questions × 80-100 mots chacune)
+### [Question 1]
+### [Question 2]
+### [Question 3]
+
+## Conclusion (80-100 mots)
+3 points clés, CTA naturel.`;
+  } else if (targetWords <= 1800) {
+    structureBlock = `## Introduction (120-150 mots)
+Accroche percutante. Keyword dans les 100 premiers mots. Annonce du plan.
+
+## [Section 1 — Informationnel, 350-400 mots]
+### [Sous-section A — 170 mots]
+### [Sous-section B — 170 mots]
+
+## [Section 2 — Pratique & Actionnable, 350-400 mots]
+### [Sous-section A — 200 mots]
+### [Sous-section B — 150 mots]
+
+## [Section 3 — Données / Comparatif, 250-300 mots]
+Tableau comparatif si pertinent.
+
+## FAQ — Questions fréquentes (${faqCount} questions × 80-100 mots chacune)
+### [Question 1]
+### [Question 2]
+### [Question 3]
+### [Question 4]
+
+## Conclusion (100-120 mots)`;
+  } else {
+    structureBlock = `## Introduction (150-180 mots)
+Accroche forte. Keyword dans les 100 premiers mots. Angle différenciateur vs top résultats.
+
+## [Section 1 — Informationnel, 400-450 mots]
+### [Sous-section A — 200 mots]
+### [Sous-section B — 200 mots]
+
+## [Section 2 — Pratique & Actionnable, 400-450 mots]
+### [Sous-section A — 200 mots]
+### [Sous-section B — 200 mots]
+
+## [Section 3 — Données chiffrées / Comparatif, 300-350 mots]
+Tableau comparatif obligatoire.
+
+## [Section 4 — Ancrage local / Expérience terrain, 250-300 mots]
+
+## FAQ — Questions fréquentes (${faqCount} questions × 80-100 mots chacune)
+### [Question 1]
+### [Question 2]
+### [Question 3]
+### [Question 4]
+### [Question 5]
+
+## Conclusion (120-150 mots)`;
+  }
+
   const paaBlock =
     paaQuestions.length > 0
-      ? paaQuestions.map((q, i) => `${i + 1}. ${q}`).join("\n")
-      : "Génère 5 questions pertinentes sur le sujet (angle PAA Google).";
+      ? paaQuestions.slice(0, faqCount).map((q, i) => `${i + 1}. ${q}`).join("\n")
+      : `Génère ${faqCount} questions pertinentes sur le sujet (angle PAA Google).`;
 
   const serpBlock =
     topResults.length > 0
@@ -570,7 +649,7 @@ async function generateArticle(
 
   const externalLinksBlock =
     externalSources.length > 0
-      ? `SOURCES EXTERNES VÉRIFIÉES (URLs réelles — utilise 1 à 3 dans le texte là où elles apportent de la valeur):
+      ? `SOURCES EXTERNES VÉRIFIÉES (URLs réelles — utilise 1 à 2 là où elles apportent vraiment de la valeur):
 ${externalSources.map((s) => `- [${s.title}](${s.url})`).join("\n")}`
       : "Aucune source externe vérifiée — n'invente aucune URL.";
 
@@ -599,7 +678,14 @@ Réponds UNIQUEMENT avec ce JSON valide (aucune explication):
 
   // ── Call 2: article body via Claude Sonnet 4.6 (quality + instruction-following) ──
   console.log(`  [Claude Sonnet 4.6] Generating article body...`);
-  const bodyPrompt = `Tu es Jules Gaveglio, co-fondateur de Vanzon Explorer — expert vanlife au Pays Basque depuis 5 ans. Tu rédiges des articles de blog SEO ultra-qualitatifs qui classent sur Google et convertissent des lecteurs en clients.
+  const bodyPrompt = `Tu es Jules Gaveglio, co-fondateur de Vanzon Explorer — expert vanlife au Pays Basque depuis 5 ans. Tu rédiges des articles de blog SEO qui classent sur Google et convertissent des lecteurs en clients.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CONTRAINTE ABSOLUE DE LONGUEUR
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${wordCountInstruction}
+Un article trop long avec du remplissage est pire qu'un article court et dense.
+Chaque paragraphe doit avoir une raison d'exister.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 DONNÉES SEO
@@ -611,84 +697,48 @@ Concurrence: ${keywordData.competition_level ?? "inconnue"}
 
 ${serpBlock}
 
-QUESTIONS "PEOPLE ALSO ASK" (traite-les toutes en FAQ):
+QUESTIONS "PEOPLE ALSO ASK" (à traiter en FAQ):
 ${paaBlock}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-STRUCTURE DE L'ARTICLE (2500-3000 mots)
+STRUCTURE (utilise ## pour H2, ### pour H3 — jamais de # H1)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Utilise ## pour H2, ### pour H3. Jamais de # H1 (il est généré séparément).
-
-## [Introduction — 150-200 mots]
-Accroche percutante sans cliché. Pose le problème/désir du lecteur, annonce ce qu'il va apprendre. Keyword dans les 100 premiers mots.
-
-## [Section 1 — Informationnel, 450-550 mots]
-### [Sous-section A — 180-220 mots]
-### [Sous-section B — 180-220 mots]
-Données factuelles, contexte, pourquoi c'est important.
-
-## [Section 2 — Pratique & Actionnable, 450-550 mots]
-### [Sous-section A — 200-250 mots]
-### [Sous-section B — 180-220 mots]
-Guide pas à pas, conseils terrain concrets, erreurs à éviter.
-
-## [Section 3 — Données chiffrées / Comparatif, 350-400 mots]
-Inclure un tableau markdown si pertinent (| Col1 | Col2 | Col3 |).
-Chiffres réels: prix, distances, durées, comparatifs.
-
-## [Section 4 — Ancrage local Pays Basque, 300-350 mots]
-Expérience terrain Vanzon Explorer. Mentions de lieux précis (villages, cols, plages, routes).
-Conseils exclusifs qu'on ne trouve pas sur les autres sites.
-
-## FAQ — Questions fréquentes
-### [Question 1 — exactement tirée du PAA]
-[Réponse directe 80-100 mots, optimisée featured snippet, commence par une réponse courte puis développe]
-### [Question 2]
-[80-100 mots]
-### [Question 3]
-[80-100 mots]
-### [Question 4]
-[80-100 mots]
-### [Question 5]
-[80-100 mots]
-
-## Conclusion
-[120-150 mots — récapitulatif des 3 points essentiels, CTA naturel vers Vanzon Explorer]
+${structureBlock}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-MISE EN FORME (OBLIGATOIRE partout)
+MISE EN FORME (obligatoire, pas optionnel)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 • **gras** → mots-clés importants, données chiffrées, noms de lieux, points-clés
 • *italique* → termes techniques, mots basques (larrun, pottok, txakoli…), citations
 • Listes à puces → dès qu'il y a 3 éléments parallèles ou plus
-• Minimum 1 callout par section H2 (choisis selon le contexte):
+• 1 callout par section H2 minimum (choisis selon le contexte):
   ⚠️ Point de vigilance important
   💡 Conseil pratique Vanzon Explorer
   📍 Spot ou lieu précis avec contexte utile
   ✅ Bonne pratique recommandée
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-LIENS EXTERNES (intègre-les naturellement)
+LIENS EXTERNES
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ${externalLinksBlock}
-Format markdown: [texte ancre descriptif](url)
-— Intègre uniquement où le contexte le justifie vraiment.
+Format: [texte ancre descriptif](url) — seulement si ça apporte vraiment de la valeur.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 STYLE & TON
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-• Tutoiement chaleureux et direct — tu parles à un vanlifer passionné
-• Phrases courtes et rythmées. Alterne phrases courtes et développées.
-• Données concrètes: prix en euros, distances en km, durées précises
-• Ancrage local fort: cite les noms de lieux (Biarritz, Saint-Jean-de-Luz, Ascain, Col de Saint-Ignace, Bayonne, Bidart, Hossegor…)
+• Tutoiement chaleureux — tu parles à un vanlifer passionné
+• Phrases courtes et rythmées. Alterner court/développé.
+• Données concrètes: prix €, distances km, durées précises
+• Ancrage local: noms de lieux basques précis (Biarritz, Saint-Jean-de-Luz, Ascain, Col de Saint-Ignace, Bayonne, Bidart, Hossegor…)
 • Zéro superlatif creux ("incroyable", "révolutionnaire", "époustouflant")
-• Zéro ouverture bateau ("De nos jours…", "Dans un monde où…", "Vous êtes-vous déjà demandé…")
-• Écris comme un humain passionné, pas comme une IA
-• L'article doit surpasser les résultats actuels en profondeur et valeur ajoutée
+• Zéro ouverture bateau ("De nos jours…", "Dans un monde où…")
+• Écris comme un humain passionné qui connaît le terrain, pas comme une IA
 
-Réponds UNIQUEMENT avec le texte markdown de l'article. Aucune explication, aucune balise, aucun JSON.`;
+Réponds UNIQUEMENT avec le texte markdown. Aucune explication, aucune balise, aucun JSON.`;
 
-  const rawBody = await callClaude(bodyPrompt, { maxTokens: 10000 });
+  // Scale max tokens to target word count (≈1.3 tokens/word, +2000 buffer for thinking)
+  const maxTokensForBody = Math.min(10000, Math.ceil(targetWords * 1.5) + 2000);
+  const rawBody = await callClaude(bodyPrompt, { maxTokens: maxTokensForBody });
 
   // Post-process: inject internal links automatically (guaranteed, Claude-independent)
   const body = injectInternalLinks(rawBody);
@@ -985,6 +1035,7 @@ async function main(): Promise<void> {
   console.log(`  Slug: ${article.slug}`);
   console.log(`  Category: ${article.category}`);
   console.log(`  Target keyword: ${article.targetKeyword}`);
+  console.log(`  Target word count: ${article.targetWordCount ?? 1400} mots`);
   console.log(`  Priority: ${article.priority}`);
 
   // Step 3: Mark as "writing" in queue
