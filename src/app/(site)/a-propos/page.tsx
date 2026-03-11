@@ -245,39 +245,6 @@ export default async function AProposPage() {
           JULES & ELIO
       ══════════════════════════════════════════════ */}
 
-      {/* Photos */}
-      <section className="bg-slate-50 pb-10">
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="grid grid-cols-3 gap-3 md:gap-4">
-            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden">
-              <Image
-                src="https://cdn.sanity.io/images/lewexa74/production/16f9120e659bdd4bba47e663e9df9a1a9293fe3f-1170x2080.jpg"
-                alt="Jules co-fondateur Vanzon Explorer - expert business et location van Pays Basque"
-                fill
-                className="object-cover hover:scale-105 transition-transform duration-500"
-                priority
-              />
-            </div>
-            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden">
-              <Image
-                src="https://cdn.sanity.io/images/lewexa74/production/28a2c5acbe2ee16169d4ace1ab0522481c43d356-1170x2080.jpg"
-                alt="Jules et Elio fondateurs Vanzon Explorer - construction van aménagé Pays Basque"
-                fill
-                className="object-cover hover:scale-105 transition-transform duration-500"
-              />
-            </div>
-            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden">
-              <Image
-                src="https://cdn.sanity.io/images/lewexa74/production/325f3ebf1d68fd890487229864c73cc65bef20d3-1186x1654.png"
-                alt="Elio co-fondateur Vanzon Explorer - spécialiste mécanique et aménagement fourgon"
-                fill
-                className="object-cover hover:scale-105 transition-transform duration-500"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Profils */}
       <section className="bg-[#F8FAFC] py-20">
         <div className="max-w-5xl mx-auto px-6">
