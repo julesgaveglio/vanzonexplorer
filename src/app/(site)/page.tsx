@@ -40,10 +40,15 @@ export default async function HomePage() {
 
         <div className="relative z-10 max-w-7xl mx-auto px-6 pb-20 pt-32 w-full">
           <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-2 mb-6">
+            <a
+              href={`https://www.google.com/maps/place/?q=place_id:ChIJ7-3ASe0oTyQR6vNHg7YRicA`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-2 mb-6 transition-transform hover:scale-105 cursor-pointer"
+            >
               <span className="text-amber-400">★★★★★</span>
               <span className="text-white/90 text-sm font-medium">{placeStats.reviewCount} avis Google • {placeStats.ratingDisplay}/5</span>
-            </div>
+            </a>
 
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[1.05] mb-6">
               L&apos;aventure<br />
@@ -101,9 +106,8 @@ export default async function HomePage() {
           <div className="flex flex-wrap justify-center md:justify-between items-center gap-y-4 gap-x-8 text-white/60 text-sm font-medium">
             {[
               { icon: "🛡️", text: "Assurance incluse via Yescapa" },
-              { icon: "📍", text: "Basé à Bayonne — Pays Basque" },
+              { icon: "📍", text: "Basé au Pays Basque" },
               { icon: "⭐", text: `${placeStats.ratingDisplay}/5 sur ${placeStats.reviewCount} avis Google` },
-              { icon: "🚐", text: "Vans aménagés & entretenus" },
             ].map((item) => (
               <div key={item.text} className="flex items-center gap-2">
                 <span>{item.icon}</span>
