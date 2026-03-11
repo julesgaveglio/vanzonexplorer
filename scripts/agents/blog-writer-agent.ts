@@ -160,6 +160,122 @@ function ensureUniqueKeys(blocks: PortableTextBlock[]): PortableTextBlock[] {
   }));
 }
 
+// ── Tavily: fetch verified external sources for a topic ───────────────────────
+interface TavilySource {
+  url: string;
+  title: string;
+}
+
+async function fetchExternalSources(keyword: string): Promise<TavilySource[]> {
+  const apiKey = process.env.TAVILY_API_KEY;
+  if (!apiKey) return [];
+  try {
+    const res = await fetch("https://api.tavily.com/search", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+      body: JSON.stringify({
+        query: keyword,
+        search_depth: "basic",
+        max_results: 5,
+        include_domains: [
+          "wikipedia.org",
+          "ffrandonnee.fr",
+          "pyrenees-atlantiques.fr",
+          "pays-basque.fr",
+          "tourisme64.com",
+          "sncf.com",
+          "lescrêtes.fr",
+          "bassussarry.fr",
+          "ascain.fr",
+        ],
+      }),
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const results: TavilySource[] = (data.results ?? []).slice(0, 3).map((r: any) => ({
+      url: r.url,
+      title: r.title,
+    }));
+    return results;
+  } catch {
+    return [];
+  }
+}
+
+// ── Post-processing: inject internal links into generated markdown ─────────────
+// Applies each internal URL once (first occurrence of any matching phrase).
+// Only applies to regular paragraph lines — not to headings/blockquotes/list items.
+function injectInternalLinks(markdown: string): string {
+  // Priority-ordered list: first match wins for each URL.
+  // NOTE: \b doesn't work with French accented chars (é, à, û…) — use lookahead/lookbehind instead.
+  // (?<![a-zA-ZÀ-ÿ]) = not preceded by a letter  (handles accents too)
+  // (?![a-zA-ZÀ-ÿ])  = not followed by a letter
+  const W = "(?<![a-zA-ZÀ-ÿ])"; // word-start boundary for French
+  const w = "(?![a-zA-ZÀ-ÿ])";  // word-end boundary for French
+  const rules: Array<{ pattern: RegExp; url: string }> = [
+    // /vanzon/location — louer/réserver un van
+    { pattern: new RegExp(`${W}(lou(?:er?|ez) (?:un |votre |son |notre |leur )?van(?:\\s+aménagé)?)${w}`, "i"), url: "/vanzon/location" },
+    { pattern: new RegExp(`${W}(location de van(?:\\s+aménagé)?)${w}`, "i"), url: "/vanzon/location" },
+    { pattern: new RegExp(`${W}(van en location)${w}`, "i"), url: "/vanzon/location" },
+    { pattern: new RegExp(`${W}(réserver (?:un |ton |votre )?van)${w}`, "i"), url: "/vanzon/location" },
+    { pattern: new RegExp(`${W}(vanlife)${w}`, "i"), url: "/vanzon/location" },
+    // /vanzon/achat — acheter un van
+    { pattern: new RegExp(`${W}(acheter (?:un |votre |ton |son )?van(?:\\s+aménagé)?)${w}`, "i"), url: "/vanzon/achat" },
+    { pattern: new RegExp(`${W}(van aménagé à (?:vendre|la vente|acheter))${w}`, "i"), url: "/vanzon/achat" },
+    { pattern: new RegExp(`${W}(van aménagé)${w}`, "i"), url: "/vanzon/achat" }, // first mention of "van aménagé"
+    // /vanzon/articles/ou-dormir-van-pays-basque — bivouac & nuit en van
+    { pattern: new RegExp(`${W}(bivouac(?:er|ant|quer)?)${w}`, "i"), url: "/vanzon/articles/ou-dormir-van-pays-basque" },
+    { pattern: new RegExp(`${W}(dormir (?:dans |en |à bord de )?(?:son |ton |votre )?van)${w}`, "i"), url: "/vanzon/articles/ou-dormir-van-pays-basque" },
+    { pattern: new RegExp(`${W}(nuit(?:s)? (?:dans |en |à bord de )?(?:son |ton |votre )?van)${w}`, "i"), url: "/vanzon/articles/ou-dormir-van-pays-basque" },
+    // /vanzon/articles/road-trip-pays-basque-van — road trip
+    { pattern: new RegExp(`${W}(road[- ]trip (?:au |en van au |au )?Pays Basque)${w}`, "i"), url: "/vanzon/articles/road-trip-pays-basque-van" },
+    { pattern: new RegExp(`${W}(road[- ]trip)${w}`, "i"), url: "/vanzon/articles/road-trip-pays-basque-van" },
+    { pattern: new RegExp(`${W}(itinéraire (?:de |du |au )?Pays Basque)${w}`, "i"), url: "/vanzon/articles/road-trip-pays-basque-van" },
+    // /vanzon/pays-basque — guide/spots Pays Basque
+    { pattern: new RegExp(`${W}(guide (?:du |de )?Pays Basque)${w}`, "i"), url: "/vanzon/pays-basque" },
+    { pattern: new RegExp(`${W}(spots? (?:du |au |en )?Pays Basque)${w}`, "i"), url: "/vanzon/pays-basque" },
+    { pattern: new RegExp(`${W}(Pays Basque vanlife)${w}`, "i"), url: "/vanzon/pays-basque" },
+  ];
+
+  const usedUrls = new Set<string>();
+  const lines = markdown.split("\n");
+
+  const result = lines.map((line) => {
+    const trimmed = line.trim();
+    // Skip headings, blockquotes, list items — only process paragraph text
+    if (
+      trimmed.startsWith("#") ||
+      trimmed.startsWith(">") ||
+      trimmed.startsWith("-") ||
+      trimmed.startsWith("*") ||
+      /^\d+\./.test(trimmed) ||
+      trimmed.startsWith("⚠️") ||
+      trimmed.startsWith("💡") ||
+      trimmed.startsWith("📍") ||
+      trimmed.startsWith("✅")
+    ) {
+      return line;
+    }
+
+    let processed = line;
+    for (const { pattern, url } of rules) {
+      if (usedUrls.has(url)) continue;
+      const newLine = processed.replace(pattern, (match) => {
+        usedUrls.add(url);
+        return `[${match}](${url})`;
+      });
+      if (newLine !== processed) {
+        processed = newLine;
+        break; // One replacement per line to keep text natural
+      }
+    }
+    return processed;
+  });
+
+  return result.join("\n");
+}
+
 // ── Inline markdown parser (bold, italic, links) ──────────────────────────────
 function parseInlineMarkdown(text: string): {
   children: Array<{ _type: "span"; _key: string; text: string; marks: string[] }>;
@@ -386,6 +502,16 @@ async function generateArticle(
       ? paaQuestions.map((q, i) => `${i + 1}. ${q}`).join("\n")
       : "Aucune question PAA disponible — génère 5 questions pertinentes sur le sujet.";
 
+  // Fetch verified external sources via Tavily
+  console.log(`  [Tavily] Searching external sources for: "${article.targetKeyword}"...`);
+  const externalSources = await fetchExternalSources(article.targetKeyword);
+  const externalLinksBlock =
+    externalSources.length > 0
+      ? `LIENS EXTERNES VÉRIFIÉS — UTILISE 1 À 3 DE CES URLs (elles existent réellement):
+${externalSources.map((s) => `- [${s.title}](${s.url})`).join("\n")}
+Place ces liens naturellement dans le texte, là où le sujet le justifie.`
+      : `LIENS EXTERNES: aucune source vérifiée disponible — n'invente aucune URL externe.`;
+
   const context = `
 Contexte:
 - Site: Vanzon Explorer (location/vente van aménagé au Pays Basque)
@@ -485,23 +611,12 @@ CALLOUTS — utilise au minimum 1 par section H2:
 ✅ [Bonne pratique recommandée]
 
 ═══════════════════════════════════════
-LIENS À INTÉGRER (OBLIGATOIRE)
+LIENS EXTERNES (OBLIGATOIRE — UTILISE CES URLs EXACTES)
 ═══════════════════════════════════════
 
-LIENS INTERNES VANZON (2-3 liens, placés naturellement dans le texte):
-Utilise le format markdown: [texte ancre descriptif](/vanzon/page)
-Pages disponibles:
-- /vanzon/location → louer un van au Pays Basque
-- /vanzon/achat → acheter un van avec Vanzon Explorer
-- /vanzon/pays-basque → guide et spots Pays Basque
-- /vanzon/articles/road-trip-pays-basque-van → itinéraire road trip Pays Basque
-- /vanzon/articles/ou-dormir-van-pays-basque → spots pour dormir en van
-
-LIENS EXTERNES AUTORITÉ (1 à 3 liens max):
-RÈGLE ABSOLUE: N'utilise QUE des URLs que tu connais avec CERTITUDE depuis ta formation.
-Préfère: sites officiels (.gouv.fr, mairies, offices de tourisme officiels), Wikipedia, grandes fédérations reconnues (ffrandonnee.fr, ffc.fr, etc.), sites de référence du domaine.
-Format: [texte ancre](https://url-complete-et-certaine)
-⚠️ Si tu as le moindre doute sur l'existence d'une URL → NE L'INCLUS PAS. Mieux vaut 1 lien certain que 3 liens douteux.
+${externalLinksBlock}
+Format: [texte ancre court et descriptif](url)
+Les liens internes seront ajoutés automatiquement en post-traitement — ne les inclus PAS.
 
 ═══════════════════════════════════════
 TON & STYLE
@@ -515,7 +630,10 @@ TON & STYLE
 
 Réponds UNIQUEMENT avec le texte markdown de l'article, sans JSON, sans balises, sans explication.`;
 
-  const body = await callGemini(apiKey, bodyPrompt, { json: false, maxTokens: 8192 });
+  const rawBody = await callGemini(apiKey, bodyPrompt, { json: false, maxTokens: 8192 });
+
+  // Post-process: inject internal links automatically (Gemini doesn't generate them reliably)
+  const body = injectInternalLinks(rawBody);
 
   // Convert markdown body to Portable Text blocks
   const content = markdownToPortableText(body);
