@@ -406,9 +406,14 @@ async function getKeywordData(keyword: string): Promise<KeywordData> {
   }
 }
 
-// ── Step 2: Extract PAA questions from SERP ────────────────────────────────────
-async function getPAAQuestions(keyword: string): Promise<string[]> {
-  console.log(`  Fetching SERP PAA for: "${keyword}"...`);
+interface SerpAnalysis {
+  paaQuestions: string[];
+  topResults: Array<{ title: string; url: string; description: string }>;
+}
+
+// ── Step 2: SERP analysis — PAA questions + top organic results ─────────────────
+async function analyzeSERP(keyword: string): Promise<SerpAnalysis> {
+  console.log(`  Analyzing SERP for: "${keyword}"...`);
   try {
     const result = await dfsPost<unknown>(
       "/serp/google/organic/live/advanced",
@@ -424,33 +429,89 @@ async function getPAAQuestions(keyword: string): Promise<string[]> {
       ]
     );
 
-    const items = (result as { items?: Array<{ type: string; items?: Array<{ title?: string; question?: string }> }> })?.items ?? [];
+    type SerpItem = {
+      type: string;
+      title?: string;
+      url?: string;
+      description?: string;
+      question?: string;
+      items?: SerpItem[];
+    };
 
+    const items = (result as { items?: SerpItem[] })?.items ?? [];
     const paaQuestions: string[] = [];
+    const topResults: SerpAnalysis["topResults"] = [];
+
     for (const item of items) {
       if (item.type === "people_also_ask" && Array.isArray(item.items)) {
         for (const paa of item.items) {
           const q = paa.title ?? paa.question;
-          if (q) paaQuestions.push(q);
-          if (paaQuestions.length >= 5) break;
+          if (q && paaQuestions.length < 6) paaQuestions.push(q);
         }
       }
-      if (paaQuestions.length >= 5) break;
+      if (item.type === "organic" && item.title && item.url && topResults.length < 5) {
+        topResults.push({
+          title: item.title,
+          url: item.url,
+          description: item.description ?? "",
+        });
+      }
     }
 
-    console.log(`  Found ${paaQuestions.length} PAA question(s)`);
-    return paaQuestions;
+    console.log(`  Found ${paaQuestions.length} PAA + ${topResults.length} top organic results`);
+    return { paaQuestions, topResults };
   } catch (err) {
-    console.warn(`  Warning: Could not fetch PAA questions — ${(err as Error).message}`);
-    return [];
+    console.warn(`  Warning: SERP analysis failed — ${(err as Error).message}`);
+    return { paaQuestions: [], topResults: [] };
   }
 }
 
-// ── Gemini helper ──────────────────────────────────────────────────────────────
+// ── Claude Sonnet 4.6 via session token ────────────────────────────────────────
+// Uses CLAUDE_CODE_SESSION_ACCESS_TOKEN (already authenticated in Claude Code CLI).
+async function callClaude(prompt: string, opts: { maxTokens?: number } = {}): Promise<string> {
+  const token = process.env.CLAUDE_CODE_SESSION_ACCESS_TOKEN;
+  if (!token) throw new Error("CLAUDE_CODE_SESSION_ACCESS_TOKEN not found — run inside a Claude Code session");
+
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "x-api-key": token,
+      "anthropic-version": "2023-06-01",
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-6",
+      max_tokens: opts.maxTokens ?? 8000,
+      temperature: 1, // required for extended thinking budget
+      thinking: { type: "enabled", budget_tokens: 2000 },
+      messages: [{ role: "user", content: prompt }],
+    }),
+  });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`Claude API error ${res.status}: ${errText}`);
+  }
+
+  const json = await res.json() as {
+    content?: Array<{ type: string; text?: string }>;
+  };
+
+  // Extract text blocks only (skip thinking blocks)
+  const text = (json.content ?? [])
+    .filter((b) => b.type === "text")
+    .map((b) => b.text ?? "")
+    .join("");
+
+  if (!text) throw new Error("Claude returned empty response");
+  return text;
+}
+
+// ── Gemini Flash — fast metadata generation only ────────────────────────────────
 async function callGemini(
   apiKey: string,
   prompt: string,
-  opts: { json?: boolean; maxTokens?: number; noThinking?: boolean } = {}
+  opts: { json?: boolean; maxTokens?: number } = {}
 ): Promise<string> {
   const res = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
@@ -460,10 +521,9 @@ async function callGemini(
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
         generationConfig: {
-          maxOutputTokens: opts.maxTokens ?? 4096,
-          temperature: 0.7,
-          // Disable thinking to avoid token consumption on reasoning overhead
-          ...(opts.noThinking ? { thinkingConfig: { thinkingBudget: 0 } } : {}),
+          maxOutputTokens: opts.maxTokens ?? 2048,
+          temperature: 0.5,
+          thinkingConfig: { thinkingBudget: 0 },
           ...(opts.json ? { responseMimeType: "application/json" } : {}),
         },
       }),
@@ -484,155 +544,153 @@ async function callGemini(
   return text;
 }
 
-// ── Step 3: Generate article with Gemini ───────────────────────────────────────
-// Two-call strategy: metadata as JSON (small, safe) + body as plain markdown text.
-// Avoids JSON encoding corruption for long French text with apostrophes/newlines.
+// ── Step 3: Generate article ────────────────────────────────────────────────────
+// Strategy: Gemini Flash for metadata (fast JSON) + Claude Sonnet 4.6 for body (quality).
 async function generateArticle(
   article: ArticleQueueItem,
   keywordData: KeywordData,
-  paaQuestions: string[]
+  serpAnalysis: SerpAnalysis,
+  externalSources: TavilySource[]
 ): Promise<GeneratedContent> {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    throw new Error("GEMINI_API_KEY env var is required");
-  }
+  const geminiKey = process.env.GEMINI_API_KEY;
+  if (!geminiKey) throw new Error("GEMINI_API_KEY is required for metadata generation");
+
+  const { paaQuestions, topResults } = serpAnalysis;
 
   const paaBlock =
     paaQuestions.length > 0
       ? paaQuestions.map((q, i) => `${i + 1}. ${q}`).join("\n")
-      : "Aucune question PAA disponible — génère 5 questions pertinentes sur le sujet.";
+      : "Génère 5 questions pertinentes sur le sujet (angle PAA Google).";
 
-  // Fetch verified external sources via Tavily
-  console.log(`  [Tavily] Searching external sources for: "${article.targetKeyword}"...`);
-  const externalSources = await fetchExternalSources(article.targetKeyword);
+  const serpBlock =
+    topResults.length > 0
+      ? `TOP ${topResults.length} RÉSULTATS GOOGLE ACTUELS (ce que ton article doit dépasser):\n` +
+        topResults.map((r, i) => `${i + 1}. "${r.title}" — ${r.url}\n   ${r.description}`).join("\n")
+      : "";
+
   const externalLinksBlock =
     externalSources.length > 0
-      ? `LIENS EXTERNES VÉRIFIÉS — UTILISE 1 À 3 DE CES URLs (elles existent réellement):
-${externalSources.map((s) => `- [${s.title}](${s.url})`).join("\n")}
-Place ces liens naturellement dans le texte, là où le sujet le justifie.`
-      : `LIENS EXTERNES: aucune source vérifiée disponible — n'invente aucune URL externe.`;
+      ? `SOURCES EXTERNES VÉRIFIÉES (URLs réelles — utilise 1 à 3 dans le texte là où elles apportent de la valeur):
+${externalSources.map((s) => `- [${s.title}](${s.url})`).join("\n")}`
+      : "Aucune source externe vérifiée — n'invente aucune URL.";
 
-  const context = `
-Contexte:
-- Site: Vanzon Explorer (location/vente van aménagé au Pays Basque)
-- Keyword cible: "${article.targetKeyword}"
-- Volume mensuel: ${keywordData.search_volume ?? "N/A"}
-- Concurrence: ${keywordData.competition_level ?? "N/A"}
-- Mots-clés secondaires: ${article.secondaryKeywords.join(", ")}
-- Questions PAA:
-${paaBlock}
-`.trim();
+  // ── Call 1: metadata via Gemini Flash (fast + cheap) ────────────────────────
+  console.log(`  [Gemini] Generating metadata JSON...`);
+  const metaPrompt = `Tu génères des métadonnées SEO pour un article de blog.
 
-  // ── Call 1: metadata only (small JSON, no encoding issues) ──────────────────
-  console.log(`  [Gemini 1/2] Generating metadata...`);
-  const metaPrompt = `${context}
+Site: Vanzon Explorer — location et vente de van aménagé au Pays Basque
+Article: "${article.title}"
+Keyword cible: "${article.targetKeyword}"
+Mots-clés secondaires: ${article.secondaryKeywords.join(", ")}
 
-Génère les métadonnées SEO pour l'article "${article.title}".
+Réponds UNIQUEMENT avec ce JSON valide (aucune explication):
+{"title":"H1 accrocheur avec keyword principal (60-80 chars)","seoTitle":"title tag SEO max 60 chars","seoDescription":"meta description 140-155 chars avec CTA","excerpt":"accroche article 180-220 chars"}`;
 
-Réponds UNIQUEMENT avec ce JSON (pas d'explication):
-{"title":"H1 exact optimisé avec keyword principal","seoTitle":"max 60 caractères","seoDescription":"max 155 caractères accrocheur","excerpt":"résumé 200-250 caractères"}`;
-
-  const metaText = await callGemini(apiKey, metaPrompt, { json: true, maxTokens: 2048, noThinking: true });
+  const metaText = await callGemini(geminiKey, metaPrompt, { json: true, maxTokens: 512 });
   let meta: Pick<GeminiRawContent, "title" | "seoTitle" | "seoDescription" | "excerpt">;
   try {
-    // Strip code fences if present
     const cleaned = metaText.replace(/^```(?:json)?\s*/i, "").replace(/\s*```\s*$/, "").trim();
     meta = JSON.parse(cleaned);
   } catch {
-    // Try to extract JSON object with regex
     const match = metaText.match(/\{[\s\S]*\}/);
-    if (!match) {
-      throw new Error("Gemini metadata call returned invalid JSON:\n" + metaText.slice(0, 400));
-    }
-    try {
-      meta = JSON.parse(match[0]);
-    } catch {
-      throw new Error("Gemini metadata call returned invalid JSON:\n" + metaText.slice(0, 400));
-    }
+    if (!match) throw new Error("Gemini metadata: invalid JSON — " + metaText.slice(0, 200));
+    meta = JSON.parse(match[0]);
   }
 
-  // ── Call 2: article body as plain markdown (no JSON wrapping) ───────────────
-  console.log(`  [Gemini 2/2] Generating article body (2000-2500 mots)...`);
-  const bodyPrompt = `${context}
+  // ── Call 2: article body via Claude Sonnet 4.6 (quality + instruction-following) ──
+  console.log(`  [Claude Sonnet 4.6] Generating article body...`);
+  const bodyPrompt = `Tu es Jules Gaveglio, co-fondateur de Vanzon Explorer — expert vanlife au Pays Basque depuis 5 ans. Tu rédiges des articles de blog SEO ultra-qualitatifs qui classent sur Google et convertissent des lecteurs en clients.
 
-Rédige le corps complet d'un article de 2000-2500 mots sur "${article.title}".
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DONNÉES SEO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Keyword principal: "${article.targetKeyword}"
+Keywords secondaires: ${article.secondaryKeywords.join(", ")}
+Volume mensuel: ${keywordData.search_volume ?? "inconnu"} recherches/mois
+Concurrence: ${keywordData.competition_level ?? "inconnue"}
 
-═══════════════════════════════════════
-STRUCTURE OBLIGATOIRE
-═══════════════════════════════════════
-(utilise ## pour H2, ### pour H3, jamais de # H1)
+${serpBlock}
 
-## [Section 1 — informationnel/éducatif, 400-500 mots]
-### [Sous-section 1a]
-[150-200 mots avec données concrètes]
-### [Sous-section 1b]
-[150-200 mots]
+QUESTIONS "PEOPLE ALSO ASK" (traite-les toutes en FAQ):
+${paaBlock}
 
-## [Section 2 — pratique/actionnable, 400-500 mots]
-### [Sous-section 2a]
-[150-200 mots — étapes concrètes]
-### [Sous-section 2b]
-[150-200 mots]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STRUCTURE DE L'ARTICLE (2500-3000 mots)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Utilise ## pour H2, ### pour H3. Jamais de # H1 (il est généré séparément).
 
-## [Section 3 — données chiffrées / comparatif, 300-350 mots]
-[Inclure un tableau comparatif si pertinent — max 4 colonnes]
+## [Introduction — 150-200 mots]
+Accroche percutante sans cliché. Pose le problème/désir du lecteur, annonce ce qu'il va apprendre. Keyword dans les 100 premiers mots.
 
-## [Section 4 — Pays Basque & expérience terrain, 300-350 mots]
-[Ancrage local fort — mentions de lieux précis du Pays Basque]
+## [Section 1 — Informationnel, 450-550 mots]
+### [Sous-section A — 180-220 mots]
+### [Sous-section B — 180-220 mots]
+Données factuelles, contexte, pourquoi c'est important.
+
+## [Section 2 — Pratique & Actionnable, 450-550 mots]
+### [Sous-section A — 200-250 mots]
+### [Sous-section B — 180-220 mots]
+Guide pas à pas, conseils terrain concrets, erreurs à éviter.
+
+## [Section 3 — Données chiffrées / Comparatif, 350-400 mots]
+Inclure un tableau markdown si pertinent (| Col1 | Col2 | Col3 |).
+Chiffres réels: prix, distances, durées, comparatifs.
+
+## [Section 4 — Ancrage local Pays Basque, 300-350 mots]
+Expérience terrain Vanzon Explorer. Mentions de lieux précis (villages, cols, plages, routes).
+Conseils exclusifs qu'on ne trouve pas sur les autres sites.
 
 ## FAQ — Questions fréquentes
-### [Question 1 tirée du PAA]
-[Réponse directe 80-120 mots — optimisé featured snippet]
+### [Question 1 — exactement tirée du PAA]
+[Réponse directe 80-100 mots, optimisée featured snippet, commence par une réponse courte puis développe]
 ### [Question 2]
-[80-120 mots]
+[80-100 mots]
 ### [Question 3]
-[80-120 mots]
+[80-100 mots]
 ### [Question 4]
-[80-120 mots]
+[80-100 mots]
 ### [Question 5]
-[80-120 mots]
+[80-100 mots]
 
 ## Conclusion
-[100-130 mots — récapitulatif 3 points clés, CTA naturel]
+[120-150 mots — récapitulatif des 3 points essentiels, CTA naturel vers Vanzon Explorer]
 
-═══════════════════════════════════════
-MISE EN FORME OBLIGATOIRE
-═══════════════════════════════════════
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+MISE EN FORME (OBLIGATOIRE partout)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+• **gras** → mots-clés importants, données chiffrées, noms de lieux, points-clés
+• *italique* → termes techniques, mots basques (larrun, pottok, txakoli…), citations
+• Listes à puces → dès qu'il y a 3 éléments parallèles ou plus
+• Minimum 1 callout par section H2 (choisis selon le contexte):
+  ⚠️ Point de vigilance important
+  💡 Conseil pratique Vanzon Explorer
+  📍 Spot ou lieu précis avec contexte utile
+  ✅ Bonne pratique recommandée
 
-TEXTE ENRICHI — utilise dans chaque section:
-- **texte en gras** pour les mots-clés importants, données chiffrées, lieux précis
-- *texte en italique* pour les termes techniques, citations, mots basques
-- Listes à puces (- item) pour les éléments parallèles (3+ items)
-
-CALLOUTS — utilise au minimum 1 par section H2:
-⚠️ [Avertissement ou point de vigilance important]
-💡 [Conseil pratique ou astuce terrain Vanzon]
-📍 [Spot ou lieu précis avec contexte]
-✅ [Bonne pratique recommandée]
-
-═══════════════════════════════════════
-LIENS EXTERNES (OBLIGATOIRE — UTILISE CES URLs EXACTES)
-═══════════════════════════════════════
-
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+LIENS EXTERNES (intègre-les naturellement)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ${externalLinksBlock}
-Format: [texte ancre court et descriptif](url)
-Les liens internes seront ajoutés automatiquement en post-traitement — ne les inclus PAS.
+Format markdown: [texte ancre descriptif](url)
+— Intègre uniquement où le contexte le justifie vraiment.
 
-═══════════════════════════════════════
-TON & STYLE
-═══════════════════════════════════════
-- Expert terrain Vanzon Explorer au Pays Basque
-- Chaleureux, tutoiement pour les vanlifers
-- Données concrètes: distances en km, prix réels, durées précises
-- Ancrage local: noms de lieux basques précis (Biarritz, Bidart, Ascain, etc.)
-- Jamais de superlatifs vides ("incroyable", "parfait", "révolutionnaire")
-- Jamais d'ouvertures clichées ("Dans un monde où...", "De nos jours...")
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STYLE & TON
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+• Tutoiement chaleureux et direct — tu parles à un vanlifer passionné
+• Phrases courtes et rythmées. Alterne phrases courtes et développées.
+• Données concrètes: prix en euros, distances en km, durées précises
+• Ancrage local fort: cite les noms de lieux (Biarritz, Saint-Jean-de-Luz, Ascain, Col de Saint-Ignace, Bayonne, Bidart, Hossegor…)
+• Zéro superlatif creux ("incroyable", "révolutionnaire", "époustouflant")
+• Zéro ouverture bateau ("De nos jours…", "Dans un monde où…", "Vous êtes-vous déjà demandé…")
+• Écris comme un humain passionné, pas comme une IA
+• L'article doit surpasser les résultats actuels en profondeur et valeur ajoutée
 
-Réponds UNIQUEMENT avec le texte markdown de l'article, sans JSON, sans balises, sans explication.`;
+Réponds UNIQUEMENT avec le texte markdown de l'article. Aucune explication, aucune balise, aucun JSON.`;
 
-  const rawBody = await callGemini(apiKey, bodyPrompt, { json: false, maxTokens: 8192 });
+  const rawBody = await callClaude(bodyPrompt, { maxTokens: 10000 });
 
-  // Post-process: inject internal links automatically (Gemini doesn't generate them reliably)
+  // Post-process: inject internal links automatically (guaranteed, Claude-independent)
   const body = injectInternalLinks(rawBody);
 
   // Convert markdown body to Portable Text blocks
@@ -882,6 +940,7 @@ async function main(): Promise<void> {
   if (!process.env.PEXELS_API_KEY) missingVars.push("PEXELS_API_KEY");
   if (!process.env.DATAFORSEO_LOGIN) missingVars.push("DATAFORSEO_LOGIN");
   if (!process.env.DATAFORSEO_PASSWORD) missingVars.push("DATAFORSEO_PASSWORD");
+  if (!process.env.CLAUDE_CODE_SESSION_ACCESS_TOKEN) missingVars.push("CLAUDE_CODE_SESSION_ACCESS_TOKEN");
   if (missingVars.length > 0) {
     console.error(`\nMissing required environment variables:\n  ${missingVars.join("\n  ")}`);
     process.exit(1);
@@ -939,19 +998,24 @@ async function main(): Promise<void> {
 
   try {
     // Step 4: DataForSEO — keyword overview
-    console.log("\n[1/5] Fetching keyword data from DataForSEO...");
+    console.log("\n[1/6] Fetching keyword data from DataForSEO...");
     const keywordData = await getKeywordData(article.targetKeyword);
 
-    // Step 5: DataForSEO — PAA questions from SERP
-    console.log("\n[2/5] Fetching PAA questions from SERP...");
-    const paaQuestions = await getPAAQuestions(article.targetKeyword);
+    // Step 5: DataForSEO SERP — PAA questions + top organic results
+    console.log("\n[2/6] Analyzing SERP (PAA + top results)...");
+    const serpAnalysis = await analyzeSERP(article.targetKeyword);
 
-    // Step 6: Generate article with Gemini
-    console.log("\n[3/6] Generating article with Gemini...");
-    const generatedContent = await generateArticle(article, keywordData, paaQuestions);
+    // Step 5.5: Tavily — fetch verified external sources
+    console.log("\n[3/6] Fetching external sources via Tavily...");
+    const externalSources = await fetchExternalSources(article.targetKeyword);
+    console.log(`  Found ${externalSources.length} verified external source(s)`);
+
+    // Step 6: Generate article — Gemini for metadata, Claude Sonnet 4.6 for body
+    console.log("\n[4/6] Generating article (Gemini metadata + Claude Sonnet body)...");
+    const generatedContent = await generateArticle(article, keywordData, serpAnalysis, externalSources);
 
     // Step 6.5: SERP images — 1 API call, inject into content body
-    console.log("\n[4/6] Fetching inline images via SERP API...");
+    console.log("\n[5/6] Fetching inline images via SERP API...");
     const serpImages = await searchAndUploadSerpImages(
       article.targetKeyword,
       generatedContent.title
@@ -965,11 +1029,11 @@ async function main(): Promise<void> {
     }
 
     // Step 7: Cover image (SerpAPI → Pexels fallback)
-    console.log("\n[5/6] Fetching and uploading cover image...");
+    console.log("\n[6/6] Fetching and uploading cover image...");
     const { imageAsset, credit } = await uploadCoverImage(article);
 
     // Step 8: Create Sanity document
-    console.log("\n[6/6] Publishing to Sanity...");
+    console.log("\nPublishing to Sanity...");
     const sanityId = await createSanityArticle(article, generatedContent, imageAsset, credit);
 
     // Step 9: Update queue — mark as published
