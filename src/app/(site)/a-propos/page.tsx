@@ -181,14 +181,15 @@ export default async function AProposPage() {
                   C&apos;est à ce moment qu&apos;il rencontre <strong className="text-slate-800">Elio</strong>, déjà propriétaire de son propre van. Une passion commune, deux compétences complémentaires. Ensemble, ils investissent dans un second fourgon et posent les bases de Vanzon Explorer.
                 </p>
                 <p>
-                  Le nom de l&apos;entreprise porte une signification profonde. Il est né après le décès de <strong className="text-slate-800">Manon, la mère de Jules</strong>, grande passionnée de voyage. En néerlandais, <em>zon</em> signifie <strong className="text-slate-800">soleil</strong> — et c&apos;est exactement ce que représentait Manon. Associer <em>van</em> et <em>zon</em> pour former <strong className="text-slate-800">Vanzon</strong> s&apos;est imposé comme une évidence : un hommage lumineux, gravé dans le nom même de l&apos;entreprise.
+                  <strong className="text-slate-800">Pourquoi Vanzon ?</strong><br />
+                  Le nom de l&apos;entreprise porte une signification profonde. Il est né après le décès de la mère de Jules, passionnée de voyage. En néerlandais, <em>&laquo;&nbsp;van zon&nbsp;&raquo;</em> signifie <em>&laquo;&nbsp;du soleil&nbsp;&raquo;</em>. C&apos;est exactement ce que représentait <strong className="text-slate-800">Sandra Vanzon</strong>. Ce nom est paru comme une évidence : un hommage lumineux, une manière de faire perdurer sa mémoire.
                 </p>
                 <blockquote className="border-l-2 border-blue-200 pl-4">
                   <p className="text-slate-500 italic">
                     &ldquo;Rendre accessible à tous le goût de la liberté.&rdquo;
                   </p>
                   <footer className="mt-1 text-xs font-semibold text-slate-400 uppercase tracking-widest">
-                    — Manon
+                    — Vanzon Explorer
                   </footer>
                 </blockquote>
               </div>
