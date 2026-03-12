@@ -6,6 +6,7 @@ import { sanityFetch } from "@/lib/sanity/client";
 import { getSiteSettingsQuery } from "@/lib/sanity/queries";
 import CookieBanner from "@/components/ui/CookieBanner";
 import { LocalBusinessJsonLd } from "@/components/seo/JsonLd";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 
 const inter = Inter({
@@ -80,6 +81,7 @@ export default function RootLayout({
           <LocalBusinessJsonLd />
           {children}
           <CookieBanner />
+          <GoogleAnalytics gaId="G-D8NPYG2FDM" />
         </body>
       </html>
     </ClerkProvider>
