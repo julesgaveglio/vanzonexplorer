@@ -92,3 +92,55 @@ export async function downloadPexelsPhoto(photo: PexelsPhoto): Promise<Buffer> {
 export function buildPexelsCredit(photo: PexelsPhoto): string {
   return `Photo by ${photo.photographer} on Pexels`;
 }
+
+export interface SimplePexelsPhoto {
+  url: string;
+  alt: string;
+  photographer: string;
+  photographerUrl: string;
+}
+
+/**
+ * Fetch a single Pexels photo for use in pages (server component).
+ * Returns fallback if API key not set or request fails.
+ * Uses Next.js fetch cache with 24h revalidation.
+ */
+export async function fetchPexelsPhoto(
+  query: string,
+  fallbackUrl?: string
+): Promise<SimplePexelsPhoto | null> {
+  const apiKey = process.env.PEXELS_API_KEY;
+
+  if (!apiKey) {
+    return fallbackUrl
+      ? { url: fallbackUrl, alt: query, photographer: "", photographerUrl: "" }
+      : null;
+  }
+
+  try {
+    const res = await fetch(
+      `https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=3&orientation=landscape`,
+      {
+        headers: { Authorization: apiKey },
+        next: { revalidate: 86400 },
+      }
+    );
+
+    if (!res.ok) return fallbackUrl ? { url: fallbackUrl, alt: query, photographer: "", photographerUrl: "" } : null;
+
+    const data = await res.json();
+    const photo = data.photos?.[0];
+    if (!photo) return fallbackUrl ? { url: fallbackUrl, alt: query, photographer: "", photographerUrl: "" } : null;
+
+    return {
+      url: photo.src.large2x,
+      alt: photo.alt || query,
+      photographer: photo.photographer,
+      photographerUrl: photo.photographer_url,
+    };
+  } catch {
+    return fallbackUrl
+      ? { url: fallbackUrl, alt: query, photographer: "", photographerUrl: "" }
+      : null;
+  }
+}
