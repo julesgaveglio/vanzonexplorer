@@ -213,9 +213,27 @@ function PageCard({ page }: { page: (typeof PAGES)[0] }) {
       {/* Error */}
       {state.status === "error" && (
         <div className="px-5 pb-4">
-          <div className="bg-red-50 border border-red-100 rounded-xl px-4 py-3 text-xs text-red-600 font-medium">
-            {state.message}
-          </div>
+          {state.message.includes("pagespeedonline") || state.message.includes("disabled") || state.message.includes("has not been used") ? (
+            <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-start gap-3">
+              <span className="text-amber-500 text-base flex-shrink-0">⚠️</span>
+              <div>
+                <p className="text-xs font-bold text-amber-800 mb-1">PageSpeed Insights API non activée</p>
+                <p className="text-xs text-amber-700 mb-2">Active l&apos;API dans Google Cloud Console, puis réessaie dans 2 minutes.</p>
+                <a
+                  href="https://console.developers.google.com/apis/api/pagespeedonline.googleapis.com/overview?project=1032728566510"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-white bg-amber-500 hover:bg-amber-600 px-3 py-1.5 rounded-lg transition-colors"
+                >
+                  Activer l&apos;API →
+                </a>
+              </div>
+            </div>
+          ) : (
+            <div className="bg-red-50 border border-red-100 rounded-xl px-4 py-3 text-xs text-red-600 font-medium">
+              {state.message}
+            </div>
+          )}
         </div>
       )}
 
