@@ -5,6 +5,7 @@ import { sanityFetch } from "@/lib/sanity/client";
 import { getAllLocationVansQuery } from "@/lib/sanity/queries";
 import type { VanCard as VanCardType } from "@/lib/sanity/types";
 import VanCard from "@/components/van/VanCard";
+import { getGooglePlaceStats } from "@/lib/google-places";
 
 const BASE_URL = "https://vanzonexplorer.com";
 
@@ -131,7 +132,10 @@ const faqJsonLd = {
 };
 
 export default async function LocationPage() {
-  const vans = await sanityFetch<VanCardType[]>(getAllLocationVansQuery) ?? [];
+  const [vans, placeStats] = await Promise.all([
+    sanityFetch<VanCardType[]>(getAllLocationVansQuery).then(r => r ?? []),
+    getGooglePlaceStats(),
+  ]);
 
   return (
     <>
@@ -141,17 +145,18 @@ export default async function LocationPage() {
       />
 
       {/* ── Hero ── */}
-      <section className="relative min-h-[80vh] flex items-end overflow-hidden">
+      <section className="relative -mt-16 min-h-screen flex items-end overflow-hidden">
         <div className="absolute inset-0">
           <Image
             src="https://cdn.sanity.io/images/lewexa74/production/f93fa16ab46d8934dcc3092a8e86fc80ebce4305-1080x750.png"
             alt="Van aménagé au Pays Basque face à l'Atlantique"
             fill
-            className="object-cover object-center"
+            className="object-cover object-center sm:object-center object-right"
             priority
             unoptimized
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/92 via-slate-900/55 to-slate-900/10" />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-900/50 to-slate-900/20" />
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-950/30 via-transparent to-transparent" />
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-6 pb-20 pt-32 w-full">
@@ -164,27 +169,32 @@ export default async function LocationPage() {
           </nav>
 
           <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-2 mb-6">
+            <a
+              href="https://www.google.com/maps/place/?q=place_id:ChIJ7-3ASe0oTyQR6vNHg7YRicA"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-2 mb-6 transition-transform hover:scale-105 cursor-pointer"
+            >
               <span className="text-amber-400">★★★★★</span>
-              <span className="text-white/90 text-sm font-medium">4.9/5 · 33 avis Google · Départ Bayonne</span>
-            </div>
+              <span className="text-white/90 text-sm font-medium">{placeStats.reviewCount} avis Google · {placeStats.ratingDisplay}/5 · Départ Cambo-les-Bains</span>
+            </a>
 
-            <h1 className="text-5xl md:text-6xl font-black text-white leading-tight mb-6">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[1.05] mb-6">
               Location van aménagé<br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4BC3E3] to-[#4D5FEC]">
                 au Pays Basque
               </span>
             </h1>
 
-            <p className="text-xl text-white/75 leading-relaxed mb-8">
-              Vans tout équipés, assurance incluse, départ Bayonne.
+            <p className="text-xl text-white/75 leading-relaxed mb-8 max-w-xl">
+              Vans tout équipés, assurance incluse, départ Cambo-les-Bains.
               Surf, montagne, road trip — explorez le Pays Basque en toute liberté dès <strong className="text-white">65€/nuit</strong>.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
               <a
                 href="#nos-vans"
-                className="inline-flex items-center justify-center gap-2 bg-white text-slate-900 font-bold px-8 py-4 rounded-xl hover:bg-blue-50 transition-colors text-lg shadow-2xl"
+                className="btn-shine inline-flex items-center justify-center gap-2 bg-white text-slate-900 font-bold px-8 py-4 rounded-xl hover:bg-blue-50 transition-colors text-lg shadow-2xl"
               >
                 Voir nos vans disponibles
               </a>
@@ -196,7 +206,27 @@ export default async function LocationPage() {
               </Link>
             </div>
           </div>
+
+          <div className="hidden lg:flex gap-4 absolute bottom-20 right-6">
+            {[
+              { value: "65€", label: "/ nuit", sub: "à partir de" },
+              { value: "2", label: "vans", sub: "exclusifs" },
+              { value: `${placeStats.ratingDisplay}★`, label: "Google", sub: `${placeStats.reviewCount} avis` },
+            ].map((stat) => (
+              <div key={stat.label} className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-5 py-4 text-center min-w-[100px]">
+                <div className="text-xs text-white/60 font-medium mb-0.5">{stat.sub}</div>
+                <div className="text-2xl font-black text-white">{stat.value}</div>
+                <div className="text-xs text-white/70 font-medium">{stat.label}</div>
+              </div>
+            ))}
+          </div>
         </div>
+
+        <a href="#nos-vans" className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 text-white/50 hover:text-white/80 transition-colors animate-bounce">
+          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </a>
       </section>
 
       {/* ── Barre de réassurance ── */}
@@ -204,10 +234,10 @@ export default async function LocationPage() {
         <div className="max-w-5xl mx-auto px-6">
           <div className="flex flex-wrap justify-center md:justify-between items-center gap-y-4 gap-x-8 text-white/60 text-sm font-medium">
             {[
-              { icon: "📍", text: "Départ Bayonne, Pays Basque" },
+              { icon: "📍", text: "Départ Cambo-les-Bains, Pays Basque" },
               { icon: "🛡️", text: "Assurance tous risques incluse" },
               { icon: "💰", text: "Dès 65€/nuit" },
-              { icon: "⭐", text: "4.9/5 sur 33 avis Google" },
+              { icon: "⭐", text: `${placeStats.ratingDisplay}/5 sur ${placeStats.reviewCount} avis Google` },
               { icon: "🔑", text: "Livraison possible à Biarritz" },
             ].map((item) => (
               <div key={item.text} className="flex items-center gap-2">
@@ -318,6 +348,36 @@ export default async function LocationPage() {
         </div>
       </section>
 
+      {/* ── Google Maps — Point de départ ── */}
+      <section className="py-20 bg-white">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="text-center mb-10">
+            <span className="badge-glass !px-4 !py-1.5 text-sm font-semibold mb-4 inline-block" style={{ color: "#4D5FEC" }}>
+              📍 Point de départ
+            </span>
+            <h2 className="text-3xl font-black text-slate-900 mb-3">
+              Où récupérer le van ?
+            </h2>
+            <p className="text-slate-500 text-lg max-w-xl mx-auto">
+              Remise des clés à <strong>Cambo-les-Bains</strong> (64250) — à 15 min de Bayonne,
+              25 min de Biarritz. Livraison possible sur demande.
+            </p>
+          </div>
+          <div className="rounded-3xl overflow-hidden shadow-lg border border-slate-100">
+            <iframe
+              src="https://maps.google.com/maps?q=Cambo-les-Bains,64250,France&t=&z=13&ie=UTF8&iwloc=&output=embed"
+              width="100%"
+              height="400"
+              style={{ border: 0 }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Cambo-les-Bains — Point de départ Vanzon Explorer"
+            />
+          </div>
+        </div>
+      </section>
+
       {/* ── FAQ ── */}
       <section className="py-20" style={{ background: "linear-gradient(160deg, #F8FAFC 0%, #EFF6FF 100%)" }}>
         <div className="max-w-3xl mx-auto px-6">
@@ -369,7 +429,7 @@ export default async function LocationPage() {
           </h2>
           <p className="text-white/70 text-xl mb-10">
             Dès <strong className="text-white">65€/nuit</strong> — assurance incluse, van tout équipé,
-            récupération à Bayonne.
+            récupération à Cambo-les-Bains.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <a
