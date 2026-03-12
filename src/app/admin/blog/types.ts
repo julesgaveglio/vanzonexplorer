@@ -5,7 +5,7 @@ export interface ArticleQueueItem {
   slug: string;
   title: string;
   excerpt: string;
-  category: "Pays Basque" | "Aménagement Van" | "Business Van" | "Achat Van" | "Club Privé";
+  category: "Pays Basque" | "Aménagement Van" | "Business Van" | "Achat Van" | "Club Privé" | "Vie en van" | "Réglementation";
   tag: string | null;
   readTime: string;
   targetKeyword: string;
@@ -39,6 +39,8 @@ export const CATEGORY_COLORS: Record<string, { bg: string; text: string }> = {
   "Business Van": { bg: "bg-amber-50", text: "text-amber-700" },
   "Achat Van": { bg: "bg-violet-50", text: "text-violet-700" },
   "Club Privé": { bg: "bg-rose-50", text: "text-rose-700" },
+  "Vie en van": { bg: "bg-sky-50", text: "text-sky-700" },
+  "Réglementation": { bg: "bg-orange-50", text: "text-orange-700" },
 };
 
 export const STATUS_CONFIG: Record<ArticleStatus, { label: string; bg: string; text: string; dot: string }> = {
@@ -48,4 +50,4 @@ export const STATUS_CONFIG: Record<ArticleStatus, { label: string; bg: string; t
   "needs-improvement": { label: "À améliorer", bg: "bg-amber-50", text: "text-amber-700", dot: "bg-amber-500" },
 };
 
-export const CATEGORIES = ["Pays Basque", "Aménagement Van", "Business Van", "Achat Van", "Club Privé"] as const;
+export const CATEGORIES = ["Vie en van", "Réglementation", "Pays Basque", "Aménagement Van", "Business Van", "Achat Van", "Club Privé"] as const;
