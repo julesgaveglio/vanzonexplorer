@@ -6,6 +6,7 @@ import { getAllLocationVansQuery } from "@/lib/sanity/queries";
 import type { VanCard as VanCardType } from "@/lib/sanity/types";
 import VanCard from "@/components/van/VanCard";
 import { getGooglePlaceStats } from "@/lib/google-places";
+import { fetchPexelsPhoto } from "@/lib/pexels";
 
 const BASE_URL = "https://vanzonexplorer.com";
 
@@ -50,49 +51,22 @@ const faqItems = [
   },
 ];
 
-const destinations = [
-  {
-    href: "/location/biarritz",
-    label: "Biarritz",
-    emoji: "🌊",
-    desc: "Surf, plages et couchers de soleil",
-    img: "https://cdn.sanity.io/images/lewexa74/production/f93fa16ab46d8934dcc3092a8e86fc80ebce4305-1080x750.png",
-  },
-  {
-    href: "/location/hossegor",
-    label: "Hossegor",
-    emoji: "🏄",
-    desc: "La Mecque du surf européen",
-    img: "https://cdn.sanity.io/images/lewexa74/production/660105a28e577c33f642a8fdff528d88925642e3-1080x750.png",
-  },
-  {
-    href: "/location/bayonne",
-    label: "Bayonne",
-    emoji: "🏰",
-    desc: "Culture basque et gastronomie",
-    img: "https://cdn.sanity.io/images/lewexa74/production/f93fa16ab46d8934dcc3092a8e86fc80ebce4305-1080x750.png",
-  },
-  {
-    href: "/location/saint-jean-de-luz",
-    label: "Saint-Jean-de-Luz",
-    emoji: "⛵",
-    desc: "Village basque face à l'océan",
-    img: "https://cdn.sanity.io/images/lewexa74/production/660105a28e577c33f642a8fdff528d88925642e3-1080x750.png",
-  },
-  {
-    href: "/location/week-end",
-    label: "Week-end",
-    emoji: "🗓️",
-    desc: "2 nuits au minimum, idée d'itinéraire incluse",
-    img: "https://cdn.sanity.io/images/lewexa74/production/f93fa16ab46d8934dcc3092a8e86fc80ebce4305-1080x750.png",
-  },
-  {
-    href: "/articles/foret-irati-van",
-    label: "Forêt d'Irati",
-    emoji: "🌲",
-    desc: "Bivouac, randonnée et nature sauvage",
-    img: "https://cdn.sanity.io/images/lewexa74/production/660105a28e577c33f642a8fdff528d88925642e3-1080x750.png",
-  },
+const DEST_FALLBACKS: Record<string, string> = {
+  biarritz: "https://cdn.sanity.io/images/lewexa74/production/f93fa16ab46d8934dcc3092a8e86fc80ebce4305-1080x750.png",
+  hossegor: "https://cdn.sanity.io/images/lewexa74/production/04d93973d30c5eede51f954d1432a50a5f82ef9b-1080x750.png",
+  bayonne: "https://cdn.sanity.io/images/lewexa74/production/e9664378c5fdc652c33ae7342dfc52cc4960c8bf-1080x750.png",
+  sjdl: "https://cdn.sanity.io/images/lewexa74/production/0b3f81d08627ba0b4423224029cb5016d0e7ed25-2048x1365.jpg",
+  weekend: "https://cdn.sanity.io/images/lewexa74/production/660105a28e577c33f642a8fdff528d88925642e3-1080x750.png",
+  irati: "https://cdn.sanity.io/images/lewexa74/production/f93fa16ab46d8934dcc3092a8e86fc80ebce4305-1080x750.png",
+};
+
+const destMeta = [
+  { href: "/location/biarritz", label: "Biarritz", emoji: "🌊", desc: "Surf, plages et couchers de soleil", query: "biarritz beach surf atlantic basque coast", fb: "biarritz" },
+  { href: "/location/hossegor", label: "Hossegor", emoji: "🏄", desc: "La Mecque du surf européen", query: "hossegor surf waves beach landes", fb: "hossegor" },
+  { href: "/location/bayonne", label: "Bayonne", emoji: "🏰", desc: "Culture basque et gastronomie", query: "bayonne cathedral basque city ramparts france", fb: "bayonne" },
+  { href: "/location/saint-jean-de-luz", label: "Saint-Jean-de-Luz", emoji: "⛵", desc: "Village basque face à l'océan", query: "saint jean de luz harbor boats fishing village basque", fb: "sjdl" },
+  { href: "/location/week-end", label: "Week-end", emoji: "🗓️", desc: "2 nuits au minimum, idée d'itinéraire incluse", query: "basque country coast road trip weekend ocean", fb: "weekend" },
+  { href: "/location/foret-irati", label: "Forêt d'Irati", emoji: "🌲", desc: "Bivouac, randonnée et nature sauvage", query: "irati forest beech trees pyrenees basque autumn", fb: "irati" },
 ];
 
 const whyItems = [
@@ -132,10 +106,17 @@ const faqJsonLd = {
 };
 
 export default async function LocationPage() {
-  const [vans, placeStats] = await Promise.all([
+  const [vans, placeStats, ...destPhotos] = await Promise.all([
     sanityFetch<VanCardType[]>(getAllLocationVansQuery).then(r => r ?? []),
     getGooglePlaceStats(),
+    ...destMeta.map((d) => fetchPexelsPhoto(d.query, DEST_FALLBACKS[d.fb])),
   ]);
+
+  const destinations = destMeta.map((d, i) => ({
+    ...d,
+    img: destPhotos[i]?.url ?? DEST_FALLBACKS[d.fb],
+    photographer: destPhotos[i]?.photographer ?? null,
+  }));
 
   return (
     <>
