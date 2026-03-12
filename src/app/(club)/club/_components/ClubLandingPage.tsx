@@ -304,10 +304,27 @@ export default function ClubLandingPage({ previewProducts, brands, isLoggedIn = 
       </section>
 
       {/* ════════════════════════════════════════════════
-          LE CALCUL EST SIMPLE — violet
+          LE CALCUL EST SIMPLE — dark earth (même DA que le Hero)
       ════════════════════════════════════════════════ */}
-      <section ref={calcRef} className="px-6 py-28" style={{ background: "linear-gradient(135deg, #7C3AED 0%, #6D28D9 50%, #4C1D95 100%)" }}>
-        <div className="mx-auto max-w-5xl">
+      <section ref={calcRef} className="relative overflow-hidden bg-earth px-6 py-28">
+
+        {/* Orbes lumineux */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-rust/12 blur-[120px]" />
+          <div className="absolute bottom-0 right-0 w-[350px] h-[350px] rounded-full bg-sage/8 blur-[100px]" />
+          <div className="absolute top-0 right-1/4 w-[250px] h-[250px] rounded-full bg-rust/6 blur-[80px]" />
+        </div>
+
+        {/* Grille décorative subtile */}
+        <div
+          className="pointer-events-none absolute inset-0 opacity-[0.025]"
+          style={{
+            backgroundImage: "linear-gradient(rgba(250,247,242,1) 1px, transparent 1px), linear-gradient(90deg, rgba(250,247,242,1) 1px, transparent 1px)",
+            backgroundSize: "60px 60px",
+          }}
+        />
+
+        <div className="relative mx-auto max-w-5xl">
           <div className="grid gap-16 lg:grid-cols-[1fr_1.1fr] lg:items-center">
 
             {/* Gauche — grand chiffre */}
@@ -316,19 +333,19 @@ export default function ClubLandingPage({ previewProducts, brands, isLoggedIn = 
               initial="hidden"
               animate={calcInView ? "visible" : "hidden"}
             >
-              <span className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-200 mb-6 block">
+              <span className="text-xs font-semibold uppercase tracking-[0.2em] text-rust mb-6 block">
                 Le calcul est simple
               </span>
-              <div className="font-display text-[clamp(5rem,14vw,9rem)] leading-none tracking-wide text-white">
+              <div className="font-display text-[clamp(5rem,14vw,9rem)] leading-none tracking-wide text-cream">
                 9,99€
               </div>
-              <div className="font-display text-xl tracking-wide text-white/40 mt-1">/mois</div>
-              <div className="mt-8 h-px w-12 bg-white/20" />
-              <p className="mt-8 max-w-xs text-sm leading-relaxed text-white/60">
+              <div className="font-display text-xl tracking-wide text-cream/40 mt-1">/mois</div>
+              <div className="mt-8 h-px w-12 bg-cream/20" />
+              <p className="mt-8 max-w-xs text-sm leading-relaxed text-cream/55">
                 Un aménagement van coûte entre 3 000€ et 15 000€. Nos deals te font économiser en moyenne{" "}
-                <strong className="text-white font-semibold">10 à 30%</strong> sur chaque achat auprès de nos partenaires.
+                <strong className="text-cream font-semibold">10 à 30%</strong> sur chaque achat auprès de nos partenaires.
               </p>
-              <p className="mt-3 text-xs text-white/30">Résiliable à tout moment · Sans engagement</p>
+              <p className="mt-3 text-xs text-cream/25">Résiliable à tout moment · Sans engagement</p>
             </motion.div>
 
             {/* Droite — features */}
@@ -358,14 +375,14 @@ export default function ClubLandingPage({ previewProducts, brands, isLoggedIn = 
                 <motion.div
                   key={item.title}
                   variants={cardIn}
-                  className="group flex items-start gap-4 rounded-2xl border border-white/10 bg-white/10 p-5 transition-all duration-200 hover:bg-white/15 hover:border-white/20"
+                  className="group flex items-start gap-4 rounded-2xl border border-cream/10 bg-cream/6 p-5 transition-all duration-200 hover:bg-cream/10 hover:border-cream/20"
                 >
-                  <div className="mt-0.5 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-white/15 transition-colors group-hover:bg-white/20">
-                    <item.icon className="h-4 w-4 text-violet-200" />
+                  <div className="mt-0.5 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-rust/20 transition-colors group-hover:bg-rust/30">
+                    <item.icon className="h-4 w-4 text-rust" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-semibold text-white">{item.title}</h3>
-                    <p className="mt-1 text-sm leading-relaxed text-white/55">{item.desc}</p>
+                    <h3 className="text-sm font-semibold text-cream">{item.title}</h3>
+                    <p className="mt-1 text-sm leading-relaxed text-cream/50">{item.desc}</p>
                   </div>
                 </motion.div>
               ))}
