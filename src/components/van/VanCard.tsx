@@ -3,13 +3,13 @@ import type { VanCard as VanCardType } from "@/lib/sanity/types";
 import PriceDisplay from "./PriceDisplay";
 import VanImageCarousel from "./VanImageCarousel";
 
-// Équipements à afficher sur la card
-const equipmentBadges: { key: keyof VanCardType; label: string; icon: string }[] = [
-  { key: "eq_kitchen", label: "Cuisine coulissante", icon: "🍳" },
-  { key: "eq_toilet", label: "Toilettes sèches", icon: "🚽" },
-  { key: "eq_solar", label: "Électricité", icon: "⚡" },
-  { key: "eq_shower", label: "Douche solaire", icon: "🚿" },
-  { key: "eq_outdoor_chairs", label: "Chaise de camping", icon: "🪑" },
+// Équipements toujours affichés sur les deux cartes
+const equipmentBadges = [
+  { label: "Cuisine", icon: "🍳" },
+  { label: "Toilette", icon: "🧻" },
+  { label: "Électricité", icon: "⚡️" },
+  { label: "Chaise de camping", icon: "⛺️" },
+  { label: "Douche solaire", icon: "🚿" },
 ];
 
 
@@ -28,9 +28,6 @@ export default function VanCard({ van, mode }: VanCardProps) {
     ...(van.gallery?.filter((g) => g?.url).map((g) => ({ url: g.url, alt: g.alt || van.name })) ?? []),
   ];
 
-  const visibleEquipments = equipmentBadges.filter(
-    (eq) => van[eq.key as keyof VanCardType]
-  );
 
   return (
     <article className="glass-card glass-card-hover overflow-hidden group">
@@ -52,15 +49,13 @@ export default function VanCard({ van, mode }: VanCardProps) {
         </h3>
 
         {/* Badges équipements */}
-        {visibleEquipments.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 mt-3">
-            {visibleEquipments.map((eq) => (
-              <span key={eq.key} className="badge-glass">
-                {eq.icon} {eq.label}
-              </span>
-            ))}
-          </div>
-        )}
+        <div className="flex flex-wrap gap-1.5 mt-3">
+          {equipmentBadges.map((eq) => (
+            <span key={eq.label} className="badge-glass">
+              {eq.icon} {eq.label}
+            </span>
+          ))}
+        </div>
 
         {/* Prix */}
         <div className="mt-4">
