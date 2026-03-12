@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   description:
     "Louez un van aménagé tout équipé au Pays Basque dès 65€/nuit. Départ Bayonne, assurance tous risques incluse. Surf, montagne, road trip — explorez librement avec Vanzon Explorer.",
   alternates: {
-    canonical: `${BASE_URL}/location`,
+    canonical: "https://vanzonexplorer.com/location",
   },
   openGraph: {
     title: "Location Van Aménagé Pays Basque — dès 65€/nuit",

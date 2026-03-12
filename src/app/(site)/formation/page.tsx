@@ -13,6 +13,9 @@ export const metadata: Metadata = {
   title: "Van Business Academy — Formation Vanlife | Vanzon Explorer",
   description:
     "Apprends à aménager ton fourgon et lancer ton business de location de van. Formation complète par Jules & Elio de Vanzon Explorer — de l'achat au premier euro généré.",
+  alternates: {
+    canonical: "https://vanzonexplorer.com/formation",
+  },
   openGraph: {
     title: "Van Business Academy — Formation Vanlife | Vanzon Explorer",
     description: "Apprends à aménager ton fourgon et lancer ton business de location de van. Formation complète par Jules & Elio — de l'achat au premier euro généré.",

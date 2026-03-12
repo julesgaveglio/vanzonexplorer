@@ -14,6 +14,9 @@ export const metadata: Metadata = {
   title: "Location Van Aménagé Pays Basque — dès 65€/nuit | Vanzon Explorer",
   description:
     "Louez un van aménagé au Pays Basque dès 65€/nuit. Biarritz, Bayonne, Hossegor — vans tout équipés, assurance incluse, réservation simple. Surf, montagne, océan — vivez le Pays Basque en liberté.",
+  alternates: {
+    canonical: "https://vanzonexplorer.com/",
+  },
 };
 
 export default async function HomePage() {

@@ -7,6 +7,9 @@ export const metadata: Metadata = {
   title: "Road Trip Pays Basque en Van — Itinéraire 7 Jours | Vanzon Explorer",
   description:
     "Découvrez notre itinéraire road trip Pays Basque en van aménagé : Biarritz, Hossegor, Saint-Jean-de-Luz, Espelette. Spots vanlife, budget et conseils pratiques.",
+  alternates: {
+    canonical: "https://vanzonexplorer.com/road-trip-pays-basque-van",
+  },
   openGraph: {
     title: "Road Trip Pays Basque en Van — Itinéraire 7 Jours",
     description:

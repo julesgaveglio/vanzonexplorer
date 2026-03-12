@@ -13,6 +13,9 @@ export const metadata: Metadata = {
     "fourgon aménagé à vendre",
     "van aménagé 2024 vente",
   ],
+  alternates: {
+    canonical: "https://vanzonexplorer.com/achat/yoni",
+  },
   openGraph: {
     title: "Yoni — Renault Trafic aménagé 2024, 25 000 €",
     description: "Van aménagé par nos soins, issu de notre flotte de location au Pays Basque. Historique complet, remise à Cambo-les-Bains.",

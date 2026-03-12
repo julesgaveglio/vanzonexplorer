@@ -16,6 +16,9 @@ export const metadata: Metadata = {
     "bivouac pays basque",
     "vanlife france",
   ],
+  alternates: {
+    canonical: "https://vanzonexplorer.com/articles",
+  },
   openGraph: {
     title: "Guides & Articles Vanlife — Pays Basque",
     description: "Itinéraires, spots secrets et conseils pratiques pour explorer le Pays Basque en van aménagé.",

@@ -13,6 +13,9 @@ export const metadata: Metadata = {
     "fourgon aménagé à vendre pays basque",
     "acheter van aménagé occasion",
   ],
+  alternates: {
+    canonical: "https://vanzonexplorer.com/achat/xalbat",
+  },
   openGraph: {
     title: "Xalbat — Renault Trafic aménagé 2025, 25 000 €",
     description: "Notre dernier aménagement, le van le plus récent de notre flotte. Historique complet, remise à Cambo-les-Bains.",
