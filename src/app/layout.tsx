@@ -21,7 +21,7 @@ const bebasNeue = Bebas_Neue({
   display: "swap",
 });
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://vanzonexplorer.com";
+const BASE_URL = "https://vanzonexplorer.com";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await sanityFetch<{
@@ -49,6 +49,9 @@ export async function generateMetadata(): Promise<Metadata> {
     description:
       "Location de vans aménagés, achat/revente et formation vanlife au Pays Basque. Explorez la côte basque en toute liberté.",
     metadataBase: new URL(BASE_URL),
+    alternates: {
+      canonical: BASE_URL,
+    },
     openGraph: {
       type: "website",
       locale: "fr_FR",

@@ -6,6 +6,9 @@ export const metadata: Metadata = {
   title: "Location Van Aménagé Biarritz — dès 65€/nuit | Vanzon Explorer",
   description:
     "Louez un van aménagé à Biarritz dès 65€/nuit. Surf à la Côte des Basques, plage de Milady, Grande Plage — explorez Biarritz en van avec Vanzon Explorer.",
+  alternates: {
+    canonical: "https://vanzonexplorer.com/location/biarritz",
+  },
 };
 
 const highlights = [

@@ -6,6 +6,9 @@ export const metadata: Metadata = {
   title: "Location Van Aménagé Saint-Jean-de-Luz | Vanzon Explorer",
   description:
     "Louez un van aménagé à Saint-Jean-de-Luz dès 65€/nuit. Port pittoresque, plage protégée, pintxos et ambiance basque authentique. Assurance incluse, départ Bayonne.",
+  alternates: {
+    canonical: "https://vanzonexplorer.com/location/saint-jean-de-luz",
+  },
 };
 
 const highlights = [

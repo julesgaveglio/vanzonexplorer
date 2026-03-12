@@ -10,6 +10,9 @@ export const metadata: Metadata = {
   title: "À propos — Vanzon Explorer | Écosystème Vanlife Pays Basque",
   description:
     "Vanzon Explorer : l'écosystème vanlife 360° qui rend la liberté accessible à tous. Location, achat, formation et Club Privé au Pays Basque et partout en France. Fondé en 2024 par Jules et Elio.",
+  alternates: {
+    canonical: "https://vanzonexplorer.com/a-propos",
+  },
 };
 
 // ── Requêtes dynamiques ──────────────────────────────────────────

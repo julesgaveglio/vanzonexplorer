@@ -6,6 +6,9 @@ export const metadata: Metadata = {
   title: "Pays Basque en van — Vantrips & Meilleurs Spots | Vanzon Explorer",
   description:
     "Découvrez les meilleurs spots et vantrips au Pays Basque avec Vanzon Explorer. Côte atlantique, montagnes, villages basques — les itinéraires arrivent bientôt.",
+  alternates: {
+    canonical: "https://vanzonexplorer.com/pays-basque",
+  },
 };
 
 

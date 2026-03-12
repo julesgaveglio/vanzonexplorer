@@ -3,7 +3,7 @@ import { sanityFetch } from "@/lib/sanity/client";
 import { getAllVanSlugsQuery, getAllArticleSlugsQuery } from "@/lib/sanity/queries";
 import { VANS } from "@/lib/data/vans";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://vanzonexplorer.com";
+const BASE_URL = "https://vanzonexplorer.com";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const vanSlugs = await sanityFetch<{ slug: string }[]>(getAllVanSlugsQuery) ?? [];

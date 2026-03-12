@@ -6,6 +6,9 @@ export const metadata: Metadata = {
   title: "Location Van Aménagé Hossegor — Surf & Vanlife | Vanzon Explorer",
   description:
     "Louez un van aménagé à Hossegor dès 65€/nuit. La Gravière, les Estagnots, ambiance surf culture — explorez les Landes et la côte basque en van avec Vanzon Explorer.",
+  alternates: {
+    canonical: "https://vanzonexplorer.com/location/hossegor",
+  },
 };
 
 const highlights = [

@@ -6,6 +6,9 @@ export const metadata: Metadata = {
   title: "Location Van Week-end Pays Basque — 2 nuits dès 130€ | Vanzon Explorer",
   description:
     "Louez un van aménagé pour le week-end au Pays Basque dès 65€/nuit. Escape parfaite sur 2–3 jours depuis Biarritz ou Bayonne — assurance incluse, van tout équipé.",
+  alternates: {
+    canonical: "https://vanzonexplorer.com/location/week-end",
+  },
 };
 
 const weekendIdeas = [

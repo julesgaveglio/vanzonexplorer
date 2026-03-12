@@ -4,6 +4,9 @@ export const metadata: Metadata = {
   title: "Contact | Vanzon Explorer",
   description:
     "Contactez Jules de Vanzon Explorer pour toute question sur la location de van, la formation vanlife ou l'achat accompagne. Reponse rapide par email ou WhatsApp.",
+  alternates: {
+    canonical: "https://vanzonexplorer.com/contact",
+  },
 };
 
 export default function ContactPage() {
