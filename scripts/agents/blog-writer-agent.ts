@@ -98,6 +98,21 @@ const sanity = createClient({
   useCdn: false,
 });
 
+// ── Sanity: fetch all published article slugs ──────────────────────────────────
+async function getPublishedSlugs(): Promise<Set<string>> {
+  try {
+    const docs = await sanity.fetch<Array<{ slug: { current: string } }>>(
+      `*[_type == "article" && defined(slug.current)]{ slug }`
+    );
+    const slugs = new Set(docs.map((d) => d.slug.current));
+    console.log(`  [LinkCheck] ${slugs.size} published article slug(s) fetched from Sanity`);
+    return slugs;
+  } catch (err) {
+    console.warn(`  [LinkCheck] Could not fetch published slugs from Sanity: ${(err as Error).message}`);
+    return new Set();
+  }
+}
+
 // ── DataForSEO helpers ─────────────────────────────────────────────────────────
 function getDfsAuthHeader(): string {
   const login = process.env.DATAFORSEO_LOGIN;
@@ -208,14 +223,21 @@ async function fetchExternalSources(keyword: string): Promise<TavilySource[]> {
 // ── Post-processing: inject internal links into generated markdown ─────────────
 // Applies each internal URL once (first occurrence of any matching phrase).
 // Only applies to regular paragraph lines — not to headings/blockquotes/list items.
-function injectInternalLinks(markdown: string): string {
+function injectInternalLinks(markdown: string, publishedSlugs: Set<string> = new Set()): string {
   // Priority-ordered list: first match wins for each URL.
   // NOTE: \b doesn't work with French accented chars (é, à, û…) — use lookahead/lookbehind instead.
   // (?<![a-zA-ZÀ-ÿ]) = not preceded by a letter  (handles accents too)
   // (?![a-zA-ZÀ-ÿ])  = not followed by a letter
   const W = "(?<![a-zA-ZÀ-ÿ])"; // word-start boundary for French
   const w = "(?![a-zA-ZÀ-ÿ])";  // word-end boundary for French
-  const rules: Array<{ pattern: RegExp; url: string }> = [
+
+  // Helper: only include article-specific rules if the slug is published
+  const articleUrl = (slug: string) =>
+    publishedSlugs.size === 0 || publishedSlugs.has(slug)
+      ? `/vanzon/articles/${slug}`
+      : null;
+
+  const allRules: Array<{ pattern: RegExp; url: string | null }> = [
     // /vanzon/location — louer/réserver un van
     { pattern: new RegExp(`${W}(lou(?:er?|ez) (?:un |votre |son |notre |leur )?van(?:\\s+aménagé)?)${w}`, "i"), url: "/vanzon/location" },
     { pattern: new RegExp(`${W}(location de van(?:\\s+aménagé)?)${w}`, "i"), url: "/vanzon/location" },
@@ -227,18 +249,21 @@ function injectInternalLinks(markdown: string): string {
     { pattern: new RegExp(`${W}(van aménagé à (?:vendre|la vente|acheter))${w}`, "i"), url: "/vanzon/achat" },
     { pattern: new RegExp(`${W}(van aménagé)${w}`, "i"), url: "/vanzon/achat" }, // first mention of "van aménagé"
     // /vanzon/articles/ou-dormir-van-pays-basque — bivouac & nuit en van
-    { pattern: new RegExp(`${W}(bivouac(?:er|ant|quer)?)${w}`, "i"), url: "/vanzon/articles/ou-dormir-van-pays-basque" },
-    { pattern: new RegExp(`${W}(dormir (?:dans |en |à bord de )?(?:son |ton |votre )?van)${w}`, "i"), url: "/vanzon/articles/ou-dormir-van-pays-basque" },
-    { pattern: new RegExp(`${W}(nuit(?:s)? (?:dans |en |à bord de )?(?:son |ton |votre )?van)${w}`, "i"), url: "/vanzon/articles/ou-dormir-van-pays-basque" },
+    { pattern: new RegExp(`${W}(bivouac(?:er|ant|quer)?)${w}`, "i"), url: articleUrl("ou-dormir-van-pays-basque") },
+    { pattern: new RegExp(`${W}(dormir (?:dans |en |à bord de )?(?:son |ton |votre )?van)${w}`, "i"), url: articleUrl("ou-dormir-van-pays-basque") },
+    { pattern: new RegExp(`${W}(nuit(?:s)? (?:dans |en |à bord de )?(?:son |ton |votre )?van)${w}`, "i"), url: articleUrl("ou-dormir-van-pays-basque") },
     // /vanzon/articles/road-trip-pays-basque-van — road trip
-    { pattern: new RegExp(`${W}(road[- ]trip (?:au |en van au |au )?Pays Basque)${w}`, "i"), url: "/vanzon/articles/road-trip-pays-basque-van" },
-    { pattern: new RegExp(`${W}(road[- ]trip)${w}`, "i"), url: "/vanzon/articles/road-trip-pays-basque-van" },
-    { pattern: new RegExp(`${W}(itinéraire (?:de |du |au )?Pays Basque)${w}`, "i"), url: "/vanzon/articles/road-trip-pays-basque-van" },
+    { pattern: new RegExp(`${W}(road[- ]trip (?:au |en van au |au )?Pays Basque)${w}`, "i"), url: articleUrl("road-trip-pays-basque-van") },
+    { pattern: new RegExp(`${W}(road[- ]trip)${w}`, "i"), url: articleUrl("road-trip-pays-basque-van") },
+    { pattern: new RegExp(`${W}(itinéraire (?:de |du |au )?Pays Basque)${w}`, "i"), url: articleUrl("road-trip-pays-basque-van") },
     // /vanzon/pays-basque — guide/spots Pays Basque
     { pattern: new RegExp(`${W}(guide (?:du |de )?Pays Basque)${w}`, "i"), url: "/vanzon/pays-basque" },
     { pattern: new RegExp(`${W}(spots? (?:du |au |en )?Pays Basque)${w}`, "i"), url: "/vanzon/pays-basque" },
     { pattern: new RegExp(`${W}(Pays Basque vanlife)${w}`, "i"), url: "/vanzon/pays-basque" },
   ];
+
+  // Filter out rules with null URL (unpublished article targets)
+  const rules = allRules.filter((r): r is { pattern: RegExp; url: string } => r.url !== null);
 
   const usedUrls = new Set<string>();
   const lines = markdown.split("\n");
@@ -276,6 +301,79 @@ function injectInternalLinks(markdown: string): string {
   });
 
   return result.join("\n");
+}
+
+// ── Post-processing: verify and strip broken external links from Portable Text ─
+// Sends HEAD requests to all external hrefs in markDefs.
+// Removes markDef + flattens marks on spans for any URL that doesn't return 2xx.
+async function verifyExternalLinks(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  blocks: Array<Record<string, any>>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+): Promise<Array<Record<string, any>>> {
+  // Collect all unique external hrefs
+  const externalHrefs = new Set<string>();
+  for (const block of blocks) {
+    if (block._type !== "block" || !Array.isArray(block.markDefs)) continue;
+    for (const def of block.markDefs) {
+      if (def._type === "link" && typeof def.href === "string" && def.href.startsWith("http")) {
+        externalHrefs.add(def.href);
+      }
+    }
+  }
+
+  if (externalHrefs.size === 0) return blocks;
+  console.log(`  [LinkVerify] Checking ${externalHrefs.size} external link(s)...`);
+
+  // HEAD-check each URL (5s timeout)
+  const brokenUrls = new Set<string>();
+  await Promise.all(
+    Array.from(externalHrefs).map(async (href) => {
+      try {
+        const res = await fetch(href, {
+          method: "HEAD",
+          signal: AbortSignal.timeout(5000),
+          headers: { "User-Agent": "Mozilla/5.0 (compatible; VanzonBot/1.0)" },
+          redirect: "follow",
+        });
+        if (!res.ok) {
+          brokenUrls.add(href);
+          console.warn(`  [LinkVerify] BROKEN (${res.status}): ${href}`);
+        } else {
+          console.log(`  [LinkVerify] OK (${res.status}): ${href}`);
+        }
+      } catch {
+        brokenUrls.add(href);
+        console.warn(`  [LinkVerify] BROKEN (timeout/error): ${href}`);
+      }
+    })
+  );
+
+  if (brokenUrls.size === 0) return blocks;
+
+  // Remove broken markDefs and flatten their marks in spans
+  return blocks.map((block) => {
+    if (block._type !== "block" || !Array.isArray(block.markDefs)) return block;
+
+    const brokenKeys = new Set<string>(
+      (block.markDefs as Array<{ _type: string; _key: string; href: string }>)
+        .filter((def) => def._type === "link" && brokenUrls.has(def.href))
+        .map((def) => def._key)
+    );
+    if (brokenKeys.size === 0) return block;
+
+    const cleanMarkDefs = (block.markDefs as Array<{ _key: string }>).filter(
+      (def) => !brokenKeys.has(def._key)
+    );
+    const cleanChildren = (
+      block.children as Array<{ marks?: string[]; [k: string]: unknown }>
+    ).map((child) => ({
+      ...child,
+      marks: (child.marks ?? []).filter((m: string) => !brokenKeys.has(m)),
+    }));
+
+    return { ...block, markDefs: cleanMarkDefs, children: cleanChildren };
+  });
 }
 
 // ── Inline markdown parser (bold, italic, links) ──────────────────────────────
@@ -552,7 +650,8 @@ async function generateArticle(
   article: ArticleQueueItem,
   keywordData: KeywordData,
   serpAnalysis: SerpAnalysis,
-  externalSources: TavilySource[]
+  externalSources: TavilySource[],
+  publishedSlugs: Set<string> = new Set()
 ): Promise<GeneratedContent> {
   const geminiKey = process.env.GEMINI_API_KEY;
   if (!geminiKey) throw new Error("GEMINI_API_KEY is required for metadata generation");
@@ -741,7 +840,8 @@ Réponds UNIQUEMENT avec le texte markdown. Aucune explication, aucune balise, a
   const rawBody = await callClaude(bodyPrompt, { maxTokens: maxTokensForBody });
 
   // Post-process: inject internal links automatically (guaranteed, Claude-independent)
-  const body = injectInternalLinks(rawBody);
+  // Only injects article links for slugs confirmed to exist in Sanity
+  const body = injectInternalLinks(rawBody, publishedSlugs);
 
   // Convert markdown body to Portable Text blocks
   const content = markdownToPortableText(body);
@@ -1049,24 +1149,32 @@ async function main(): Promise<void> {
 
   try {
     // Step 4: DataForSEO — keyword overview
-    console.log("\n[1/6] Fetching keyword data from DataForSEO...");
+    console.log("\n[1/7] Fetching keyword data from DataForSEO...");
     const keywordData = await getKeywordData(article.targetKeyword);
 
     // Step 5: DataForSEO SERP — PAA questions + top organic results
-    console.log("\n[2/6] Analyzing SERP (PAA + top results)...");
+    console.log("\n[2/7] Analyzing SERP (PAA + top results)...");
     const serpAnalysis = await analyzeSERP(article.targetKeyword);
 
     // Step 5.5: Tavily — fetch verified external sources
-    console.log("\n[3/6] Fetching external sources via Tavily...");
+    console.log("\n[3/7] Fetching external sources via Tavily...");
     const externalSources = await fetchExternalSources(article.targetKeyword);
     console.log(`  Found ${externalSources.length} verified external source(s)`);
 
+    // Step 5.6: Fetch published Sanity slugs for link verification
+    console.log("\n[4/7] Fetching published article slugs from Sanity...");
+    const publishedSlugs = await getPublishedSlugs();
+
     // Step 6: Generate article — Gemini for metadata, Claude Sonnet 4.6 for body
-    console.log("\n[4/6] Generating article (Gemini metadata + Claude Sonnet body)...");
-    const generatedContent = await generateArticle(article, keywordData, serpAnalysis, externalSources);
+    console.log("\n[5/7] Generating article (Gemini metadata + Claude Sonnet body)...");
+    const generatedContent = await generateArticle(article, keywordData, serpAnalysis, externalSources, publishedSlugs);
+
+    // Step 6.1: Verify external links — strip broken ones before publishing
+    console.log("\n[5.5/7] Verifying external links...");
+    generatedContent.content = await verifyExternalLinks(generatedContent.content) as typeof generatedContent.content;
 
     // Step 6.5: SERP images — 1 API call, inject into content body
-    console.log("\n[5/6] Fetching inline images via SERP API...");
+    console.log("\n[6/7] Fetching inline images via SERP API...");
     const serpImages = await searchAndUploadSerpImages(
       article.targetKeyword,
       generatedContent.title
@@ -1080,7 +1188,7 @@ async function main(): Promise<void> {
     }
 
     // Step 7: Cover image (SerpAPI → Pexels fallback)
-    console.log("\n[6/6] Fetching and uploading cover image...");
+    console.log("\n[7/7] Fetching and uploading cover image...");
     const { imageAsset, credit } = await uploadCoverImage(article);
 
     // Step 8: Create Sanity document

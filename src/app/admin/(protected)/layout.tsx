@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { auth, currentUser } from "@clerk/nextjs/server";
-import AdminSidebar from "./_components/AdminSidebar";
+import AdminSidebar from "../_components/AdminSidebar";
 
 const ALLOWED_EMAIL = "gavegliojules@gmail.com";
 

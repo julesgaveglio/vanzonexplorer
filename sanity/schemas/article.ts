@@ -54,9 +54,11 @@ export default defineType({
       options: {
         list: [
           { title: "Road Trips", value: "Road Trips" },
+          { title: "Pays Basque", value: "Pays Basque" },
           { title: "Aménagement Van", value: "Aménagement Van" },
           { title: "Business Van", value: "Business Van" },
           { title: "Achat Van", value: "Achat Van" },
+          { title: "Club Privé", value: "Club Privé" },
         ],
       },
       validation: (R) => R.required(),

@@ -1,7 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { dfsPost, DFS_LOCATION, DFS_LANGUAGE_CODE } from "@/lib/dataforseo";
-import { KEYWORDS, KeywordData } from "@/app/admin/keywords/data/keywords";
+import { KEYWORDS, KeywordData } from "@/app/admin/(protected)/keywords/data/keywords";
 
 interface DFSKeywordItem {
   keyword?: string;
