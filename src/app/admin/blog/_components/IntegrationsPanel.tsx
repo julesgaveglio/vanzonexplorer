@@ -58,9 +58,10 @@ function IntegrationCard({ name, description, metrics, logoUrl, accentColor, con
 
 interface IntegrationsPanelProps {
   gscConnected?: boolean;
+  gaConnected?: boolean;
 }
 
-export default function IntegrationsPanel({ gscConnected = false }: IntegrationsPanelProps) {
+export default function IntegrationsPanel({ gscConnected = false, gaConnected = false }: IntegrationsPanelProps) {
   return (
     <div>
       <div className="flex items-center gap-3 mb-4">
@@ -80,9 +81,11 @@ export default function IntegrationsPanel({ gscConnected = false }: Integrations
         <IntegrationCard
           name="Google Analytics 4"
           description="Trafic, sessions et comportement utilisateurs"
-          metrics={["Visiteurs uniques", "Sessions", "Taux de rebond", "Durée moyenne"]}
+          metrics={["Sessions (28j)", "Pages vues", "Durée moyenne", "Taux de rebond"]}
           logoUrl="https://www.gstatic.com/analytics-suite/header/suite/v2/ic_analytics.svg"
           accentColor="#F9AB00"
+          connected={gaConnected}
+          connectHref="/api/admin/ga/auth"
         />
       </div>
     </div>

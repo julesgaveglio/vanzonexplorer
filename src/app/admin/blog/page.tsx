@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { readFile } from "fs/promises";
 import path from "path";
-import type { ArticleQueueItem, GscMetrics } from "./types";
+import type { ArticleQueueItem, GscMetrics, GaMetrics } from "./types";
 import KpiBar from "./_components/KpiBar";
 import PublishedArticlesTable from "./_components/PublishedArticlesTable";
 import ArticleQueueList from "./_components/ArticleQueueList";
@@ -77,10 +77,96 @@ async function getGscMetrics(): Promise<{ metrics: Record<string, GscMetrics>; c
   }
 }
 
+async function getGaMetrics(): Promise<{ metrics: Record<string, GaMetrics>; connected: boolean; activeUsers?: number }> {
+  const refreshToken = process.env.GOOGLE_GA_REFRESH_TOKEN;
+  if (!refreshToken) return { metrics: {}, connected: false };
+
+  try {
+    const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        client_id: process.env.GOOGLE_GSC_CLIENT_ID!,
+        client_secret: process.env.GOOGLE_GSC_CLIENT_SECRET!,
+        refresh_token: refreshToken,
+        grant_type: "refresh_token",
+      }),
+      next: { revalidate: 300 },
+    });
+    const tokenData = await tokenRes.json();
+    if (!tokenRes.ok) return { metrics: {}, connected: false };
+
+    const accessToken = tokenData.access_token;
+    const propertyId = process.env.GOOGLE_GA_PROPERTY_ID ?? "483724268";
+    const endDate = new Date().toISOString().slice(0, 10);
+    const startDate = new Date(Date.now() - 28 * 86400000).toISOString().slice(0, 10);
+
+    // Page-level report: sessions, pageviews, avgSessionDuration, bounceRate
+    const [reportRes, realtimeRes] = await Promise.all([
+      fetch(`https://analyticsdata.googleapis.com/v1beta/properties/${propertyId}:runReport`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          dateRanges: [{ startDate, endDate }],
+          dimensions: [{ name: "pagePath" }],
+          metrics: [
+            { name: "sessions" },
+            { name: "screenPageViews" },
+            { name: "averageSessionDuration" },
+            { name: "bounceRate" },
+          ],
+          dimensionFilter: {
+            filter: {
+              fieldName: "pagePath",
+              stringFilter: { matchType: "BEGINS_WITH", value: "/vanzon/articles/" },
+            },
+          },
+          limit: 100,
+        }),
+        next: { revalidate: 300 },
+      }),
+      fetch(`https://analyticsdata.googleapis.com/v1beta/properties/${propertyId}:runRealtimeReport`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ metrics: [{ name: "activeUsers" }] }),
+        next: { revalidate: 60 },
+      }),
+    ]);
+
+    const metrics: Record<string, GaMetrics> = {};
+    if (reportRes.ok) {
+      const data = await reportRes.json();
+      for (const row of data.rows ?? []) {
+        const pagePath: string = row.dimensionValues[0].value;
+        const match = pagePath.match(/\/vanzon\/articles\/([^/?#]+)/);
+        if (match) {
+          metrics[match[1]] = {
+            sessions: Math.round(Number(row.metricValues[0].value)),
+            pageviews: Math.round(Number(row.metricValues[1].value)),
+            avgDuration: Math.round(Number(row.metricValues[2].value)),
+            bounceRate: Math.round(Number(row.metricValues[3].value) * 100),
+          };
+        }
+      }
+    }
+
+    let activeUsers: number | undefined;
+    if (realtimeRes.ok) {
+      const rtData = await realtimeRes.json();
+      activeUsers = Math.round(Number(rtData.rows?.[0]?.metricValues?.[0]?.value ?? 0));
+    }
+
+    return { metrics, connected: true, activeUsers };
+  } catch {
+    return { metrics: {}, connected: false };
+  }
+}
+
 export default async function AdminBlogPage() {
-  const [articles, { metrics: gscMetrics, connected: gscConnected }] = await Promise.all([
+  const [articles, { metrics: gscMetrics, connected: gscConnected }, { metrics: gaMetrics, connected: gaConnected, activeUsers }] = await Promise.all([
     getArticleQueue(),
     getGscMetrics(),
+    getGaMetrics(),
   ]);
 
   const publishedCount = articles.filter((a) => a.status === "published").length;
@@ -112,7 +198,7 @@ export default async function AdminBlogPage() {
       </div>
 
       {/* KPIs */}
-      <KpiBar articles={articles} />
+      <KpiBar articles={articles} activeUsers={activeUsers} />
 
       {/* Articles publiés */}
       <div className="mb-8">
@@ -120,7 +206,7 @@ export default async function AdminBlogPage() {
           <span className="w-8 h-px bg-slate-200" />
           <span className="text-xs font-semibold uppercase tracking-widest text-slate-400">Articles publiés</span>
         </div>
-        <PublishedArticlesTable articles={articles} gscMetrics={gscMetrics} />
+        <PublishedArticlesTable articles={articles} gscMetrics={gscMetrics} gaMetrics={gaMetrics} />
       </div>
 
       {/* File d'attente */}
@@ -133,7 +219,7 @@ export default async function AdminBlogPage() {
       </div>
 
       {/* Intégrations */}
-      <IntegrationsPanel gscConnected={gscConnected} />
+      <IntegrationsPanel gscConnected={gscConnected} gaConnected={gaConnected} />
     </div>
   );
 }

@@ -33,6 +33,13 @@ export interface GscMetrics {
   sessions?: number;
 }
 
+export interface GaMetrics {
+  sessions?: number;
+  pageviews?: number;
+  avgDuration?: number; // seconds
+  bounceRate?: number;  // 0-100
+}
+
 export const CATEGORY_COLORS: Record<string, { bg: string; text: string }> = {
   "Pays Basque": { bg: "bg-teal-50", text: "text-teal-700" },
   "Aménagement Van": { bg: "bg-emerald-50", text: "text-emerald-700" },
