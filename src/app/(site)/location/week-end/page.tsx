@@ -1,15 +1,21 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { fetchPexelsPhoto } from "@/lib/pexels";
+import { getGooglePlaceStats } from "@/lib/google-places";
+
+export const revalidate = 86400;
 
 export const metadata: Metadata = {
   title: "Location Van Week-end Pays Basque — 2 nuits dès 130€ | Vanzon Explorer",
   description:
-    "Louez un van aménagé pour le week-end au Pays Basque dès 65€/nuit. Escape parfaite sur 2–3 jours depuis Biarritz ou Bayonne — assurance incluse, van tout équipé.",
+    "Louez un van aménagé pour le week-end au Pays Basque dès 65€/nuit. Escape parfaite sur 2–3 jours depuis Cambo-les-Bains — assurance incluse, van tout équipé.",
   alternates: {
     canonical: "https://vanzonexplorer.com/location/week-end",
   },
 };
+
+const FALLBACK_IMG = "https://cdn.sanity.io/images/lewexa74/production/f93fa16ab46d8934dcc3092a8e86fc80ebce4305-1080x750.png";
 
 const weekendIdeas = [
   {
@@ -42,22 +48,27 @@ const weekendIdeas = [
   },
 ];
 
-export default function LocationWeekEndPage() {
+export default async function LocationWeekEndPage() {
+  const [photo, placeStats] = await Promise.all([
+    fetchPexelsPhoto("basque country road trip van camping weekend", FALLBACK_IMG),
+    getGooglePlaceStats(),
+  ]);
+
   return (
     <>
       {/* Hero */}
-      <section className="relative min-h-[70vh] flex items-end overflow-hidden">
+      <section className="relative -mt-16 min-h-screen flex items-end overflow-hidden">
         <div className="absolute inset-0">
           <Image
-            src="https://cdn.sanity.io/images/lewexa74/production/f93fa16ab46d8934dcc3092a8e86fc80ebce4305-1080x750.png"
+            src={photo?.url ?? FALLBACK_IMG}
             alt="Location van week-end Pays Basque - van aménagé bord de mer"
             fill
-            className="object-cover object-center"
+            className="object-cover object-center sm:object-center object-right"
             priority
             unoptimized
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-900/50 to-slate-900/10" />
-          <div className="absolute inset-0 bg-gradient-to-r from-purple-950/20 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-900/50 to-slate-900/20" />
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-950/30 via-transparent to-transparent" />
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-6 pb-20 pt-32 w-full">
@@ -72,19 +83,24 @@ export default function LocationWeekEndPage() {
           </nav>
 
           <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-2 mb-6">
-              <span>📅</span>
-              <span className="text-white/90 text-sm font-medium">2 nuits minimum · Disponible vendredi soir</span>
-            </div>
+            <a
+              href="https://www.google.com/maps/place/?q=place_id:ChIJ7-3ASe0oTyQR6vNHg7YRicA"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-2 mb-6 transition-transform hover:scale-105 cursor-pointer"
+            >
+              <span className="text-amber-400">★★★★★</span>
+              <span className="text-white/90 text-sm font-medium">{placeStats.reviewCount} avis Google · Départ Cambo-les-Bains</span>
+            </a>
 
-            <h1 className="text-5xl md:text-6xl font-black text-white leading-tight mb-6">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[1.05] mb-6">
               Van week-end<br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4D5FEC] to-[#4BC3E3]">
                 Pays Basque
               </span>
             </h1>
 
-            <p className="text-xl text-white/75 leading-relaxed mb-8">
+            <p className="text-xl text-white/75 leading-relaxed mb-8 max-w-xl">
               Le Pays Basque en van pour un week-end — la meilleure façon de décompresser.
               Réservez du vendredi au dimanche, et revenez rechargé à bloc dès <strong className="text-white">130€ (2 nuits)</strong>.
             </p>
@@ -92,7 +108,7 @@ export default function LocationWeekEndPage() {
             <div className="flex flex-col sm:flex-row gap-4">
               <Link
                 href="/location#nos-vans"
-                className="inline-flex items-center justify-center gap-2 bg-white text-slate-900 font-bold px-8 py-4 rounded-xl hover:bg-blue-50 transition-colors text-lg shadow-2xl"
+                className="btn-shine inline-flex items-center justify-center gap-2 bg-white text-slate-900 font-bold px-8 py-4 rounded-xl hover:bg-blue-50 transition-colors text-lg shadow-2xl"
               >
                 Voir les disponibilités
               </Link>
@@ -111,7 +127,7 @@ export default function LocationWeekEndPage() {
             {[
               { value: "2", label: "nuits min.", sub: "week-end" },
               { value: "130€", label: "2 nuits", sub: "dès" },
-              { value: "5★", label: "Google", sub: "33 avis" },
+              { value: `${placeStats.ratingDisplay}★`, label: "Google", sub: `${placeStats.reviewCount} avis` },
             ].map((stat) => (
               <div key={stat.label} className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-5 py-4 text-center min-w-[100px]">
                 <div className="text-xs text-white/60 font-medium mb-0.5">{stat.sub}</div>
@@ -121,6 +137,18 @@ export default function LocationWeekEndPage() {
             ))}
           </div>
         </div>
+
+        {photo?.photographer && (
+          <p className="absolute bottom-2 right-4 text-white/30 text-[10px] z-10">
+            Photo: {photo.photographer} / Pexels
+          </p>
+        )}
+
+        <a href="#idees" className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 text-white/50 hover:text-white/80 transition-colors animate-bounce">
+          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </a>
       </section>
 
       {/* Confiance */}
@@ -131,8 +159,8 @@ export default function LocationWeekEndPage() {
               { icon: "📅", text: "Disponible vendredi soir" },
               { icon: "🛡️", text: "Assurance tous risques incluse" },
               { icon: "💰", text: "2 nuits dès 130€" },
-              { icon: "⭐", text: "4.9/5 sur 33 avis Google" },
-              { icon: "🔑", text: "Remise des clés à Bayonne" },
+              { icon: "⭐", text: `${placeStats.ratingDisplay}/5 sur ${placeStats.reviewCount} avis Google` },
+              { icon: "🔑", text: "Remise des clés à Cambo-les-Bains" },
             ].map((item) => (
               <div key={item.text} className="flex items-center gap-2">
                 <span>{item.icon}</span>
@@ -144,7 +172,7 @@ export default function LocationWeekEndPage() {
       </section>
 
       {/* Idées week-end */}
-      <section className="py-20 bg-white">
+      <section id="idees" className="py-20 bg-white scroll-mt-20">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-14">
             <span className="badge-glass !px-4 !py-1.5 text-sm font-semibold mb-4 inline-block" style={{ color: "#4D5FEC" }}>
@@ -202,7 +230,7 @@ export default function LocationWeekEndPage() {
             {[
               { step: "01", title: "Choisissez vos dates", desc: "Week-end vendredi soir au dimanche, ou samedi au lundi. Minimum 2 nuits.", color: "from-[#4BC3E3] to-[#4D5FEC]" },
               { step: "02", title: "Réservez sur Yescapa", desc: "Paiement sécurisé en ligne. Assurance tous risques automatiquement incluse.", color: "from-[#4D5FEC] to-[#3B4FDB]" },
-              { step: "03", title: "Récupérez le van à Bayonne", desc: "Jules vous remet les clés et vous partage ses spots secrets. À vous le Pays Basque !", color: "from-[#3B4FDB] to-[#2A3BC5]" },
+              { step: "03", title: "Récupérez le van à Cambo-les-Bains", desc: "Jules vous remet les clés et vous partage ses spots secrets. À vous le Pays Basque !", color: "from-[#3B4FDB] to-[#2A3BC5]" },
             ].map((item) => (
               <div key={item.step} className="text-center">
                 <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${item.color} flex items-center justify-center mx-auto mb-5 shadow-lg`}>
@@ -212,6 +240,30 @@ export default function LocationWeekEndPage() {
                 <p className="text-white/60 leading-relaxed text-sm">{item.desc}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Google Maps — Point de départ */}
+      <section className="py-16 bg-white">
+        <div className="max-w-5xl mx-auto px-6">
+          <h2 className="text-2xl font-black text-slate-900 mb-2 text-center">
+            Votre point de départ : Cambo-les-Bains
+          </h2>
+          <p className="text-slate-500 text-center mb-8">
+            Remise des clés à Cambo-les-Bains (64250). Parking gratuit sur place.
+          </p>
+          <div className="rounded-3xl overflow-hidden shadow-lg border border-slate-100">
+            <iframe
+              src="https://maps.google.com/maps?q=Cambo-les-Bains,64250,France&t=&z=13&ie=UTF8&iwloc=&output=embed"
+              width="100%"
+              height="350"
+              style={{ border: 0 }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Cambo-les-Bains — Votre base de départ week-end"
+            />
           </div>
         </div>
       </section>

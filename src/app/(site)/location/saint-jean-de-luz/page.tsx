@@ -1,15 +1,21 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { fetchPexelsPhoto } from "@/lib/pexels";
+import { getGooglePlaceStats } from "@/lib/google-places";
+
+export const revalidate = 86400;
 
 export const metadata: Metadata = {
   title: "Location Van Aménagé Saint-Jean-de-Luz | Vanzon Explorer",
   description:
-    "Louez un van aménagé à Saint-Jean-de-Luz dès 65€/nuit. Port pittoresque, plage protégée, pintxos et ambiance basque authentique. Assurance incluse, départ Bayonne.",
+    "Louez un van aménagé à Saint-Jean-de-Luz dès 65€/nuit. Port pittoresque, plage protégée, pintxos et ambiance basque authentique. Assurance incluse, départ Cambo-les-Bains.",
   alternates: {
     canonical: "https://vanzonexplorer.com/location/saint-jean-de-luz",
   },
 };
+
+const FALLBACK_IMG = "https://cdn.sanity.io/images/lewexa74/production/0b3f81d08627ba0b4423224029cb5016d0e7ed25-2048x1365.jpg";
 
 const highlights = [
   { icon: "⛵", label: "Le port", desc: "L'un des plus beaux ports de pêche de la côte Atlantique française" },
@@ -20,21 +26,27 @@ const highlights = [
   { icon: "🎣", label: "Ciboure", desc: "Village voisin, maisons colorées face à la mer — calme et authentique" },
 ];
 
-export default function LocationSaintJeanDeLuzPage() {
+export default async function LocationSaintJeanDeLuzPage() {
+  const [photo, placeStats] = await Promise.all([
+    fetchPexelsPhoto("saint jean de luz harbor fishing village basque", FALLBACK_IMG),
+    getGooglePlaceStats(),
+  ]);
+
   return (
     <>
       {/* Hero */}
-      <section className="relative min-h-[70vh] flex items-end overflow-hidden">
+      <section className="relative -mt-16 min-h-screen flex items-end overflow-hidden">
         <div className="absolute inset-0">
           <Image
-            src="https://cdn.sanity.io/images/lewexa74/production/0b3f81d08627ba0b4423224029cb5016d0e7ed25-2048x1365.jpg"
+            src={photo?.url ?? FALLBACK_IMG}
             alt="Van aménagé à Saint-Jean-de-Luz au Pays Basque"
             fill
-            className="object-cover object-center"
+            className="object-cover object-center sm:object-center object-right"
             priority
             unoptimized
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-900/50 to-slate-900/10" />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-900/50 to-slate-900/20" />
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-950/30 via-transparent to-transparent" />
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-6 pb-20 pt-32 w-full">
@@ -49,19 +61,24 @@ export default function LocationSaintJeanDeLuzPage() {
           </nav>
 
           <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-2 mb-6">
-              <span>⛵</span>
-              <span className="text-white/90 text-sm font-medium">Joyau du Pays Basque — à 25 min de Bayonne</span>
-            </div>
+            <a
+              href="https://www.google.com/maps/place/?q=place_id:ChIJ7-3ASe0oTyQR6vNHg7YRicA"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-2 mb-6 transition-transform hover:scale-105 cursor-pointer"
+            >
+              <span className="text-amber-400">★★★★★</span>
+              <span className="text-white/90 text-sm font-medium">{placeStats.reviewCount} avis Google · Départ Cambo-les-Bains</span>
+            </a>
 
-            <h1 className="text-5xl md:text-6xl font-black text-white leading-tight mb-6">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[1.05] mb-6">
               Location van aménagé<br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4BC3E3] to-sky-400">
                 Saint-Jean-de-Luz
               </span>
             </h1>
 
-            <p className="text-xl text-white/75 leading-relaxed mb-8">
+            <p className="text-xl text-white/75 leading-relaxed mb-8 max-w-xl">
               Van aménagé tout équipé pour explorer Saint-Jean-de-Luz et la côte basque.
               Plage protégée, port authentique, gastronomie basque — le charme du Pays Basque
               dans toute sa splendeur.
@@ -70,7 +87,7 @@ export default function LocationSaintJeanDeLuzPage() {
             <div className="flex flex-col sm:flex-row gap-4">
               <Link
                 href="/location#nos-vans"
-                className="inline-flex items-center justify-center gap-2 bg-white text-slate-900 font-bold px-8 py-4 rounded-xl hover:bg-blue-50 transition-colors text-lg shadow-2xl"
+                className="btn-shine inline-flex items-center justify-center gap-2 bg-white text-slate-900 font-bold px-8 py-4 rounded-xl hover:bg-blue-50 transition-colors text-lg shadow-2xl"
               >
                 Voir nos vans disponibles
               </Link>
@@ -84,7 +101,33 @@ export default function LocationSaintJeanDeLuzPage() {
               </a>
             </div>
           </div>
+
+          <div className="hidden lg:flex gap-4 absolute bottom-20 right-6">
+            {[
+              { value: "65€", label: "/ nuit", sub: "à partir de" },
+              { value: "2", label: "vans", sub: "exclusifs" },
+              { value: `${placeStats.ratingDisplay}★`, label: "Google", sub: `${placeStats.reviewCount} avis` },
+            ].map((stat) => (
+              <div key={stat.label} className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-5 py-4 text-center min-w-[100px]">
+                <div className="text-xs text-white/60 font-medium mb-0.5">{stat.sub}</div>
+                <div className="text-2xl font-black text-white">{stat.value}</div>
+                <div className="text-xs text-white/70 font-medium">{stat.label}</div>
+              </div>
+            ))}
+          </div>
         </div>
+
+        {photo?.photographer && (
+          <p className="absolute bottom-2 right-4 text-white/30 text-[10px] z-10">
+            Photo: {photo.photographer} / Pexels
+          </p>
+        )}
+
+        <a href="#infos" className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 text-white/50 hover:text-white/80 transition-colors animate-bounce">
+          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </a>
       </section>
 
       {/* Confiance */}
@@ -92,10 +135,10 @@ export default function LocationSaintJeanDeLuzPage() {
         <div className="max-w-5xl mx-auto px-6">
           <div className="flex flex-wrap justify-center md:justify-between items-center gap-y-4 gap-x-8 text-white/60 text-sm font-medium">
             {[
-              { icon: "📍", text: "Départ Bayonne — 25 min de Saint-Jean-de-Luz" },
+              { icon: "📍", text: "Départ Cambo-les-Bains — 20 min de Saint-Jean-de-Luz" },
               { icon: "🛡️", text: "Assurance tous risques incluse" },
               { icon: "💰", text: "Dès 65€/nuit" },
-              { icon: "⭐", text: "4.9/5 sur 33 avis Google" },
+              { icon: "⭐", text: `${placeStats.ratingDisplay}/5 sur ${placeStats.reviewCount} avis Google` },
               { icon: "🚿", text: "Toilette sèche & cuisine à bord" },
             ].map((item) => (
               <div key={item.text} className="flex items-center gap-2">
@@ -108,7 +151,7 @@ export default function LocationSaintJeanDeLuzPage() {
       </section>
 
       {/* Points forts */}
-      <section className="py-20 bg-white">
+      <section id="infos" className="py-20 bg-white scroll-mt-20">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-14">
             <span className="badge-glass !px-4 !py-1.5 text-sm font-semibold mb-4 inline-block" style={{ color: "#4D5FEC" }}>
@@ -148,7 +191,7 @@ export default function LocationSaintJeanDeLuzPage() {
               </h2>
               <div className="space-y-4">
                 {[
-                  { label: "Distance Bayonne", value: "25 min (D918) — route côtière panoramique" },
+                  { label: "Récupération du van", value: "Cambo-les-Bains (20 min de Saint-Jean-de-Luz) — route côtière panoramique" },
                   { label: "Spot nuit recommandé", value: "Aire municipale de Saint-Jean-de-Luz (7€/nuit, accès port)" },
                   { label: "Meilleure saison", value: "Toute l'année — baie protégée, peu de vent" },
                   { label: "Tarif van", value: "Dès 65€/nuit — assurance et équipements inclus" },
@@ -176,6 +219,30 @@ export default function LocationSaintJeanDeLuzPage() {
         </div>
       </section>
 
+      {/* Google Maps — Point de départ */}
+      <section className="py-16 bg-white">
+        <div className="max-w-5xl mx-auto px-6">
+          <h2 className="text-2xl font-black text-slate-900 mb-2 text-center">
+            Votre point de départ : Cambo-les-Bains
+          </h2>
+          <p className="text-slate-500 text-center mb-8">
+            À 20 min de Saint-Jean-de-Luz. Remise des clés sur place, parking gratuit.
+          </p>
+          <div className="rounded-3xl overflow-hidden shadow-lg border border-slate-100">
+            <iframe
+              src="https://maps.google.com/maps?q=Cambo-les-Bains,64250,France&t=&z=13&ie=UTF8&iwloc=&output=embed"
+              width="100%"
+              height="350"
+              style={{ border: 0 }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Cambo-les-Bains — Point de départ vers Saint-Jean-de-Luz"
+            />
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="relative py-24 overflow-hidden">
         <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, #0F153A 0%, #1e2d6b 100%)" }} />
@@ -185,7 +252,7 @@ export default function LocationSaintJeanDeLuzPage() {
           </h2>
           <p className="text-white/70 text-xl mb-10">
             Dès <strong className="text-white">65€/nuit</strong> — assurance incluse, van tout équipé,
-            départ Bayonne.
+            départ Cambo-les-Bains.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <a
