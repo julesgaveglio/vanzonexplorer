@@ -17,6 +17,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/location/bayonne`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE_URL}/location/saint-jean-de-luz`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE_URL}/location/week-end`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },
+    { url: `${BASE_URL}/location/foret-irati`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE_URL}/formation`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9 },
     { url: `${BASE_URL}/achat`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
     ...VANS.map((v) => ({ url: `${BASE_URL}/achat/${v.id}`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.8 })),

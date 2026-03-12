@@ -1,5 +1,49 @@
 import type { VanData } from "@/lib/data/vans";
 
+const SITE_URL = "https://vanzonexplorer.com";
+
+export function LocationRentalJsonLd({ destination, url }: { destination: string; url: string }) {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: `Location van aménagé — ${destination}`,
+    description: `Louez un van aménagé tout équipé pour explorer ${destination} au départ de Cambo-les-Bains. Assurance incluse.`,
+    url,
+    brand: { "@type": "Brand", name: "Vanzon Explorer" },
+    offers: {
+      "@type": "AggregateOffer",
+      lowPrice: 65,
+      highPrice: 95,
+      priceCurrency: "EUR",
+      offerCount: 2,
+      offers: [
+        {
+          "@type": "Offer",
+          name: "Basse saison (15/11–15/02)",
+          price: 65,
+          priceCurrency: "EUR",
+          availability: "https://schema.org/InStock",
+          seller: { "@type": "Organization", name: "Vanzon Explorer", url: SITE_URL },
+        },
+        {
+          "@type": "Offer",
+          name: "Haute saison (15/04–15/09)",
+          price: 95,
+          priceCurrency: "EUR",
+          availability: "https://schema.org/InStock",
+          seller: { "@type": "Organization", name: "Vanzon Explorer", url: SITE_URL },
+        },
+      ],
+    },
+  };
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  );
+}
+
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL
   ? `${process.env.NEXT_PUBLIC_SITE_URL}/vanzon`
   : "https://vanzonexplorer.com/vanzon";

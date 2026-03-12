@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { fetchPexelsPhoto } from "@/lib/pexels";
 import { getGooglePlaceStats } from "@/lib/google-places";
+import { LocationRentalJsonLd } from "@/components/seo/JsonLd";
 
 export const revalidate = 86400;
 
@@ -34,6 +35,11 @@ export default async function LocationBayonnePage() {
 
   return (
     <>
+      <LocationRentalJsonLd
+        destination="Bayonne"
+        url="https://vanzonexplorer.com/location/bayonne"
+      />
+
       {/* Hero */}
       <section className="relative -mt-16 min-h-screen flex items-end overflow-hidden">
         <div className="absolute inset-0">

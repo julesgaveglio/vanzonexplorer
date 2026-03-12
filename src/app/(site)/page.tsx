@@ -17,6 +17,19 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://vanzonexplorer.com/",
   },
+  openGraph: {
+    title: "Location Van Aménagé Pays Basque — dès 65€/nuit | Vanzon Explorer",
+    description: "Louez un van aménagé au Pays Basque dès 65€/nuit. Vans tout équipés, assurance incluse. Surf, montagne, océan.",
+    url: "https://vanzonexplorer.com/",
+    images: [
+      {
+        url: "https://cdn.sanity.io/images/lewexa74/production/d445397965472d300e3dc13d6b1c37503fe8ba25-1920x1080.png",
+        width: 1920,
+        height: 1080,
+        alt: "Van aménagé au bord de l'océan au Pays Basque — Vanzon Explorer",
+      },
+    ],
+  },
 };
 
 export default async function HomePage() {

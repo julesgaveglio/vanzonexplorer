@@ -8,36 +8,36 @@ import { LocationRentalJsonLd } from "@/components/seo/JsonLd";
 export const revalidate = 86400;
 
 export const metadata: Metadata = {
-  title: "Location Van Aménagé Biarritz — dès 65€/nuit | Vanzon Explorer",
+  title: "Location Van Forêt d'Irati — Bivouac Pyrénées | Vanzon Explorer",
   description:
-    "Louez un van aménagé à Biarritz dès 65€/nuit. Surf à la Côte des Basques, plage de Milady, Grande Plage — explorez Biarritz en van avec Vanzon Explorer.",
+    "Louez un van aménagé pour explorer la Forêt d'Irati dès 65€/nuit. La plus grande hêtraie d'Europe, bivouac en altitude, randonnées Pyrénées basques. Départ Cambo-les-Bains.",
   alternates: {
-    canonical: "https://vanzonexplorer.com/location/biarritz",
+    canonical: "https://vanzonexplorer.com/location/foret-irati",
   },
 };
 
 const FALLBACK_IMG = "https://cdn.sanity.io/images/lewexa74/production/f93fa16ab46d8934dcc3092a8e86fc80ebce4305-1080x750.png";
 
 const highlights = [
-  { icon: "🌊", label: "Côte des Basques", desc: "Le spot de surf le plus célèbre de France, à 10 min du van" },
-  { icon: "🏄", label: "Plage de Milady", desc: "Idéale pour les débutants et les longboarders" },
-  { icon: "🎡", label: "Grande Plage", desc: "Le cœur de Biarritz, casino, hôtels, bars animés" },
-  { icon: "🪨", label: "Rocher de la Vierge", desc: "Vue panoramique sur l'Atlantique depuis la passerelle" },
-  { icon: "🏛️", label: "Marché des Halles", desc: "Pintxos, fromages basques et jambon de Bayonne" },
-  { icon: "💡", label: "Phare de Biarritz", desc: "Point de vue sur 3 pays par temps clair" },
+  { icon: "🌲", label: "Hêtraie millénaire", desc: "La plus grande forêt de hêtres d'Europe — 17 000 hectares entre France et Espagne" },
+  { icon: "⛺", label: "Bivouac altitude", desc: "Dormir en van à 900m, au calme absolu, entouré de forêt et de brouillard matinal" },
+  { icon: "🦌", label: "Faune sauvage", desc: "Cerfs, chevaux sauvages, vautours — une nature préservée et accessible" },
+  { icon: "🥾", label: "Randonnées balisées", desc: "Sentiers GR depuis le col d'Orgambide — vues Pyrénées jusqu'à l'océan" },
+  { icon: "🧀", label: "Fromage de brebis", desc: "Fromageries basques en route — Ossau-Iraty AOP produit localement" },
+  { icon: "🏔️", label: "Col Bagargui", desc: "Route panoramique spectaculaire — le Pays Basque sous un autre angle" },
 ];
 
-export default async function LocationBiarritzPage() {
+export default async function LocationForetIratiPage() {
   const [photo, placeStats] = await Promise.all([
-    fetchPexelsPhoto("biarritz surf atlantic beach basque france", FALLBACK_IMG),
+    fetchPexelsPhoto("irati forest beech trees pyrenees basque", FALLBACK_IMG),
     getGooglePlaceStats(),
   ]);
 
   return (
     <>
       <LocationRentalJsonLd
-        destination="Biarritz"
-        url="https://vanzonexplorer.com/location/biarritz"
+        destination="Forêt d'Irati"
+        url="https://vanzonexplorer.com/location/foret-irati"
       />
 
       {/* Hero */}
@@ -45,7 +45,7 @@ export default async function LocationBiarritzPage() {
         <div className="absolute inset-0">
           <Image
             src={photo?.url ?? FALLBACK_IMG}
-            alt="Van aménagé à Biarritz au bord de l'Atlantique"
+            alt="Van aménagé en bivouac dans la Forêt d'Irati, Pyrénées basques"
             fill
             className="object-cover object-center sm:object-center object-right"
             priority
@@ -62,7 +62,7 @@ export default async function LocationBiarritzPage() {
               <li>›</li>
               <li><Link href="/location" className="hover:text-white/80 transition-colors">Location</Link></li>
               <li>›</li>
-              <li className="text-white/80">Biarritz</li>
+              <li className="text-white/80">Forêt d&apos;Irati</li>
             </ol>
           </nav>
 
@@ -78,16 +78,16 @@ export default async function LocationBiarritzPage() {
             </a>
 
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[1.05] mb-6">
-              Location van aménagé<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4BC3E3] to-[#4D5FEC]">
-                à Biarritz
+              Van & bivouac<br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-[#4BC3E3]">
+                Forêt d&apos;Irati
               </span>
             </h1>
 
             <p className="text-xl text-white/75 leading-relaxed mb-8 max-w-xl">
-              Explorez Biarritz et la Côte des Basques en van aménagé tout équipé.
-              Surf, culture basque et couchers de soleil sur l&apos;Atlantique — dès 65€/nuit,
-              assurance incluse.
+              La plus grande hêtraie d&apos;Europe à 45 min de Cambo-les-Bains.
+              Van tout équipé, bivouac en altitude, randonnées dans les Pyrénées basques
+              — une expérience vanlife hors du commun dès <strong className="text-white">65€/nuit</strong>.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
@@ -111,7 +111,7 @@ export default async function LocationBiarritzPage() {
           <div className="hidden lg:flex gap-4 absolute bottom-20 right-6">
             {[
               { value: "65€", label: "/ nuit", sub: "à partir de" },
-              { value: "2", label: "vans", sub: "exclusifs" },
+              { value: "45 min", label: "de Cambo", sub: "seulement" },
               { value: `${placeStats.ratingDisplay}★`, label: "Google", sub: `${placeStats.reviewCount} avis` },
             ].map((stat) => (
               <div key={stat.label} className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-5 py-4 text-center min-w-[100px]">
@@ -136,16 +136,16 @@ export default async function LocationBiarritzPage() {
         </a>
       </section>
 
-      {/* Infos confiance */}
+      {/* Confiance */}
       <section className="bg-slate-950 py-5 border-t border-white/5">
         <div className="max-w-5xl mx-auto px-6">
           <div className="flex flex-wrap justify-center md:justify-between items-center gap-y-4 gap-x-8 text-white/60 text-sm font-medium">
             {[
-              { icon: "📍", text: "Départ Cambo-les-Bains — 25 min de Biarritz" },
+              { icon: "📍", text: "Départ Cambo-les-Bains — 45 min de la forêt" },
               { icon: "🛡️", text: "Assurance tous risques incluse" },
               { icon: "💰", text: "Dès 65€/nuit" },
               { icon: "⭐", text: `${placeStats.ratingDisplay}/5 sur ${placeStats.reviewCount} avis Google` },
-              { icon: "🔑", text: "Livraison Biarritz sur demande" },
+              { icon: "🌲", text: "Spots bivouac partagés par Jules" },
             ].map((item) => (
               <div key={item.text} className="flex items-center gap-2">
                 <span>{item.icon}</span>
@@ -156,7 +156,7 @@ export default async function LocationBiarritzPage() {
         </div>
       </section>
 
-      {/* Pourquoi Biarritz en van */}
+      {/* Points forts */}
       <section id="infos" className="py-20 bg-white scroll-mt-20">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-14">
@@ -164,11 +164,11 @@ export default async function LocationBiarritzPage() {
               La destination
             </span>
             <h2 className="text-4xl font-black text-slate-900 mb-3">
-              Pourquoi louer un van à Biarritz ?
+              Forêt d&apos;Irati en van — la nature absolue
             </h2>
             <p className="text-slate-500 text-lg max-w-xl mx-auto">
-              Biarritz est la capitale du surf français et l&apos;un des spots les plus photogéniques
-              du Pays Basque. En van, vous dormez à 500 m des meilleures plages.
+              À seulement 45 min de Cambo-les-Bains, la Forêt d&apos;Irati est l&apos;antithèse de la côte :
+              silence, altitude, forêt primaire et bivouacs à couper le souffle.
             </p>
           </div>
 
@@ -192,16 +192,16 @@ export default async function LocationBiarritzPage() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="text-3xl font-black text-slate-900 mb-6">
-                Infos pratiques — Biarritz en van
+                Infos pratiques — Forêt d&apos;Irati en van
               </h2>
               <div className="space-y-4">
                 {[
-                  { label: "Récupération du van", value: "Cambo-les-Bains (25 min de Biarritz) ou livraison sur demande" },
-                  { label: "Durée minimum", value: "2 nuits (week-end) — idéal 4–7 jours" },
-                  { label: "Tarif", value: "Dès 65€/nuit — assurance et équipements inclus" },
-                  { label: "Spot nuit recommandé", value: "Parking Côte des Basques — gratuit hors juillet/août" },
-                  { label: "Meilleure saison", value: "Mai–Juin et Septembre — vagues + météo parfaites" },
-                  { label: "Accès surf", value: "Côte des Basques, Milady, Anglet (Cavaliers) — toutes à 10 min" },
+                  { label: "Récupération du van", value: "Cambo-les-Bains (45 min d'Irati) — route via col d'Ispéguy" },
+                  { label: "Spot nuit recommandé", value: "Col d'Orgambide ou lac d'Irabia — bivouac gratuit en dehors juil./août" },
+                  { label: "Meilleure saison", value: "Septembre-Novembre — feuillage automnal, cerfs en rut, peu de monde" },
+                  { label: "Tarif van", value: "Dès 65€/nuit — assurance et équipements inclus" },
+                  { label: "À prévoir", value: "Eau potable à remplir à Cambo — sources non potables en forêt" },
+                  { label: "À combiner avec", value: "La Rhune (45 min), Espelette (30 min), San Sebastián (1h)" },
                 ].map((row) => (
                   <div key={row.label} className="flex gap-4 border-b border-slate-100 pb-4">
                     <span className="text-sm font-semibold text-slate-400 w-40 flex-shrink-0">{row.label}</span>
@@ -213,8 +213,8 @@ export default async function LocationBiarritzPage() {
 
             <div className="relative aspect-square rounded-3xl overflow-hidden">
               <Image
-                src="https://cdn.sanity.io/images/lewexa74/production/660105a28e577c33f642a8fdff528d88925642e3-1080x750.png"
-                alt="Van Yoni Vanzon Explorer ouvert près de Biarritz"
+                src="https://cdn.sanity.io/images/lewexa74/production/04d93973d30c5eede51f954d1432a50a5f82ef9b-1080x750.png"
+                alt="Van Xalbat Vanzon Explorer en direction de la Forêt d'Irati"
                 fill
                 className="object-cover"
                 unoptimized
@@ -231,7 +231,7 @@ export default async function LocationBiarritzPage() {
             Votre point de départ : Cambo-les-Bains
           </h2>
           <p className="text-slate-500 text-center mb-8">
-            À 25 min de Biarritz. Remise des clés sur place, parking gratuit.
+            À 45 min de la Forêt d&apos;Irati. Remise des clés sur place, parking gratuit.
           </p>
           <div className="rounded-3xl overflow-hidden shadow-lg border border-slate-100">
             <iframe
@@ -242,7 +242,7 @@ export default async function LocationBiarritzPage() {
               allowFullScreen
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              title="Cambo-les-Bains — Point de départ vers Biarritz"
+              title="Cambo-les-Bains — Point de départ vers la Forêt d'Irati"
             />
           </div>
         </div>
@@ -253,7 +253,7 @@ export default async function LocationBiarritzPage() {
         <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, #0F153A 0%, #1e2d6b 100%)" }} />
         <div className="relative z-10 max-w-3xl mx-auto px-6 text-center">
           <h2 className="text-4xl md:text-5xl font-black text-white mb-5 leading-tight">
-            Partez à Biarritz<br />en van dès ce week-end.
+            La forêt vous attend.<br />Le van aussi.
           </h2>
           <p className="text-white/70 text-xl mb-10">
             Dès <strong className="text-white">65€/nuit</strong> — assurance incluse, van tout équipé,
@@ -279,7 +279,7 @@ export default async function LocationBiarritzPage() {
           </div>
           <p className="text-white/40 text-sm mt-6">
             <Link href="/road-trip-pays-basque-van" className="hover:text-white/60 transition-colors underline underline-offset-2">
-              Voir notre itinéraire road trip Pays Basque en van
+              Voir l&apos;itinéraire road trip Pays Basque 7 jours
             </Link>
           </p>
         </div>
