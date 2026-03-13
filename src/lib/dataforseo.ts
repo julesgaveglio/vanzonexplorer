@@ -37,3 +37,22 @@ export const DFS_LOCATION = "France";
 export const DFS_LANGUAGE = "fr";
 export const DFS_LOCATION_CODE = 2250;
 export const DFS_LANGUAGE_CODE = "fr";
+
+export async function dfsPostRaw<T = unknown>(
+  endpoint: string,
+  body: unknown
+): Promise<T> {
+  const res = await fetch(`${DFS_BASE}${endpoint}`, {
+    method: "POST",
+    headers: {
+      Authorization: getAuthHeader(),
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+    next: { revalidate: 3600 },
+  });
+  if (!res.ok) {
+    throw new Error(`DataForSEO HTTP error ${res.status}: ${await res.text()}`);
+  }
+  return res.json() as Promise<T>;
+}
