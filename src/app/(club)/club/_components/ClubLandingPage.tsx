@@ -102,25 +102,26 @@ function BrandLogoTicker({ brand }: { brand: Brand }) {
 
   if (src && !imgFailed) {
     return (
-      <div className="flex h-9 flex-shrink-0 items-center px-2">
+      <div className="flex h-10 flex-shrink-0 items-center gap-2.5 rounded-full bg-white/90 px-4 shadow-sm">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={src}
           alt={brand.name}
           onError={() => setImgFailed(true)}
-          className="h-6 w-auto max-w-[110px] object-contain brightness-0 invert opacity-30 hover:opacity-60 transition-opacity duration-300"
+          className="h-5 w-auto max-w-[80px] object-contain"
         />
+        <span className="text-[11px] font-semibold text-slate-700 whitespace-nowrap">{brand.name}</span>
       </div>
     );
   }
 
   // Fallback : pill avec initiales + nom
   return (
-    <div className="flex h-9 flex-shrink-0 items-center gap-2 rounded-full border border-cream/10 bg-cream/5 px-4 hover:bg-cream/10 hover:border-cream/20 transition-all duration-300">
-      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-rust/30 text-[9px] font-black text-cream/70 flex-shrink-0">
+    <div className="flex h-10 flex-shrink-0 items-center gap-2.5 rounded-full bg-white/90 px-4 shadow-sm">
+      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-rust text-[9px] font-black text-white flex-shrink-0">
         {brand.name.charAt(0).toUpperCase()}
       </span>
-      <span className="text-[11px] font-semibold uppercase tracking-[0.15em] text-cream/35 hover:text-cream/60 transition-colors duration-300">
+      <span className="text-[11px] font-semibold text-slate-700 whitespace-nowrap">
         {brand.name}
       </span>
     </div>
