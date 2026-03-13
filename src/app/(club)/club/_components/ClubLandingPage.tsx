@@ -1,11 +1,11 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Lock, Tag, RefreshCw, ShieldCheck } from "lucide-react";
-import type { Product, Brand } from "@/lib/club/types";
+import type { Product, Brand, Category } from "@/lib/club/types";
 import OtherServices from "@/components/ui/OtherServices";
 
 const ease = [0.25, 0.1, 0.25, 1] as const;
@@ -16,8 +16,20 @@ const cardIn   = { hidden: { opacity: 0, y: 20 },  visible: { opacity: 1, y: 0, 
 
 interface ClubLandingPageProps {
   previewProducts: Product[];
+  allProducts: Product[];
   brands: Brand[];
+  categories: Category[];
   isLoggedIn?: boolean;
+}
+
+/** Max N produits par marque pour diversifier */
+function diversifyLocal(products: Product[], maxPerBrand = 2): Product[] {
+  const seen: Record<string, number> = {};
+  return products.filter((p) => {
+    const key = p.brand.id || p.brand.name;
+    seen[key] = (seen[key] || 0) + 1;
+    return seen[key] <= maxPerBrand;
+  });
 }
 
 const FALLBACK_PRODUCTS: Product[] = [
@@ -89,10 +101,33 @@ const FALLBACK_PRODUCTS: Product[] = [
   },
 ];
 
-export default function ClubLandingPage({ previewProducts, brands, isLoggedIn = false }: ClubLandingPageProps) {
+export default function ClubLandingPage({ previewProducts, allProducts, brands, categories, isLoggedIn = false }: ClubLandingPageProps) {
   const ctaHref  = isLoggedIn ? "/club/deals" : "/sign-up";
   const ctaLabel = isLoggedIn ? "Accéder aux deals" : "Commencer";
-  const displayProducts = previewProducts.length > 0 ? previewProducts : FALLBACK_PRODUCTS;
+
+  const [activeCategory, setActiveCategory] = useState<string>("tous");
+
+  // Filtrage par catégorie depuis allProducts, puis diversification
+  const filteredProducts = (() => {
+    const base = activeCategory === "tous"
+      ? allProducts
+      : allProducts.filter((p) => p.category.slug === activeCategory);
+    const sorted = [...base].sort((a, b) => {
+      if (a.isFeatured && !b.isFeatured) return -1;
+      if (!a.isFeatured && b.isFeatured) return 1;
+      return 0;
+    });
+    return diversifyLocal(sorted, 2).slice(0, 9);
+  })();
+
+  const displayProducts = filteredProducts.length > 0
+    ? filteredProducts
+    : (previewProducts.length > 0 ? previewProducts : FALLBACK_PRODUCTS);
+
+  // Catégories qui ont au moins 1 produit
+  const activeCategories = categories.filter((c) =>
+    allProducts.some((p) => p.category.slug === c.slug)
+  );
 
   const calcRef    = useRef(null);
   const dealsRef   = useRef(null);
@@ -213,16 +248,17 @@ export default function ClubLandingPage({ previewProducts, brands, isLoggedIn = 
       </section>
 
       {/* ════════════════════════════════════════════════
-          DEALS LOCKÉS — blanc
+          DEALS — blanc, catégories + produits visibles
       ════════════════════════════════════════════════ */}
       <section ref={dealsRef} className="relative overflow-hidden bg-white px-6 py-28">
-
         <div className="relative mx-auto max-w-5xl">
+
+          {/* Header */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={dealsInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.55 }}
-            className="mb-12 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6"
+            className="mb-10 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6"
           >
             <div>
               <span className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-500 mb-4 block">
@@ -233,28 +269,63 @@ export default function ClubLandingPage({ previewProducts, brands, isLoggedIn = 
               </h2>
             </div>
             <Link
-              href={ctaHref}
+              href="/club/deals"
               className="flex-shrink-0 inline-flex items-center gap-2 rounded-full border border-earth/20 px-5 py-2.5 text-xs font-medium text-earth/50 transition-all hover:border-earth/40 hover:text-earth/80"
             >
-              {isLoggedIn ? "Voir tous les deals" : "Tout débloquer"}
+              Voir tous les deals
               <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </motion.div>
 
+          {/* Onglets catégories */}
+          {activeCategories.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={dealsInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.4, delay: 0.1 }}
+              className="mb-8 flex flex-wrap gap-2"
+            >
+              <button
+                onClick={() => setActiveCategory("tous")}
+                className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-all duration-200 ${
+                  activeCategory === "tous"
+                    ? "bg-earth text-cream"
+                    : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+                }`}
+              >
+                Tous
+              </button>
+              {activeCategories.map((cat) => (
+                <button
+                  key={cat.id}
+                  onClick={() => setActiveCategory(cat.slug)}
+                  className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-all duration-200 ${
+                    activeCategory === cat.slug
+                      ? "bg-earth text-cream"
+                      : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+                  }`}
+                >
+                  {cat.name}
+                </button>
+              ))}
+            </motion.div>
+          )}
+
+          {/* Grille produits */}
           <motion.div
             variants={stagger}
             initial="hidden"
             animate={dealsInView ? "visible" : "hidden"}
             className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
           >
-            {displayProducts.slice(0, 3).map((product) => (
+            {displayProducts.map((product) => (
               <motion.div
                 key={product.id}
                 variants={cardIn}
-                className="group relative cursor-default overflow-hidden rounded-2xl bg-white border border-slate-100 shadow-sm"
+                className="group relative overflow-hidden rounded-2xl bg-white border border-slate-100 shadow-sm"
               >
-                {/* ── Image pleine largeur ── */}
-                <div className="relative aspect-[4/3] overflow-hidden">
+                {/* Image */}
+                <div className="relative aspect-[4/3] overflow-hidden bg-slate-50">
                   <Image
                     src={product.image || "/placeholder.svg"}
                     alt={product.name}
@@ -267,38 +338,84 @@ export default function ClubLandingPage({ previewProducts, brands, isLoggedIn = 
                       -{product.discount}%
                     </span>
                   )}
-                  {/* Hover overlay */}
-                  <div className="absolute inset-0 z-20 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-md bg-black/65">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full border border-white/25 bg-white/10 mb-3">
-                      <Lock className="h-5 w-5 text-white" />
-                    </div>
-                    <p className="text-sm font-semibold text-white">Réservé aux membres</p>
-                    <p className="mt-0.5 text-xs text-white/60">9,99€/mois</p>
-                    <Link
-                      href={ctaHref}
-                      className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-violet-600 px-5 py-2 text-xs font-semibold text-white transition-colors hover:bg-violet-700 active:scale-95"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      {isLoggedIn ? "Accéder" : "S'inscrire"}
-                      <ArrowRight className="h-3 w-3" />
-                    </Link>
-                  </div>
+                  {/* Badge catégorie */}
+                  {product.category.name && (
+                    <span className="absolute right-3 top-3 z-10 rounded-full bg-black/40 backdrop-blur-sm px-2.5 py-1 text-[10px] font-medium text-white/90">
+                      {product.category.name}
+                    </span>
+                  )}
                 </div>
 
-                {/* ── Barre d'info ── */}
+                {/* Infos produit */}
                 <div className="bg-white px-4 py-3">
                   <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">{product.brand.name}</p>
-                  <h3 className="mt-0.5 text-sm font-semibold text-gray-900 leading-snug">{product.name}</h3>
+                  <h3 className="mt-0.5 text-sm font-semibold text-gray-900 leading-snug line-clamp-2">{product.name}</h3>
                   <div className="mt-2 flex items-baseline gap-2">
-                    <span className="text-base font-bold text-violet-600">{product.promoPrice.toFixed(2)}€</span>
-                    <span className="text-xs text-red-500 line-through">{product.originalPrice.toFixed(2)}€</span>
-                    <span className="ml-auto text-xs font-semibold text-emerald-500">
-                      -{(product.originalPrice - product.promoPrice).toFixed(2)}€
-                    </span>
+                    {product.promoPrice > 0 ? (
+                      <>
+                        <span className="text-base font-bold text-violet-600">{product.promoPrice.toFixed(2)}€</span>
+                        {product.originalPrice > product.promoPrice && (
+                          <span className="text-xs text-red-400 line-through">{product.originalPrice.toFixed(2)}€</span>
+                        )}
+                        {product.originalPrice > product.promoPrice && (
+                          <span className="ml-auto text-xs font-semibold text-emerald-500">
+                            -{(product.originalPrice - product.promoPrice).toFixed(2)}€
+                          </span>
+                        )}
+                      </>
+                    ) : (
+                      <span className="text-sm font-semibold text-violet-600">Offre exclusive</span>
+                    )}
                   </div>
+
+                  {/* Code promo — visible membres seulement */}
+                  {product.promoCode && (
+                    <div className="mt-2.5">
+                      {isLoggedIn ? (
+                        <span className="inline-flex items-center gap-1.5 rounded-lg bg-violet-50 border border-violet-200 px-3 py-1.5 text-xs font-mono font-bold text-violet-700">
+                          <Tag className="h-3 w-3" />
+                          {product.promoCode}
+                        </span>
+                      ) : (
+                        <div className="relative inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-3 py-1.5 overflow-hidden">
+                          <Lock className="h-3 w-3 text-slate-400 flex-shrink-0" />
+                          <span className="text-xs font-mono font-bold text-transparent select-none blur-[4px]">
+                            XXXXXXX
+                          </span>
+                          <Link
+                            href="/sign-up"
+                            className="absolute inset-0 flex items-center justify-center bg-slate-100/80 backdrop-blur-[1px] text-[10px] font-semibold text-slate-500 hover:text-violet-600 transition-colors"
+                          >
+                            Voir le code
+                          </Link>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </motion.div>
             ))}
+          </motion.div>
+
+          {/* CTA bas de section */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={dealsInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="mt-10 text-center"
+          >
+            <Link
+              href="/club/deals"
+              className="group inline-flex items-center gap-2 rounded-full bg-earth px-7 py-3 text-sm font-semibold text-cream transition-all duration-200 hover:opacity-90 hover:-translate-y-0.5"
+            >
+              Voir tous les deals
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+            </Link>
+            {!isLoggedIn && (
+              <p className="mt-3 text-xs text-slate-400">
+                Les codes promo sont réservés aux membres · <Link href="/sign-up" className="text-violet-500 hover:underline">S&apos;inscrire pour 9,99€/mois</Link>
+              </p>
+            )}
           </motion.div>
         </div>
       </section>

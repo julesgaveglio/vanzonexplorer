@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import Groq from "groq-sdk";
 import { createClient as createSanityClient } from "@sanity/client";
 import { createClient } from "@supabase/supabase-js";
 
@@ -49,6 +49,56 @@ interface ScrapedAnalysis {
   }>;
 }
 
+// ── SELF-HEALING DB INSERT ─────────────────────────────────────────────────────
+
+/** Retry an insert removing unknown columns until it succeeds or no more columns to drop */
+async function selfHealingInsert(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  sb: any,
+  table: string,
+  data: Record<string, unknown>,
+  sendLog: (msg: string) => void,
+  maxRetries = 8
+): Promise<{ data: { id: string } | null; error: { message: string } | null }> {
+  const payload: Record<string, unknown> = { ...data };
+
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    const { data: result, error } = await sb
+      .from(table)
+      .insert(payload)
+      .select("id")
+      .single();
+
+    if (!error) return { data: result as { id: string }, error: null };
+
+    // Detect "column not found" pattern and auto-remove the offending column
+    const colMatch =
+      error.message.match(/Could not find the '([\w]+)' column/i) ||
+      error.message.match(/column[s]? ['"]?([\w]+)['"]? (?:of|does not exist|not found)/i);
+
+    if (colMatch) {
+      const badCol = colMatch[1].trim();
+      if (badCol in payload) {
+        sendLog(`🔧 Auto-fix: colonne inconnue "${badCol}" dans "${table}" → supprimée, retry...`);
+        delete payload[badCol];
+        continue;
+      }
+    }
+
+    // Detect duplicate slug → append random suffix and retry
+    if (error.message.includes("duplicate") && "slug" in payload) {
+      const newSlug = `${payload.slug}-${Math.random().toString(36).slice(2, 6)}`;
+      sendLog(`🔧 Auto-fix: slug dupliqué → nouveau slug "${newSlug}", retry...`);
+      payload.slug = newSlug;
+      continue;
+    }
+
+    return { data: null, error };
+  }
+
+  return { data: null, error: { message: `Échec après ${maxRetries} tentatives` } };
+}
+
 // ── CLIENTS ───────────────────────────────────────────────────────────────────
 
 function getSanityClient() {
@@ -96,29 +146,41 @@ async function uploadImageToSanity(
   }
 }
 
-// ── TAVILY HELPERS ────────────────────────────────────────────────────────────
+// ── JINA AI HELPERS ───────────────────────────────────────────────────────────
 
-async function tavilyExtract(urls: string[]): Promise<string> {
+/** Extract clean markdown content from a URL using Jina AI Reader */
+async function jinaExtract(url: string): Promise<string> {
   try {
-    const res = await fetch("https://api.tavily.com/extract", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        api_key: process.env.TAVILY_API_KEY,
-        urls,
-        extract_depth: "advanced",
-      }),
-      signal: AbortSignal.timeout(30000),
+    const res = await fetch(`https://r.jina.ai/${url}`, {
+      headers: {
+        "Authorization": `Bearer ${process.env.JINA_API_KEY}`,
+        "Accept": "text/plain",
+        "X-Return-Format": "markdown",
+        "X-Timeout": "20",
+      },
+      signal: AbortSignal.timeout(25000),
     });
     if (!res.ok) return "";
-    const data = await res.json();
-    const results: Array<{ url: string; raw_content?: string }> =
-      data.results || [];
-    return results.map((r) => `=== ${r.url} ===\n${r.raw_content || ""}`).join("\n\n");
+    const text = await res.text();
+    return `=== ${url} ===\n${text}`;
   } catch {
     return "";
   }
 }
+
+/** Extract multiple URLs in parallel with Jina AI (max 5 concurrent) */
+async function jinaExtractBatch(urls: string[]): Promise<string> {
+  const chunks: string[][] = [];
+  for (let i = 0; i < urls.length; i += 5) chunks.push(urls.slice(i, i + 5));
+  const results: string[] = [];
+  for (const chunk of chunks) {
+    const contents = await Promise.all(chunk.map(jinaExtract));
+    results.push(...contents.filter(Boolean));
+  }
+  return results.join("\n\n");
+}
+
+// ── TAVILY HELPERS ────────────────────────────────────────────────────────────
 
 async function tavilySearch(
   query: string,
@@ -139,26 +201,48 @@ async function tavilySearch(
     });
     if (!res.ok) return { urls: [], images: [], content: "" };
     const data = await res.json();
-    const results: Array<{ url: string; content?: string }> =
-      data.results || [];
+    const results: Array<{ url: string; content?: string }> = data.results || [];
     const images: string[] = data.images || [];
     const urls = results.map((r) => r.url);
-    const content = results
-      .map((r) => `=== ${r.url} ===\n${r.content || ""}`)
-      .join("\n\n");
+    const content = results.map((r) => `=== ${r.url} ===\n${r.content || ""}`).join("\n\n");
     return { urls, images, content };
   } catch {
     return { urls: [], images: [], content: "" };
   }
 }
 
+/** Try to fetch product URLs from sitemap.xml */
+async function scrapeSitemap(website: string): Promise<string[]> {
+  const sitemapUrls = [
+    `${website}/sitemap.xml`,
+    `${website}/sitemap_index.xml`,
+    `${website}/products/sitemap.xml`,
+  ];
+  for (const sitemapUrl of sitemapUrls) {
+    try {
+      const res = await fetch(sitemapUrl, { signal: AbortSignal.timeout(10000) });
+      if (!res.ok) continue;
+      const xml = await res.text();
+      const matches = xml.match(/<loc>(https?:\/\/[^<]+)<\/loc>/g) || [];
+      const urls = matches
+        .map((m) => m.replace(/<\/?loc>/g, "").trim())
+        .filter((u) => /\/(products?|collections?|shop|boutique|accessoires?|solaire)/i.test(u))
+        .slice(0, 30);
+      if (urls.length > 0) return urls;
+    } catch {
+      continue;
+    }
+  }
+  return [];
+}
+
 // ── CLAUDE HELPERS ────────────────────────────────────────────────────────────
 
 async function claudeParseEmail(emailText: string): Promise<ParsedEmail> {
-  const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+  const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-  const msg = await anthropic.messages.create({
-    model: "claude-sonnet-4-6",
+  const completion = await groq.chat.completions.create({
+    model: "llama-3.3-70b-versatile",
     max_tokens: 1024,
     messages: [
       {
@@ -182,10 +266,9 @@ ${emailText}`,
     ],
   });
 
-  const text =
-    msg.content[0].type === "text" ? msg.content[0].text : "";
+  const text = completion.choices[0]?.message?.content || "";
   const jsonMatch = text.match(/\{[\s\S]*\}/);
-  if (!jsonMatch) throw new Error("Claude n'a pas retourné de JSON valide");
+  if (!jsonMatch) throw new Error("Le modèle n'a pas retourné de JSON valide");
   return JSON.parse(jsonMatch[0]) as ParsedEmail;
 }
 
@@ -196,10 +279,10 @@ async function claudeAnalyzeContent(
   productPagesContent: string,
   searchImages: string[]
 ): Promise<ScrapedAnalysis> {
-  const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+  const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-  const msg = await anthropic.messages.create({
-    model: "claude-sonnet-4-6",
+  const completion = await groq.chat.completions.create({
+    model: "llama-3.3-70b-versatile",
     max_tokens: 4096,
     messages: [
       {
@@ -214,13 +297,13 @@ Type d'offre : ${parsed.offerType}
 Notes : ${parsed.notes || "aucune"}
 
 ## Contenu de la page d'accueil :
-${homepageContent.substring(0, 3000)}
+${homepageContent.substring(0, 2000)}
 
 ## Résultats de recherche produits :
-${searchContent.substring(0, 3000)}
+${searchContent.substring(0, 2000)}
 
 ## Contenu des pages produits :
-${productPagesContent.substring(0, 6000)}
+${productPagesContent.substring(0, 10000)}
 
 ## Images trouvées :
 ${searchImages.slice(0, 20).join("\n")}
@@ -247,7 +330,7 @@ Réponds UNIQUEMENT avec un JSON valide (pas de markdown, pas de texte autour) s
 }
 
 Règles :
-- Maximum 10 produits, choisis les plus pertinents pour des vanlifers
+- Maximum 30 produits, couvre TOUTES les catégories trouvées (batteries, panneaux solaires, accessoires, etc.)
 - Icônes disponibles : Zap (énergie), Thermometer (isolation/température), Utensils (cuisine), Wifi (connectivité), Camera (photo/vidéo), Shield (sécurité), Droplets (eau/douche), Wind (aération/clim), Package (stockage/rangement), Compass (navigation/GPS), Wrench (outillage), Sun (solaire/lumière), Truck (véhicule), Star (premium/général)
 - Les prix doivent être des nombres (ex: 299.99) ou null
 - Si le code promo s'applique à tout le magasin, applique le même promoCode à chaque produit
@@ -257,10 +340,9 @@ Règles :
     ],
   });
 
-  const text =
-    msg.content[0].type === "text" ? msg.content[0].text : "";
+  const text = completion.choices[0]?.message?.content || "";
   const jsonMatch = text.match(/\{[\s\S]*\}/);
-  if (!jsonMatch) throw new Error("Claude n'a pas retourné de JSON valide");
+  if (!jsonMatch) throw new Error("Le modèle n'a pas retourné de JSON valide");
   return JSON.parse(jsonMatch[0]) as ScrapedAnalysis;
 }
 
@@ -317,53 +399,65 @@ export async function POST(req: NextRequest) {
           }
         })();
 
-        // ── STEP 2: Scrape homepage ──────────────────────────────────────
-        send({ type: "log", level: "scraping", message: `🔍 Scraping de la homepage ${parsed.website}...` });
-        const homepageContent = await tavilyExtract([parsed.website]);
-        send({ type: "log", level: "info", message: `✅ Homepage scrapée (${homepageContent.length} caractères)` });
+        // ── STEP 2: Scrape homepage via Jina AI ─────────────────────────
+        send({ type: "log", level: "scraping", message: `🔍 Scraping homepage via Jina AI...` });
+        const homepageContent = await jinaExtract(parsed.website);
+        send({ type: "log", level: "info", message: `✅ Homepage scrapée (${homepageContent.length} cars)` });
 
-        // ── STEP 3: Search products ──────────────────────────────────────
-        send({
-          type: "log",
-          level: "scraping",
-          message: `🔍 Recherche des produits sur ${domain}...`,
-        });
-        const { urls: productUrls, images: searchImages, content: searchContent } =
-          await tavilySearch(
-            `${parsed.brandName} products catalog ${parsed.website}`,
-            [domain]
-          );
+        // ── STEP 3: Discover product URLs ────────────────────────────────
+        send({ type: "log", level: "scraping", message: `🗺️ Recherche URLs produits (sitemap + Tavily multi-catégories)...` });
+
+        // 3a: Sitemap
+        const sitemapUrls = await scrapeSitemap(parsed.website);
+        send({ type: "log", level: "info", message: `📋 Sitemap: ${sitemapUrls.length} URLs produits trouvées` });
+
+        // 3b: Multi-category Tavily searches in parallel
+        const categories = ["batteries portables", "panneaux solaires", "accessoires"];
+        const searchResults = await Promise.all(
+          categories.map((cat) =>
+            tavilySearch(`${parsed.brandName} ${cat} site:${domain}`, [domain])
+          )
+        );
+
+        // Merge & deduplicate URLs
+        const allImages: string[] = [];
+        const seenUrls = new Set<string>(sitemapUrls);
+        const allSearchContent: string[] = [];
+
+        for (const result of searchResults) {
+          allImages.push(...result.images);
+          allSearchContent.push(result.content);
+          for (const url of result.urls) seenUrls.add(url);
+        }
+
+        const productUrls = Array.from(seenUrls).filter((u) =>
+          /\/(product|collection|shop|boutique|accessoire|solaire|batterie|panneau)/i.test(u)
+        );
+        const searchImages = Array.from(new Set(allImages));
+        const searchContent = allSearchContent.join("\n\n");
+
         send({
           type: "log",
           level: "info",
-          message: `✅ ${productUrls.length} pages produits trouvées, ${searchImages.length} images`,
+          message: `✅ ${productUrls.length} URLs produits uniques, ${searchImages.length} images`,
         });
 
-        // ── STEP 4: Scrape product pages ─────────────────────────────────
-        const top8Urls = productUrls.slice(0, 8);
+        // ── STEP 4: Deep scrape top product pages via Jina AI ───────────
+        const top20Urls = productUrls.slice(0, 20);
         let productPagesContent = "";
 
-        if (top8Urls.length > 0) {
+        if (top20Urls.length > 0) {
           send({
             type: "log",
             level: "scraping",
-            message: `🔍 Scraping de ${top8Urls.length} pages produits en lots de 3...`,
+            message: `🔍 Scraping Jina AI de ${top20Urls.length} pages produits...`,
           });
-
-          const batches: string[][] = [];
-          for (let i = 0; i < top8Urls.length; i += 3) {
-            batches.push(top8Urls.slice(i, i + 3));
-          }
-
-          for (const batch of batches) {
-            const content = await tavilyExtract(batch);
-            productPagesContent += content + "\n\n";
-            send({
-              type: "log",
-              level: "scraping",
-              message: `🔍 Lot de ${batch.length} pages scrapé`,
-            });
-          }
+          productPagesContent = await jinaExtractBatch(top20Urls);
+          send({
+            type: "log",
+            level: "info",
+            message: `✅ Contenu extrait (${productPagesContent.length} cars)`,
+          });
         }
 
         // ── STEP 5: Claude analysis ──────────────────────────────────────
@@ -421,12 +515,12 @@ export async function POST(req: NextRequest) {
 
         // ── STEP 7: Upload product images ────────────────────────────────
         const productsWithImages = await Promise.all(
-          analysis.products.slice(0, 10).map(async (product, i) => {
+          analysis.products.slice(0, 30).map(async (product, i) => {
             if (!product.imageUrl) return { ...product, uploadedImageUrl: null };
             send({
               type: "log",
               level: "info",
-              message: `📤 Upload image produit ${i + 1}/${Math.min(analysis.products.length, 10)} : ${product.name}`,
+              message: `📤 Upload image produit ${i + 1}/${Math.min(analysis.products.length, 30)} : ${product.name}`,
             });
             const uploadedUrl = await uploadImageToSanity(
               product.imageUrl,
@@ -467,17 +561,18 @@ export async function POST(req: NextRequest) {
               message: `ℹ️ Catégorie existante : ${cat.name}`,
             });
           } else {
-            const { data: newCat, error: catError } = await sb
-              .from("categories")
-              .insert({
+            const { data: newCat, error: catError } = await selfHealingInsert(
+              sb,
+              "categories",
+              {
                 name: cat.name,
                 slug: catSlug,
                 icon: cat.icon,
                 description: null,
                 sort_order: 0,
-              })
-              .select("id")
-              .single();
+              },
+              (msg) => send({ type: "log", level: "warning", message: msg })
+            );
 
             if (catError) {
               send({
@@ -499,9 +594,10 @@ export async function POST(req: NextRequest) {
         // Insert brand
         send({ type: "log", level: "info", message: "💾 Création de la marque..." });
         const brandSlug = slugify(parsed.brandName);
-        const { data: newBrand, error: brandError } = await sb
-          .from("brands")
-          .insert({
+        const { data: newBrand, error: brandError } = await selfHealingInsert(
+          sb,
+          "brands",
+          {
             name: parsed.brandName,
             slug: brandSlug,
             description: analysis.brandDescription,
@@ -513,9 +609,9 @@ export async function POST(req: NextRequest) {
             is_partner: true,
             is_trusted: true,
             status: "active",
-          })
-          .select("id")
-          .single();
+          },
+          (msg) => send({ type: "log", level: "warning", message: msg })
+        );
 
         if (brandError) {
           send({
@@ -526,7 +622,7 @@ export async function POST(req: NextRequest) {
           return;
         }
 
-        const brandId = newBrand.id;
+        const brandId = newBrand!.id;
         send({
           type: "log",
           level: "success",
@@ -546,25 +642,30 @@ export async function POST(req: NextRequest) {
 
             const productSlug = slugify(product.name);
 
-            const { error: productError } = await sb.from("products").insert({
-              name: product.name,
-              slug: productSlug,
-              brand_id: brandId,
-              category_id: categoryId,
-              description: product.description,
-              long_description: product.longDescription,
-              why_this_deal: product.whyThisDeal,
-              original_price: product.originalPrice ?? 0,
-              promo_price: product.promoPrice ?? 0,
-              promo_code: parsed.promoCode,
-              offer_type: parsed.offerType,
-              affiliate_url: parsed.website,
-              main_image_url: product.uploadedImageUrl || product.imageUrl,
-              is_featured: productsCreated < 3,
-              is_active: true,
-              priority_score: 10 - productsCreated,
-              expires_at: parsed.expiresAt,
-            });
+            const { error: productError } = await selfHealingInsert(
+              sb,
+              "products",
+              {
+                name: product.name,
+                slug: productSlug,
+                brand_id: brandId,
+                category_id: categoryId,
+                description: product.description,
+                long_description: product.longDescription,
+                why_this_deal: product.whyThisDeal,
+                original_price: product.originalPrice ?? 0,
+                promo_price: product.promoPrice ?? 0,
+                promo_code: parsed.promoCode,
+                offer_type: parsed.offerType,
+                affiliate_url: parsed.website,
+                main_image_url: product.uploadedImageUrl || product.imageUrl,
+                is_featured: productsCreated < 3,
+                is_active: true,
+                priority_score: 10 - productsCreated,
+                expires_at: parsed.expiresAt,
+              },
+              (msg) => send({ type: "log", level: "warning", message: msg })
+            );
 
             if (productError) {
               send({

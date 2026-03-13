@@ -58,19 +58,19 @@ export function ImageOptimization() {
       </div>
 
       {isLoading ? (
-        <div className="flex items-center justify-center py-10">
+        <div className="flex items-center justify-center py-6">
           <div className="w-5 h-5 border-2 border-rose-400 border-t-transparent rounded-full animate-spin" />
         </div>
       ) : data?.error ? (
-        <p className="px-6 py-8 text-center text-slate-400 text-sm">{data.error}</p>
+        <p className="px-6 py-6 text-center text-slate-400 text-sm">{data.error}</p>
       ) : (
-        <div className="p-6 space-y-5">
+        <div className="p-4 space-y-4">
           {/* KPI Cards */}
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-3 gap-2">
             {kpis.map(({ label, count, color, icon, tip }) => (
-              <div key={label} className="rounded-xl bg-slate-50 p-3 text-center">
-                <p className="text-lg">{icon}</p>
-                <p className={`text-2xl font-black bg-gradient-to-r ${color} bg-clip-text text-transparent`}>
+              <div key={label} className="rounded-xl bg-slate-50 p-2.5 text-center">
+                <p className="text-sm">{icon}</p>
+                <p className={`text-lg font-black bg-gradient-to-r ${color} bg-clip-text text-transparent`}>
                   {count}
                 </p>
                 <p className="text-xs font-semibold text-slate-600">{label}</p>
@@ -85,7 +85,7 @@ export function ImageOptimization() {
               <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
                 Images à corriger
               </p>
-              <div className="space-y-1 max-h-40 overflow-y-auto">
+              <div className="space-y-1 max-h-32 overflow-y-auto">
                 {problems.map((p) => (
                   <div key={`${p.url}-${p.type}`} className="flex items-center gap-2 text-xs">
                     <span

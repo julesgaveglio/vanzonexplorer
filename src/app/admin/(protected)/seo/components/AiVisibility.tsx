@@ -41,23 +41,23 @@ export function AiVisibility() {
       </div>
 
       {isLoading ? (
-        <div className="flex items-center justify-center py-10">
+        <div className="flex items-center justify-center py-6">
           <div className="w-5 h-5 border-2 border-violet-400 border-t-transparent rounded-full animate-spin" />
         </div>
       ) : data?.error ? (
-        <p className="px-6 py-8 text-center text-slate-400 text-sm">{data.error}</p>
+        <p className="px-6 py-6 text-center text-slate-400 text-sm">{data.error}</p>
       ) : !data?.available ? (
-        <div className="px-6 py-8 text-center">
+        <div className="px-6 py-6 text-center">
           <p className="text-slate-400 text-sm mb-2">Données non disponibles</p>
           <p className="text-slate-300 text-xs">
             Le domaine vanzonexplorer.com n&apos;est pas encore suivi dans DataForSEO AI Visibility.
           </p>
         </div>
       ) : (
-        <div className="p-6 space-y-5">
+        <div className="p-4 space-y-4">
           {/* Score global */}
-          <div className="flex items-center gap-4 p-4 rounded-xl bg-violet-50">
-            <div className="text-3xl font-black text-violet-600">
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-violet-50">
+            <div className="text-xl font-black text-violet-600">
               {data.metrics?.visibility_score ?? 0}
             </div>
             <div>

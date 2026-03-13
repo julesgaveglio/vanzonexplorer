@@ -75,23 +75,23 @@ export function TechnicalSeo() {
       </div>
 
       {isLoading ? (
-        <div className="flex items-center justify-center py-10">
+        <div className="flex items-center justify-center py-6">
           <div className="w-5 h-5 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
         </div>
       ) : data?.error ? (
-        <p className="px-6 py-8 text-center text-slate-400 text-sm">{data.error}</p>
+        <p className="px-6 py-6 text-center text-slate-400 text-sm">{data.error}</p>
       ) : (
-        <div className="p-6 space-y-5">
+        <div className="p-4 space-y-4">
           {/* Scores Lighthouse */}
           <div className="grid grid-cols-2 gap-3">
             {scoreItems.map(({ label, key, icon }) => {
               const val = data?.scores?.[key] ?? 0;
               return (
-                <div key={key} className="flex items-center gap-3 p-3 rounded-xl bg-slate-50">
-                  <span className="text-lg">{icon}</span>
+                <div key={key} className="flex items-center gap-2 p-2 rounded-xl bg-slate-50">
+                  <span className="text-base">{icon}</span>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs text-slate-500 truncate">{label}</p>
-                    <p className={`text-lg font-black rounded px-1 inline-block ${scoreColor(val)}`}>
+                    <p className={`text-base font-black rounded px-1 inline-block ${scoreColor(val)}`}>
                       {val}
                     </p>
                   </div>
@@ -105,11 +105,11 @@ export function TechnicalSeo() {
             <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
               Core Web Vitals
             </p>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-1.5">
               {vitalItems.map(({ label, key, desc }) => {
                 const vital = data?.vitals?.[key];
                 return (
-                  <div key={key} className="flex items-center justify-between p-2 rounded-lg bg-slate-50">
+                  <div key={key} className="flex items-center justify-between p-1.5 rounded-lg bg-slate-50">
                     <div>
                       <p className="text-xs font-bold text-slate-700">{label}</p>
                       <p className="text-xs text-slate-400">{desc}</p>
