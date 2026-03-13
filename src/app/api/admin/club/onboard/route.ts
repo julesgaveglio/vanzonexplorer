@@ -148,36 +148,92 @@ async function uploadImageToSanity(
 
 // ── JINA AI HELPERS ───────────────────────────────────────────────────────────
 
-/** Extract clean markdown content from a URL using Jina AI Reader */
-async function jinaExtract(url: string): Promise<string> {
+interface JinaResult {
+  content: string;
+  images: string[];
+}
+
+/** Extract clean markdown + all image URLs from a page via Jina AI */
+async function jinaExtract(url: string): Promise<JinaResult> {
   try {
     const res = await fetch(`https://r.jina.ai/${url}`, {
       headers: {
         "Authorization": `Bearer ${process.env.JINA_API_KEY}`,
         "Accept": "text/plain",
         "X-Return-Format": "markdown",
+        "X-With-Images-Summary": "true",
         "X-Timeout": "20",
       },
       signal: AbortSignal.timeout(25000),
     });
-    if (!res.ok) return "";
+    if (!res.ok) return { content: "", images: [] };
     const text = await res.text();
-    return `=== ${url} ===\n${text}`;
+
+    // Extract image URLs from markdown: ![alt](url) and raw https://...jpg/png/webp
+    const mdImages = Array.from(text.matchAll(/!\[.*?\]\((https?:\/\/[^)]+)\)/g)).map(m => m[1]);
+    const rawImages = Array.from(text.matchAll(/(https?:\/\/[^\s"'<>]+\.(?:jpg|jpeg|png|webp)(?:\?[^\s"'<>]*)?)/gi)).map(m => m[1]);
+    const images = Array.from(new Set([...mdImages, ...rawImages]))
+      .filter(u => !u.match(/logo|icon|favicon|sprite|badge|avatar|pixel|tracking|banner|footer|header/i))
+      .slice(0, 10);
+
+    return { content: `=== ${url} ===\n${text}`, images };
   } catch {
-    return "";
+    return { content: "", images: [] };
   }
 }
 
 /** Extract multiple URLs in parallel with Jina AI (max 5 concurrent) */
-async function jinaExtractBatch(urls: string[]): Promise<string> {
+async function jinaExtractBatch(urls: string[]): Promise<{ content: string; imagesByUrl: Record<string, string[]> }> {
   const chunks: string[][] = [];
   for (let i = 0; i < urls.length; i += 5) chunks.push(urls.slice(i, i + 5));
-  const results: string[] = [];
+  const contents: string[] = [];
+  const imagesByUrl: Record<string, string[]> = {};
+
   for (const chunk of chunks) {
-    const contents = await Promise.all(chunk.map(jinaExtract));
-    results.push(...contents.filter(Boolean));
+    const results = await Promise.all(chunk.map((url) =>
+      jinaExtract(url).then(r => ({ url, ...r }))
+    ));
+    for (const r of results) {
+      if (r.content) contents.push(r.content);
+      if (r.images.length > 0) imagesByUrl[r.url] = r.images;
+    }
   }
-  return results.join("\n\n");
+  return { content: contents.join("\n\n"), imagesByUrl };
+}
+
+/** Try uploading from multiple candidate URLs — returns first success */
+async function uploadImageFromCandidates(
+  candidates: string[],
+  filename: string
+): Promise<string | null> {
+  for (const url of candidates) {
+    if (!url?.startsWith("http")) continue;
+    const result = await uploadImageToSanity(url, filename);
+    if (result) return result;
+  }
+  return null;
+}
+
+/** Search for a product image via Tavily when direct scraping fails */
+async function searchProductImage(productName: string, brandName: string): Promise<string[]> {
+  try {
+    const res = await fetch("https://api.tavily.com/search", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        api_key: process.env.TAVILY_API_KEY,
+        query: `${brandName} ${productName} product image`,
+        include_images: true,
+        max_results: 5,
+      }),
+      signal: AbortSignal.timeout(15000),
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return (data.images as string[]) || [];
+  } catch {
+    return [];
+  }
 }
 
 // ── TAVILY HELPERS ────────────────────────────────────────────────────────────
@@ -401,7 +457,8 @@ export async function POST(req: NextRequest) {
 
         // ── STEP 2: Scrape homepage via Jina AI ─────────────────────────
         send({ type: "log", level: "scraping", message: `🔍 Scraping homepage via Jina AI...` });
-        const homepageContent = await jinaExtract(parsed.website);
+        const homepageResult = await jinaExtract(parsed.website);
+        const homepageContent = homepageResult.content;
         send({ type: "log", level: "info", message: `✅ Homepage scrapée (${homepageContent.length} cars)` });
 
         // ── STEP 3: Discover product URLs ────────────────────────────────
@@ -445,6 +502,7 @@ export async function POST(req: NextRequest) {
         // ── STEP 4: Deep scrape top product pages via Jina AI ───────────
         const top20Urls = productUrls.slice(0, 20);
         let productPagesContent = "";
+        let imagesByUrl: Record<string, string[]> = {};
 
         if (top20Urls.length > 0) {
           send({
@@ -452,11 +510,14 @@ export async function POST(req: NextRequest) {
             level: "scraping",
             message: `🔍 Scraping Jina AI de ${top20Urls.length} pages produits...`,
           });
-          productPagesContent = await jinaExtractBatch(top20Urls);
+          const jinaResult = await jinaExtractBatch(top20Urls);
+          productPagesContent = jinaResult.content;
+          imagesByUrl = jinaResult.imagesByUrl;
+          const totalImages = Object.values(imagesByUrl).reduce((n, imgs) => n + imgs.length, 0);
           send({
             type: "log",
             level: "info",
-            message: `✅ Contenu extrait (${productPagesContent.length} cars)`,
+            message: `✅ Contenu extrait (${productPagesContent.length} cars, ${totalImages} images trouvées)`,
           });
         }
 
@@ -513,26 +574,49 @@ export async function POST(req: NextRequest) {
           }
         }
 
-        // ── STEP 7: Upload product images ────────────────────────────────
+        // ── STEP 7: Upload product images (multi-source) ─────────────────
         const productsWithImages = await Promise.all(
           analysis.products.slice(0, 30).map(async (product, i) => {
-            if (!product.imageUrl) return { ...product, uploadedImageUrl: null };
+            const filename = `product-${slugify(product.name)}.jpg`;
             send({
               type: "log",
               level: "info",
-              message: `📤 Upload image produit ${i + 1}/${Math.min(analysis.products.length, 30)} : ${product.name}`,
+              message: `📤 Image ${i + 1}/${Math.min(analysis.products.length, 30)}: ${product.name}`,
             });
-            const uploadedUrl = await uploadImageToSanity(
-              product.imageUrl,
-              `product-${slugify(product.name)}.jpg`
+
+            // Source 1: URL suggérée par Groq
+            // Source 2: Images Jina extraites des pages produits (cherche la page la plus proche)
+            const jinaImages = Object.entries(imagesByUrl)
+              .filter(([url]) => url.toLowerCase().includes(slugify(product.name).slice(0, 8)) ||
+                product.name.toLowerCase().split(" ").some(w => w.length > 4 && url.toLowerCase().includes(w)))
+              .flatMap(([, imgs]) => imgs);
+
+            // Source 3: Images Tavily globales déjà collectées
+            const tavilyMatches = searchImages.filter(u =>
+              product.name.toLowerCase().split(" ").some(w => w.length > 4 && u.toLowerCase().includes(w))
             );
+
+            const candidates = [
+              product.imageUrl,
+              ...jinaImages,
+              ...tavilyMatches,
+            ].filter(Boolean) as string[];
+
+            let uploadedUrl = await uploadImageFromCandidates(candidates, filename);
+
+            // Source 4: Tavily image search dédié si tout échoue
             if (!uploadedUrl) {
-              send({
-                type: "log",
-                level: "warning",
-                message: `⚠️ Upload image "${product.name}" échoué`,
-              });
+              send({ type: "log", level: "warning", message: `🔍 Recherche image alternative pour "${product.name}"...` });
+              const fallbackImages = await searchProductImage(product.name, parsed.brandName);
+              uploadedUrl = await uploadImageFromCandidates(fallbackImages, filename);
             }
+
+            if (uploadedUrl) {
+              send({ type: "log", level: "success", message: `✅ Image uploadée : ${product.name}` });
+            } else {
+              send({ type: "log", level: "warning", message: `⚠️ Aucune image trouvée pour "${product.name}"` });
+            }
+
             return { ...product, uploadedImageUrl: uploadedUrl };
           })
         );
