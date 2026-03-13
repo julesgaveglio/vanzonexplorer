@@ -7,6 +7,10 @@ import { QuickWins } from "./components/QuickWins";
 import { CompetitorsTable } from "./components/CompetitorsTable";
 import { SerpChecker } from "./components/SerpChecker";
 import { KeywordIdeas } from "./components/KeywordIdeas";
+import { TechnicalSeo } from "./components/TechnicalSeo";
+import { SchemaMarkup } from "./components/SchemaMarkup";
+import { AiVisibility } from "./components/AiVisibility";
+import { ImageOptimization } from "./components/ImageOptimization";
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
@@ -142,6 +146,18 @@ export default function SeoClient() {
       {/* Row 5: Keyword Ideas */}
       <div className="mb-6">
         <KeywordIdeas />
+      </div>
+
+      {/* Row 6: Technical SEO + Schema Markup */}
+      <div className="grid lg:grid-cols-2 gap-6 mb-6">
+        <TechnicalSeo />
+        <SchemaMarkup />
+      </div>
+
+      {/* Row 7: AI Visibility + Image Optimization */}
+      <div className="grid lg:grid-cols-2 gap-6 mb-6">
+        <AiVisibility />
+        <ImageOptimization />
       </div>
 
       <p className="text-center text-xs text-slate-300 mt-8">
