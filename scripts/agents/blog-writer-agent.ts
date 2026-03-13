@@ -611,10 +611,15 @@ async function callClaude(prompt: string, opts: { maxTokens?: number } = {}): Pr
 async function callGemini(
   apiKey: string,
   prompt: string,
-  opts: { json?: boolean; maxTokens?: number } = {}
+  opts: { json?: boolean; maxTokens?: number; model?: string } = {}
 ): Promise<string> {
+  const model = opts.model ?? "gemini-2.5-flash";
+  // gemini-2.5-pro requires thinking mode; flash can disable it with budget:0
+  const thinkingConfig = model.includes("pro")
+    ? { thinkingBudget: 8192 }
+    : { thinkingBudget: 0 };
   const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -623,7 +628,7 @@ async function callGemini(
         generationConfig: {
           maxOutputTokens: opts.maxTokens ?? 2048,
           temperature: 0.5,
-          thinkingConfig: { thinkingBudget: 0 },
+          thinkingConfig,
           ...(opts.json ? { responseMimeType: "application/json" } : {}),
         },
       }),
@@ -835,9 +840,11 @@ STYLE & TON
 
 Réponds UNIQUEMENT avec le texte markdown. Aucune explication, aucune balise, aucun JSON.`;
 
-  // Scale max tokens to target word count (≈1.3 tokens/word, +2000 buffer for thinking)
-  const maxTokensForBody = Math.min(10000, Math.ceil(targetWords * 1.5) + 2000);
-  const rawBody = await callClaude(bodyPrompt, { maxTokens: maxTokensForBody });
+  // Scale max tokens to target word count (≈1.3 tokens/word, +2000 buffer)
+  const maxTokensForBody = Math.min(16000, Math.ceil(targetWords * 1.5) + 2000);
+  // Use Gemini 2.5 Pro for body (better quality, higher context window)
+  console.log(`  [Gemini 2.5 Pro] Generating article body...`);
+  const rawBody = await callGemini(geminiKey, bodyPrompt, { maxTokens: maxTokensForBody, model: "gemini-2.5-pro" });
 
   // Post-process: inject internal links automatically (guaranteed, Claude-independent)
   // Only injects article links for slugs confirmed to exist in Sanity
@@ -1088,9 +1095,9 @@ async function main(): Promise<void> {
   if (!process.env.GEMINI_API_KEY) missingVars.push("GEMINI_API_KEY");
   if (!process.env.SANITY_API_WRITE_TOKEN) missingVars.push("SANITY_API_WRITE_TOKEN");
   if (!process.env.PEXELS_API_KEY) missingVars.push("PEXELS_API_KEY");
-  if (!process.env.DATAFORSEO_LOGIN) missingVars.push("DATAFORSEO_LOGIN");
-  if (!process.env.DATAFORSEO_PASSWORD) missingVars.push("DATAFORSEO_PASSWORD");
-  if (!process.env.CLAUDE_CODE_SESSION_ACCESS_TOKEN) missingVars.push("CLAUDE_CODE_SESSION_ACCESS_TOKEN");
+  // DataForSEO and CLAUDE_CODE_SESSION are optional — functions degrade gracefully
+  if (!process.env.DATAFORSEO_LOGIN) console.warn("  ⚠️  DATAFORSEO_LOGIN not set — keyword data will be skipped");
+  if (!process.env.CLAUDE_CODE_SESSION_ACCESS_TOKEN) console.warn("  ⚠️  CLAUDE_CODE_SESSION_ACCESS_TOKEN not set — body uses Gemini");
   if (missingVars.length > 0) {
     console.error(`\nMissing required environment variables:\n  ${missingVars.join("\n  ")}`);
     process.exit(1);

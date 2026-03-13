@@ -1,5 +1,33 @@
 [
   {
+    "id": "club-prive-vanzon-liste-attente",
+    "slug": "club-prive-vanzon-liste-attente",
+    "title": "Deals exclusifs sur le matériel van : le Club Privé Vanzon ouvre sa liste d'attente",
+    "excerpt": "Batteries lithium, panneaux solaires, accessoires van — le Club Privé Vanzon négocie des codes promo exclusifs avec les grandes marques pour ses membres. Rejoins la liste d'attente et économise sur tout ton équipement.",
+    "category": "Aménagement Van",
+    "tag": "Club Privé",
+    "readTime": "10 min",
+    "targetKeyword": "deals exclusifs matériel van",
+    "secondaryKeywords": [
+      "codes promo équipement van aménagé",
+      "batterie lithium van pas cher",
+      "panneau solaire van réduction",
+      "club vanlife France abonnement",
+      "économiser équipement van",
+      "offres exclusives vanlife marques partenaires",
+      "BLUETTI réduction van",
+      "liste attente club van"
+    ],
+    "targetWordCount": 2200,
+    "wordCountNote": "Article pilier Club Privé — positionnement communauté + deals équipement. Données SEO: 64% Français prêts à partir en van (YouGov), +20% ventes vans, marché +15%/an depuis 2020. Marques partenaires: BLUETTI, Jackery, EcoFlow, H2R Equipements. Contexte: le Club Privé Vanzon propose des deals exclusifs sur batteries, panneaux solaires, accessoires. Liste d'attente à rejoindre sur /club. CTA final vers /club. Liens internes: /vanzon/club (principal), /vanzon/location, /vanzon/achat. Sources web: vanlife-france.com (codes promo Vevor/Aferiy/Trelino), camping-car.com/YouGov (64% Français), car-van.com (tendances 2025). Angle: coût réel équipement van 500-2000€ kit solaire, lithium 800-2500€ → le club permet d'économiser 10-30% sur ces postes. Style: tutoiement, ancrage Pays Basque (Biarritz, Bayonne), données chiffrées réelles.",
+    "status": "published",
+    "priority": -20,
+    "sanityId": "vpRjRXp3a43oXmiL0f44Ci",
+    "publishedAt": "2026-03-13T13:36:15.748Z",
+    "lastSeoCheck": null,
+    "seoPosition": null
+  },
+  {
     "id": "repas-sans-frigo-van",
     "slug": "repas-sans-frigo-van",
     "title": "Repas sans frigo en van : 25 idées faciles pour la route",
@@ -170,7 +198,7 @@
     "gscSource": {
       "oldSlug": "dormir-van-saint-jean-de-luz",
       "clicks90d": 55,
-      "position": 16.0
+      "position": 16
     },
     "status": "pending",
     "priority": -10,
@@ -380,7 +408,7 @@
     "gscSource": {
       "oldSlug": "itineraire-3-jours-van-pays-basque",
       "clicks90d": 33,
-      "position": 12.0
+      "position": 12
     },
     "status": "pending",
     "priority": -3,
@@ -410,7 +438,7 @@
     "gscSource": {
       "oldSlug": "parking-van-biarritz",
       "clicks90d": 33,
-      "position": 12.0
+      "position": 12
     },
     "status": "pending",
     "priority": -2,
