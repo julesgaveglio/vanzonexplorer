@@ -3,7 +3,6 @@
 import { useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import Link from "next/link";
-import Image from "next/image";
 import { ArrowRight, Lock, Tag, RefreshCw, ShieldCheck } from "lucide-react";
 import type { Product, Brand, Category } from "@/lib/club/types";
 import OtherServices from "@/components/ui/OtherServices";
@@ -89,11 +88,26 @@ function buildSmartTabs(products: Product[], dbCategories: Category[]): Array<{ 
 
 function filterBySmartCategory(products: Product[], slug: string): Product[] {
   if (slug === "tous") return products;
-  // Smart category
   const smart = SMART_CATEGORIES.find((c) => c.slug === slug);
   if (smart) return products.filter((p) => getSmartCategory(p) === slug);
-  // DB category fallback
   return products.filter((p) => p.category.slug === slug);
+}
+
+/** Image produit avec fallback automatique si l'URL est cassée */
+function ProductImage({ src, alt, categoryName }: { src: string; alt: string; categoryName: string }) {
+  const [errored, setErrored] = useState(false);
+  const fallback = `https://placehold.co/600x450/1C1917/FAF7F2?text=${encodeURIComponent(categoryName || alt.slice(0, 20))}`;
+  const imgSrc = errored ? fallback : (src || fallback);
+
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={imgSrc}
+      alt={alt}
+      onError={() => setErrored(true)}
+      className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+    />
+  );
 }
 
 const FALLBACK_PRODUCTS: Product[] = [
@@ -376,12 +390,10 @@ export default function ClubLandingPage({ previewProducts, allProducts, brands, 
               >
                 {/* Image */}
                 <div className="relative aspect-[4/3] overflow-hidden bg-slate-50">
-                  <Image
-                    src={product.image || "/placeholder.svg"}
+                  <ProductImage
+                    src={product.image}
                     alt={product.name}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    categoryName={product.category.name || product.brand.name}
                   />
                   {product.discount > 0 && (
                     <span className="absolute left-3 top-3 z-10 rounded-full bg-violet-600 px-2.5 py-1 text-xs font-bold text-white">
