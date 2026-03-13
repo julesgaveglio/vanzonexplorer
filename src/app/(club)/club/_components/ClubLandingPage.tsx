@@ -32,6 +32,70 @@ function diversifyLocal(products: Product[], maxPerBrand = 2): Product[] {
   });
 }
 
+/** Détection intelligente du type de produit par mots-clés */
+const SMART_CATEGORIES = [
+  {
+    slug: "batteries",
+    name: "Batteries",
+    keywords: ["batterie", "battery", "ac200", "ac300", "ac500", "ac60", "ac70", "ac180", "ac240", "eb", "ep200", "ep500", "elite", "rv5", "powerhub", "hub", "lifepo4", "lithium", "powerstation", "station"],
+  },
+  {
+    slug: "panneaux-solaires",
+    name: "Panneaux Solaires",
+    keywords: ["panneau", "solar", "solaire", "pv", "sp", "photovoltaïque", "monocristallin", "polycristallin", "module solaire"],
+  },
+  {
+    slug: "accessoires",
+    name: "Accessoires",
+    keywords: ["câble", "cable", "adaptateur", "chargeur", "bag", "valise", "sac", "extension", "connecteur", "support", "fixation", "protection", "housse", "cover"],
+  },
+];
+
+function getSmartCategory(product: Product): string {
+  const text = `${product.name} ${product.description}`.toLowerCase();
+  for (const cat of SMART_CATEGORIES) {
+    if (cat.keywords.some((kw) => text.includes(kw))) return cat.slug;
+  }
+  // Fallback sur la catégorie DB
+  return product.category.slug;
+}
+
+/** Construit les onglets intelligents fusionnant catégories DB + smart */
+function buildSmartTabs(products: Product[], dbCategories: Category[]): Array<{ slug: string; name: string }> {
+  const tabs: Array<{ slug: string; name: string }> = [{ slug: "tous", name: "Tous" }];
+  const seen = new Set<string>();
+
+  // Catégories smart qui ont au moins 1 produit
+  for (const cat of SMART_CATEGORIES) {
+    if (products.some((p) => getSmartCategory(p) === cat.slug)) {
+      tabs.push({ slug: cat.slug, name: cat.name });
+      seen.add(cat.slug);
+    }
+  }
+
+  // Catégories DB non couvertes par smart
+  for (const cat of dbCategories) {
+    const hasProducts = products.some((p) => p.category.slug === cat.slug);
+    const alreadyCovered = SMART_CATEGORIES.some((sc) =>
+      products.filter((p) => p.category.slug === cat.slug).every((p) => getSmartCategory(p) !== cat.slug)
+    );
+    if (hasProducts && !seen.has(cat.slug) && alreadyCovered) {
+      tabs.push({ slug: cat.slug, name: cat.name });
+    }
+  }
+
+  return tabs;
+}
+
+function filterBySmartCategory(products: Product[], slug: string): Product[] {
+  if (slug === "tous") return products;
+  // Smart category
+  const smart = SMART_CATEGORIES.find((c) => c.slug === slug);
+  if (smart) return products.filter((p) => getSmartCategory(p) === slug);
+  // DB category fallback
+  return products.filter((p) => p.category.slug === slug);
+}
+
 const FALLBACK_PRODUCTS: Product[] = [
   {
     id: "fallback-1",
@@ -107,27 +171,23 @@ export default function ClubLandingPage({ previewProducts, allProducts, brands, 
 
   const [activeCategory, setActiveCategory] = useState<string>("tous");
 
-  // Filtrage par catégorie depuis allProducts, puis diversification
+  // Onglets intelligents
+  const smartTabs = buildSmartTabs(allProducts, categories);
+
+  // Filtrage par catégorie smart, puis diversification
   const filteredProducts = (() => {
-    const base = activeCategory === "tous"
-      ? allProducts
-      : allProducts.filter((p) => p.category.slug === activeCategory);
+    const base = filterBySmartCategory(allProducts, activeCategory);
     const sorted = [...base].sort((a, b) => {
       if (a.isFeatured && !b.isFeatured) return -1;
       if (!a.isFeatured && b.isFeatured) return 1;
       return 0;
     });
-    return diversifyLocal(sorted, 2).slice(0, 9);
+    return diversifyLocal(sorted, 3).slice(0, 9);
   })();
 
   const displayProducts = filteredProducts.length > 0
     ? filteredProducts
     : (previewProducts.length > 0 ? previewProducts : FALLBACK_PRODUCTS);
-
-  // Catégories qui ont au moins 1 produit
-  const activeCategories = categories.filter((c) =>
-    allProducts.some((p) => p.category.slug === c.slug)
-  );
 
   const calcRef    = useRef(null);
   const dealsRef   = useRef(null);
@@ -277,35 +337,25 @@ export default function ClubLandingPage({ previewProducts, allProducts, brands, 
             </Link>
           </motion.div>
 
-          {/* Onglets catégories */}
-          {activeCategories.length > 0 && (
+          {/* Onglets catégories intelligents */}
+          {smartTabs.length > 1 && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={dealsInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.4, delay: 0.1 }}
               className="mb-8 flex flex-wrap gap-2"
             >
-              <button
-                onClick={() => setActiveCategory("tous")}
-                className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-all duration-200 ${
-                  activeCategory === "tous"
-                    ? "bg-earth text-cream"
-                    : "bg-slate-100 text-slate-500 hover:bg-slate-200"
-                }`}
-              >
-                Tous
-              </button>
-              {activeCategories.map((cat) => (
+              {smartTabs.map((tab) => (
                 <button
-                  key={cat.id}
-                  onClick={() => setActiveCategory(cat.slug)}
+                  key={tab.slug}
+                  onClick={() => setActiveCategory(tab.slug)}
                   className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-all duration-200 ${
-                    activeCategory === cat.slug
+                    activeCategory === tab.slug
                       ? "bg-earth text-cream"
                       : "bg-slate-100 text-slate-500 hover:bg-slate-200"
                   }`}
                 >
-                  {cat.name}
+                  {tab.name}
                 </button>
               ))}
             </motion.div>
