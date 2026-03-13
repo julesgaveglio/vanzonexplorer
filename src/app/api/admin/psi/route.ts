@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
 
 export async function GET(req: NextRequest) {
+  const { userId } = await auth();
+  if (!userId) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+
   const url = req.nextUrl.searchParams.get("url");
   const strategy = req.nextUrl.searchParams.get("strategy") ?? "mobile";
 
