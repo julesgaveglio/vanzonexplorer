@@ -93,18 +93,31 @@ function filterBySmartCategory(products: Product[], slug: string): Product[] {
   return products.filter((p) => p.category.slug === slug);
 }
 
-/** Image produit avec fallback automatique si l'URL est cassée */
+/** Génère un SVG placeholder inline — aucune dépendance réseau, jamais d'échec */
+function svgPlaceholder(label: string): string {
+  const text = label.replace(/[<>&"]/g, "").slice(0, 28);
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="450" viewBox="0 0 600 450">
+    <rect width="600" height="450" fill="#1C1917"/>
+    <rect x="240" y="160" width="120" height="80" rx="12" fill="#292524" stroke="#44403c" stroke-width="1"/>
+    <circle cx="300" cy="200" r="22" fill="#44403c"/>
+    <line x1="300" y1="178" x2="300" y2="162" stroke="#78716c" stroke-width="2"/>
+    <text x="300" y="278" text-anchor="middle" font-family="system-ui,sans-serif" font-size="13" fill="#78716c" font-weight="500">${text}</text>
+  </svg>`;
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+}
+
+/** Image produit avec fallback SVG inline garanti */
 function ProductImage({ src, alt, categoryName }: { src: string; alt: string; categoryName: string }) {
   const [errored, setErrored] = useState(false);
-  const fallback = `https://placehold.co/600x450/1C1917/FAF7F2?text=${encodeURIComponent(categoryName || alt.slice(0, 20))}`;
-  const imgSrc = errored ? fallback : (src || fallback);
+  const placeholder = svgPlaceholder(categoryName || alt);
+  const imgSrc = (!src || errored) ? placeholder : src;
 
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
       src={imgSrc}
       alt={alt}
-      onError={() => setErrored(true)}
+      onError={() => !errored && setErrored(true)}
       className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
     />
   );

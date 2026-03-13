@@ -202,20 +202,72 @@ async function jinaExtractBatch(urls: string[]): Promise<{ content: string; imag
   return { content: contents.join("\n\n"), imagesByUrl };
 }
 
-/** Try uploading from multiple candidate URLs — returns first success */
+/** Fetch og:image / twitter:image from a product page HTML — always publicly accessible */
+async function fetchOgImage(url: string): Promise<string | null> {
+  try {
+    const res = await fetch(url, {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (compatible; Twitterbot/1.0)",
+        "Accept": "text/html",
+      },
+      signal: AbortSignal.timeout(12000),
+    });
+    if (!res.ok) return null;
+    const html = await res.text();
+    // og:image (two attribute orders), twitter:image, first large img
+    const patterns = [
+      /property=["']og:image["'][^>]+content=["']([^"']+)["']/i,
+      /content=["']([^"']+)["'][^>]+property=["']og:image["']/i,
+      /name=["']twitter:image["'][^>]+content=["']([^"']+)["']/i,
+      /content=["']([^"']+)["'][^>]+name=["']twitter:image["']/i,
+      /<img[^>]+src=["'](https?:\/\/[^"']+\.(?:jpg|jpeg|png|webp)[^"']*)["'][^>]+(?:width=["'](?:[4-9]\d{2}|\d{4,})["'])/i,
+    ];
+    for (const pattern of patterns) {
+      const match = html.match(pattern);
+      if (match?.[1]?.startsWith("http")) return match[1];
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+/** Try uploading from multiple candidate URLs — cycles through User-Agent variants */
 async function uploadImageFromCandidates(
   candidates: string[],
   filename: string
 ): Promise<string | null> {
+  const userAgents = [
+    "Mozilla/5.0 (compatible; Twitterbot/1.0)",
+    "Mozilla/5.0 (compatible; facebookexternalhit/1.1)",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36",
+    "VanzonBot/1.0",
+  ];
   for (const url of candidates) {
     if (!url?.startsWith("http")) continue;
-    const result = await uploadImageToSanity(url, filename);
-    if (result) return result;
+    for (const ua of userAgents) {
+      try {
+        const res = await fetch(url, {
+          headers: { "User-Agent": ua },
+          signal: AbortSignal.timeout(12000),
+        });
+        if (!res.ok) continue;
+        const contentType = res.headers.get("content-type") || "";
+        if (!contentType.startsWith("image/")) continue;
+        const buffer = Buffer.from(await res.arrayBuffer());
+        if (buffer.length < 1000) continue; // skip tiny/broken images
+        const sanity = getSanityClient();
+        const asset = await sanity.assets.upload("image", buffer, { filename, contentType });
+        return asset.url;
+      } catch {
+        continue;
+      }
+    }
   }
   return null;
 }
 
-/** Search for a product image via Tavily when direct scraping fails */
+/** Search for a product image via Tavily — returns publicly-indexed image URLs */
 async function searchProductImage(productName: string, brandName: string): Promise<string[]> {
   try {
     const res = await fetch("https://api.tavily.com/search", {
@@ -223,9 +275,9 @@ async function searchProductImage(productName: string, brandName: string): Promi
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         api_key: process.env.TAVILY_API_KEY,
-        query: `${brandName} ${productName} product image`,
+        query: `${brandName} ${productName} product official`,
         include_images: true,
-        max_results: 5,
+        max_results: 8,
       }),
       signal: AbortSignal.timeout(15000),
     });
@@ -577,7 +629,7 @@ export async function POST(req: NextRequest) {
           }
         }
 
-        // ── STEP 7: Upload product images (multi-source) ─────────────────
+        // ── STEP 7: Upload product images — stratégie 5 sources ──────────
         const productsWithImages = await Promise.all(
           analysis.products.slice(0, 30).map(async (product, i) => {
             const filename = `product-${slugify(product.name)}.jpg`;
@@ -587,19 +639,25 @@ export async function POST(req: NextRequest) {
               message: `📤 Image ${i + 1}/${Math.min(analysis.products.length, 30)}: ${product.name}`,
             });
 
-            // Source 1: URL suggérée par Groq
-            // Source 2: Images Jina extraites des pages produits (cherche la page la plus proche)
+            // Source 1 — og:image de la page produit (toujours public pour social preview)
+            const productPageUrl = product.productUrl || null;
+            const ogImage = productPageUrl ? await fetchOgImage(productPageUrl) : null;
+
+            // Source 2 — URL suggérée par Groq
+            // Source 3 — Images Jina extraites (pages dont l'URL contient le nom produit)
             const jinaImages = Object.entries(imagesByUrl)
-              .filter(([url]) => url.toLowerCase().includes(slugify(product.name).slice(0, 8)) ||
-                product.name.toLowerCase().split(" ").some(w => w.length > 4 && url.toLowerCase().includes(w)))
+              .filter(([url]) =>
+                product.name.toLowerCase().split(" ").some(w => w.length > 3 && url.toLowerCase().includes(w))
+              )
               .flatMap(([, imgs]) => imgs);
 
-            // Source 3: Images Tavily globales déjà collectées
+            // Source 4 — Images Tavily globales matchées par nom
             const tavilyMatches = searchImages.filter(u =>
               product.name.toLowerCase().split(" ").some(w => w.length > 4 && u.toLowerCase().includes(w))
             );
 
             const candidates = [
+              ogImage,
               product.imageUrl,
               ...jinaImages,
               ...tavilyMatches,
@@ -607,9 +665,9 @@ export async function POST(req: NextRequest) {
 
             let uploadedUrl = await uploadImageFromCandidates(candidates, filename);
 
-            // Source 4: Tavily image search dédié si tout échoue
+            // Source 5 — Tavily image search dédié en dernier recours
             if (!uploadedUrl) {
-              send({ type: "log", level: "warning", message: `🔍 Recherche image alternative pour "${product.name}"...` });
+              send({ type: "log", level: "warning", message: `🔍 Image search pour "${product.name}"...` });
               const fallbackImages = await searchProductImage(product.name, parsed.brandName);
               uploadedUrl = await uploadImageFromCandidates(fallbackImages, filename);
             }
@@ -617,7 +675,7 @@ export async function POST(req: NextRequest) {
             if (uploadedUrl) {
               send({ type: "log", level: "success", message: `✅ Image uploadée : ${product.name}` });
             } else {
-              send({ type: "log", level: "warning", message: `⚠️ Aucune image trouvée pour "${product.name}"` });
+              send({ type: "log", level: "warning", message: `⚠️ Pas d'image uploadable pour "${product.name}" — placeholder utilisé` });
             }
 
             return { ...product, uploadedImageUrl: uploadedUrl };

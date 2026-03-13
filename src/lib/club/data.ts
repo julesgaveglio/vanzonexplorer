@@ -103,7 +103,7 @@ function transformProduct(row: DbProduct): Product {
     description: row.description || "",
     longDescription: row.long_description || "",
     whyThisDeal: row.why_this_deal || "",
-    image: row.main_image_url || `https://placehold.co/600x400/1C0A35/FAF7F2?text=${encodeURIComponent(row.name)}`,
+    image: row.main_image_url || "",
     gallery: row.gallery_urls || [],
     originalPrice: Number(row.original_price),
     promoPrice: Number(row.promo_price),
