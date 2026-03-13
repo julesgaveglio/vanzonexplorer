@@ -139,7 +139,7 @@ export async function POST(req: NextRequest) {
         const sb = getSupabase();
 
         // Fetch brands to process
-        let query = sb.from("brands").select("id, name, website_url, logo_url, logo_png_url").eq("status", "active");
+        let query = sb.from("brands").select("id, name, website_url, logo_url").eq("status", "active");
         if (brandId) query = query.eq("id", brandId);
 
         const { data: brands, error } = await query;
@@ -152,7 +152,7 @@ export async function POST(req: NextRequest) {
         send({ type: "log", level: "info", message: `🔍 ${brands.length} marque(s) à traiter...` });
 
         let updated = 0;
-        for (const brand of brands as Array<{ id: string; name: string; website_url: string | null; logo_url: string | null; logo_png_url: string | null }>) {
+        for (const brand of brands as Array<{ id: string; name: string; website_url: string | null; logo_url: string | null }>) {
           if (!brand.website_url) {
             send({ type: "log", level: "warning", message: `⚠️ ${brand.name} — pas d'URL, ignoré` });
             continue;
@@ -163,7 +163,7 @@ export async function POST(req: NextRequest) {
           const logoUrl = await scrapeLogo(brand.website_url, brand.name);
 
           if (logoUrl) {
-            await sb.from("brands").update({ logo_url: logoUrl, logo_png_url: logoUrl }).eq("id", brand.id);
+            await sb.from("brands").update({ logo_url: logoUrl }).eq("id", brand.id);
             send({ type: "log", level: "success", message: `✅ Logo ${brand.name} uploadé` });
             send({ type: "brand", id: brand.id, name: brand.name, logoUrl });
             updated++;

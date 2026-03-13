@@ -747,7 +747,6 @@ export async function POST(req: NextRequest) {
             slug: brandSlug,
             description: analysis.brandDescription,
             website_url: parsed.website,
-            logo_png_url: finalLogoUrl,
             logo_url: finalLogoUrl,
             promo_code_global: parsed.promoCode,
             affiliate_url_base: parsed.website,
