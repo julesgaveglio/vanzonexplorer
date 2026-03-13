@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getBrandsAdmin, getProductsAdmin } from "./actions";
+import ScrapeLogosButton from "./_components/ScrapeLogosButton";
 
 export default async function AdminClubPage() {
   const [brands, products] = await Promise.all([
@@ -59,6 +60,11 @@ export default async function AdminClubPage() {
             <p className="text-sm text-slate-500 mt-1">{s.label}</p>
           </Link>
         ))}
+      </div>
+
+      {/* Scraping logos */}
+      <div className="mb-6">
+        <ScrapeLogosButton />
       </div>
 
       {/* Marques récentes */}

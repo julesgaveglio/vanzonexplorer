@@ -93,6 +93,40 @@ function filterBySmartCategory(products: Product[], slug: string): Product[] {
   return products.filter((p) => p.category.slug === slug);
 }
 
+/** Logo marque dans le ticker — image avec fallback pill stylé */
+function BrandLogoTicker({ brand }: { brand: Brand }) {
+  const [imgFailed, setImgFailed] = useState(false);
+  const src = brand.logoPng?.startsWith("http") ? brand.logoPng
+    : brand.logo?.startsWith("http") ? brand.logo
+    : null;
+
+  if (src && !imgFailed) {
+    return (
+      <div className="flex h-9 flex-shrink-0 items-center px-2">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={src}
+          alt={brand.name}
+          onError={() => setImgFailed(true)}
+          className="h-6 w-auto max-w-[110px] object-contain brightness-0 invert opacity-30 hover:opacity-60 transition-opacity duration-300"
+        />
+      </div>
+    );
+  }
+
+  // Fallback : pill avec initiales + nom
+  return (
+    <div className="flex h-9 flex-shrink-0 items-center gap-2 rounded-full border border-cream/10 bg-cream/5 px-4 hover:bg-cream/10 hover:border-cream/20 transition-all duration-300">
+      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-rust/30 text-[9px] font-black text-cream/70 flex-shrink-0">
+        {brand.name.charAt(0).toUpperCase()}
+      </span>
+      <span className="text-[11px] font-semibold uppercase tracking-[0.15em] text-cream/35 hover:text-cream/60 transition-colors duration-300">
+        {brand.name}
+      </span>
+    </div>
+  );
+}
+
 /** Génère un SVG placeholder inline — aucune dépendance réseau, jamais d'échec */
 function svgPlaceholder(label: string): string {
   const text = label.replace(/[<>&"]/g, "").slice(0, 28);
@@ -300,36 +334,23 @@ export default function ClubLandingPage({ previewProducts, allProducts, brands, 
             </motion.div>
 
             {/* Ticker marques partenaires */}
-            <motion.div variants={fadeUp} className="mt-16 -mx-6">
-              <p className="px-6 mb-4 text-[10px] font-semibold uppercase tracking-[0.2em] text-cream/20">
-                Marques partenaires
-              </p>
-              <div className="relative overflow-hidden">
-                <div className="absolute bottom-0 left-0 top-0 z-10 w-16 bg-gradient-to-r from-earth to-transparent" />
-                <div className="absolute bottom-0 right-0 top-0 z-10 w-16 bg-gradient-to-l from-earth to-transparent" />
-                <div className="flex animate-marquee items-center gap-12">
-                  {Array.from({ length: 6 }, () => brands).flat().map((brand, i) => {
-                    const src = brand.logoPng?.startsWith("http") ? brand.logoPng : (brand.logo?.startsWith("http") ? brand.logo : null);
-                    return (
-                      <div key={`${brand.id}-${i}`} className="flex h-8 flex-shrink-0 items-center">
-                        {src ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={src}
-                            alt={brand.name}
-                            className="h-5 w-auto max-w-[100px] object-contain brightness-0 invert opacity-25 hover:opacity-50 transition-opacity duration-300"
-                          />
-                        ) : (
-                          <span className="text-[11px] font-semibold uppercase tracking-widest text-cream/20 hover:text-cream/40 transition-colors duration-300">
-                            {brand.name}
-                          </span>
-                        )}
-                      </div>
-                    );
-                  })}
+            {brands.length > 0 && (
+              <motion.div variants={fadeUp} className="mt-16 -mx-6">
+                <p className="px-6 mb-5 text-[10px] font-semibold uppercase tracking-[0.2em] text-cream/20">
+                  Marques partenaires
+                </p>
+                <div className="relative overflow-hidden">
+                  <div className="absolute bottom-0 left-0 top-0 z-10 w-24 bg-gradient-to-r from-earth to-transparent pointer-events-none" />
+                  <div className="absolute bottom-0 right-0 top-0 z-10 w-24 bg-gradient-to-l from-earth to-transparent pointer-events-none" />
+                  {/* Double le tableau pour un défilement fluide infini */}
+                  <div className="flex animate-marquee items-center gap-10 py-1" style={{ width: "max-content" }}>
+                    {[...Array(8)].flatMap(() => brands).map((brand, i) => (
+                      <BrandLogoTicker key={`${brand.id}-${i}`} brand={brand} />
+                    ))}
+                  </div>
                 </div>
-              </div>
-            </motion.div>
+              </motion.div>
+            )}
           </motion.div>
         </div>
       </section>
