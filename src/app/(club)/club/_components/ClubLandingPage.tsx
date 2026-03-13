@@ -75,7 +75,7 @@ function buildSmartTabs(products: Product[], dbCategories: Category[]): Array<{ 
   // Catégories DB non couvertes par smart
   for (const cat of dbCategories) {
     const hasProducts = products.some((p) => p.category.slug === cat.slug);
-    const alreadyCovered = SMART_CATEGORIES.some((sc) =>
+    const alreadyCovered = SMART_CATEGORIES.some(() =>
       products.filter((p) => p.category.slug === cat.slug).every((p) => getSmartCategory(p) !== cat.slug)
     );
     if (hasProducts && !seen.has(cat.slug) && alreadyCovered) {
