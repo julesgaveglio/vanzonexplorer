@@ -35,8 +35,8 @@ export async function GET() {
 
     return NextResponse.json({
       total: images.length,
-      noAlt: noAlt.map((r) => r.url),
-      nonOptimized: nonOptimized.map((r) => r.url),
+      noAlt: noAlt.map((r) => r.url).filter((u): u is string => !!u),
+      nonOptimized: nonOptimized.map((r) => r.url).filter((u): u is string => !!u),
       tooHeavy: tooHeavy.map((r) => ({ url: r.url, sizeKb: Math.round((r.size ?? 0) / 1024) })),
     });
   } catch (err) {
