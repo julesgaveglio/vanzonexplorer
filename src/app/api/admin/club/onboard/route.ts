@@ -46,6 +46,7 @@ interface ScrapedAnalysis {
     promoPrice: number | null;
     category: string;
     imageUrl: string | null;
+    productUrl: string | null;
   }>;
 }
 
@@ -380,7 +381,8 @@ Réponds UNIQUEMENT avec un JSON valide (pas de markdown, pas de texte autour) s
       "originalPrice": prix_original_en_euros_ou_null,
       "promoPrice": prix_promo_en_euros_ou_null,
       "category": "Nom de la catégorie (doit matcher une des catégories ci-dessus)",
-      "imageUrl": "URL de l'image du produit ou null"
+      "imageUrl": "URL de l'image du produit ou null",
+      "productUrl": "URL directe de la page produit sur le site de la marque ou null"
     }
   ]
 }
@@ -390,6 +392,7 @@ Règles :
 - Icônes disponibles : Zap (énergie), Thermometer (isolation/température), Utensils (cuisine), Wifi (connectivité), Camera (photo/vidéo), Shield (sécurité), Droplets (eau/douche), Wind (aération/clim), Package (stockage/rangement), Compass (navigation/GPS), Wrench (outillage), Sun (solaire/lumière), Truck (véhicule), Star (premium/général)
 - Les prix doivent être des nombres (ex: 299.99) ou null
 - Si le code promo s'applique à tout le magasin, applique le même promoCode à chaque produit
+- productUrl doit être l'URL exacte de la page produit (ex: https://fr.bluettipower.eu/products/ac200p), extraite du contenu scrapé
 - Rédige tout le contenu en français
 `,
       },
@@ -741,7 +744,7 @@ export async function POST(req: NextRequest) {
                 promo_price: product.promoPrice ?? 0,
                 promo_code: parsed.promoCode,
                 offer_type: parsed.offerType,
-                affiliate_url: parsed.website,
+                affiliate_url: product.productUrl || parsed.website,
                 main_image_url: product.uploadedImageUrl || product.imageUrl,
                 is_featured: productsCreated < 3,
                 is_active: true,

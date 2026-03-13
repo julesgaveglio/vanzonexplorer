@@ -386,25 +386,47 @@ export default function ClubLandingPage({ previewProducts, allProducts, brands, 
               <motion.div
                 key={product.id}
                 variants={cardIn}
-                className="group relative overflow-hidden rounded-2xl bg-white border border-slate-100 shadow-sm"
+                className="group relative overflow-hidden rounded-2xl bg-white border border-slate-100 shadow-sm cursor-default"
               >
-                {/* Image */}
+                {/* Image + overlay hover */}
                 <div className="relative aspect-[4/3] overflow-hidden bg-slate-50">
                   <ProductImage
                     src={product.image}
                     alt={product.name}
                     categoryName={product.category.name || product.brand.name}
                   />
+
+                  {/* Badge réduction */}
                   {product.discount > 0 && (
                     <span className="absolute left-3 top-3 z-10 rounded-full bg-violet-600 px-2.5 py-1 text-xs font-bold text-white">
                       -{product.discount}%
                     </span>
                   )}
+
                   {/* Badge catégorie */}
                   {product.category.name && (
                     <span className="absolute right-3 top-3 z-10 rounded-full bg-black/40 backdrop-blur-sm px-2.5 py-1 text-[10px] font-medium text-white/90">
                       {product.category.name}
                     </span>
+                  )}
+
+                  {/* Overlay hover — non-membres : rejoindre le club */}
+                  {!isLoggedIn && (
+                    <div className="absolute inset-0 z-20 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-md bg-black/65">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-full border border-white/25 bg-white/10 mb-3">
+                        <Lock className="h-5 w-5 text-white" />
+                      </div>
+                      <p className="text-sm font-semibold text-white">Réservé aux membres</p>
+                      <p className="mt-0.5 text-xs text-white/60">9,99€/mois · Sans engagement</p>
+                      <Link
+                        href="/sign-up"
+                        className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-violet-600 px-5 py-2 text-xs font-semibold text-white transition-colors hover:bg-violet-700 active:scale-95"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        Rejoindre le club
+                        <ArrowRight className="h-3 w-3" />
+                      </Link>
+                    </div>
                   )}
                 </div>
 
@@ -412,6 +434,7 @@ export default function ClubLandingPage({ previewProducts, allProducts, brands, 
                 <div className="bg-white px-4 py-3">
                   <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">{product.brand.name}</p>
                   <h3 className="mt-0.5 text-sm font-semibold text-gray-900 leading-snug line-clamp-2">{product.name}</h3>
+
                   <div className="mt-2 flex items-baseline gap-2">
                     {product.promoPrice > 0 ? (
                       <>
@@ -430,28 +453,36 @@ export default function ClubLandingPage({ previewProducts, allProducts, brands, 
                     )}
                   </div>
 
-                  {/* Code promo — visible membres seulement */}
-                  {product.promoCode && (
-                    <div className="mt-2.5">
-                      {isLoggedIn ? (
+                  {/* Membres connectés : code promo + bouton voir l'offre */}
+                  {isLoggedIn && (
+                    <div className="mt-3 flex items-center gap-2 flex-wrap">
+                      {product.promoCode && (
                         <span className="inline-flex items-center gap-1.5 rounded-lg bg-violet-50 border border-violet-200 px-3 py-1.5 text-xs font-mono font-bold text-violet-700">
                           <Tag className="h-3 w-3" />
                           {product.promoCode}
                         </span>
-                      ) : (
-                        <div className="relative inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-3 py-1.5 overflow-hidden">
-                          <Lock className="h-3 w-3 text-slate-400 flex-shrink-0" />
-                          <span className="text-xs font-mono font-bold text-transparent select-none blur-[4px]">
-                            XXXXXXX
-                          </span>
-                          <Link
-                            href="/sign-up"
-                            className="absolute inset-0 flex items-center justify-center bg-slate-100/80 backdrop-blur-[1px] text-[10px] font-semibold text-slate-500 hover:text-violet-600 transition-colors"
-                          >
-                            Voir le code
-                          </Link>
-                        </div>
                       )}
+                      {product.affiliateUrl && product.affiliateUrl !== "/" && (
+                        <Link
+                          href={product.affiliateUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="ml-auto inline-flex items-center gap-1 rounded-full bg-earth px-3 py-1.5 text-[11px] font-semibold text-cream hover:opacity-80 transition-opacity"
+                        >
+                          Voir l&apos;offre
+                          <ArrowRight className="h-3 w-3" />
+                        </Link>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Non-membres : placeholder code verrouillé statique */}
+                  {!isLoggedIn && (
+                    <div className="mt-3 flex items-center gap-1.5 rounded-lg bg-slate-100 px-3 py-1.5 w-fit">
+                      <Lock className="h-3 w-3 text-slate-400 flex-shrink-0" />
+                      <span className="text-xs font-mono font-bold text-slate-400 select-none tracking-widest">
+                        ••••••••
+                      </span>
                     </div>
                   )}
                 </div>
@@ -475,7 +506,7 @@ export default function ClubLandingPage({ previewProducts, allProducts, brands, 
             </Link>
             {!isLoggedIn && (
               <p className="mt-3 text-xs text-slate-400">
-                Les codes promo sont réservés aux membres · <Link href="/sign-up" className="text-violet-500 hover:underline">S&apos;inscrire pour 9,99€/mois</Link>
+                Codes promo réservés aux membres · <Link href="/sign-up" className="text-violet-500 hover:underline">S&apos;inscrire pour 9,99€/mois</Link>
               </p>
             )}
           </motion.div>
