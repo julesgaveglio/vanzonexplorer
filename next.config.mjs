@@ -1,5 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // sharp is a native Node module — exclude from webpack bundle
+  experimental: {
+    serverComponentsExternalPackages: ["sharp"],
+  },
   async redirects() {
     return [
       // Redirections précises : anciens slugs → nouveaux articles
