@@ -102,27 +102,24 @@ function BrandLogoTicker({ brand }: { brand: Brand }) {
 
   if (src && !imgFailed) {
     return (
-      <div className="flex h-10 flex-shrink-0 items-center gap-2.5 rounded-full bg-white/90 px-4 shadow-sm">
+      <div className="flex-shrink-0 flex items-center px-3">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={src}
           alt={brand.name}
           onError={() => setImgFailed(true)}
-          className="h-5 w-auto max-w-[80px] object-contain"
+          className="h-7 w-auto max-w-[100px] object-contain"
+          style={{ filter: "brightness(0) invert(1)", opacity: 0.7 }}
         />
-        <span className="text-[11px] font-semibold text-slate-700 whitespace-nowrap">{brand.name}</span>
       </div>
     );
   }
 
-  // Fallback : pill avec initiales + nom
+  // Fallback : initiale seule en blanc
   return (
-    <div className="flex h-10 flex-shrink-0 items-center gap-2.5 rounded-full bg-white/90 px-4 shadow-sm">
-      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-rust text-[9px] font-black text-white flex-shrink-0">
-        {brand.name.charAt(0).toUpperCase()}
-      </span>
-      <span className="text-[11px] font-semibold text-slate-700 whitespace-nowrap">
-        {brand.name}
+    <div className="flex-shrink-0 flex items-center px-3">
+      <span className="text-sm font-black text-white/50 tracking-widest uppercase">
+        {brand.name.charAt(0)}
       </span>
     </div>
   );
