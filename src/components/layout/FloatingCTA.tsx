@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useArticleCategory } from "@/lib/contexts/ArticleCategoryContext";
 
 type CTAConfig = {
   btnLabel: string;
@@ -15,12 +16,12 @@ type CTAConfig = {
 
 // ── Palettes dégradés Vanzon ───────────────────────────────────────────────
 const PALETTE = {
-  // Bleu — Location & Achat
+  // Bleu — Location & Road Trips
   blue: {
     gradient: "linear-gradient(135deg, #3B82F6 0%, #0EA5E9 100%)",
     glow: "0 4px 18px rgba(59, 130, 246, 0.50), 0 1px 4px rgba(14, 165, 233, 0.30)",
   },
-  // Doré — Formation (#B9945F foncé → #FCF6B8 clair)
+  // Doré — Formation
   gold: {
     gradient: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
     glow: "0 4px 18px rgba(185, 148, 95, 0.55), 0 1px 4px rgba(228, 211, 152, 0.30)",
@@ -30,6 +31,21 @@ const PALETTE = {
     gradient: "linear-gradient(135deg, #883AE2 0%, #8A80E9 100%)",
     glow: "0 4px 18px rgba(136, 58, 226, 0.50), 0 1px 4px rgba(138, 128, 233, 0.30)",
   },
+  // Slate — Achat Van / Aménagement
+  slate: {
+    gradient: "linear-gradient(135deg, #334155 0%, #475569 100%)",
+    glow: "0 4px 18px rgba(51, 65, 85, 0.50), 0 1px 4px rgba(71, 85, 105, 0.30)",
+  },
+};
+
+// ── Mapping catégorie article → CTA ──────────────────────────────────────
+const ARTICLE_CATEGORY_CTA: Record<string, CTAConfig> = {
+  "Road Trips": { btnLabel: "Louer un van", href: "/location", ...PALETTE.blue },
+  "Pays Basque": { btnLabel: "Louer un van", href: "/location", ...PALETTE.blue },
+  "Aménagement Van": { btnLabel: "Trouver mon van", href: "/achat", ...PALETTE.slate },
+  "Achat Van": { btnLabel: "Trouver mon van", href: "/achat", ...PALETTE.slate },
+  "Business Van": { btnLabel: "Découvrir la formation", href: "/formation", ...PALETTE.gold },
+  "Club Privé": { btnLabel: "Rejoindre le Club", href: "/club", ...PALETTE.purple },
 };
 
 function getCTAConfig(pathname: string): CTAConfig {
@@ -169,6 +185,7 @@ export default function FloatingCTA() {
   const [visible, setVisible] = useState(true);
   const pathname = usePathname();
   const router = useRouter();
+  const { category } = useArticleCategory();
 
   useEffect(() => {
     const footer = document.querySelector("footer");
@@ -182,7 +199,12 @@ export default function FloatingCTA() {
     return () => observer.disconnect();
   }, []);
 
-  const config = getCTAConfig(pathname);
+  // Sur un article spécifique avec catégorie connue : CTA dynamique
+  const isArticlePage = pathname.startsWith("/articles/") && pathname !== "/articles/";
+  const config =
+    isArticlePage && category && ARTICLE_CATEGORY_CTA[category]
+      ? ARTICLE_CATEGORY_CTA[category]
+      : getCTAConfig(pathname);
 
   return (
     <AnimatePresence>

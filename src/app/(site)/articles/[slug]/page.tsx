@@ -13,6 +13,7 @@ import { ArticleJsonLd, type FAQItem } from "@/components/seo/JsonLd";
 import ArticleTOC, { type TOCHeading } from "./_components/ArticleTOC";
 import ReadingProgressBar from "./_components/ReadingProgressBar";
 import ArticleFAQ from "./_components/ArticleFAQ";
+import ArticleCategorySync from "./_components/ArticleCategorySync";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -428,6 +429,7 @@ export default async function ArticleDetailPage({
   return (
     <main className="min-h-screen bg-white">
       <ReadingProgressBar />
+      <ArticleCategorySync category={article.category} />
       {/* JSON-LD: Article + BreadcrumbList + FAQPage */}
       <ArticleJsonLd article={article} faqItems={faqItems} />
 
