@@ -175,6 +175,7 @@ const FALLBACK_PRODUCTS: Product[] = [
     affiliateUrl: "",
     isFeatured: true,
     isActive: true,
+    priorityScore: 0,
     createdAt: "",
     expiresAt: null,
   },
@@ -197,6 +198,7 @@ const FALLBACK_PRODUCTS: Product[] = [
     affiliateUrl: "",
     isFeatured: true,
     isActive: true,
+    priorityScore: 0,
     createdAt: "",
     expiresAt: null,
   },
@@ -219,6 +221,7 @@ const FALLBACK_PRODUCTS: Product[] = [
     affiliateUrl: "",
     isFeatured: true,
     isActive: true,
+    priorityScore: 0,
     createdAt: "",
     expiresAt: null,
   },
@@ -240,7 +243,7 @@ export default function ClubLandingPage({ previewProducts, allProducts, brands, 
     const sorted = [...base].sort((a, b) => {
       if (a.isFeatured && !b.isFeatured) return -1;
       if (!a.isFeatured && b.isFeatured) return 1;
-      return 0;
+      return b.priorityScore - a.priorityScore;
     });
     return diversifyLocal(sorted, 3).slice(0, 9);
   })();

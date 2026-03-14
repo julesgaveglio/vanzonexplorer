@@ -42,6 +42,7 @@ export interface Product {
   affiliateUrl: string;
   isFeatured: boolean;
   isActive: boolean;
+  priorityScore: number;
   createdAt: string;
   expiresAt: string | null;
 }

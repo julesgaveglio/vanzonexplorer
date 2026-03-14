@@ -111,6 +111,7 @@ function transformProduct(row: DbProduct): Product {
     affiliateUrl: row.affiliate_url || "",
     isFeatured: row.is_featured,
     isActive: row.is_active,
+    priorityScore: row.priority_score,
     createdAt: row.created_at,
     expiresAt: row.expires_at,
   };

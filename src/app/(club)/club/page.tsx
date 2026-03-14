@@ -34,7 +34,7 @@ export default async function ClubPage() {
   const sorted = [...allProducts].sort((a, b) => {
     if (a.isFeatured && !b.isFeatured) return -1;
     if (!a.isFeatured && b.isFeatured) return 1;
-    return 0;
+    return b.priorityScore - a.priorityScore;
   });
   const previewProducts = diversify(sorted, 2).slice(0, 9);
 
