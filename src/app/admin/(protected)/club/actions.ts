@@ -190,6 +190,25 @@ export async function toggleProductActive(id: string, active: boolean) {
   revalidatePath("/club");
 }
 
+export async function reorderProducts(
+  items: { id: string; priority_score: number }[]
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const sb = createSupabaseAdmin();
+    await Promise.all(
+      items.map(({ id, priority_score }) =>
+        sb.from("products").update({ priority_score }).eq("id", id)
+      )
+    );
+    revalidatePath("/admin/club");
+    revalidatePath("/admin/club/produits");
+    revalidatePath("/club");
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: String(e) };
+  }
+}
+
 // ── CATÉGORIES ────────────────────────────────────────────────────
 
 export async function getCategoriesAdmin() {
