@@ -229,6 +229,7 @@ export default function ClubLandingPage({ previewProducts, allProducts, brands, 
   const ctaLabel = isLoggedIn ? "Accéder aux deals" : "Commencer";
 
   const [activeCategory, setActiveCategory] = useState<string>("tous");
+  const [showAll, setShowAll] = useState(false);
 
   // Onglets intelligents
   const smartTabs = buildSmartTabs(allProducts, categories);
@@ -244,9 +245,15 @@ export default function ClubLandingPage({ previewProducts, allProducts, brands, 
     return diversifyLocal(sorted, 3).slice(0, 9);
   })();
 
-  const displayProducts = filteredProducts.length > 0
+  const allDisplayProducts = filteredProducts.length > 0
     ? filteredProducts
     : (previewProducts.length > 0 ? previewProducts : FALLBACK_PRODUCTS);
+
+  // Mobile : 3 max / Desktop : 9 max — "Voir plus" révèle le reste
+  // On gère ça via CSS classes sur les items au-delà du seuil
+  const MOBILE_LIMIT = 3;
+  const displayProducts = allDisplayProducts;
+  const hasMore = allDisplayProducts.length > MOBILE_LIMIT;
 
   const calcRef    = useRef(null);
   const dealsRef   = useRef(null);
@@ -414,11 +421,14 @@ export default function ClubLandingPage({ previewProducts, allProducts, brands, 
             animate={dealsInView ? "visible" : "hidden"}
             className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
           >
-            {displayProducts.map((product) => (
+            {displayProducts.map((product, index) => (
               <motion.div
                 key={product.id}
                 variants={cardIn}
-                className="group relative overflow-hidden rounded-2xl bg-white border border-slate-100 shadow-sm cursor-default"
+                className={`group relative overflow-hidden rounded-2xl bg-white border border-slate-100 shadow-sm cursor-default${
+                  // Mobile : cacher les éléments après le 3e si showAll est false
+                  !showAll && index >= MOBILE_LIMIT ? " hidden sm:block" : ""
+                }`}
               >
                 {/* Image + overlay hover */}
                 <div className="relative aspect-[4/3] overflow-hidden bg-slate-50">
@@ -521,6 +531,19 @@ export default function ClubLandingPage({ previewProducts, allProducts, brands, 
               </motion.div>
             ))}
           </motion.div>
+
+          {/* Bouton Voir plus — mobile uniquement (sm: masqué car grille reprend) */}
+          {hasMore && !showAll && (
+            <div className="mt-6 flex justify-center sm:hidden">
+              <button
+                onClick={() => setShowAll(true)}
+                className="inline-flex items-center gap-2 rounded-full border border-earth/30 bg-earth/5 px-6 py-2.5 text-sm font-semibold text-earth/80 transition-all hover:bg-earth/10 hover:border-earth/50"
+              >
+                Voir plus
+                <ArrowRight className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          )}
 
           {/* CTA bas de section */}
           <motion.div
