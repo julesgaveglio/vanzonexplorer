@@ -9,6 +9,7 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://vanzonexplorer.com/pays-basque",
   },
+  robots: { index: false, follow: true },
 };
 
 
@@ -22,6 +23,7 @@ export default function PaysBasquePage() {
             src="https://cdn.sanity.io/images/lewexa74/production/0b3f81d08627ba0b4423224029cb5016d0e7ed25-2048x1365.jpg"
             alt="Pays Basque depuis un van - ikurriña et paysage basque Vanzon Explorer"
             fill
+            sizes="100vw"
             className="object-cover"
             priority
           />

@@ -30,6 +30,9 @@ export async function generateMetadata({
   return {
     title: van.seoTitle || `${van.name} — Location`,
     description: van.seoDescription || van.tagline || `Louez ${van.name} au Pays Basque`,
+    alternates: {
+      canonical: `https://vanzonexplorer.com/location/${params.slug}`,
+    },
   };
 }
 

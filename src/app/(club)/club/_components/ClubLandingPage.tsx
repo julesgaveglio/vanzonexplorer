@@ -308,13 +308,12 @@ export default function ClubLandingPage({ previewProducts, allProducts, brands, 
               className="font-display text-[clamp(3.2rem,9vw,7.5rem)] leading-[0.88] tracking-[0.03em] text-cream"
             >
               Économise des centaines
-            </motion.h1>
-            <motion.h1
-              variants={fadeUp}
-              className="font-display text-[clamp(3.2rem,9vw,7.5rem)] leading-[0.88] tracking-[0.03em]"
-              style={{ WebkitTextStroke: "1px rgba(250,247,242,0.25)", color: "transparent" }}
-            >
-              sur ton van.
+              <span
+                className="block"
+                style={{ WebkitTextStroke: "1px rgba(250,247,242,0.25)", color: "transparent" }}
+              >
+                sur ton van.
+              </span>
             </motion.h1>
 
             {/* Sous-titre */}

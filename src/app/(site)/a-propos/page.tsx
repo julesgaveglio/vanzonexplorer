@@ -393,6 +393,50 @@ export default async function AProposPage() {
           </div>
         </div>
       </section>
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            name: "Vanzon Explorer",
+            url: "https://vanzonexplorer.com",
+            logo: "https://cdn.sanity.io/images/lewexa74/production/1f483103ef15ee3549eab14ba2801d11b32a9055-313x313.png",
+            description:
+              "Écosystème vanlife 360° — location, achat, formation et Club Privé au Pays Basque. Fondé en 2024 par Jules Gaveglio et Elio.",
+            foundingDate: "2024",
+            foundingLocation: { "@type": "Place", name: "Cambo-les-Bains, Pays Basque, France" },
+            areaServed: "FR",
+            employee: [
+              {
+                "@type": "Person",
+                name: "Jules Gaveglio",
+                jobTitle: "Président & Co-fondateur",
+                description:
+                  "Stratégie, business, marketing et mise en location. Retour de tour du monde 2024.",
+                url: "https://vanzonexplorer.com/a-propos",
+                worksFor: { "@type": "Organization", name: "Vanzon Explorer" },
+              },
+              {
+                "@type": "Person",
+                name: "Elio",
+                jobTitle: "Directeur Général & Co-fondateur",
+                description:
+                  "Expert mécanique et aménagement van. Spécialiste sourcing et négociation.",
+                url: "https://vanzonexplorer.com/a-propos",
+                worksFor: { "@type": "Organization", name: "Vanzon Explorer" },
+              },
+            ],
+            sameAs: [
+              "https://www.instagram.com/vanzonexplorer",
+              "https://www.youtube.com/@vanzonexplorer",
+              "https://www.tiktok.com/@vanzonexplorer",
+              "https://www.trustpilot.com/review/vanzonexplorer.com",
+            ],
+          }),
+        }}
+      />
     </>
   );
 }

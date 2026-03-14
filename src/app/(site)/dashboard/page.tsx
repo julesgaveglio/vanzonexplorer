@@ -9,6 +9,7 @@ import DashboardTabs from "./DashboardTabs";
 export const metadata: Metadata = {
   title: "Mon espace — Vanzon Explorer",
   description: "Gérez votre profil, vos deals sauvegardés et vos locations.",
+  robots: { index: false, follow: false },
 };
 
 async function getOrCreateProfile(clerkId: string, email: string, name: string, avatar: string) {

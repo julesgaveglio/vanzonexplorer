@@ -15,7 +15,6 @@ function ImageGallery({ images, name }: { images: string[]; name: string }) {
           alt={`Van ${name}`}
           fill
           className="object-cover transition-all duration-500"
-          unoptimized
         />
         {/* Compteur photo */}
         <div className="absolute bottom-3 right-3 bg-black/50 backdrop-blur-sm text-white text-xs font-semibold px-2.5 py-1 rounded-full">
@@ -33,7 +32,7 @@ function ImageGallery({ images, name }: { images: string[]; name: string }) {
                 : "border-transparent opacity-55 hover:opacity-85 hover:scale-[1.01]"
             }`}
           >
-            <Image src={img} alt={`${name} ${i + 1}`} fill className="object-cover" unoptimized />
+            <Image src={img} alt={`${name} ${i + 1}`} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
           </button>
         ))}
       </div>

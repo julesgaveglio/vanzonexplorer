@@ -177,12 +177,12 @@ export async function generateMetadata({
     slug: params.slug,
   });
   if (!article) return {};
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
-    ? `${process.env.NEXT_PUBLIC_SITE_URL}/vanzon`
-    : "https://vanzonexplorer.com/vanzon";
+  const siteUrl = "https://vanzonexplorer.com";
+  const hasContent = Array.isArray(article.content) && article.content.length > 0;
   return {
     title: article.seoTitle ?? `${article.title} | Vanzon Explorer`,
     description: article.seoDescription ?? article.excerpt,
+    ...(!hasContent && { robots: { index: false, follow: false } }),
     alternates: {
       canonical: `${siteUrl}/articles/${article.slug}`,
     },
@@ -223,8 +223,8 @@ function makePortableComponents(headingIds: Map<string, string>) {
                 src={src}
                 alt={value?.alt ?? ""}
                 fill
+                sizes="(max-width: 768px) 100vw, 65vw"
                 className="object-cover"
-                unoptimized
                 loading="lazy"
               />
             </div>
@@ -441,7 +441,6 @@ export default async function ArticleDetailPage({
             alt={article.coverImage.alt ?? article.title}
             fill
             className="object-cover"
-            unoptimized
             priority
           />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-900/20 to-transparent" />

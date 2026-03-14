@@ -7,6 +7,9 @@ import type { Product } from "@/lib/club/types";
 export const metadata: Metadata = {
   title: "Club Privé Vanzon — Deals & Codes Promo Vanlife",
   description: "Accédez aux meilleurs deals, codes promo et réductions exclusives pour l'aménagement de votre van. Abonnement 9,99€/mois.",
+  alternates: {
+    canonical: "https://vanzonexplorer.com/club",
+  },
 };
 
 export const dynamic = "force-dynamic";

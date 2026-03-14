@@ -69,9 +69,9 @@ export default async function LocationWeekEndPage() {
             src={photo?.url ?? FALLBACK_IMG}
             alt="Location van week-end Pays Basque - van aménagé bord de mer"
             fill
+            sizes="100vw"
             className="object-cover object-center sm:object-center object-right"
             priority
-            unoptimized
           />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-900/50 to-slate-900/20" />
           <div className="absolute inset-0 bg-gradient-to-r from-blue-950/30 via-transparent to-transparent" />
@@ -281,8 +281,8 @@ export default async function LocationWeekEndPage() {
             src="https://cdn.sanity.io/images/lewexa74/production/e9664378c5fdc652c33ae7342dfc52cc4960c8bf-1080x750.png"
             alt="Van Vanzon Explorer week-end Pays Basque"
             fill
+            sizes="100vw"
             className="object-cover"
-            unoptimized
           />
           <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(15,21,58,0.92) 0%, rgba(77,95,236,0.6) 100%)" }} />
         </div>

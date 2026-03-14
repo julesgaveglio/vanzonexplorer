@@ -47,9 +47,9 @@ export default async function LocationBayonnePage() {
             src={photo?.url ?? FALLBACK_IMG}
             alt="Van Vanzon Explorer à Bayonne, base de départ Pays Basque"
             fill
+            sizes="100vw"
             className="object-cover object-center sm:object-center object-right"
             priority
-            unoptimized
           />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-900/50 to-slate-900/20" />
           <div className="absolute inset-0 bg-gradient-to-r from-blue-950/30 via-transparent to-transparent" />

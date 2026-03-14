@@ -5,13 +5,6 @@ export const metadata: Metadata = {
   title: "Van aménagé à vendre au Pays Basque — Yoni & Xalbat | Vanzon Explorer",
   description:
     "Deux Renault Trafic entièrement aménagés à vendre au Pays Basque. Issus de notre flotte de location, historique complet depuis l'origine. Remise en main propre à Cambo-les-Bains. 25 000 € chacun.",
-  keywords: [
-    "van aménagé à vendre pays basque",
-    "fourgon aménagé occasion",
-    "renault trafic aménagé occasion",
-    "acheter van aménagé",
-    "van aménagé cambo-les-bains",
-  ],
   alternates: {
     canonical: "https://vanzonexplorer.com/achat",
   },

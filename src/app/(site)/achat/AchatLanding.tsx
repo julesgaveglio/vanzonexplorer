@@ -43,7 +43,6 @@ export default function AchatLanding() {
                   alt={`Van ${van.name} aménagé à vendre - Pays Basque`}
                   fill
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  unoptimized
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/30 to-transparent" />
                 <div className="absolute top-3 left-3">

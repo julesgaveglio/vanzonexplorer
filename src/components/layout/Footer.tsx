@@ -148,7 +148,7 @@ export default function Footer() {
 
         <div className="pt-6 border-t border-border-default flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-text-light">
-            © {currentYear} Vanzon Explorer · Bayonne, Pays Basque
+            © {currentYear} Vanzon Explorer · Cambo-les-Bains, Pays Basque
           </p>
           <div className="flex gap-6">
             <Link href="/mentions-legales" className="text-xs text-text-light hover:text-text-muted transition-colors">

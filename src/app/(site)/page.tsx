@@ -46,9 +46,9 @@ export default async function HomePage() {
             src="https://cdn.sanity.io/images/lewexa74/production/d445397965472d300e3dc13d6b1c37503fe8ba25-1920x1080.png?auto=format&fit=max&q=82"
             alt="Van aménagé au bord de l'océan au Pays Basque"
             fill
+            sizes="100vw"
             className="object-cover object-center sm:object-center object-right"
             priority
-            unoptimized
           />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-900/50 to-slate-900/20" />
           <div className="absolute inset-0 bg-gradient-to-r from-blue-950/30 via-transparent to-transparent" />
@@ -227,8 +227,8 @@ export default async function HomePage() {
                   src="https://cdn.sanity.io/images/lewexa74/production/0b3f81d08627ba0b4423224029cb5016d0e7ed25-2048x1365.jpg"
                   alt="Paysage Pays Basque en van"
                   fill
+                  sizes="(max-width: 768px) 100vw, calc(50vw + 200px)"
                   className="object-cover hover:scale-105 transition-transform duration-700"
-                  unoptimized
                 />
               </div>
               {/* 2 images côte à côte */}
@@ -237,8 +237,8 @@ export default async function HomePage() {
                   src="https://cdn.sanity.io/images/lewexa74/production/7e04357061492ab4193c49d03351310cf245a106-1540x976.png"
                   alt="Van aménagé Vanzon Explorer"
                   fill
+                  sizes="(max-width: 768px) 100vw, 33vw"
                   className="object-cover hover:scale-105 transition-transform duration-700"
-                  unoptimized
                 />
               </div>
               <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-lg">
@@ -246,8 +246,8 @@ export default async function HomePage() {
                   src="https://cdn.sanity.io/images/lewexa74/production/4ee40c1abb03d029487868808a159216a641e3ad-3829x2872.jpg"
                   alt="Van life Pays Basque"
                   fill
+                  sizes="(max-width: 768px) 100vw, 33vw"
                   className="object-cover hover:scale-105 transition-transform duration-700"
-                  unoptimized
                 />
               </div>
             </div>
@@ -383,7 +383,6 @@ export default async function HomePage() {
                 width={960}
                 height={540}
                 className="w-full h-auto"
-                unoptimized
               />
             </div>
 
@@ -397,8 +396,8 @@ export default async function HomePage() {
             src="https://cdn.sanity.io/images/lewexa74/production/e9664378c5fdc652c33ae7342dfc52cc4960c8bf-1080x750.png"
             alt="Van Xalbat Vanzon Explorer"
             fill
+            sizes="100vw"
             className="object-cover"
-            unoptimized
           />
           <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(15,21,58,0.92) 0%, rgba(77,95,236,0.6) 100%)" }} />
         </div>

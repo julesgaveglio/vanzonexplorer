@@ -97,7 +97,6 @@ export default function Navbar() {
                 height={40}
                 className="h-9 w-auto transition-opacity duration-200 group-hover:opacity-75"
                 priority
-                unoptimized
               />
             </Link>
 

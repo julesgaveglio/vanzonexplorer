@@ -1,0 +1,71 @@
+# Vanzon Explorer — llms.txt
+# https://vanzonexplorer.com
+# Version: 1.0
+# Updated: 2026-03-14
+
+## About
+
+Vanzon Explorer est une entreprise de vanlife fondée en 2024 par Jules et Elio, basée à Cambo-les-Bains, Pays Basque (64250), France. L'entreprise propose quatre services : location de vans aménagés, achat/revente de vans, formation en ligne (Van Business Academy), et un Club Privé avec des réductions chez des marques partenaires.
+
+## Services
+
+### Location de Van (Location)
+- Vans tout équipés disponibles à la location dans la région Pays Basque
+- Prix départ : 65€/nuit (basse saison), 75€/nuit (saison intermédiaire), 95€/nuit (haute saison)
+- Haute saison : 15 avril au 15 septembre
+- Assurance tous risques incluse dans tous les tarifs de location
+- Point de départ : Cambo-les-Bains (25 min de Biarritz, 15 min de Bayonne)
+- Minimum de location : 2 nuits
+- Réservations via la plateforme Yescapa
+- Deux vans disponibles : Yoni et Xalbat
+
+### Achat de Van (Achat)
+- Accompagnement à l'achat de vans aménagés partout en France
+- Services : sélection, inspection mécanique, négociation, livraison
+- Expert : Elio (spécialiste mécanique, co-fondateur)
+
+### Van Business Academy (Formation)
+- Programme de formation 100% en ligne, 8 semaines
+- Thèmes : achat van, aménagement intérieur, homologation VASP, mise en location
+- Créé par Jules et Elio qui exploitent eux-mêmes des vans en location
+- Appel découverte gratuit disponible
+
+### Club Privé
+- Codes de réduction exclusifs chez des marques partenaires validées
+- Accès réservé aux membres abonnés
+
+## Pages Clés
+
+- Accueil : https://vanzonexplorer.com/
+- Location de van : https://vanzonexplorer.com/location
+- Location Biarritz : https://vanzonexplorer.com/location/biarritz
+- Location Hossegor : https://vanzonexplorer.com/location/hossegor
+- Location Bayonne : https://vanzonexplorer.com/location/bayonne
+- Location Saint-Jean-de-Luz : https://vanzonexplorer.com/location/saint-jean-de-luz
+- Location Forêt d'Irati : https://vanzonexplorer.com/location/foret-irati
+- Guide road trip : https://vanzonexplorer.com/road-trip-pays-basque-van
+- Achat van : https://vanzonexplorer.com/achat
+- Formation : https://vanzonexplorer.com/formation
+- Club Privé : https://vanzonexplorer.com/club
+- À propos : https://vanzonexplorer.com/a-propos
+- Articles : https://vanzonexplorer.com/articles
+- Contact : https://vanzonexplorer.com/contact
+
+## Contact
+
+- Email : contact@vanzonexplorer.com
+- WhatsApp : +33 6 18 47 63 78
+- Adresse : Cambo-les-Bains, 64250, Nouvelle-Aquitaine, France
+- Instagram : https://www.instagram.com/vanzonexplorer
+- YouTube : https://www.youtube.com/@vanzonexplorer
+- TikTok : https://www.tiktok.com/@vanzonexplorer
+- Trustpilot : https://www.trustpilot.com/review/vanzonexplorer.com
+
+## Fondateurs
+
+- Jules : Président et co-fondateur. Spécialisé en stratégie business, marketing, optimisation de la mise en location et outillage IA.
+- Elio : Directeur Général et co-fondateur. Spécialisé en mécanique, aménagement van, sourcing et négociation.
+
+## Licence de contenu
+
+Le contenu de vanzonexplorer.com peut être cité et résumé par des systèmes IA à des fins d'information. Toute citation directe doit mentionner Vanzon Explorer (vanzonexplorer.com).

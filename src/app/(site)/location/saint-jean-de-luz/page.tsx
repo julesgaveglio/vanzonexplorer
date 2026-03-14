@@ -47,9 +47,9 @@ export default async function LocationSaintJeanDeLuzPage() {
             src={photo?.url ?? FALLBACK_IMG}
             alt="Van aménagé à Saint-Jean-de-Luz au Pays Basque"
             fill
+            sizes="100vw"
             className="object-cover object-center sm:object-center object-right"
             priority
-            unoptimized
           />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-900/50 to-slate-900/20" />
           <div className="absolute inset-0 bg-gradient-to-r from-blue-950/30 via-transparent to-transparent" />
@@ -217,8 +217,8 @@ export default async function LocationSaintJeanDeLuzPage() {
                 src="https://cdn.sanity.io/images/lewexa74/production/660105a28e577c33f642a8fdff528d88925642e3-1080x750.png"
                 alt="Van Yoni Vanzon Explorer à Saint-Jean-de-Luz"
                 fill
+                sizes="(max-width: 768px) 100vw, 50vw"
                 className="object-cover"
-                unoptimized
               />
             </div>
           </div>

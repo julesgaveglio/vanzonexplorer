@@ -47,9 +47,9 @@ export default async function LocationHossegorPage() {
             src={photo?.url ?? FALLBACK_IMG}
             alt="Van aménagé à Hossegor face à l'Atlantique"
             fill
+            sizes="100vw"
             className="object-cover object-center sm:object-center object-right"
             priority
-            unoptimized
           />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-900/50 to-slate-900/20" />
           <div className="absolute inset-0 bg-gradient-to-r from-blue-950/30 via-transparent to-transparent" />
@@ -215,8 +215,8 @@ export default async function LocationHossegorPage() {
                 src="https://cdn.sanity.io/images/lewexa74/production/04d93973d30c5eede51f954d1432a50a5f82ef9b-1080x750.png"
                 alt="Van Xalbat Vanzon Explorer en route vers Hossegor"
                 fill
+                sizes="(max-width: 768px) 100vw, 50vw"
                 className="object-cover"
-                unoptimized
               />
             </div>
           </div>

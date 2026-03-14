@@ -15,12 +15,20 @@ export function LocationRentalJsonLd({ destination, url }: { destination: string
       lowPrice: 65,
       highPrice: 95,
       priceCurrency: "EUR",
-      offerCount: 2,
+      offerCount: 3,
       offers: [
         {
           "@type": "Offer",
           name: "Basse saison (15/11–15/02)",
           price: 65,
+          priceCurrency: "EUR",
+          availability: "https://schema.org/InStock",
+          seller: { "@type": "Organization", name: "Vanzon Explorer", url: SITE_URL },
+        },
+        {
+          "@type": "Offer",
+          name: "Saison intermédiaire",
+          price: 75,
           priceCurrency: "EUR",
           availability: "https://schema.org/InStock",
           seller: { "@type": "Organization", name: "Vanzon Explorer", url: SITE_URL },
@@ -44,19 +52,22 @@ export function LocationRentalJsonLd({ destination, url }: { destination: string
   );
 }
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL
-  ? `${process.env.NEXT_PUBLIC_SITE_URL}/vanzon`
-  : "https://vanzonexplorer.com/vanzon";
+const BASE_URL = "https://vanzonexplorer.com";
 
 const schema = {
   "@context": "https://schema.org",
-  "@type": "LocalBusiness",
+  "@type": ["LocalBusiness", "CarRental"],
   name: "Vanzon Explorer",
-  description: "Location et vente de vans aménagés au Pays Basque",
+  description: "Location de vans aménagés tout équipés au Pays Basque. Assurance incluse, départ Cambo-les-Bains. Achat, formation vanlife et Club Privé.",
   url: BASE_URL,
+  telephone: "+33618476378",
+  email: "contact@vanzonexplorer.com",
+  image: "https://cdn.sanity.io/images/lewexa74/production/1f483103ef15ee3549eab14ba2801d11b32a9055-313x313.png",
   address: {
     "@type": "PostalAddress",
+    streetAddress: "Cambo-les-Bains",
     addressLocality: "Cambo-les-Bains",
+    postalCode: "64250",
     addressRegion: "Nouvelle-Aquitaine",
     addressCountry: "FR",
   },
@@ -65,8 +76,31 @@ const schema = {
     latitude: 43.3623,
     longitude: -1.3944,
   },
-  areaServed: ["Biarritz", "Bayonne", "Hossegor", "Pays Basque"],
+  areaServed: [
+    { "@type": "City", name: "Biarritz" },
+    { "@type": "City", name: "Bayonne" },
+    { "@type": "City", name: "Hossegor" },
+    { "@type": "City", name: "Saint-Jean-de-Luz" },
+  ],
   priceRange: "€€",
+  currenciesAccepted: "EUR",
+  openingHoursSpecification: {
+    "@type": "OpeningHoursSpecification",
+    dayOfWeek: ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
+    opens: "08:00",
+    closes: "20:00",
+  },
+  sameAs: [
+    "https://www.instagram.com/vanzonexplorer",
+    "https://www.youtube.com/@vanzonexplorer",
+    "https://www.tiktok.com/@vanzonexplorer",
+    "https://www.trustpilot.com/review/vanzonexplorer.com",
+  ],
+  foundingDate: "2024",
+  founder: [
+    { "@type": "Person", name: "Jules Gaveglio" },
+    { "@type": "Person", name: "Elio" },
+  ],
 };
 
 export function LocalBusinessJsonLd() {

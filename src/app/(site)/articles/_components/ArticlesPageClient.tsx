@@ -47,8 +47,8 @@ function ArticleCard({ article, index }: { article: MappedArticle; index: number
           src={article.image}
           alt={article.imageAlt}
           fill
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           className={`object-cover transition-transform duration-500 ${isComing ? "grayscale-[30%]" : "group-hover:scale-105"}`}
-          unoptimized
         />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent" />
         <div className="absolute top-3 left-3 flex gap-2">
@@ -494,8 +494,8 @@ export default function ArticlesPageClient({ sanityArticles = [] }: { sanityArti
                       src={featuredArticle.image}
                       alt={featuredArticle.imageAlt}
                       fill
+                      sizes="(max-width: 768px) 100vw, 50vw"
                       className="object-cover transition-transform duration-700 group-hover:scale-105"
-                      unoptimized
                       priority
                     />
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-white hidden md:block" />

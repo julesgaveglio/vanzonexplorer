@@ -290,6 +290,48 @@ export default function FormationPage() {
       <FormationCTA />
 
       <OtherServices current="formation" bgColor="#FAF6F0" />
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Course",
+            name: "Van Business Academy",
+            description:
+              "Formation complète pour aménager son fourgon et lancer un business de location de van. De l'achat du véhicule à la mise en location rentable — homologation VASP incluse.",
+            url: "https://vanzonexplorer.com/formation",
+            provider: {
+              "@type": "Organization",
+              name: "Vanzon Explorer",
+              url: "https://vanzonexplorer.com",
+            },
+            instructor: [
+              {
+                "@type": "Person",
+                name: "Jules Gaveglio",
+                jobTitle: "Président & Co-fondateur",
+                url: "https://vanzonexplorer.com/a-propos",
+              },
+              {
+                "@type": "Person",
+                name: "Elio",
+                jobTitle: "Directeur Général & Co-fondateur",
+                url: "https://vanzonexplorer.com/a-propos",
+              },
+            ],
+            courseMode: "online",
+            educationalLevel: "Beginner",
+            inLanguage: "fr-FR",
+            teaches: [
+              "Aménagement de fourgon",
+              "Homologation VASP",
+              "Mise en location de van",
+              "Rentabilité van aménagé",
+            ],
+          }),
+        }}
+      />
     </>
   );
 }

@@ -31,9 +31,15 @@ export async function generateMetadata(): Promise<Metadata> {
     twitterHandle?: string;
   }>(getSiteSettingsQuery);
 
-  const ogImages = settings?.openGraphImageUrl
-    ? [{ url: settings.openGraphImageUrl, width: 1200, height: 630, alt: settings.openGraphImageAlt ?? "Vanzon Explorer" }]
-    : [];
+  const FALLBACK_OG = "https://cdn.sanity.io/images/lewexa74/production/d445397965472d300e3dc13d6b1c37503fe8ba25-1920x1080.png";
+  const ogImages = [
+    {
+      url: settings?.openGraphImageUrl ?? FALLBACK_OG,
+      width: 1200,
+      height: 630,
+      alt: settings?.openGraphImageAlt ?? "Vanzon Explorer — Vanlife au Pays Basque",
+    },
+  ];
 
   return {
     title: {
@@ -57,12 +63,12 @@ export async function generateMetadata(): Promise<Metadata> {
       type: "website",
       locale: "fr_FR",
       siteName: "Vanzon Explorer",
-      images: ogImages.length > 0 ? ogImages : undefined,
+      images: ogImages,
     },
     twitter: {
       card: "summary_large_image",
       site: settings?.twitterHandle ?? undefined,
-      images: ogImages.length > 0 ? ogImages.map((i) => i.url) : undefined,
+      images: ogImages.map((i) => i.url),
     },
   };
 }

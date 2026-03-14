@@ -209,9 +209,9 @@ export default function RoadTripPaysBasquePage() {
             src="https://cdn.sanity.io/images/lewexa74/production/f93fa16ab46d8934dcc3092a8e86fc80ebce4305-1080x750.png"
             alt="Van aménagé au bord de l'océan au Pays Basque pour un road trip"
             fill
+            sizes="100vw"
             className="object-cover object-center"
             priority
-            unoptimized
           />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-900/50 to-slate-900/10" />
           <div className="absolute inset-0 bg-gradient-to-r from-blue-950/30 via-transparent to-transparent" />
@@ -336,8 +336,8 @@ export default function RoadTripPaysBasquePage() {
                   src="https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&w=800&q=80"
                   alt="Randonnée en montagne au Pays Basque"
                   fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
                   className="object-cover hover:scale-105 transition-transform duration-700"
-                  unoptimized
                 />
               </div>
               <div className="relative aspect-square rounded-2xl overflow-hidden">
@@ -345,8 +345,8 @@ export default function RoadTripPaysBasquePage() {
                   src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=800&q=80"
                   alt="Maisons typiques basques à colombages rouges"
                   fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
                   className="object-cover hover:scale-105 transition-transform duration-700"
-                  unoptimized
                 />
               </div>
               <div className="relative aspect-square rounded-2xl overflow-hidden">
@@ -354,8 +354,8 @@ export default function RoadTripPaysBasquePage() {
                   src="https://images.unsplash.com/photo-1505118380757-91f5f5632de0?auto=format&fit=crop&w=800&q=80"
                   alt="Vagues de l'Atlantique au Pays Basque"
                   fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
                   className="object-cover hover:scale-105 transition-transform duration-700"
-                  unoptimized
                 />
               </div>
             </div>
@@ -508,8 +508,8 @@ export default function RoadTripPaysBasquePage() {
             src="https://cdn.sanity.io/images/lewexa74/production/e9664378c5fdc652c33ae7342dfc52cc4960c8bf-1080x750.png"
             alt="Van Vanzon Explorer au Pays Basque"
             fill
+            sizes="100vw"
             className="object-cover"
-            unoptimized
           />
           <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(15,21,58,0.92) 0%, rgba(77,95,236,0.6) 100%)" }} />
         </div>

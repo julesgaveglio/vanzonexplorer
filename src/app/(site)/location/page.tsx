@@ -153,9 +153,9 @@ export default async function LocationPage() {
             src="https://cdn.sanity.io/images/lewexa74/production/f93fa16ab46d8934dcc3092a8e86fc80ebce4305-1080x750.png"
             alt="Van aménagé au Pays Basque face à l'Atlantique"
             fill
+            sizes="100vw"
             className="object-cover object-center sm:object-center object-right"
             priority
-            unoptimized
           />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-900/50 to-slate-900/20" />
           <div className="absolute inset-0 bg-gradient-to-r from-blue-950/30 via-transparent to-transparent" />
@@ -306,8 +306,8 @@ export default async function LocationPage() {
                   src={dest.img}
                   alt={`Van au Pays Basque — ${dest.label}`}
                   fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  unoptimized
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/30 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-5">
@@ -421,8 +421,8 @@ export default async function LocationPage() {
             src="https://cdn.sanity.io/images/lewexa74/production/660105a28e577c33f642a8fdff528d88925642e3-1080x750.png"
             alt=""
             fill
+            sizes="100vw"
             className="object-cover"
-            unoptimized
           />
         </div>
         <div className="relative z-10 max-w-3xl mx-auto px-6 text-center">

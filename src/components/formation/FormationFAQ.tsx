@@ -1,14 +1,4 @@
-"use client";
-
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-
-interface FAQItem {
-  question: string;
-  answer: string;
-}
-
-const faqs: FAQItem[] = [
+const faqs = [
   {
     question: "Est-ce que j'ai besoin de compétences en bricolage ?",
     answer:
@@ -52,61 +42,29 @@ const faqs: FAQItem[] = [
 ];
 
 export default function FormationFAQ() {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
-
-  const toggle = (i: number) => {
-    setOpenIndex((prev) => (prev === i ? null : i));
-  };
-
   return (
-    <section className="py-20" style={{ background: '#FAF6F0' }}>
+    <section className="py-20" style={{ background: "#FAF6F0" }}>
       <div className="max-w-3xl mx-auto px-6">
         <h2 className="text-3xl font-bold text-slate-900 text-center mb-12">
           Questions fréquentes
         </h2>
 
         <div className="space-y-3">
-          {faqs.map((faq, i) => {
-            const isOpen = openIndex === i;
-            return (
-              <div key={i} className="glass-card !p-0 overflow-hidden">
-                <button
-                  onClick={() => toggle(i)}
-                  className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left hover:bg-slate-50/60 transition-colors"
-                  aria-expanded={isOpen}
-                >
-                  <span className="font-semibold text-slate-900 text-sm md:text-base">
-                    {faq.question}
-                  </span>
-                  <motion.span
-                    animate={{ rotate: isOpen ? 180 : 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="text-slate-400 flex-shrink-0"
-                  >
-                    ▼
-                  </motion.span>
-                </button>
-
-                <AnimatePresence initial={false}>
-                  {isOpen && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.25, ease: "easeInOut" }}
-                      className="overflow-hidden"
-                    >
-                      <div className="px-5 pb-5 pt-1">
-                        <p className="text-sm text-slate-600 leading-relaxed">
-                          {faq.answer}
-                        </p>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+          {faqs.map((faq, i) => (
+            <details key={i} className="glass-card !p-0 overflow-hidden group">
+              <summary className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left hover:bg-slate-50/60 transition-colors cursor-pointer list-none">
+                <span className="font-semibold text-slate-900 text-sm md:text-base">
+                  {faq.question}
+                </span>
+                <span className="text-slate-400 flex-shrink-0 transition-transform duration-200 group-open:rotate-180">
+                  ▼
+                </span>
+              </summary>
+              <div className="px-5 pb-5 pt-1">
+                <p className="text-sm text-slate-600 leading-relaxed">{faq.answer}</p>
               </div>
-            );
-          })}
+            </details>
+          ))}
         </div>
       </div>
     </section>
