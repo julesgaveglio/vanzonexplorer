@@ -10,18 +10,17 @@ interface Brand {
   slug?: string;
   description?: string;
   website_url?: string;
-  logo_png_url?: string;
+  logo_url?: string;
   promo_code_global?: string;
   affiliate_url_base?: string;
   is_partner?: boolean;
-  is_trusted?: boolean;
   status?: string;
 }
 
 export default function BrandForm({ brand }: { brand?: Brand }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [logoUrl, setLogoUrl] = useState(brand?.logo_png_url || "");
+  const [logoUrl, setLogoUrl] = useState(brand?.logo_url || "");
   const [uploading, setUploading] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
@@ -56,7 +55,7 @@ export default function BrandForm({ brand }: { brand?: Brand }) {
     e.preventDefault();
     setFormError(null);
     const fd = new FormData(e.currentTarget);
-    fd.set("logo_png_url", logoUrl);
+    fd.set("logo_url", logoUrl);
     startTransition(async () => {
       const result = await upsertBrand(fd);
       if (!result.success) {
@@ -246,19 +245,6 @@ export default function BrandForm({ brand }: { brand?: Brand }) {
             <div>
               <p className="text-sm font-semibold text-slate-800">Marque partenaire</p>
               <p className="text-xs text-slate-400">Apparaît dans le ticker de logos</p>
-            </div>
-          </label>
-          <label className="flex items-center gap-3 cursor-pointer">
-            <input
-              type="checkbox"
-              name="is_trusted"
-              value="true"
-              defaultChecked={brand?.is_trusted}
-              className="w-4 h-4 rounded text-blue-600 focus:ring-blue-300"
-            />
-            <div>
-              <p className="text-sm font-semibold text-slate-800">Marque de confiance</p>
-              <p className="text-xs text-slate-400">Badge &ldquo;Trusted&rdquo; sur le site</p>
             </div>
           </label>
         </div>

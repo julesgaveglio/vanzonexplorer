@@ -49,9 +49,9 @@ export default async function AdminMarquesPage() {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="w-12 h-12 rounded-xl bg-slate-100 flex-shrink-0 overflow-hidden flex items-center justify-center">
-                          {brand.logo_png_url?.startsWith("http") ? (
+                          {brand.logo_url?.startsWith("http") ? (
                             // eslint-disable-next-line @next/next/no-img-element
-                            <img src={brand.logo_png_url} alt={brand.name} className="w-full h-full object-contain p-1" />
+                            <img src={brand.logo_url} alt={brand.name} className="w-full h-full object-contain p-1" />
                           ) : (
                             <span className="text-sm font-bold text-slate-400">{brand.name[0]}</span>
                           )}

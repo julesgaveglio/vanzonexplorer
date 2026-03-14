@@ -17,11 +17,9 @@ interface DbBrand {
   slug: string;
   name: string;
   logo_url: string | null;
-  logo_png_url: string | null;
   description: string | null;
   website_url: string | null;
   is_partner: boolean;
-  is_trusted: boolean;
   promo_code_global: string | null;
   affiliate_url_base: string | null;
   status: string;
@@ -73,11 +71,11 @@ function transformBrand(row: DbBrand): Brand {
     name: row.name,
     slug: row.slug,
     logo: row.logo_url || `/brands/${row.slug}.svg`,
-    logoPng: row.logo_png_url || row.logo_url || `/brands/${row.slug}.svg`,
+    logoPng: row.logo_url || `/brands/${row.slug}.svg`,
     description: row.description || "",
     website: row.website_url || "",
     isPartner: row.is_partner,
-    isTrusted: row.is_trusted ?? false,
+    isTrusted: false,
     activeOffers: 0,
     categories: [],
   };

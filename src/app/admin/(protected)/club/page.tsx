@@ -81,9 +81,9 @@ export default async function AdminClubPage() {
             {brands.slice(0, 8).map((brand) => (
               <div key={brand.id} className="flex items-center gap-4 px-6 py-3">
                 <div className="w-10 h-10 rounded-xl bg-slate-100 flex-shrink-0 overflow-hidden flex items-center justify-center">
-                  {brand.logo_png_url?.startsWith("http") ? (
+                  {brand.logo_url?.startsWith("http") ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={brand.logo_png_url} alt={brand.name} className="w-full h-full object-contain" />
+                    <img src={brand.logo_url} alt={brand.name} className="w-full h-full object-contain" />
                   ) : (
                     <span className="text-xs font-bold text-slate-400">{brand.name[0]}</span>
                   )}

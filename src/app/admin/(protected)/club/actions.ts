@@ -38,12 +38,10 @@ export async function upsertBrand(formData: FormData): Promise<{ success: boolea
       slug: rawSlug || slugify(name),
       description: (formData.get("description") as string) || null,
       website_url: (formData.get("website_url") as string) || null,
-      logo_png_url: (formData.get("logo_png_url") as string) || null,
-      logo_url: (formData.get("logo_png_url") as string) || null,
+      logo_url: (formData.get("logo_url") as string) || null,
       promo_code_global: (formData.get("promo_code_global") as string) || null,
       affiliate_url_base: (formData.get("affiliate_url_base") as string) || null,
       is_partner: formData.get("is_partner") === "true",
-      is_trusted: formData.get("is_trusted") === "true",
       status: (formData.get("status") as string) || "active",
     };
 
