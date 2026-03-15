@@ -704,7 +704,7 @@ Accroche percutante. Keyword dans les 100 premiers mots. Annonce du plan.
 ### [Sous-section B — 150 mots]
 
 ## [Section 3 — Données / Comparatif, 250-300 mots]
-Tableau comparatif si pertinent.
+Liste à puces comparative si pertinent. ❌ INTERDIT : tableaux Markdown (| col | col |).
 
 ## FAQ — Questions fréquentes (${faqCount} questions × 80-100 mots chacune)
 ### [Question 1]
@@ -726,7 +726,7 @@ Accroche forte. Keyword dans les 100 premiers mots. Angle différenciateur vs to
 ### [Sous-section B — 200 mots]
 
 ## [Section 3 — Données chiffrées / Comparatif, 300-350 mots]
-Tableau comparatif obligatoire.
+Liste à puces comparative obligatoire. ❌ INTERDIT : tableaux Markdown (| col | col |).
 
 ## [Section 4 — Ancrage local / Expérience terrain, 250-300 mots]
 
@@ -815,6 +815,7 @@ MISE EN FORME (obligatoire, pas optionnel)
 • **gras** → mots-clés importants, données chiffrées, noms de lieux, points-clés
 • *italique* → termes techniques, mots basques (larrun, pottok, txakoli…), citations
 • Listes à puces → dès qu'il y a 3 éléments parallèles ou plus
+• ❌ JAMAIS de tableaux Markdown (syntaxe | col | col | INTERDITE — utilise des listes à puces à la place)
 • 1 callout par section H2 minimum (choisis selon le contexte):
   ⚠️ Point de vigilance important
   💡 Conseil pratique Vanzon Explorer

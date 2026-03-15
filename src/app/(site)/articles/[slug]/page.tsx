@@ -201,6 +201,120 @@ export async function generateMetadata({
   };
 }
 
+// ── Inline markdown parser (fallback for raw link/bold/italic syntax) ───────────
+
+function renderInlineMarkdown(text: string): React.ReactNode[] {
+  const regex = /\*\*([^*\n]+?)\*\*|\*([^*\n]+?)\*|\[([^\]]+)\]\(([^)]+)\)/g;
+  const result: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = regex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      result.push(text.slice(lastIndex, match.index));
+    }
+    if (match[1] !== undefined) {
+      result.push(<strong key={match.index} className="font-bold text-slate-800">{match[1]}</strong>);
+    } else if (match[2] !== undefined) {
+      result.push(<em key={match.index} className="italic text-slate-700">{match[2]}</em>);
+    } else if (match[3] !== undefined && match[4] !== undefined) {
+      const href = match[4];
+      const isExternal = href.startsWith("http");
+      result.push(
+        <a
+          key={match.index}
+          href={href}
+          target={isExternal ? "_blank" : undefined}
+          rel={isExternal ? "noopener noreferrer" : undefined}
+          className="text-[#4D5FEC] underline underline-offset-2 hover:text-[#3B4FD4] transition-colors"
+        >
+          {match[3]}
+        </a>
+      );
+    }
+    lastIndex = match.index + match[0].length;
+  }
+
+  if (lastIndex < text.length) result.push(text.slice(lastIndex));
+  return result.length > 0 ? result : [text];
+}
+
+// ── Table markdown renderer ────────────────────────────────────────────────────
+
+function ArticleTable({ rows }: { rows: string[] }) {
+  const parseRow = (row: string) =>
+    row.split("|").map((c) => c.trim()).filter((c) => c !== "");
+
+  // Filter out separator rows (| :--- | --- | :---: |)
+  const dataRows = rows.filter((r) => !/^\|[\s:|-]+\|$/.test(r.replace(/\s/g, "")));
+  if (dataRows.length === 0) return null;
+
+  const headerCells = parseRow(dataRows[0]);
+  const bodyRows = dataRows.slice(1).map(parseRow);
+
+  return (
+    <div className="overflow-x-auto my-8 rounded-2xl border border-slate-200">
+      <table className="w-full text-sm text-left">
+        <thead className="bg-slate-50 border-b border-slate-200">
+          <tr>
+            {headerCells.map((cell, i) => (
+              <th key={i} className="px-4 py-3 font-semibold text-slate-700 whitespace-nowrap">
+                {cell}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-slate-100">
+          {bodyRows.map((row, ri) => (
+            <tr key={ri} className="hover:bg-slate-50/60 transition-colors">
+              {row.map((cell, ci) => (
+                <td key={ci} className="px-4 py-3 text-slate-600 align-top">
+                  {renderInlineMarkdown(cell)}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+// ── Pre-process: group consecutive table rows into virtual table blocks ─────────
+
+type VirtualBlock =
+  | PortableBlock
+  | { _type: "table"; _key: string; rows: string[] };
+
+function groupTableBlocks(blocks: PortableBlock[]): VirtualBlock[] {
+  const result: VirtualBlock[] = [];
+  let tableRows: string[] = [];
+
+  const flushTable = () => {
+    if (tableRows.length > 0) {
+      result.push({
+        _type: "table" as const,
+        _key: Math.random().toString(36).slice(2),
+        rows: [...tableRows],
+      });
+      tableRows = [];
+    }
+  };
+
+  for (const block of blocks) {
+    const text = getBlockText(block);
+    const isTableRow = block._type === "block" && block.style === "normal" && text.trimStart().startsWith("|");
+    if (isTableRow) {
+      tableRows.push(text);
+    } else {
+      flushTable();
+      result.push(block);
+    }
+  }
+  flushTable();
+  return result;
+}
+
 // ── Portable Text components ────────────────────────────────────────────────────
 
 function makePortableComponents(headingIds: Map<string, string>) {
@@ -314,6 +428,12 @@ function makePortableComponents(headingIds: Map<string, string>) {
           );
         }
 
+        // Fallback: if block text contains raw markdown link syntax, render it
+        const hasRawMarkdown = text.includes("[") && text.includes("](");
+        if (hasRawMarkdown) {
+          return <p className="text-[18px] text-slate-600 leading-[1.75] mb-6">{renderInlineMarkdown(text)}</p>;
+        }
+
         return <p className="text-[18px] text-slate-600 leading-[1.75] mb-6">{children}</p>;
       },
     },
@@ -342,6 +462,27 @@ function makePortableComponents(headingIds: Map<string, string>) {
       ),
     },
   };
+}
+
+// ── Render helper: handles virtual table blocks + PortableText ─────────────────
+
+function renderBlocks(
+  blocks: PortableBlock[],
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  components: any
+): React.ReactNode {
+  const virtualBlocks = groupTableBlocks(blocks);
+  return virtualBlocks.map((block, i) => {
+    if (block._type === "table") {
+      const tb = block as { _type: "table"; _key: string; rows: string[] };
+      return <ArticleTable key={tb._key || i} rows={tb.rows} />;
+    }
+    const pb = block as PortableBlock;
+    return (
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      <PortableText key={pb._key || i} value={[pb] as any} components={components} />
+    );
+  });
 }
 
 // ── CTA between sections ───────────────────────────────────────────────────────
@@ -532,8 +673,7 @@ export default async function ArticleDetailPage({
             <div>
               {sections.map((section, i) => (
                 <div key={i}>
-                  {/* @ts-expect-error portabletext generic types */}
-                  <PortableText value={section} components={portableComponents} />
+                  {renderBlocks(section, portableComponents)}
                   {/* Inject CTA after every 2nd section, skip last 2 sections */}
                   {i % 2 === 1 && i < sections.length - 2 && (
                     <SectionCTA index={Math.floor(i / 2)} />
@@ -554,8 +694,7 @@ export default async function ArticleDetailPage({
           {/* ── Conclusion (contenu après FAQ) ── */}
           {conclusionContent.length > 0 && (
             <div>
-              {/* @ts-expect-error portabletext generic types */}
-              <PortableText value={conclusionContent} components={portableComponents} />
+              {renderBlocks(conclusionContent, portableComponents)}
             </div>
           )}
 
