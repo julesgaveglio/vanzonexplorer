@@ -623,29 +623,21 @@ export default function ArticlesPageClient({ sanityArticles = [] }: { sanityArti
       </section>
 
       {/* ── CTA BAS DE PAGE ───────────────────────────────────────── */}
-      <section className="py-20 border-t border-slate-100" style={{ background: "linear-gradient(160deg, #EFF6FF 0%, #F0FDFF 100%)" }}>
+      <section className="py-20 border-t border-slate-100 bg-bg-secondary">
         <div className="max-w-3xl mx-auto px-6 text-center">
-          <div className="text-4xl mb-5">🚐</div>
-          <h2 className="text-3xl font-black text-slate-900 mb-3">Prêt à vivre l&apos;aventure ?</h2>
+          <span className="text-xs font-semibold uppercase tracking-widest text-blue-500 mb-4 block">
+            Prêt à partir ?
+          </span>
+          <h2 className="text-3xl font-black text-slate-900 mb-3">Vivez le Pays Basque en van</h2>
           <p className="text-slate-500 text-lg leading-relaxed mb-8 max-w-xl mx-auto">
-            Louer un van aménagé au Pays Basque, c&apos;est la liberté totale — sans les contraintes de la propriété.
+            Location de van aménagé depuis Cambo-les-Bains — assurance tous risques incluse, dès 65€/nuit.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Link
-              href="/location"
-              className="inline-flex items-center justify-center gap-2 bg-slate-900 text-white font-bold px-8 py-4 rounded-xl hover:bg-slate-800 transition-colors text-base shadow-lg"
-            >
-              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect width="20" height="8" x="2" y="13" rx="2" />
-                <path d="M6 13V8a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v5" />
-              </svg>
-              Louer un van aménagé
+            <Link href="/location" className="btn-primary btn-shine inline-flex items-center justify-center gap-2">
+              Louer un van aménagé →
             </Link>
-            <Link
-              href="/formation"
-              className="inline-flex items-center justify-center gap-2 border border-slate-200 bg-white text-slate-700 font-bold px-8 py-4 rounded-xl hover:border-[#4D5FEC]/40 hover:text-[#4D5FEC] transition-colors text-base"
-            >
-              Découvrir la formation →
+            <Link href="/formation" className="btn-ghost inline-flex items-center justify-center gap-2">
+              Découvrir la formation
             </Link>
           </div>
         </div>

@@ -14,6 +14,7 @@ import ArticleTOC, { type TOCHeading } from "./_components/ArticleTOC";
 import ReadingProgressBar from "./_components/ReadingProgressBar";
 import ArticleFAQ from "./_components/ArticleFAQ";
 import ArticleCategorySync from "./_components/ArticleCategorySync";
+import ShareButton from "./_components/ShareButton";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -26,6 +27,7 @@ type ArticleDoc = {
   tag?: string;
   readTime?: string;
   publishedAt: string;
+  updatedAt?: string;
   featured: boolean;
   content?: PortableBlock[];
   seoTitle?: string;
@@ -192,6 +194,8 @@ export async function generateMetadata({
       images: article.coverImage?.url ? [{ url: article.coverImage.url }] : [],
       type: "article",
       publishedTime: article.publishedAt,
+      ...(article.updatedAt ? { modifiedTime: article.updatedAt } : {}),
+      authors: ["Jules Gaveglio", "Elio"],
       locale: "fr_FR",
     },
   };
@@ -221,7 +225,7 @@ function makePortableComponents(headingIds: Map<string, string>) {
             <div className={`relative w-full ${aspectClass} rounded-2xl overflow-hidden bg-slate-100`}>
               <Image
                 src={src}
-                alt={value?.alt ?? ""}
+                alt={value?.alt ?? "Illustration de l'article"}
                 fill
                 sizes="(max-width: 768px) 100vw, 65vw"
                 className="object-cover"
@@ -404,12 +408,13 @@ export default async function ArticleDetailPage({
 }: {
   params: { slug: string };
 }) {
-  const [article, relatedArticles] = await Promise.all([
-    sanityFetch<ArticleDoc>(getArticleBySlugQuery, { slug: params.slug }),
-    sanityFetch<RelatedArticle[]>(getRelatedArticlesQuery, { slug: params.slug }),
-  ]);
-
+  // Sequential: relatedArticles depends on article.category for same-category sorting
+  const article = await sanityFetch<ArticleDoc>(getArticleBySlugQuery, { slug: params.slug });
   if (!article) notFound();
+  const relatedArticles = await sanityFetch<RelatedArticle[]>(getRelatedArticlesQuery, {
+    slug: params.slug,
+    category: article.category,
+  });
 
   const content = article.content ?? [];
   const headings = extractHeadings(content);
@@ -431,7 +436,7 @@ export default async function ArticleDetailPage({
       <ReadingProgressBar />
       <ArticleCategorySync category={article.category} />
       {/* JSON-LD: Article + BreadcrumbList + FAQPage */}
-      <ArticleJsonLd article={article} faqItems={faqItems} />
+      <ArticleJsonLd article={{ ...article, updatedAt: article.updatedAt }} faqItems={faqItems} />
 
       {/* ── Hero cover image ── */}
       {article.coverImage?.url && (
@@ -445,7 +450,7 @@ export default async function ArticleDetailPage({
           />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-900/20 to-transparent" />
           {article.coverImage.credit && (
-            <p className="absolute bottom-3 right-4 text-white/40 text-xs">
+            <p className="absolute bottom-3 right-4 text-white/65 text-xs bg-black/20 backdrop-blur-sm px-2 py-0.5 rounded-full">
               {article.coverImage.credit}
             </p>
           )}
@@ -488,6 +493,9 @@ export default async function ArticleDetailPage({
               </span>
             )}
             <span className="text-xs text-slate-400">{formatDate(article.publishedAt)}</span>
+            <div className="ml-auto">
+              <ShareButton />
+            </div>
           </div>
 
           {/* H1 */}
@@ -551,9 +559,48 @@ export default async function ArticleDetailPage({
             </div>
           )}
 
+          {/* ── Auteurs ── */}
+          <div className="mt-14 pt-10 border-t border-slate-100">
+            <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4">À propos des auteurs</p>
+            <div className="glass-card p-5">
+              <div className="flex items-start gap-4">
+                <div className="flex -space-x-3 flex-shrink-0">
+                  <div className="relative w-11 h-11 rounded-full overflow-hidden border-2 border-white shadow-sm">
+                    <Image
+                      src="https://cdn.sanity.io/images/lewexa74/production/16f9120e659bdd4bba47e663e9df9a1a9293fe3f-1170x2080.jpg"
+                      alt="Jules Gaveglio — Co-fondateur Vanzon Explorer"
+                      fill
+                      sizes="44px"
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="relative w-11 h-11 rounded-full overflow-hidden border-2 border-white shadow-sm">
+                    <Image
+                      src="https://cdn.sanity.io/images/lewexa74/production/325f3ebf1d68fd890487229864c73cc65bef20d3-1186x1654.png"
+                      alt="Elio — Co-fondateur Vanzon Explorer"
+                      fill
+                      sizes="44px"
+                      className="object-cover"
+                    />
+                  </div>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-bold text-slate-900 text-sm leading-none mb-1">Jules & Elio</p>
+                  <p className="text-xs text-[#4D5FEC] font-semibold mb-2">Co-fondateurs · Vanzon Explorer</p>
+                  <p className="text-xs text-slate-500 leading-relaxed">
+                    Passionnés de vanlife et du Pays Basque depuis 2022. Ils ont aménagé leur flotte de vans, lancé la location et créé la Van Business Academy — ils partagent ici tout ce qu&apos;ils ont appris sur le terrain.
+                  </p>
+                  <Link href="/a-propos" className="text-xs font-semibold text-[#4D5FEC] hover:underline mt-2 inline-block">
+                    En savoir plus →
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* ── Articles similaires ── */}
           {relatedArticles && relatedArticles.length > 0 && (
-            <div className="mt-16 pt-12 border-t border-slate-100">
+            <div className="mt-10 pt-8 border-t border-slate-100">
               <h2 className="text-sm font-bold uppercase tracking-widest text-slate-400 mb-4">
                 Articles similaires
               </h2>

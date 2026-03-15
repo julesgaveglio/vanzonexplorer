@@ -140,6 +140,7 @@ type ArticleType = {
   title: string;
   excerpt: string;
   publishedAt: string;
+  updatedAt?: string;
   coverImage?: { url: string } | null;
   slug: string;
   seoDescription?: string;
@@ -162,14 +163,25 @@ export function ArticleJsonLd({
     "headline": article.title,
     "description": article.seoDescription ?? article.excerpt,
     "datePublished": article.publishedAt,
-    "author": {
-      "@type": "Organization",
-      "name": "Vanzon Explorer",
-      "url": BASE_URL,
-    },
+    ...(article.updatedAt ? { "dateModified": article.updatedAt } : {}),
+    "author": [
+      {
+        "@type": "Person",
+        "name": "Jules Gaveglio",
+        "url": `${BASE_URL}/a-propos`,
+        "jobTitle": "Co-fondateur Vanzon Explorer",
+      },
+      {
+        "@type": "Person",
+        "name": "Elio",
+        "url": `${BASE_URL}/a-propos`,
+        "jobTitle": "Co-fondateur Vanzon Explorer",
+      },
+    ],
     "publisher": {
       "@type": "Organization",
       "name": "Vanzon Explorer",
+      "url": BASE_URL,
       "logo": {
         "@type": "ImageObject",
         "url": `${BASE_URL}/logo.png`,
