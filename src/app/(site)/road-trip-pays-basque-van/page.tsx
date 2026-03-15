@@ -146,7 +146,7 @@ const jsonLdArticle = {
   },
   datePublished: "2025-06-01",
   dateModified: "2026-03-05",
-  image: "https://cdn.sanity.io/images/lewexa74/production/f93fa16ab46d8934dcc3092a8e86fc80ebce4305-1080x750.png",
+  image: "https://cdn.sanity.io/images/lewexa74/production/d445397965472d300e3dc13d6b1c37503fe8ba25-1920x1080.png",
   mainEntityOfPage: {
     "@type": "WebPage",
     "@id": "https://vanzonexplorer.com/road-trip-pays-basque-van",
@@ -206,7 +206,7 @@ export default function RoadTripPaysBasquePage() {
       <section className="relative min-h-[80vh] flex items-end overflow-hidden">
         <div className="absolute inset-0">
           <Image
-            src="https://cdn.sanity.io/images/lewexa74/production/f93fa16ab46d8934dcc3092a8e86fc80ebce4305-1080x750.png"
+            src="https://cdn.sanity.io/images/lewexa74/production/d445397965472d300e3dc13d6b1c37503fe8ba25-1920x1080.png"
             alt="Van aménagé au bord de l'océan au Pays Basque pour un road trip"
             fill
             sizes="100vw"

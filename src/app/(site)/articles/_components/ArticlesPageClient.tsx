@@ -407,7 +407,7 @@ export default function ArticlesPageClient({ sanityArticles = [] }: { sanityArti
       title: a.title,
       description: a.excerpt,
       category: a.category,
-      image: a.coverImage?.url ?? "https://cdn.sanity.io/images/lewexa74/production/f93fa16ab46d8934dcc3092a8e86fc80ebce4305-1080x750.png",
+      image: a.coverImage?.url ?? "https://cdn.sanity.io/images/lewexa74/production/d445397965472d300e3dc13d6b1c37503fe8ba25-1920x1080.png",
       imageAlt: a.coverImage?.alt ?? a.title,
       readTime: a.readTime ?? null,
       href: `/articles/${a.slug}`,

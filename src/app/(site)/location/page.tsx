@@ -150,7 +150,7 @@ export default async function LocationPage() {
       <section className="relative -mt-16 min-h-screen flex items-end overflow-hidden">
         <div className="absolute inset-0">
           <Image
-            src="https://cdn.sanity.io/images/lewexa74/production/f93fa16ab46d8934dcc3092a8e86fc80ebce4305-1080x750.png"
+            src="https://cdn.sanity.io/images/lewexa74/production/d445397965472d300e3dc13d6b1c37503fe8ba25-1920x1080.png"
             alt="Van aménagé au Pays Basque face à l'Atlantique"
             fill
             sizes="100vw"

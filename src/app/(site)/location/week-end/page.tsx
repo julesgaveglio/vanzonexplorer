@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   },
 };
 
-const FALLBACK_IMG = "https://cdn.sanity.io/images/lewexa74/production/f93fa16ab46d8934dcc3092a8e86fc80ebce4305-1080x750.png";
+const FALLBACK_IMG = "https://cdn.sanity.io/images/lewexa74/production/d445397965472d300e3dc13d6b1c37503fe8ba25-1920x1080.png";
 
 const weekendIdeas = [
   {
