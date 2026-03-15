@@ -12,7 +12,7 @@ export default function ConfidentialitePage() {
       <div className="max-w-3xl mx-auto px-6">
         <div className="glass-card p-10">
           <h1 className="text-3xl font-black text-slate-900 mb-2">Politique de confidentialité</h1>
-          <p className="text-sm text-slate-400 mb-10">Conformément au Règlement Général sur la Protection des Données (RGPD — UE 2016/679).</p>
+          <p className="text-sm text-slate-400 mb-10">Conformément au Règlement Général sur la Protection des Données (RGPD — UE 2016/679). Dernière mise à jour : mars 2026.</p>
 
           <div className="prose prose-slate max-w-none space-y-10">
             {/* Responsable */}
@@ -42,11 +42,19 @@ export default function ConfidentialitePage() {
                 </li>
                 <li className="flex gap-3">
                   <span className="text-accent-blue font-bold mt-0.5">—</span>
+                  <span><strong>Paiement (Stripe) :</strong> les paiements liés au Club Privé sont traités par Stripe. Vanzon Explorer ne stocke aucune donnée bancaire. Seul un identifiant client Stripe est conservé pour la gestion de l&apos;abonnement.</span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="text-accent-blue font-bold mt-0.5">—</span>
                   <span><strong>Analytics (Google Analytics 4) :</strong> données de navigation anonymisées (pages visitées, durée de session, provenance). L&apos;IP est anonymisée. Chargé uniquement après consentement explicite.</span>
                 </li>
                 <li className="flex gap-3">
                   <span className="text-accent-blue font-bold mt-0.5">—</span>
                   <span><strong>Service de réservation externe (Yescapa) :</strong> les réservations de vans transitent via la plateforme Yescapa, soumise à sa propre politique de confidentialité.</span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="text-accent-blue font-bold mt-0.5">—</span>
+                  <span><strong>Distribution de contenu (Pinterest) :</strong> les articles publiés sur ce site sont automatiquement partagés sur Pinterest via l&apos;API officielle Pinterest. Aucune donnée utilisateur n&apos;est transmise à Pinterest dans ce processus — seul le contenu éditorial public (titre, image, lien) est utilisé.</span>
                 </li>
               </ul>
             </div>
@@ -56,7 +64,9 @@ export default function ConfidentialitePage() {
               <h2 className="text-lg font-bold text-slate-900 mb-3">3. Finalités du traitement</h2>
               <ul className="text-slate-600 space-y-2 list-none pl-0">
                 <li className="flex gap-3"><span className="text-accent-blue font-bold mt-0.5">—</span><span>Gestion des comptes utilisateurs et authentification</span></li>
-                <li className="flex gap-3"><span className="text-accent-blue font-bold mt-0.5">—</span><span>Traitement des demandes de contact et devis</span></li>
+                <li className="flex gap-3"><span className="text-accent-blue font-bold mt-0.5">—</span><span>Gestion des abonnements Club Privé et traitement des paiements</span></li>
+                <li className="flex gap-3"><span className="text-accent-blue font-bold mt-0.5">—</span><span>Traitement des demandes de contact et devis formation</span></li>
+                <li className="flex gap-3"><span className="text-accent-blue font-bold mt-0.5">—</span><span>Distribution automatique du contenu éditorial sur Pinterest</span></li>
                 <li className="flex gap-3"><span className="text-accent-blue font-bold mt-0.5">—</span><span>Amélioration de l&apos;expérience utilisateur</span></li>
                 <li className="flex gap-3"><span className="text-accent-blue font-bold mt-0.5">—</span><span>Statistiques d&apos;utilisation anonymes</span></li>
               </ul>
@@ -109,9 +119,25 @@ export default function ConfidentialitePage() {
               </ul>
             </div>
 
+            {/* Services tiers */}
+            <div>
+              <h2 className="text-lg font-bold text-slate-900 mb-3">7. Services tiers</h2>
+              <p className="text-slate-600 leading-relaxed mb-4">
+                Vanzon Explorer utilise les services tiers suivants, chacun disposant de sa propre politique de confidentialité :
+              </p>
+              <ul className="text-slate-600 space-y-2 list-none pl-0">
+                <li className="flex gap-3"><span className="text-accent-blue font-bold mt-0.5">—</span><span><strong>Clerk</strong> (auth) — <a href="https://clerk.com/privacy" target="_blank" rel="noopener noreferrer" className="text-accent-blue hover:underline">clerk.com/privacy</a></span></li>
+                <li className="flex gap-3"><span className="text-accent-blue font-bold mt-0.5">—</span><span><strong>Stripe</strong> (paiement) — <a href="https://stripe.com/fr/privacy" target="_blank" rel="noopener noreferrer" className="text-accent-blue hover:underline">stripe.com/fr/privacy</a></span></li>
+                <li className="flex gap-3"><span className="text-accent-blue font-bold mt-0.5">—</span><span><strong>Yescapa</strong> (réservation) — <a href="https://www.yescapa.fr/fr/politique-de-confidentialite" target="_blank" rel="noopener noreferrer" className="text-accent-blue hover:underline">yescapa.fr/politique-de-confidentialite</a></span></li>
+                <li className="flex gap-3"><span className="text-accent-blue font-bold mt-0.5">—</span><span><strong>Pinterest</strong> (distribution contenu) — <a href="https://policy.pinterest.com/fr/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-accent-blue hover:underline">policy.pinterest.com/fr/privacy-policy</a></span></li>
+                <li className="flex gap-3"><span className="text-accent-blue font-bold mt-0.5">—</span><span><strong>Google Analytics 4</strong> (analytics) — <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-accent-blue hover:underline">policies.google.com/privacy</a></span></li>
+                <li className="flex gap-3"><span className="text-accent-blue font-bold mt-0.5">—</span><span><strong>Supabase</strong> (base de données) — <a href="https://supabase.com/privacy" target="_blank" rel="noopener noreferrer" className="text-accent-blue hover:underline">supabase.com/privacy</a></span></li>
+              </ul>
+            </div>
+
             {/* Réclamation */}
             <div>
-              <h2 className="text-lg font-bold text-slate-900 mb-3">7. Réclamation</h2>
+              <h2 className="text-lg font-bold text-slate-900 mb-3">8. Réclamation</h2>
               <p className="text-slate-600 leading-relaxed">
                 Si vous estimez que le traitement de vos données n&apos;est pas conforme à la réglementation, vous pouvez introduire une réclamation auprès de la <strong>CNIL</strong> (Commission Nationale de l&apos;Informatique et des Libertés) — cnil.fr.
               </p>
