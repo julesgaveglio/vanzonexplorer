@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import {
   Prospect,
   ProspectStatus,
@@ -216,7 +216,7 @@ export default function ProspectionClient({ initialProspects }: Props) {
     const prospect = prospects.find(p => p.id === id);
     if (!prospect) { setEditingCell(null); return; }
 
-    let updateData: Partial<Prospect> & { name: string } = { id, name: prospect.name };
+    const updateData: Partial<Prospect> & { name: string } = { id, name: prospect.name };
 
     if (field === "name") updateData.name = editValue;
     else if (field === "website") updateData.website = editValue;

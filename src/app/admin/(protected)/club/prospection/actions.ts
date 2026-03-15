@@ -134,7 +134,8 @@ export async function upsertProspect(
       revalidatePath("/admin/club/prospection");
       return { success: true, id: updated?.id };
     } else {
-      const { id: _ignored, ...rest } = data as Partial<Prospect> & { name: string };
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { id: _id, ...rest } = data as Partial<Prospect> & { name: string };
       const { data: inserted, error } = await supabase
         .from("prospects")
         .insert({ ...rest, updated_at: now })
@@ -255,7 +256,8 @@ export async function bulkInsertProspects(
       return { success: true, inserted: 0, skipped };
     }
 
-    const rows = toInsert.map(({ id: _ignored, ...rest }) => ({
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const rows = toInsert.map(({ id: _id2, ...rest }) => ({
       ...rest,
       updated_at: now,
     }));

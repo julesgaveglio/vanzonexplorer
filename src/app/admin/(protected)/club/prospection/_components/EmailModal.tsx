@@ -158,7 +158,7 @@ export default function EmailModal({ open, prospect, onClose, onGenerated }: Pro
             className="px-5 py-2.5 rounded-xl text-sm font-semibold text-white disabled:opacity-50 disabled:cursor-not-allowed"
             style={{ background: "linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)" }}
           >
-            Préparer l'envoi →
+            Préparer l&apos;envoi →
           </button>
         </div>
       </div>
