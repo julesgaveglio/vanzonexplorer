@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { auth, currentUser } from "@clerk/nextjs/server";
-import AdminSidebar from "../_components/AdminSidebar";
+import AdminShell from "../_components/AdminShell";
 
 const ALLOWED_EMAIL = "gavegliojules@gmail.com";
 
@@ -17,12 +17,5 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const email = user?.emailAddresses?.[0]?.emailAddress;
   if (email !== ALLOWED_EMAIL) redirect("/");
 
-  return (
-    <div className="min-h-screen" style={{ background: "#F1F5F9" }}>
-      <AdminSidebar />
-      <div className="pl-[260px]">
-        <main className="min-h-screen">{children}</main>
-      </div>
-    </div>
-  );
+  return <AdminShell>{children}</AdminShell>;
 }
