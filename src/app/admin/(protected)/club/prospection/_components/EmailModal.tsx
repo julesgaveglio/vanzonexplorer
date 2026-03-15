@@ -15,6 +15,7 @@ export default function EmailModal({ open, prospect, onClose, onGenerated }: Pro
   const [isGenerating, setIsGenerating] = useState(false);
   const [subject, setSubject] = useState("");
   const [body, setBody] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (prospect) {
@@ -28,22 +29,22 @@ export default function EmailModal({ open, prospect, onClose, onGenerated }: Pro
   async function handleGenerate() {
     if (!prospect) return;
     setIsGenerating(true);
+    setError("");
     try {
       const response = await fetch("/api/admin/club/prospect/generate-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prospectId: prospect.id }),
       });
-      if (!response.ok) {
-        const err = await response.json().catch(() => ({ error: 'Erreur serveur' }));
-        console.error('[EmailModal] generate error:', err);
+      const data = await response.json().catch(() => ({ success: false, error: "Réponse invalide du serveur" }));
+      if (!response.ok || !data.success) {
+        setError(data.error ?? `Erreur ${response.status}`);
         return;
       }
-      const data = await response.json();
       if (data.subject) setSubject(data.subject);
       if (data.body) setBody(data.body);
     } catch (err) {
-      console.error("Erreur génération email:", err);
+      setError(err instanceof Error ? err.message : "Erreur réseau");
     } finally {
       setIsGenerating(false);
     }
@@ -80,8 +81,25 @@ export default function EmailModal({ open, prospect, onClose, onGenerated }: Pro
             className="w-full py-2.5 rounded-xl text-sm font-semibold text-white disabled:opacity-50 disabled:cursor-not-allowed"
             style={{ background: "linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)" }}
           >
-            {isGenerating ? "Génération en cours..." : "Générer avec l'IA"}
+            {isGenerating ? (
+              <span className="flex items-center justify-center gap-2">
+                <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+                </svg>
+                Génération en cours...
+              </span>
+            ) : "Générer avec l'IA"}
           </button>
+          {error && (
+            <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-red-50 border border-red-100 text-sm text-red-700">
+              <svg className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              {error}
+              <button onClick={handleGenerate} className="ml-auto text-xs font-semibold underline">Réessayer</button>
+            </div>
+          )}
 
           {/* Subject */}
           <div>

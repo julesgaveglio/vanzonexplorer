@@ -55,25 +55,28 @@ export async function POST(req: NextRequest) {
 
     const typedProspect = prospect as Prospect;
 
-    // Fetch homepage via Jina AI for product context
+    // Fetch homepage via Jina AI for product context (timeout 15s max)
     let siteContent = "";
-    try {
-      const jinaResponse = await fetch(
-        `https://r.jina.ai/${typedProspect.website}`,
-        {
-          headers: {
-            Authorization: `Bearer ${process.env.JINA_API_KEY}`,
-            Accept: "text/plain",
-            "X-Return-Format": "markdown",
-            "X-Timeout": "20",
-          },
+    if (typedProspect.website) {
+      try {
+        const jinaResponse = await fetch(
+          `https://r.jina.ai/${typedProspect.website}`,
+          {
+            headers: {
+              Authorization: `Bearer ${process.env.JINA_API_KEY}`,
+              Accept: "text/plain",
+              "X-Return-Format": "markdown",
+              "X-Timeout": "12",
+            },
+            signal: AbortSignal.timeout(15000),
+          }
+        );
+        if (jinaResponse.ok) {
+          siteContent = await jinaResponse.text();
         }
-      );
-      if (jinaResponse.ok) {
-        siteContent = await jinaResponse.text();
+      } catch {
+        // continue without site content
       }
-    } catch {
-      // continue without site content
     }
 
     // Determine category angle
@@ -114,43 +117,56 @@ Génère:
    - Lien Club: https://www.vanzonexplorer.com/club
    - Ton: professionnel, humain, direct, crédible
 
-Réponds UNIQUEMENT avec: { "subject": "...", "body": "..." }`,
+IMPORTANT — Format de réponse OBLIGATOIRE (respecte exactement ces balises) :
+###OBJET###
+[L'objet de l'email sur une seule ligne]
+###CORPS###
+[Le corps complet de l'email]
+###FIN###`,
         },
       ],
       temperature: 0.7,
       max_tokens: 2000,
     });
 
-    const rawContent = groqResponse.choices[0]?.message?.content || "{}";
+    const rawContent = groqResponse.choices[0]?.message?.content || "";
 
-    let emailResult: { subject: string; body: string } = {
-      subject: "",
-      body: "",
-    };
+    // Parse delimited format — much more robust than JSON for multi-line email bodies
+    const subjectMatch = rawContent.match(/###OBJET###\s*([\s\S]*?)\s*###CORPS###/);
+    const bodyMatch = rawContent.match(/###CORPS###\s*([\s\S]*?)\s*###FIN###/);
 
-    try {
-      const jsonMatch = rawContent.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        emailResult = JSON.parse(jsonMatch[0]);
-      } else {
-        emailResult = JSON.parse(rawContent);
+    let subject = subjectMatch?.[1]?.trim() ?? "";
+    let body = bodyMatch?.[1]?.trim() ?? "";
+
+    // Fallback: try JSON parsing if delimiters not found (Groq occasionally ignores format instructions)
+    if (!subject || !body) {
+      try {
+        const jsonMatch = rawContent.match(/\{[\s\S]*?\}/);
+        if (jsonMatch) {
+          const parsed = JSON.parse(jsonMatch[0]);
+          subject = parsed.subject ?? subject;
+          body = parsed.body ?? body;
+        }
+      } catch {
+        // ignore
       }
-    } catch {
-      return Response.json(
-        {
-          success: false,
-          error: "Erreur parsing réponse Groq",
-          raw: rawContent.substring(0, 500),
-        },
-        { status: 500 }
-      );
     }
+
+    // Last resort: extract from raw text
+    if (!subject) {
+      subject = `Partenariat Vanzon Explorer × ${typedProspect.name}`;
+    }
+    if (!body) {
+      body = rawContent.replace(/###\w+###/g, "").trim();
+    }
+
+    const emailResult = { subject, body };
 
     if (!emailResult.subject || !emailResult.body) {
       return Response.json(
         {
           success: false,
-          error: "Réponse Groq incomplète (subject ou body manquant)",
+          error: "Impossible de générer l'email (réponse Groq vide)",
           raw: rawContent.substring(0, 500),
         },
         { status: 500 }
