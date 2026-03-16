@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 
-const CALENDLY_URL = "https://calendly.com/vanzonexplorer/30min";
+const CALENDLY_URL = "https://calendly.com/vanzonexplorer/accompagnement";
 
 interface CalendlyButtonProps {
   size?: "sm" | "md" | "lg";

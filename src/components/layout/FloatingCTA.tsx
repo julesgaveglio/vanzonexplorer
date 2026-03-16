@@ -245,7 +245,7 @@ export default function FloatingCTA() {
 
             {config.calendly ? (
               <button
-                onClick={() => (window as Window & { Calendly?: { initPopupWidget: (opts: { url: string }) => void } }).Calendly?.initPopupWidget({ url: "https://calendly.com/vanzonexplorer/30min" })}
+                onClick={() => (window as Window & { Calendly?: { initPopupWidget: (opts: { url: string }) => void } }).Calendly?.initPopupWidget({ url: "https://calendly.com/vanzonexplorer/accompagnement" })}
                 className="btn-shine relative text-sm font-semibold px-4 py-2 rounded-full flex-shrink-0 whitespace-nowrap text-white active:scale-95 transition-transform"
                 style={{ background: config.gradient, boxShadow: config.glow }}
               >
