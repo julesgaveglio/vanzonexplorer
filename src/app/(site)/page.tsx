@@ -337,7 +337,7 @@ export default async function HomePage() {
 
               <h2 className="text-4xl md:text-5xl font-black text-slate-900 leading-tight mb-4">
                 Van Business<br />
-                <span style={{ color: "#B9945F" }}>
+                <span className="bg-clip-text text-transparent" style={{ backgroundImage: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)" }}>
                   Academy
                 </span>
               </h2>
