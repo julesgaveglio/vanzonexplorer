@@ -367,7 +367,7 @@ export default async function HomePage() {
                   Découvrir la formation →
                 </a>
                 <a
-                  href="/formation"
+                  href="/formation#programme"
                   className="inline-flex items-center justify-center gap-2 bg-slate-100 text-slate-700 font-semibold px-6 py-4 rounded-2xl text-sm hover:bg-slate-200 transition-colors"
                 >
                   Voir le programme
