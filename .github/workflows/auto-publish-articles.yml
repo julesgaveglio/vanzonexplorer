@@ -1,0 +1,49 @@
+name: Auto-publish blog articles
+
+on:
+  schedule:
+    # Lundi, mercredi, vendredi à 8h00 (Paris, heure d'hiver)
+    - cron: "0 7 * * 1"   # Lundi
+    - cron: "0 7 * * 3"   # Mercredi
+    - cron: "0 7 * * 5"   # Vendredi
+  workflow_dispatch: # Déclenchement manuel depuis l'UI GitHub
+
+jobs:
+  publish:
+    name: Publish next article
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run blog writer agent
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          SANITY_API_WRITE_TOKEN: ${{ secrets.SANITY_API_WRITE_TOKEN }}
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+          DATAFORSEO_LOGIN: ${{ secrets.DATAFORSEO_LOGIN }}
+          DATAFORSEO_PASSWORD: ${{ secrets.DATAFORSEO_PASSWORD }}
+          NEXT_PUBLIC_SANITY_PROJECT_ID: lewexa74
+          NEXT_PUBLIC_SANITY_DATASET: production
+        run: npx tsx scripts/agents/blog-writer-agent.ts
+
+      - name: Commit updated article queue
+        run: |
+          git config user.name "Vanzon Bot"
+          git config user.email "bot@vanzonexplorer.com"
+          git add scripts/data/article-queue.json
+          git diff --staged --quiet || git commit -m "chore: article auto-publié [skip ci]"
+          git push
