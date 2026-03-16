@@ -12,6 +12,7 @@ type CTAConfig = {
   gradient: string;
   glow: string;
   scrollTarget?: string;
+  calendly?: boolean;
 };
 
 // ── Palettes dégradés Vanzon ───────────────────────────────────────────────
@@ -53,7 +54,8 @@ function getCTAConfig(pathname: string): CTAConfig {
   if (pathname.startsWith("/formation")) {
     return {
       btnLabel: "Réserver un appel",
-      href: "/formation#reserver",
+      href: "#",
+      calendly: true,
       ...PALETTE.gold,
     };
   }
@@ -241,7 +243,15 @@ export default function FloatingCTA() {
               Retour
             </button>
 
-            {config.scrollTarget ? (
+            {config.calendly ? (
+              <button
+                onClick={() => (window as Window & { Calendly?: { initPopupWidget: (opts: { url: string }) => void } }).Calendly?.initPopupWidget({ url: "https://calendly.com/vanzonexplorer/30min" })}
+                className="btn-shine relative text-sm font-semibold px-4 py-2 rounded-full flex-shrink-0 whitespace-nowrap text-white active:scale-95 transition-transform"
+                style={{ background: config.gradient, boxShadow: config.glow }}
+              >
+                {config.btnLabel}
+              </button>
+            ) : config.scrollTarget ? (
               <button
                 onClick={() => {
                   document.getElementById(config.scrollTarget!)?.scrollIntoView({ behavior: "smooth" });

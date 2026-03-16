@@ -1,7 +1,6 @@
 import Image from "next/image";
 import LiquidButton from "@/components/ui/LiquidButton";
-
-const GHL_BOOKING_URL = process.env.NEXT_PUBLIC_GHL_BOOKING_URL || "#";
+import CalendlyButton from "@/components/ui/CalendlyButton";
 
 const pills = [
   { icon: "🙋‍♂️", label: "Accompagnement" },
@@ -48,9 +47,9 @@ export default function FormationHero() {
         </div>
 
         <div className="flex flex-wrap justify-center gap-4 mt-10">
-          <LiquidButton href={GHL_BOOKING_URL} external size="lg" variant="gold">
+          <CalendlyButton size="lg">
             Réserver mon appel gratuit →
-          </LiquidButton>
+          </CalendlyButton>
           <LiquidButton variant="ghost" href="#programme" size="lg">
             Découvrir le programme ↓
           </LiquidButton>

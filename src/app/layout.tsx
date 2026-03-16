@@ -7,6 +7,7 @@ import { getSiteSettingsQuery } from "@/lib/sanity/queries";
 import CookieBanner from "@/components/ui/CookieBanner";
 import { LocalBusinessJsonLd } from "@/components/seo/JsonLd";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import Script from "next/script";
 import "./globals.css";
 
 const inter = Inter({
@@ -88,6 +89,9 @@ export default function RootLayout({
           {children}
           <CookieBanner />
           <GoogleAnalytics gaId="G-D8NPYG2FDM" />
+          {/* Calendly popup widget */}
+          <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet" />
+          <Script src="https://assets.calendly.com/assets/external/widget.js" strategy="lazyOnload" />
         </body>
       </html>
     </ClerkProvider>

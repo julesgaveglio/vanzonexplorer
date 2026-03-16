@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import LiquidButton from "@/components/ui/LiquidButton";
+import CalendlyButton from "@/components/ui/CalendlyButton";
 import { sanityFetch } from "@/lib/sanity/client";
 import { groq } from "next-sanity";
 import { getBrands } from "@/lib/club/data";
@@ -316,9 +317,9 @@ export default async function AProposPage() {
             <strong className="text-slate-900">bâtir un projet solide long terme, rentable et aligné avec un mode de vie plus libre.</strong>
           </p>
           <div className="flex gap-4 mt-10 justify-center flex-wrap">
-            <LiquidButton href={process.env.NEXT_PUBLIC_GHL_BOOKING_URL || "/formation"} external>
+            <CalendlyButton>
               📅 Réserver un appel gratuit →
-            </LiquidButton>
+            </CalendlyButton>
             <LiquidButton variant="ghost" href="/location">Louer un van</LiquidButton>
           </div>
         </div>

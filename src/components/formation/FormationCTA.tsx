@@ -1,6 +1,4 @@
-import LiquidButton from "@/components/ui/LiquidButton";
-
-const GHL_BOOKING_URL = process.env.NEXT_PUBLIC_GHL_BOOKING_URL || "#";
+import CalendlyButton from "@/components/ui/CalendlyButton";
 
 const reassurance = [
   "✓ Appel gratuit",
@@ -35,9 +33,9 @@ export default function FormationCTA() {
         </p>
 
         <div className="mt-8">
-          <LiquidButton href={GHL_BOOKING_URL} external size="lg" variant="gold">
+          <CalendlyButton size="lg">
             📅 Réserver mon appel gratuit →
-          </LiquidButton>
+          </CalendlyButton>
         </div>
 
         <div className="flex flex-wrap justify-center gap-4 mt-6">
