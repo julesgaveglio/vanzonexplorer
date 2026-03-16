@@ -14,7 +14,9 @@ export async function GET(req: NextRequest) {
 
   const clientId = process.env.GOOGLE_GSC_CLIENT_ID!;
   const clientSecret = process.env.GOOGLE_GSC_CLIENT_SECRET!;
-  const redirectUri = `${process.env.NEXT_PUBLIC_SITE_URL}/api/admin/google/callback`;
+  const reqUrl = new URL(req.url);
+  const baseUrl = `${reqUrl.protocol}//${reqUrl.host}`;
+  const redirectUri = `${baseUrl}/api/admin/google/callback`;
 
   const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
     method: "POST",

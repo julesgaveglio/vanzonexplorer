@@ -1,12 +1,15 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   const clientId = process.env.GOOGLE_GSC_CLIENT_ID;
   if (!clientId) {
     return NextResponse.json({ error: "GOOGLE_GSC_CLIENT_ID not configured" }, { status: 500 });
   }
 
-  const redirectUri = `${process.env.NEXT_PUBLIC_SITE_URL}/api/admin/google/callback`;
+  // Derive base URL from the actual request — works on localhost AND production without env var
+  const reqUrl = new URL(req.url);
+  const baseUrl = `${reqUrl.protocol}//${reqUrl.host}`;
+  const redirectUri = `${baseUrl}/api/admin/google/callback`;
 
   // Combined scopes: GSC + GA4
   const scopes = [
