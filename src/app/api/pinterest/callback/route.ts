@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
 
   const clientId = process.env.PINTEREST_APP_ID!;
   const clientSecret = process.env.PINTEREST_APP_SECRET!;
-  const redirectUri = `${process.env.NEXT_PUBLIC_SITE_URL}/vanzon/api/pinterest/callback`;
+  const redirectUri = `${process.env.NEXT_PUBLIC_SITE_URL}/api/pinterest/callback`;
 
   const credentials = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
 
