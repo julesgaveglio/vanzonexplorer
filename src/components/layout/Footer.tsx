@@ -4,7 +4,7 @@ import Image from "next/image";
 const footerLinks = {
   offres: [
     { label: "Location de vans", href: "/location" },
-    { label: "Achat / Revente", href: "/achat" },
+    { label: "Achat de vans", href: "/achat" },
     { label: "Formation vanlife", href: "/formation" },
     { label: "Club Privé", href: "/club" },
   ],

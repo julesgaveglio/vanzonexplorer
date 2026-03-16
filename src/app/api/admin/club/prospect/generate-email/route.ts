@@ -95,7 +95,7 @@ export async function POST(req: NextRequest) {
       messages: [
         {
           role: "user",
-          content: `Tu es le fondateur de Vanzon Explorer (vanzonexplorer.com), plateforme communautaire pour les passionnés de vanlife en France. Tu écris un email de prospection professionnel, humain et ultra-personnalisé à ${typedProspect.name} pour proposer un partenariat Club Privé.
+          content: `Tu es le fondateur de Vanzon Explorer (vanzonexplorer.com), plateforme communautaire pour les passionnés de vanlife en France. Tu écris un email de prospection simple direct court efficace professionnel, humain et ultra-personnalisé à ${typedProspect.name} pour proposer un partenariat Club Privé.
 
 Angle catégorie: ${categoryAngle}
 
