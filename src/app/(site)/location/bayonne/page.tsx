@@ -4,6 +4,7 @@ import Link from "next/link";
 import { fetchPexelsPhoto } from "@/lib/pexels";
 import { getGooglePlaceStats } from "@/lib/google-places";
 import { LocationRentalJsonLd } from "@/components/seo/JsonLd";
+import VanSelectionSection from "@/components/location/VanSelectionSection";
 
 export const revalidate = 86400;
 
@@ -239,6 +240,8 @@ export default async function LocationBayonnePage() {
           </div>
         </div>
       </section>
+
+      <VanSelectionSection destination="Bayonne" />
 
       {/* CTA */}
       <section className="relative py-24 overflow-hidden">

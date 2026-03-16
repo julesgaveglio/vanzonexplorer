@@ -4,6 +4,8 @@ import Link from "next/link";
 import { fetchPexelsPhoto } from "@/lib/pexels";
 import { getGooglePlaceStats } from "@/lib/google-places";
 import { LocationRentalJsonLd } from "@/components/seo/JsonLd";
+import VanSelectionSection from "@/components/location/VanSelectionSection";
+import PracticalInfoSection from "@/components/location/PracticalInfoSection";
 
 export const revalidate = 86400;
 
@@ -186,43 +188,19 @@ export default async function LocationForetIratiPage() {
         </div>
       </section>
 
-      {/* Infos pratiques */}
-      <section className="py-20" style={{ background: "linear-gradient(160deg, #EFF6FF 0%, #F0FDFF 100%)" }}>
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-3xl font-black text-slate-900 mb-6">
-                Infos pratiques — Forêt d&apos;Irati en van
-              </h2>
-              <div className="space-y-4">
-                {[
-                  { label: "Récupération du van", value: "Cambo-les-Bains (45 min d'Irati) — route via col d'Ispéguy" },
-                  { label: "Spot nuit recommandé", value: "Col d'Orgambide ou lac d'Irabia — bivouac gratuit en dehors juil./août" },
-                  { label: "Meilleure saison", value: "Septembre-Novembre — feuillage automnal, cerfs en rut, peu de monde" },
-                  { label: "Tarif van", value: "Dès 65€/nuit — assurance et équipements inclus" },
-                  { label: "À prévoir", value: "Eau potable à remplir à Cambo — sources non potables en forêt" },
-                  { label: "À combiner avec", value: "La Rhune (45 min), Espelette (30 min), San Sebastián (1h)" },
-                ].map((row) => (
-                  <div key={row.label} className="flex gap-4 border-b border-slate-100 pb-4">
-                    <span className="text-sm font-semibold text-slate-400 w-40 flex-shrink-0">{row.label}</span>
-                    <span className="text-sm text-slate-700">{row.value}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="relative aspect-square rounded-3xl overflow-hidden">
-              <Image
-                src="https://cdn.sanity.io/images/lewexa74/production/04d93973d30c5eede51f954d1432a50a5f82ef9b-1080x750.png"
-                alt="Van Xalbat Vanzon Explorer en direction de la Forêt d'Irati"
-                fill
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-cover"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
+      <PracticalInfoSection
+        title="Infos pratiques — Forêt d'Irati en van"
+        image="https://cdn.sanity.io/images/lewexa74/production/04d93973d30c5eede51f954d1432a50a5f82ef9b-1080x750.png"
+        imageAlt="Van Xalbat Vanzon Explorer en direction de la Forêt d'Irati"
+        rows={[
+          { label: "Récupération du van", value: "Cambo-les-Bains (45 min d'Irati) — route via col d'Ispéguy" },
+          { label: "Spot nuit recommandé", value: "Col d'Orgambide ou lac d'Irabia — bivouac gratuit en dehors juil./août" },
+          { label: "Meilleure saison", value: "Septembre-Novembre — feuillage automnal, cerfs en rut, peu de monde" },
+          { label: "Tarif van", value: "Dès 65€/nuit — assurance et équipements inclus" },
+          { label: "À prévoir", value: "Eau potable à remplir à Cambo — sources non potables en forêt" },
+          { label: "À combiner avec", value: "La Rhune (45 min), Espelette (30 min), San Sebastián (1h)" },
+        ]}
+      />
 
       {/* Google Maps — Point de départ */}
       <section className="py-16 bg-white">
@@ -247,6 +225,8 @@ export default async function LocationForetIratiPage() {
           </div>
         </div>
       </section>
+
+      <VanSelectionSection destination="la Forêt d'Irati" />
 
       {/* CTA */}
       <section className="relative py-24 overflow-hidden">

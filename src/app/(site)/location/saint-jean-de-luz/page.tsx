@@ -4,6 +4,8 @@ import Link from "next/link";
 import { fetchPexelsPhoto } from "@/lib/pexels";
 import { getGooglePlaceStats } from "@/lib/google-places";
 import { LocationRentalJsonLd } from "@/components/seo/JsonLd";
+import VanSelectionSection from "@/components/location/VanSelectionSection";
+import PracticalInfoSection from "@/components/location/PracticalInfoSection";
 
 export const revalidate = 86400;
 
@@ -187,43 +189,19 @@ export default async function LocationSaintJeanDeLuzPage() {
         </div>
       </section>
 
-      {/* Infos pratiques */}
-      <section className="py-20" style={{ background: "linear-gradient(160deg, #EFF6FF 0%, #F0FDFF 100%)" }}>
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-3xl font-black text-slate-900 mb-6">
-                Infos pratiques — Saint-Jean-de-Luz en van
-              </h2>
-              <div className="space-y-4">
-                {[
-                  { label: "Récupération du van", value: "Cambo-les-Bains (20 min de Saint-Jean-de-Luz) — route côtière panoramique" },
-                  { label: "Spot nuit recommandé", value: "Aire municipale de Saint-Jean-de-Luz (7€/nuit, accès port)" },
-                  { label: "Meilleure saison", value: "Toute l'année — baie protégée, peu de vent" },
-                  { label: "Tarif van", value: "Dès 65€/nuit — assurance et équipements inclus" },
-                  { label: "Marché local", value: "Mardi et vendredi matin — fruits, légumes, fromages basques" },
-                  { label: "À combiner avec", value: "Hendaye (15 min), Biarritz (20 min), Espelette (30 min)" },
-                ].map((row) => (
-                  <div key={row.label} className="flex gap-4 border-b border-slate-100 pb-4">
-                    <span className="text-sm font-semibold text-slate-400 w-40 flex-shrink-0">{row.label}</span>
-                    <span className="text-sm text-slate-700">{row.value}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="relative aspect-square rounded-3xl overflow-hidden">
-              <Image
-                src="https://cdn.sanity.io/images/lewexa74/production/660105a28e577c33f642a8fdff528d88925642e3-1080x750.png"
-                alt="Van Yoni Vanzon Explorer à Saint-Jean-de-Luz"
-                fill
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-cover"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
+      <PracticalInfoSection
+        title="Infos pratiques — Saint-Jean-de-Luz en van"
+        image="https://cdn.sanity.io/images/lewexa74/production/660105a28e577c33f642a8fdff528d88925642e3-1080x750.png"
+        imageAlt="Van Yoni Vanzon Explorer à Saint-Jean-de-Luz"
+        rows={[
+          { label: "Récupération du van", value: "Cambo-les-Bains (20 min de Saint-Jean-de-Luz) — route côtière panoramique" },
+          { label: "Spot nuit recommandé", value: "Aire municipale de Saint-Jean-de-Luz (7€/nuit, accès port)" },
+          { label: "Meilleure saison", value: "Toute l'année — baie protégée, peu de vent" },
+          { label: "Tarif van", value: "Dès 65€/nuit — assurance et équipements inclus" },
+          { label: "Marché local", value: "Mardi et vendredi matin — fruits, légumes, fromages basques" },
+          { label: "À combiner avec", value: "Hendaye (15 min), Biarritz (20 min), Espelette (30 min)" },
+        ]}
+      />
 
       {/* Google Maps — Point de départ */}
       <section className="py-16 bg-white">
@@ -248,6 +226,8 @@ export default async function LocationSaintJeanDeLuzPage() {
           </div>
         </div>
       </section>
+
+      <VanSelectionSection destination="Saint-Jean-de-Luz" />
 
       {/* CTA */}
       <section className="relative py-24 overflow-hidden">

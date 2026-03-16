@@ -4,6 +4,8 @@ import Link from "next/link";
 import { fetchPexelsPhoto } from "@/lib/pexels";
 import { getGooglePlaceStats } from "@/lib/google-places";
 import { LocationRentalJsonLd } from "@/components/seo/JsonLd";
+import VanSelectionSection from "@/components/location/VanSelectionSection";
+import PracticalInfoSection from "@/components/location/PracticalInfoSection";
 
 export const revalidate = 86400;
 
@@ -186,43 +188,19 @@ export default async function LocationBiarritzPage() {
         </div>
       </section>
 
-      {/* Infos pratiques */}
-      <section className="py-20" style={{ background: "linear-gradient(160deg, #EFF6FF 0%, #F0FDFF 100%)" }}>
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-3xl font-black text-slate-900 mb-6">
-                Infos pratiques — Biarritz en van
-              </h2>
-              <div className="space-y-4">
-                {[
-                  { label: "Récupération du van", value: "Cambo-les-Bains (25 min de Biarritz) ou livraison sur demande" },
-                  { label: "Durée minimum", value: "2 nuits (week-end) — idéal 4–7 jours" },
-                  { label: "Tarif", value: "Dès 65€/nuit — assurance et équipements inclus" },
-                  { label: "Spot nuit recommandé", value: "Parking Côte des Basques — gratuit hors juillet/août" },
-                  { label: "Meilleure saison", value: "Mai–Juin et Septembre — vagues + météo parfaites" },
-                  { label: "Accès surf", value: "Côte des Basques, Milady, Anglet (Cavaliers) — toutes à 10 min" },
-                ].map((row) => (
-                  <div key={row.label} className="flex gap-4 border-b border-slate-100 pb-4">
-                    <span className="text-sm font-semibold text-slate-400 w-40 flex-shrink-0">{row.label}</span>
-                    <span className="text-sm text-slate-700">{row.value}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="relative aspect-square rounded-3xl overflow-hidden">
-              <Image
-                src="https://cdn.sanity.io/images/lewexa74/production/660105a28e577c33f642a8fdff528d88925642e3-1080x750.png"
-                alt="Van Yoni Vanzon Explorer ouvert près de Biarritz"
-                fill
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-cover"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
+      <PracticalInfoSection
+        title="Infos pratiques — Biarritz en van"
+        image="https://cdn.sanity.io/images/lewexa74/production/660105a28e577c33f642a8fdff528d88925642e3-1080x750.png"
+        imageAlt="Van Yoni Vanzon Explorer ouvert près de Biarritz"
+        rows={[
+          { label: "Récupération du van", value: "Cambo-les-Bains (25 min de Biarritz) ou livraison sur demande" },
+          { label: "Durée minimum", value: "2 nuits (week-end) — idéal 4–7 jours" },
+          { label: "Tarif", value: "Dès 65€/nuit — assurance et équipements inclus" },
+          { label: "Spot nuit recommandé", value: "Parking Côte des Basques — gratuit hors juillet/août" },
+          { label: "Meilleure saison", value: "Mai–Juin et Septembre — vagues + météo parfaites" },
+          { label: "Accès surf", value: "Côte des Basques, Milady, Anglet (Cavaliers) — toutes à 10 min" },
+        ]}
+      />
 
       {/* Google Maps — Point de départ */}
       <section className="py-16 bg-white">
@@ -247,6 +225,8 @@ export default async function LocationBiarritzPage() {
           </div>
         </div>
       </section>
+
+      <VanSelectionSection destination="Biarritz" />
 
       {/* CTA */}
       <section className="relative py-24 overflow-hidden">
