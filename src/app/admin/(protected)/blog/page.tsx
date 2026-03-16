@@ -6,6 +6,7 @@ import KpiBar from "./_components/KpiBar";
 import PublishedArticlesTable from "./_components/PublishedArticlesTable";
 import ArticleQueueList from "./_components/ArticleQueueList";
 import IntegrationsPanel from "./_components/IntegrationsPanel";
+import AgentPanel from "./_components/AgentPanel";
 
 export const metadata: Metadata = {
   title: "Blog & Articles — Vanzon Admin",
@@ -23,7 +24,7 @@ async function getArticleQueue(): Promise<ArticleQueueItem[]> {
 }
 
 async function getGscMetrics(): Promise<{ metrics: Record<string, GscMetrics>; connected: boolean }> {
-  const refreshToken = process.env.GOOGLE_GSC_REFRESH_TOKEN;
+  const refreshToken = process.env.GOOGLE_REFRESH_TOKEN || process.env.GOOGLE_GSC_REFRESH_TOKEN;
   if (!refreshToken) return { metrics: {}, connected: false };
 
   try {
@@ -78,7 +79,7 @@ async function getGscMetrics(): Promise<{ metrics: Record<string, GscMetrics>; c
 }
 
 async function getGaMetrics(): Promise<{ metrics: Record<string, GaMetrics>; connected: boolean; activeUsers?: number }> {
-  const refreshToken = process.env.GOOGLE_GA_REFRESH_TOKEN;
+  const refreshToken = process.env.GOOGLE_REFRESH_TOKEN || process.env.GOOGLE_GA_REFRESH_TOKEN;
   if (!refreshToken) return { metrics: {}, connected: false };
 
   try {
@@ -169,16 +170,16 @@ export default async function AdminBlogPage() {
     getGaMetrics(),
   ]);
 
-  const publishedCount = articles.filter((a) => a.status === "published").length;
+  const publishedCount = articles.filter((a) => a.status === "published" || a.status === "needs-improvement").length;
   const pendingCount = articles.filter((a) => a.status === "pending" || a.status === "writing").length;
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-8">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-start sm:items-center justify-between mb-6 md:mb-8 gap-4">
         <div>
           <p className="text-slate-400 text-sm font-medium mb-1">Administration</p>
-          <h1 className="text-3xl font-black text-slate-900">Blog & Articles</h1>
+          <h1 className="text-2xl md:text-3xl font-black text-slate-900">Blog & Articles</h1>
           <p className="text-slate-500 mt-1">
             {publishedCount} publié{publishedCount > 1 ? "s" : ""} · {pendingCount} en attente
           </p>
@@ -199,6 +200,15 @@ export default async function AdminBlogPage() {
 
       {/* KPIs */}
       <KpiBar articles={articles} activeUsers={activeUsers} />
+
+      {/* Agents IA */}
+      <div className="mb-8">
+        <div className="flex items-center gap-3 mb-4">
+          <span className="w-8 h-px bg-slate-200" />
+          <span className="text-xs font-semibold uppercase tracking-widest text-slate-400">Intelligence IA</span>
+        </div>
+        <AgentPanel publishedArticles={articles.filter(a => a.status === "published" || a.status === "needs-improvement")} />
+      </div>
 
       {/* Articles publiés */}
       <div className="mb-8">

@@ -29,7 +29,7 @@ export default function PublishedArticlesTable({ articles, gscMetrics = {}, gaMe
 
   return (
     <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-      <div className="px-6 py-4 border-b border-slate-50 flex items-center justify-between flex-wrap gap-2">
+      <div className="px-4 md:px-6 py-4 border-b border-slate-50 flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-3">
           <span className="w-2.5 h-2.5 rounded-full bg-green-500" />
           <h2 className="font-bold text-slate-900">Articles publiés</h2>
@@ -46,7 +46,127 @@ export default function PublishedArticlesTable({ articles, gscMetrics = {}, gaMe
           </span>
         </div>
       </div>
-      <div className="overflow-x-auto">
+
+      {/* Mobile view */}
+      <div className="block md:hidden divide-y divide-slate-50">
+        {published.map((article) => {
+          const gsc = gscMetrics[article.slug];
+          const ga = gaMetrics[article.slug];
+          const catColor = CATEGORY_COLORS[article.category] ?? { bg: "bg-slate-50", text: "text-slate-600" };
+          const statusCfg = STATUS_CONFIG[article.status];
+          return (
+            <div key={article.id} className="px-4 py-4 border-b border-slate-50 last:border-0">
+              <div className="flex items-start justify-between gap-3 mb-3">
+                <div className="flex-1 min-w-0">
+                  <a
+                    href={`/vanzon/articles/${article.slug}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-bold text-slate-800 hover:text-blue-600 line-clamp-2"
+                  >
+                    {article.title}
+                  </a>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    {article.publishedAt
+                      ? new Date(article.publishedAt).toLocaleDateString("fr-FR", {
+                          day: "numeric",
+                          month: "short",
+                        })
+                      : ""}
+                  </p>
+                </div>
+                <div className="flex items-center gap-1.5 flex-shrink-0">
+                  {gsc?.position ? (
+                    <span
+                      className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                        gsc.position <= 10
+                          ? "bg-green-50 text-green-700"
+                          : gsc.position <= 20
+                          ? "bg-amber-50 text-amber-700"
+                          : "bg-red-50 text-red-600"
+                      }`}
+                    >
+                      #{Math.round(gsc.position)}
+                    </span>
+                  ) : article.seoPosition ? (
+                    <span
+                      className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                        article.seoPosition <= 10
+                          ? "bg-green-50 text-green-700"
+                          : article.seoPosition <= 20
+                          ? "bg-amber-50 text-amber-700"
+                          : "bg-red-50 text-red-600"
+                      }`}
+                    >
+                      #{article.seoPosition}
+                    </span>
+                  ) : null}
+                </div>
+              </div>
+              {/* Category + keyword */}
+              <div className="flex items-center gap-2 flex-wrap mb-3">
+                <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${catColor.bg} ${catColor.text}`}>
+                  {article.category}
+                </span>
+                <span className="text-xs text-slate-500 font-mono bg-slate-50 px-2 py-0.5 rounded border border-slate-100 truncate max-w-[180px]">
+                  {article.targetKeyword}
+                </span>
+              </div>
+              {/* GSC + GA4 metrics row */}
+              <div className="grid grid-cols-4 gap-2 mb-3">
+                <div className="text-center bg-blue-50/60 rounded-lg py-1.5">
+                  <p className="text-xs text-blue-400 font-medium">Clics</p>
+                  <p className="text-sm font-bold text-blue-700">{gsc?.clicks ?? "--"}</p>
+                </div>
+                <div className="text-center bg-blue-50/60 rounded-lg py-1.5">
+                  <p className="text-xs text-blue-400 font-medium">Impr.</p>
+                  <p className="text-sm font-bold text-blue-700">{gsc?.impressions ?? "--"}</p>
+                </div>
+                <div className="text-center bg-amber-50/60 rounded-lg py-1.5">
+                  <p className="text-xs text-amber-500 font-medium">Sessions</p>
+                  <p className="text-sm font-bold text-amber-700">{ga?.sessions ?? "--"}</p>
+                </div>
+                <div className="text-center bg-amber-50/60 rounded-lg py-1.5">
+                  <p className="text-xs text-amber-500 font-medium">Rebond</p>
+                  <p className="text-sm font-bold text-amber-700">
+                    {ga?.bounceRate != null ? `${ga.bounceRate}%` : "--"}
+                  </p>
+                </div>
+              </div>
+              {/* Actions */}
+              <div className="flex items-center gap-2">
+                <a
+                  href={`/vanzon/articles/${article.slug}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs font-medium text-slate-500 bg-slate-50 hover:bg-blue-50 hover:text-blue-600 px-3 py-1.5 rounded-lg transition-colors"
+                >
+                  Voir
+                </a>
+                {article.sanityId && (
+                  <a
+                    href={`/vanzon/studio/structure/article;${article.sanityId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs font-medium text-slate-500 bg-slate-50 hover:bg-purple-50 hover:text-purple-600 px-3 py-1.5 rounded-lg transition-colors"
+                  >
+                    Sanity
+                  </a>
+                )}
+                <span
+                  className={`ml-auto inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full ${statusCfg.bg} ${statusCfg.text}`}
+                >
+                  <span className={`w-1.5 h-1.5 rounded-full ${statusCfg.dot}`} />
+                  {statusCfg.label}
+                </span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Desktop view */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="w-full">
           <thead>
             <tr className="border-b border-slate-50">
