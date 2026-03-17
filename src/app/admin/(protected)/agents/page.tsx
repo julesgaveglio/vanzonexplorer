@@ -16,6 +16,7 @@ interface Agent {
   output: string;
   manualCommand: string;
   tags: string[];
+  pipeline: string;
 }
 
 function getAgents(): Agent[] {
@@ -97,6 +98,35 @@ export default function AgentsPage() {
         </div>
       </div>
 
+      {/* Pipeline visuel */}
+      <div className="bg-white rounded-2xl border border-slate-200 p-5 mb-8">
+        <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4">Pipeline automatisé</p>
+        <div className="flex items-center gap-2 flex-wrap">
+          {[
+            { emoji: "🔍", label: "Mots-Clés", sub: "Trimestriel" },
+            { emoji: "→", label: "", sub: "" },
+            { emoji: "🗂️", label: "Queue Builder", sub: "Mensuel" },
+            { emoji: "→", label: "", sub: "" },
+            { emoji: "✍️", label: "Rédaction", sub: "3×/semaine" },
+            { emoji: "→", label: "", sub: "" },
+            { emoji: "⚡", label: "Optimiseur", sub: "Trimestriel" },
+            { emoji: "↩️", label: "", sub: "" },
+          ].map((step, i) =>
+            step.label ? (
+              <div key={i} className="flex flex-col items-center gap-0.5">
+                <div className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-center min-w-[80px]">
+                  <div className="text-lg">{step.emoji}</div>
+                  <div className="text-[11px] font-semibold text-slate-700">{step.label}</div>
+                  <div className="text-[10px] text-slate-400">{step.sub}</div>
+                </div>
+              </div>
+            ) : (
+              <span key={i} className="text-slate-300 text-lg font-light">{step.emoji}</span>
+            )
+          )}
+        </div>
+      </div>
+
       {/* Agent cards */}
       <div className="space-y-4">
         {agents.map((agent) => {
@@ -145,6 +175,10 @@ export default function AgentsPage() {
                     <div className="flex items-center gap-2">
                       <span className="text-slate-400 font-medium w-16 flex-none">Fichier</span>
                       <code className="text-slate-600 bg-slate-50 px-1.5 py-0.5 rounded text-[11px]">{agent.file}</code>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-slate-400 font-medium w-16 flex-none">Pipeline</span>
+                      <span className="text-slate-600 text-[11px]">{agent.pipeline}</span>
                     </div>
                   </div>
 

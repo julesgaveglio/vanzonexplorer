@@ -1,0 +1,41 @@
+name: Quarterly Keyword Research
+
+on:
+  schedule:
+    - cron: "0 6 1 1 *"   # 1er janvier 6h UTC
+    - cron: "0 6 1 4 *"   # 1er avril 6h UTC
+    - cron: "0 6 1 7 *"   # 1er juillet 6h UTC
+    - cron: "0 6 1 10 *"  # 1er octobre 6h UTC
+  workflow_dispatch:       # déclenchement manuel possible
+
+jobs:
+  keyword-research:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run keyword research agent
+        env:
+          DATAFORSEO_LOGIN: ${{ secrets.DATAFORSEO_LOGIN }}
+          DATAFORSEO_PASSWORD: ${{ secrets.DATAFORSEO_PASSWORD }}
+        run: npx tsx scripts/agents/keyword-research-quarterly.ts
+
+      - name: Commit keywords research report
+        run: |
+          git config user.name "Vanzon Agent"
+          git config user.email "agent@vanzonexplorer.com"
+          git add scripts/data/keywords-research.json
+          git diff --staged --quiet || git commit -m "chore: keyword research Q$(date +%q) $(date +%Y) [skip ci]"
+          git push
