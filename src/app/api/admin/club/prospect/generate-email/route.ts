@@ -95,7 +95,7 @@ export async function POST(req: NextRequest) {
       messages: [
         {
           role: "user",
-          content: `Tu rédiges un email de prise de contact partenariat pour Vanzon Explorer, une plateforme communautaire dédiée aux passionnés de vanlife en France (vanzonexplorer.com/club).
+          content: `Tu rédiges un email de prise de contact partenariat pour Vanzon Explorer.
 
 CONTEXTE MARQUE :
 - Nom : ${typedProspect.name}
@@ -103,36 +103,39 @@ CONTEXTE MARQUE :
 - Catégorie : ${categoryAngle}
 - Description : ${typedProspect.description || typedProspect.strategic_interest || "équipement van"}
 
-CONTENU DU SITE (pour ultra-personnalisation) :
+CONTENU DU SITE (pour personnalisation de la phrase d'accroche) :
 ${siteContent.substring(0, 2000)}
 
-RÈGLES ABSOLUES :
-- Commence par "Bonjour," sur sa propre ligne
-- 8 à 10 lignes maximum, aéré, facile à lire
-- Deuxième ligne : une accroche ultra-personnalisée sur UN produit ou aspect spécifique de leur marque (utilise le contenu du site)
-- Présente Vanzon Explorer en 1-2 phrases : communauté active de vanlifers français, forte intention d'achat équipement
-- Inclure le lien https://www.vanzonexplorer.com/club de façon naturelle pour qu'ils puissent découvrir la plateforme
-- Proposition claire et concrète : mise en avant de leurs produits auprès des membres en échange d'un code promo exclusif
-- Terminer par une question courte et ouverte qui invite à répondre
-- Signer : "Jules — Vanzon Explorer"
-- Ton : chaleureux, humain, professionnel mais pas corporate — comme un vrai email entre pros
+L'email doit suivre EXACTEMENT cette structure — ne change que la phrase entre [ACCROCHE] :
 
-STRUCTURE :
-Bonjour,
+---
+Bonjour l'équipe ${typedProspect.name},
 
-[Accroche personnalisée sur leur produit/marque spécifique]
+[ACCROCHE : 1 phrase ultra-personnalisée sur un produit ou aspect spécifique de leur marque, en lien avec le van/camping/outdoor. Exemple : "Vos réfrigérateurs BCD-35 correspondent parfaitement aux besoins de nos membres pour les longs trajets : fiables, silencieux et autonomes sur batterie."]
 
-[Présentation de Vanzon Explorer + lien club en 2 phrases]
+Vanzon Explorer est un écosystème vanlife basé au Pays basque, qui propose de la location, de l'achat et de la formation. Nous développons actuellement un club privé permettant à nos membres d'accéder à des réductions exclusives auprès de nos marques partenaires. Nous sélectionnons avec soin des produits testés et approuvés sur nos propres aménagements de vans.
 
-[Proposition partenariat concrète en 1-2 phrases]
+Seriez-vous intéressés par une mise en avant de vos produits via un code promotionnel destiné à nos membres, actuellement en phase d'aménagement et avec une forte intention d'achat ?
 
-[Question de clôture]
+Nous pourrions également envisager la rédaction d'une série d'articles de blog comparatifs intégrant vos produits, afin de valoriser votre site via des backlinks.
 
-Jules — Vanzon Explorer
+Si cette opportunité vous intéresse, je serais ravi d'en discuter avec vous.
+
+Vous pouvez découvrir la plateforme ici :
+https://www.vanzonexplorer.com/club
+
+Jules
+---
+
+RÈGLES :
+- Ne modifie RIEN d'autre que la phrase [ACCROCHE]
+- L'accroche doit mentionner un produit ou une caractéristique réelle trouvée sur leur site
+- Si tu ne trouves pas de produit spécifique, parle de leur positionnement ou leur marché
+- Ton sobre, professionnel, humain
 
 Format de réponse OBLIGATOIRE :
 ###OBJET###
-[Objet court, personnalisé, accrocheur — max 55 caractères, pas de "partenariat" bateau]
+[Objet court et accrocheur, max 55 caractères — personnalisé sur leur produit/marché, sans le mot "partenariat"]
 ###CORPS###
 [Corps complet de l'email]
 ###FIN###`,
