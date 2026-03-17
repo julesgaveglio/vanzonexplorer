@@ -6,14 +6,47 @@ function sseEvent(data: Record<string, unknown>): string {
   return `data: ${JSON.stringify(data)}\n\n`;
 }
 
-// ── Types ─────────────────────────────────────────────────────────
-
 interface FoundContact {
   name: string;
   role: string;
   email: string;
   priority: number;
   source?: string;
+}
+
+// ── Helpers ───────────────────────────────────────────────────────
+
+function extractEmailsFromText(text: string): string[] {
+  const regex = /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g;
+  const found = text.match(regex) || [];
+  return Array.from(new Set(found.filter(e =>
+    !e.includes("example") && !e.includes("sentry") &&
+    !e.includes("placeholder") && !e.startsWith("your@") &&
+    !e.match(/\.(png|jpg|gif|svg|webp|pdf)$/i) &&
+    !e.includes("@2x") && e.length < 80
+  )));
+}
+
+function generatePatterns(domain: string): string[] {
+  return [
+    "contact", "info", "hello", "bonjour",
+    "partenariat", "partenariats", "partnership", "partnerships",
+    "marketing", "commercial", "pro", "b2b",
+    "presse", "media", "communication", "direction",
+  ].map(p => `${p}@${domain}`);
+}
+
+// Apply Hunter email pattern to a name (e.g. {f}.{last} → j.dupont)
+function applyHunterPattern(pattern: string, firstName: string, lastName: string, domain: string): string | null {
+  if (!pattern || !lastName) return null;
+  const f = firstName?.charAt(0).toLowerCase() || "";
+  const last = lastName.toLowerCase().replace(/\s+/g, "");
+  const first = firstName?.toLowerCase().replace(/\s+/g, "") || "";
+  return pattern
+    .replace("{first}", first)
+    .replace("{last}", last)
+    .replace("{f}", f)
+    .replace("{l}", last.charAt(0)) + `@${domain}`;
 }
 
 // ── Jina scraper ─────────────────────────────────────────────────
@@ -35,30 +68,35 @@ async function fetchWithJina(url: string): Promise<string> {
   }
 }
 
-function extractEmailsFromText(text: string): string[] {
-  const regex = /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g;
-  const found = text.match(regex) || [];
-  return Array.from(new Set(found.filter(e =>
-    !e.includes("example") && !e.includes("sentry") &&
-    !e.includes("placeholder") && !e.startsWith("your@") &&
-    !e.includes("@2x") && !e.includes(".png") && !e.includes(".jpg") &&
-    e.length < 80
-  )));
-}
-
 // ── Hunter.io ────────────────────────────────────────────────────
 
-async function searchHunter(domain: string): Promise<{ emails: string[]; contacts: FoundContact[] }> {
-  if (!process.env.HUNTER_API_KEY) return { emails: [], contacts: [] };
+interface HunterEmail {
+  value: string;
+  type: string;
+  confidence: number;
+  first_name?: string;
+  last_name?: string;
+  position?: string;
+  department?: string;
+}
+
+async function searchHunter(domain: string): Promise<{
+  emails: string[];
+  contacts: FoundContact[];
+  pattern: string | null;
+}> {
+  const empty = { emails: [], contacts: [], pattern: null };
+  if (!process.env.HUNTER_API_KEY) return empty;
   try {
     const res = await fetch(
       `https://api.hunter.io/v2/domain-search?domain=${encodeURIComponent(domain)}&limit=10&api_key=${process.env.HUNTER_API_KEY}`
     );
-    if (!res.ok) return { emails: [], contacts: [] };
+    if (!res.ok) return empty;
     const data = await res.json();
-    if (!data?.data?.emails?.length) return { emails: [], contacts: [] };
+    const emails: HunterEmail[] = data?.data?.emails || [];
+    const pattern: string | null = data?.data?.pattern || null;
 
-    const priorityOf = (e: { position?: string; department?: string; type?: string }) => {
+    const priorityOf = (e: HunterEmail) => {
       const pos = (e.position || "").toLowerCase();
       const dept = (e.department || "").toLowerCase();
       if (pos.includes("partner") || pos.includes("partenariat")) return 1;
@@ -69,23 +107,21 @@ async function searchHunter(domain: string): Promise<{ emails: string[]; contact
       return 6;
     };
 
-    const contacts: FoundContact[] = data.data.emails
-      .sort((a: { position?: string; department?: string; type?: string }, b: { position?: string; department?: string; type?: string }) => priorityOf(a) - priorityOf(b))
-      .map((e: { value: string; first_name?: string; last_name?: string; position?: string; type?: string; department?: string }) => ({
-        name: [e.first_name, e.last_name].filter(Boolean).join(" ") || "—",
-        role: e.position || e.type || "Contact",
-        email: e.value,
-        priority: priorityOf(e),
-        source: "Hunter.io",
-      }));
+    const contacts: FoundContact[] = emails.map(e => ({
+      name: [e.first_name, e.last_name].filter(Boolean).join(" ") || "—",
+      role: e.position || e.type || "Contact",
+      email: e.value,
+      priority: priorityOf(e),
+      source: "Hunter.io",
+    }));
 
-    return { emails: contacts.map(c => c.email), contacts };
+    return { emails: contacts.map(c => c.email), contacts, pattern };
   } catch {
-    return { emails: [], contacts: [] };
+    return empty;
   }
 }
 
-// ── Snov.io ───────────────────────────────────────────────────────
+// ── Snov.io (v2) ─────────────────────────────────────────────────
 
 async function getSnovToken(): Promise<string | null> {
   if (!process.env.SNOV_CLIENT_ID || !process.env.SNOV_CLIENT_SECRET) return null;
@@ -108,21 +144,28 @@ async function getSnovToken(): Promise<string | null> {
 }
 
 async function searchSnov(domain: string): Promise<{ emails: string[]; contacts: FoundContact[] }> {
+  const empty = { emails: [], contacts: [] };
   const token = await getSnovToken();
-  if (!token) return { emails: [], contacts: [] };
+  if (!token) return empty;
   try {
-    const res = await fetch("https://api.snov.io/v1/get-domain-emails-with-info", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ access_token: token, domain, type: "all", limit: 10, lastId: 0 }),
-    });
-    if (!res.ok) return { emails: [], contacts: [] };
+    // v2 endpoint: GET with Bearer token
+    const res = await fetch(
+      `https://api.snov.io/v2/domain-emails-with-info?domain=${encodeURIComponent(domain)}&type=all&limit=10`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    if (!res.ok) return empty;
     const data = await res.json();
-    const emails: Array<{ email: string; firstName?: string; lastName?: string; position?: string; confidence?: number }> = data.emails || [];
-    if (!emails.length) return { emails: [], contacts: [] };
+    const emails: Array<{
+      email: string;
+      first_name?: string;
+      last_name?: string;
+      position?: string;
+      status?: string;
+    }> = data?.data || [];
+    if (!emails.length) return empty;
 
     const priorityOf = (pos: string) => {
-      const p = pos.toLowerCase();
+      const p = (pos || "").toLowerCase();
       if (p.includes("partner") || p.includes("partenariat")) return 1;
       if (p.includes("marketing")) return 2;
       if (p.includes("commercial") || p.includes("sales")) return 3;
@@ -131,7 +174,7 @@ async function searchSnov(domain: string): Promise<{ emails: string[]; contacts:
     };
 
     const contacts: FoundContact[] = emails.map(e => ({
-      name: [e.firstName, e.lastName].filter(Boolean).join(" ") || "—",
+      name: [e.first_name, e.last_name].filter(Boolean).join(" ") || "—",
       role: e.position || "Contact",
       email: e.email,
       priority: priorityOf(e.position || ""),
@@ -140,7 +183,7 @@ async function searchSnov(domain: string): Promise<{ emails: string[]; contacts:
 
     return { emails: contacts.map(c => c.email), contacts };
   } catch {
-    return { emails: [], contacts: [] };
+    return empty;
   }
 }
 
@@ -148,19 +191,11 @@ async function searchSnov(domain: string): Promise<{ emails: string[]; contacts:
 
 type ZBStatus = "valid" | "invalid" | "catch-all" | "unknown" | "spamtrap" | "abuse" | "do_not_mail" | "disposable";
 
-interface ZBResult {
-  email: string;
-  status: ZBStatus;
-  sub_status?: string;
-}
-
 async function validateEmailsBatch(emails: string[]): Promise<Map<string, ZBStatus>> {
   const map = new Map<string, ZBStatus>();
   if (!process.env.ZEROBOUNCE_API_KEY || !emails.length) return map;
 
-  // Limit to 10 to preserve monthly quota
   const toValidate = emails.slice(0, 10);
-
   try {
     const res = await fetch("https://api.zerobounce.net/v2/validatebatch", {
       method: "POST",
@@ -172,12 +207,11 @@ async function validateEmailsBatch(emails: string[]): Promise<Map<string, ZBStat
     });
     if (!res.ok) return map;
     const data = await res.json();
-    const results: ZBResult[] = data.email_batch || [];
-    for (const r of results) {
-      map.set(r.email.toLowerCase(), r.status);
+    for (const r of (data.email_batch || []) as Array<{ address: string; status: ZBStatus }>) {
+      map.set((r.address || "").toLowerCase(), r.status);
     }
   } catch {
-    // ZeroBounce failure is non-blocking
+    // non-blocking
   }
   return map;
 }
@@ -197,7 +231,8 @@ export async function POST(req: NextRequest) {
 
   let domain = "";
   try {
-    domain = new URL(website.startsWith("http") ? website : `https://${website}`).hostname.replace(/^www\./, "");
+    domain = new URL(website.startsWith("http") ? website : `https://${website}`)
+      .hostname.replace(/^www\./, "");
   } catch {
     domain = website.replace(/^https?:\/\//, "").replace(/^www\./, "").split("/")[0];
   }
@@ -205,16 +240,14 @@ export async function POST(req: NextRequest) {
   const encoder = new TextEncoder();
   const stream = new ReadableStream({
     async start(controller) {
-      const send = (data: Record<string, unknown>) => {
+      const send = (data: Record<string, unknown>) =>
         controller.enqueue(encoder.encode(sseEvent(data)));
-      };
 
       try {
         const baseUrl = (website.startsWith("http") ? website : `https://${website}`).replace(/\/$/, "");
-
         send({ type: "log", level: "info", message: `Enrichissement multi-sources pour ${domain}...` });
 
-        // ── Phase 1 : Discovery (tout en parallèle) ───────────────
+        // ── Phase 1 : Discovery en parallèle ─────────────────────
 
         const jinaPages = [
           baseUrl,
@@ -232,26 +265,19 @@ export async function POST(req: NextRequest) {
         ];
 
         const [jinaContents, hunterResult, snovResult] = await Promise.all([
-          // Jina — scrape all pages in parallel
-          Promise.all(jinaPages.map(url => fetchWithJina(url))).then(contents => {
-            const count = contents.filter(c => c.length > 0).length;
-            send({ type: "log", level: "info", message: `Jina → ${count}/${jinaPages.length} page(s) récupérée(s)` });
-            return contents;
-          }),
-          // Hunter.io
+          Promise.all(jinaPages.map(url => fetchWithJina(url))),
           (async () => {
-            send({ type: "log", level: "info", message: `Hunter.io → recherche sur ${domain}...` });
+            send({ type: "log", level: "info", message: `Hunter.io → ${domain}...` });
             const r = await searchHunter(domain);
             send({
               type: "log",
               level: r.emails.length > 0 ? "success" : "info",
-              message: `Hunter.io → ${r.emails.length} email(s)`,
+              message: `Hunter.io → ${r.emails.length} email(s)${r.pattern ? ` · pattern: ${r.pattern}` : ""}`,
             });
             return r;
           })(),
-          // Snov.io
           (async () => {
-            send({ type: "log", level: "info", message: `Snov.io → recherche sur ${domain}...` });
+            send({ type: "log", level: "info", message: `Snov.io → ${domain}...` });
             const r = await searchSnov(domain);
             send({
               type: "log",
@@ -262,59 +288,88 @@ export async function POST(req: NextRequest) {
           })(),
         ]);
 
-        // Build combined Jina content
-        const pageLabels = ["ACCUEIL", "CONTACT", "CONTACT-US", "À PROPOS", "ABOUT", "ABOUT-US", "ÉQUIPE", "TEAM", "PARTENARIATS", "PARTENARIAT", "PRESSE", "PRO"];
-        const jinaContent = jinaContents
-          .map((c, i) => c ? `=== ${pageLabels[i]} ===\n${c.substring(0, 800)}` : "")
-          .filter(Boolean)
-          .join("\n\n");
+        // Jina stats
+        const successPages = jinaContents.filter(c => c.length > 0).length;
+        send({ type: "log", level: "info", message: `Jina → ${successPages}/${jinaPages.length} page(s) récupérée(s)` });
 
-        // Regex extract from Jina content
-        const regexEmails = extractEmailsFromText(jinaContent);
+        // Regex on FULL content (before any truncation)
+        const fullJinaText = jinaContents.join("\n\n");
+        const regexEmails = extractEmailsFromText(fullJinaText).filter(e => e.includes(domain));
         if (regexEmails.length > 0) {
           send({ type: "log", level: "info", message: `Regex → ${regexEmails.length} email(s) dans le HTML` });
         }
 
+        // Apply Hunter pattern to generate emails from contact names
+        const patternEmails: string[] = [];
+        if (hunterResult.pattern) {
+          for (const contact of [...hunterResult.contacts, ...snovResult.contacts]) {
+            const parts = contact.name.split(" ");
+            const firstName = parts[0] || "";
+            const lastName = parts.slice(1).join(" ") || "";
+            const generated = applyHunterPattern(hunterResult.pattern, firstName, lastName, domain);
+            if (generated) patternEmails.push(generated);
+          }
+          if (patternEmails.length > 0) {
+            send({ type: "log", level: "info", message: `Pattern Hunter (${hunterResult.pattern}) → ${patternEmails.length} email(s) généré(s)` });
+          }
+        }
+
         // ── Phase 2 : Merge & dedup ───────────────────────────────
 
-        const allEmailsRaw = [
+        const discovered = Array.from(new Set([
           ...hunterResult.emails,
           ...snovResult.emails,
           ...regexEmails,
-        ];
-        const allEmails = Array.from(new Set(allEmailsRaw.map(e => e.toLowerCase().trim())));
+          ...patternEmails,
+        ].map(e => e.toLowerCase().trim())));
 
-        send({ type: "log", level: "info", message: `Total avant validation : ${allEmails.length} email(s) unique(s)` });
+        // Always generate generic patterns for ZeroBounce validation
+        const genericPatterns = generatePatterns(domain);
 
-        // ── Phase 3 : ZeroBounce validation ──────────────────────
+        send({ type: "log", level: "info", message: `${discovered.length} email(s) trouvé(s) — validation ZeroBounce en cours...` });
 
-        let zbMap = new Map<string, ZBStatus>();
-        if (allEmails.length > 0) {
-          send({ type: "log", level: "info", message: `ZeroBounce → validation de ${Math.min(allEmails.length, 10)} email(s)...` });
-          zbMap = await validateEmailsBatch(allEmails);
+        // ── Phase 3 : ZeroBounce ──────────────────────────────────
 
-          const validCount = Array.from(zbMap.values()).filter(s => s === "valid" || s === "catch-all").length;
-          const invalidCount = Array.from(zbMap.values()).filter(s => s === "invalid").length;
-          send({
-            type: "log",
-            level: "info",
-            message: `ZeroBounce → ${validCount} valide(s) · ${invalidCount} invalide(s) · ${zbMap.size - validCount - invalidCount} inconnu(s)`,
-          });
-        }
+        // If emails found → validate them. Always validate top generic patterns too.
+        const toValidate = Array.from(new Set([...discovered, ...genericPatterns])).slice(0, 10);
+        const zbMap = await validateEmailsBatch(toValidate);
 
-        // Filter: keep valid + catch-all + unvalidated (not explicitly invalid)
-        const validEmails = allEmails.filter(e => {
-          const status = zbMap.get(e);
-          if (!status) return true; // not checked → keep
-          return status === "valid" || status === "catch-all" || status === "unknown";
+        const validFound = Array.from(zbMap.entries())
+          .filter(([, s]) => s === "valid" || s === "catch-all")
+          .map(([e]) => e);
+        const invalidFound = Array.from(zbMap.entries())
+          .filter(([, s]) => s === "invalid" || s === "spamtrap" || s === "abuse")
+          .map(([e]) => e);
+
+        send({
+          type: "log",
+          level: validFound.length > 0 ? "success" : "info",
+          message: `ZeroBounce → ${validFound.length} valide(s) · ${invalidFound.length} invalide(s) · ${zbMap.size - validFound.length - invalidFound.length} inconnu(s)`,
         });
+
+        // Keep: explicitly valid/catch-all + unvalidated discovered emails (not in zbMap as invalid)
+        const finalEmails = Array.from(new Set([
+          ...validFound,
+          ...discovered.filter(e => !zbMap.has(e)), // not checked → keep
+        ].filter(e => !invalidFound.includes(e))));
 
         // ── Phase 4 : Groq consolidation ─────────────────────────
 
         send({ type: "log", level: "info", message: `Groq → consolidation et priorisation...` });
 
-        // Merge contacts from all sources
         const allContacts: FoundContact[] = [...hunterResult.contacts, ...snovResult.contacts];
+
+        // Build truncated Jina context for Groq (only what's needed)
+        const pageLabels = ["ACCUEIL", "CONTACT", "CONTACT-US", "À PROPOS", "ABOUT", "ABOUT-US", "ÉQUIPE", "TEAM", "PARTENARIATS", "PARTENARIAT", "PRESSE", "PRO"];
+        const jinaContext = jinaContents
+          .map((c, i) => c ? `=== ${pageLabels[i]} ===\n${c.substring(0, 600)}` : "")
+          .filter(Boolean)
+          .join("\n\n")
+          .substring(0, 3000);
+
+        const zbSummary = Array.from(zbMap.entries())
+          .map(([e, s]) => `${e}: ${s}`)
+          .join(", ");
 
         const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
         const groqResponse = await groq.chat.completions.create({
@@ -323,68 +378,63 @@ export async function POST(req: NextRequest) {
             role: "user",
             content: `Expert prospection B2B. Domaine: ${domain}
 
-EMAILS VALIDÉS (Hunter + Snov + scraping):
-${validEmails.join(", ") || "aucun"}
+EMAILS VALIDÉS ET TROUVÉS:
+${finalEmails.join(", ") || "aucun trouvé — utilise les patterns génériques si pertinents"}
 
-CONTACTS IDENTIFIÉS:
+CONTACTS (Hunter + Snov):
 ${allContacts.map(c => `[${c.source}] ${c.name} · ${c.role} · ${c.email}`).join("\n") || "aucun"}
 
 STATUTS ZEROBOUNCE:
-${Array.from(zbMap.entries()).map(([e, s]) => `${e}: ${s}`).join(", ") || "non validés"}
+${zbSummary || "non validés"}
 
 CONTENU PAGES WEB:
-${jinaContent.substring(0, 3000)}
+${jinaContext}
 
-Consolide et déduplique. Classe par priorité : partenariat > marketing > commercial > direction > générique.
+Consolide, déduplique et classe par priorité : partenariat > marketing > commercial > direction > générique.
+Inclus UNIQUEMENT les emails validés ou "catch-all" ou non vérifiés (jamais les "invalid").
 Réponds UNIQUEMENT en JSON:
 {"emails":["email@exemple.com"],"contacts":[{"name":"...","role":"...","email":"...","priority":1}]}`,
           }],
           temperature: 0.1,
-          max_tokens: 1500,
+          max_tokens: 1000,
         });
 
-        const raw = groqResponse.choices[0]?.message?.content || "{}";
-        interface EnrichResult {
-          emails: string[];
-          contacts: FoundContact[];
-        }
-        let result: EnrichResult = { emails: validEmails, contacts: allContacts };
+        interface EnrichResult { emails: string[]; contacts: FoundContact[] }
+        let result: EnrichResult = { emails: finalEmails, contacts: allContacts };
         try {
-          const match = raw.match(/\{[\s\S]*\}/);
+          const match = (groqResponse.choices[0]?.message?.content || "").match(/\{[\s\S]*\}/);
           if (match) result = JSON.parse(match[0]);
         } catch {
           send({ type: "log", level: "info", message: "Groq parsing échoué → fallback données brutes" });
         }
 
-        // Final dedup + keep only non-invalid emails
+        // Final safety filter: remove explicitly invalid emails
         result.emails = Array.from(new Set(
-          (result.emails || validEmails).map((e: string) => e.toLowerCase().trim())
-            .filter((e: string) => zbMap.get(e) !== "invalid" && zbMap.get(e) !== "spamtrap" && zbMap.get(e) !== "abuse")
+          (result.emails || finalEmails)
+            .map((e: string) => e.toLowerCase().trim())
+            .filter((e: string) => !invalidFound.includes(e))
         ));
 
         // ── Save ──────────────────────────────────────────────────
 
         const supabase = createSupabaseAdmin();
-        await supabase
-          .from("prospects")
-          .update({
-            emails: result.emails,
-            contacts: result.contacts || [],
-            status: "enrichi",
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", prospectId);
+        await supabase.from("prospects").update({
+          emails: result.emails,
+          contacts: result.contacts || [],
+          status: "enrichi",
+          updated_at: new Date().toISOString(),
+        }).eq("id", prospectId);
 
         send({
           type: "log",
           level: "success",
-          message: `Enrichissement terminé — ${result.emails.length} email(s) · ${(result.contacts || []).length} contact(s)`,
+          message: `Terminé — ${result.emails.length} email(s) · ${(result.contacts || []).length} contact(s)`,
         });
         send({ type: "result", emails: result.emails, contacts: result.contacts || [] });
         send({ type: "done", count: result.emails.length + (result.contacts || []).length });
 
-      } catch (error) {
-        send({ type: "log", level: "error", message: `Erreur: ${error instanceof Error ? error.message : String(error)}` });
+      } catch (err) {
+        send({ type: "log", level: "error", message: `Erreur: ${err instanceof Error ? err.message : String(err)}` });
         send({ type: "done", count: 0 });
       }
 
