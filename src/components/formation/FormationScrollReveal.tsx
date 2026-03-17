@@ -50,9 +50,11 @@ export default function FormationScrollReveal() {
   const desktopSectionRef = useRef<HTMLElement>(null);
   const desktopFloatRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  // Mobile refs — pinned stack
-  const mobileSectionRef = useRef<HTMLElement>(null);
-  // overlays[0] = FLOATS[1], overlays[1] = FLOATS[2], overlays[2] = FLOATS[3]
+  // Mobile: CSS sticky wrapper (no GSAP pin)
+  const mobileWrapperRef = useRef<HTMLDivElement>(null);
+  // 3 invisible sentinels — each triggers one overlay pop
+  const sentinelRefs = useRef<(HTMLDivElement | null)[]>([]);
+  // 3 overlay image refs (FLOATS[1], [2], [3])
   const mobileOverlayRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
@@ -67,37 +69,34 @@ export default function FormationScrollReveal() {
       ctx = gsap.context(() => {
 
         // ─────────────────────────────────────────────────────────────────
-        // MOBILE — pinned section, 3 overlays revealed one by one on scroll
+        // MOBILE — no pin, CSS sticky + sentinel-based pop animations
         // ─────────────────────────────────────────────────────────────────
-        if (mobileSectionRef.current) {
-          const overlays = mobileOverlayRefs.current.filter(Boolean) as HTMLDivElement[];
+        const overlays = mobileOverlayRefs.current.filter(Boolean) as HTMLDivElement[];
+        const sentinels = sentinelRefs.current.filter(Boolean) as HTMLDivElement[];
 
-          // Hide all overlays initially
-          gsap.set(overlays, { opacity: 0, y: 28, scale: 0.96, filter: "blur(6px)" });
+        // Set overlays invisible initially
+        gsap.set(overlays, { opacity: 0, scale: 0.86, y: 18, filter: "blur(5px)" });
 
-          const tl = gsap.timeline();
-
-          // 3 overlays, evenly spaced across the timeline
-          // Each appears cleanly at its own 1/3 scroll milestone
-          overlays.forEach((el, i) => {
-            tl.fromTo(
-              el,
-              { opacity: 0, y: 28, scale: 0.96, filter: "blur(6px)" },
-              { opacity: 1, y: 0, scale: 1, filter: "blur(0px)", duration: 0.3, ease: "power2.out" },
-              i * 0.34 // 0 → 0.34 → 0.68
-            );
-          });
-
-          ScrollTrigger.create({
-            trigger: mobileSectionRef.current,
-            pin: true,
-            pinSpacing: true,
-            start: "top top",
-            end: "+=300%", // 3 scroll steps = 3 × 100vh
-            scrub: 1.5,
-            animation: tl,
-          });
-        }
+        // Each sentinel fires when it enters the viewport — triggers a distinct pop
+        sentinels.forEach((sentinel, i) => {
+          gsap.fromTo(
+            overlays[i],
+            { opacity: 0, scale: 0.86, y: 18, filter: "blur(5px)" },
+            {
+              opacity: 1,
+              scale: 1,
+              y: 0,
+              filter: "blur(0px)",
+              duration: 0.55,
+              ease: "back.out(1.6)", // bouncy pop feel
+              scrollTrigger: {
+                trigger: sentinel,
+                start: "top 85%",
+                toggleActions: "play none none reverse",
+              },
+            }
+          );
+        });
 
         // ─────────────────────────────────────────────────────────────────
         // DESKTOP — pinned section, scrubbed timeline
@@ -139,47 +138,63 @@ export default function FormationScrollReveal() {
   return (
     <>
       {/* ═══════════════════════════════════════════════════════════════
-          MOBILE — pinned stack, raw PNGs on hero background
-          FLOATS[0] as base, FLOATS[1–3] overlay one by one on scroll
+          MOBILE — no pin, no section, images directly in page flow
+          CSS sticky keeps images visible while sentinels scroll past
       ════════════════════════════════════════════════════════════════ */}
-      <section
-        ref={mobileSectionRef}
-        aria-label="Formation Van Business Academy — aperçu mobile"
-        className="md:hidden relative h-screen flex items-center justify-center"
-      >
-        {/* Raw image stack — no frame, no shadow, no border */}
-        <div className="relative w-full px-4">
-          {/* Base image — always visible, defines container height */}
-          <Image
-            src={FLOATS[0].src}
-            alt={FLOATS[0].alt}
-            width={FLOATS[0].width}
-            height={FLOATS[0].height}
-            className="w-full h-auto"
-            priority
-            unoptimized
-          />
+      <div ref={mobileWrapperRef} className="md:hidden relative">
 
-          {/* Overlays — absolutely stacked on top, revealed on scroll */}
-          {[FLOATS[1], FLOATS[2], FLOATS[3]].map((f, i) => (
+        {/* Sticky image stack — stays visible as sentinels scroll by */}
+        <div className="sticky top-8 z-10">
+          <div className="relative w-full px-4">
+
+            {/* Base image — always visible, defines height */}
+            <Image
+              src={FLOATS[0].src}
+              alt={FLOATS[0].alt}
+              width={FLOATS[0].width}
+              height={FLOATS[0].height}
+              className="w-full h-auto"
+              priority
+              unoptimized
+            />
+
+            {/* Overlay images — pop in one by one */}
+            {[FLOATS[1], FLOATS[2], FLOATS[3]].map((f, i) => (
+              <div
+                key={i}
+                ref={(el) => { mobileOverlayRefs.current[i] = el; }}
+                className="absolute top-0 left-4 right-4"
+                style={{ opacity: 0 }}
+              >
+                <Image
+                  src={f.src}
+                  alt={f.alt}
+                  width={f.width}
+                  height={f.height}
+                  className="w-full h-auto"
+                  unoptimized
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/*
+          Invisible sentinels — scrolled past to trigger each pop.
+          Each is ~110px below the previous, giving 3 distinct scroll steps.
+          This spacing adds ~330px of height below the image stack.
+        */}
+        <div className="relative" style={{ height: 340 }}>
+          {[0, 1, 2].map((i) => (
             <div
               key={i}
-              ref={(el) => { mobileOverlayRefs.current[i] = el; }}
-              className="absolute top-0 left-4 right-4"
-              style={{ opacity: 0 }}
-            >
-              <Image
-                src={f.src}
-                alt={f.alt}
-                width={f.width}
-                height={f.height}
-                className="w-full h-auto"
-                unoptimized
-              />
-            </div>
+              ref={(el) => { sentinelRefs.current[i] = el; }}
+              className="absolute w-full"
+              style={{ top: i * 110 }}
+            />
           ))}
         </div>
-      </section>
+      </div>
 
       {/* ═══════════════════════════════════════════════════════════════
           DESKTOP — pinned scroll section, unchanged
@@ -245,4 +260,3 @@ export default function FormationScrollReveal() {
     </>
   );
 }
-
