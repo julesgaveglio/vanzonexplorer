@@ -95,36 +95,46 @@ export async function POST(req: NextRequest) {
       messages: [
         {
           role: "user",
-          content: `Tu rédiges un email de prise de contact B2B pour Vanzon Explorer (vanzonexplorer.com), une plateforme pour les passionnés de vanlife en France.
+          content: `Tu rédiges un email de prise de contact partenariat pour Vanzon Explorer, une plateforme communautaire dédiée aux passionnés de vanlife en France (vanzonexplorer.com/club).
 
-Destinataire : ${typedProspect.name}
-Site : ${typedProspect.website}
-Angle produit : ${categoryAngle}
-Contexte marque : ${typedProspect.description || typedProspect.strategic_interest || "équipement van"}
+CONTEXTE MARQUE :
+- Nom : ${typedProspect.name}
+- Site : ${typedProspect.website}
+- Catégorie : ${categoryAngle}
+- Description : ${typedProspect.description || typedProspect.strategic_interest || "équipement van"}
 
-Contenu site (pour personnalisation) :
+CONTENU DU SITE (pour ultra-personnalisation) :
 ${siteContent.substring(0, 2000)}
 
 RÈGLES ABSOLUES :
-- Email très court : 5 à 7 lignes maximum, pas plus
-- Commence directement par une accroche liée à leurs produits spécifiques — jamais "Je me permets de..."
-- Ne te présente pas comme "fondateur" ou avec un titre — signe juste avec un prénom
-- Une seule proposition concrète : visibilité auprès d'une communauté de vanlifers acheteurs actifs, en échange d'un code promo exclusif membres
-- Mentionne le lien https://www.vanzonexplorer.com/club uniquement si ça s'intègre naturellement
-- Termine par une question ouverte simple pour générer une réponse
-- Ton : direct, humain, naturel — pas commercial, pas corporate
+- Commence par "Bonjour," sur sa propre ligne
+- 8 à 10 lignes maximum, aéré, facile à lire
+- Deuxième ligne : une accroche ultra-personnalisée sur UN produit ou aspect spécifique de leur marque (utilise le contenu du site)
+- Présente Vanzon Explorer en 1-2 phrases : communauté active de vanlifers français, forte intention d'achat équipement
+- Inclure le lien https://www.vanzonexplorer.com/club de façon naturelle pour qu'ils puissent découvrir la plateforme
+- Proposition claire et concrète : mise en avant de leurs produits auprès des membres en échange d'un code promo exclusif
+- Terminer par une question courte et ouverte qui invite à répondre
+- Signer : "Jules — Vanzon Explorer"
+- Ton : chaleureux, humain, professionnel mais pas corporate — comme un vrai email entre pros
 
 STRUCTURE :
-1. Accroche personnalisée sur leur produit (1 ligne)
-2. Ce qu'on propose en 2 lignes max
-3. Question de clôture (1 ligne)
-4. Signature simple (prénom + Vanzon Explorer)
+Bonjour,
+
+[Accroche personnalisée sur leur produit/marque spécifique]
+
+[Présentation de Vanzon Explorer + lien club en 2 phrases]
+
+[Proposition partenariat concrète en 1-2 phrases]
+
+[Question de clôture]
+
+Jules — Vanzon Explorer
 
 Format de réponse OBLIGATOIRE :
 ###OBJET###
-[Objet court et spécifique, max 50 caractères]
+[Objet court, personnalisé, accrocheur — max 55 caractères, pas de "partenariat" bateau]
 ###CORPS###
-[Corps de l'email]
+[Corps complet de l'email]
 ###FIN###`,
         },
       ],
