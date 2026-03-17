@@ -1,0 +1,50 @@
+[
+  {
+    "id": "blog-writer",
+    "name": "Agent Rédaction SEO",
+    "emoji": "✍️",
+    "status": "active",
+    "description": "Rédige automatiquement des articles SEO optimisés pour Vanzon Explorer. Lit la queue d'articles, génère le contenu avec Gemini AI, récupère les images via Pexels et publie directement dans Sanity.",
+    "trigger": "cron",
+    "schedule": "Lundi, Mercredi, Vendredi à 7h UTC",
+    "cronExpression": "0 7 * * 1,3,5",
+    "file": "scripts/agents/blog-writer-agent.ts",
+    "workflow": ".github/workflows/auto-publish-articles.yml",
+    "apis": ["Gemini AI", "Pexels", "Sanity", "DataForSEO"],
+    "output": "Article publié dans Sanity CMS",
+    "manualCommand": "npx tsx scripts/agents/blog-writer-agent.ts",
+    "tags": ["SEO", "Contenu", "Automatique"]
+  },
+  {
+    "id": "keyword-researcher",
+    "name": "Agent Mots-Clés",
+    "emoji": "🔍",
+    "status": "active",
+    "description": "Analyse les opportunités de mots-clés pour Vanzon Explorer via DataForSEO. Identifie les requêtes à fort potentiel, volume de recherche, difficulté et intention de recherche.",
+    "trigger": "manual",
+    "schedule": "Manuel",
+    "cronExpression": null,
+    "file": "scripts/agents/keyword-researcher.ts",
+    "workflow": null,
+    "apis": ["DataForSEO"],
+    "output": "Rapport de mots-clés dans le terminal",
+    "manualCommand": "npx tsx scripts/agents/keyword-researcher.ts",
+    "tags": ["SEO", "Analyse", "Manuel"]
+  },
+  {
+    "id": "seo-checker",
+    "name": "Agent Audit SEO",
+    "emoji": "📊",
+    "status": "active",
+    "description": "Effectue un audit SEO hebdomadaire complet du site. Vérifie les positions Google, les Core Web Vitals, les backlinks et génère des recommandations d'optimisation.",
+    "trigger": "cron",
+    "schedule": "Lundi à 9h UTC",
+    "cronExpression": "0 9 * * 1",
+    "file": "scripts/agents/seo-checker.ts",
+    "workflow": ".github/workflows/weekly-seo-check.yml",
+    "apis": ["DataForSEO", "Google Search Console"],
+    "output": "Rapport SEO — visible dans /admin/seo",
+    "manualCommand": "npx tsx scripts/agents/seo-checker.ts",
+    "tags": ["SEO", "Audit", "Automatique"]
+  }
+]
