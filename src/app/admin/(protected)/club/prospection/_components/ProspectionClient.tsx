@@ -412,20 +412,28 @@ export default function ProspectionClient({ initialProspects }: Props) {
                   </td>
 
                   {/* Email */}
-                  <td className="px-3 py-2 min-w-[140px]">
+                  <td className="px-3 py-2 min-w-[160px] max-w-[200px]">
                     <EditableCell
                       id={p.id} field="email" value={p.emails[0] ?? ""}
                       {...editableCellProps}
                       displayNode={
                         p.emails.length > 0 ? (
-                          <div className="space-y-0.5">
-                            <span className="text-xs text-slate-700 truncate block max-w-[160px]">{p.emails[0]}</span>
-                            {p.emails.length > 1 && (
-                              <span className="text-xs text-slate-400">+{p.emails.length - 1} autre{p.emails.length > 2 ? "s" : ""}</span>
-                            )}
+                          <div className="space-y-1">
+                            {/* Primary email */}
+                            <div className="flex items-center gap-1.5">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0" />
+                              <span className="text-xs text-slate-700 truncate max-w-[150px] font-medium">{p.emails[0]}</span>
+                            </div>
+                            {/* Additional emails */}
+                            {p.emails.slice(1).map((email, i) => (
+                              <div key={i} className="flex items-center gap-1.5">
+                                <span className="w-1.5 h-1.5 rounded-full bg-slate-300 flex-shrink-0" />
+                                <span className="text-xs text-slate-400 truncate max-w-[150px]">{email}</span>
+                              </div>
+                            ))}
                           </div>
                         ) : (
-                          <span className="text-xs text-slate-300">Ajouter un email...</span>
+                          <span className="text-xs text-slate-300 italic">Aucun email</span>
                         )
                       }
                     />
