@@ -1,10 +1,13 @@
+"use client";
+
+import { useRef, useState } from "react";
 import Image from "next/image";
 
-const LAPTOP = {
-  src: "https://cdn.sanity.io/images/lewexa74/production/bfdc57ebcc01953c6b6cbee01e527f7062c786e9-1998x1392.png",
-  alt: "Interface Van Business Academy",
-  width: 1998,
-  height: 1392,
+const HERO_IMG = {
+  src: "https://cdn.sanity.io/images/lewexa74/production/e8d8a66703e846a5bd916e38bd9a488b663ce433-1920x1080.png",
+  alt: "Aménagement intérieur de van - Van Business Academy",
+  width: 1920,
+  height: 1080,
 };
 
 const FLOATS = [
@@ -39,21 +42,33 @@ const FLOATS = [
 ];
 
 export default function FormationScrollReveal() {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const carouselRef = useRef<HTMLDivElement>(null);
+
+  function handleScroll() {
+    const el = carouselRef.current;
+    if (!el) return;
+    const itemWidth = el.scrollWidth / FLOATS.length;
+    const index = Math.round(el.scrollLeft / itemWidth);
+    setActiveIndex(Math.min(Math.max(index, 0), FLOATS.length - 1));
+  }
+
   return (
     <div className="w-full max-w-5xl mx-auto px-6 pb-16 pt-4">
+
       {/* Desktop */}
       <div className="hidden md:block relative">
-        {/* Laptop central */}
+        {/* Image centrale agrandie */}
         <div
-          className="relative z-10 w-[52%] mx-auto"
+          className="relative z-10 w-[65%] mx-auto"
           style={{ filter: "drop-shadow(0 24px 48px rgba(0,0,0,0.16))" }}
         >
           <Image
-            src={LAPTOP.src}
-            alt={LAPTOP.alt}
-            width={LAPTOP.width}
-            height={LAPTOP.height}
-            className="w-full h-auto rounded-xl"
+            src={HERO_IMG.src}
+            alt={HERO_IMG.alt}
+            width={HERO_IMG.width}
+            height={HERO_IMG.height}
+            className="w-full h-auto rounded-2xl"
             priority
             unoptimized
           />
@@ -61,84 +76,68 @@ export default function FormationScrollReveal() {
 
         {/* Screenshots flottants */}
         <div className="absolute inset-0 pointer-events-none">
-          {/* Haut gauche */}
           <div
-            className="absolute w-[38%] top-0 left-0"
+            className="absolute w-[36%] top-0 left-0"
             style={{
               transform: `rotate(${FLOATS[0].rotate}) translateY(-12px)`,
               filter: "drop-shadow(0 12px 32px rgba(0,0,0,0.18))",
             }}
           >
-            <Image
-              src={FLOATS[0].src}
-              alt={FLOATS[0].alt}
-              width={FLOATS[0].width}
-              height={FLOATS[0].height}
-              className="w-full h-auto rounded-xl"
-              unoptimized
-            />
+            <Image src={FLOATS[0].src} alt={FLOATS[0].alt} width={FLOATS[0].width} height={FLOATS[0].height} className="w-full h-auto rounded-xl" unoptimized />
           </div>
-
-          {/* Haut droite */}
           <div
-            className="absolute w-[38%] top-0 right-0"
+            className="absolute w-[36%] top-0 right-0"
             style={{
               transform: `rotate(${FLOATS[1].rotate}) translateY(-8px)`,
               filter: "drop-shadow(0 12px 32px rgba(0,0,0,0.18))",
             }}
           >
-            <Image
-              src={FLOATS[1].src}
-              alt={FLOATS[1].alt}
-              width={FLOATS[1].width}
-              height={FLOATS[1].height}
-              className="w-full h-auto rounded-xl"
-              unoptimized
-            />
+            <Image src={FLOATS[1].src} alt={FLOATS[1].alt} width={FLOATS[1].width} height={FLOATS[1].height} className="w-full h-auto rounded-xl" unoptimized />
           </div>
-
-          {/* Bas gauche */}
           <div
-            className="absolute w-[38%] bottom-0 left-0"
+            className="absolute w-[36%] bottom-0 left-0"
             style={{
               transform: `rotate(${FLOATS[2].rotate}) translateY(12px)`,
               filter: "drop-shadow(0 12px 32px rgba(0,0,0,0.18))",
             }}
           >
-            <Image
-              src={FLOATS[2].src}
-              alt={FLOATS[2].alt}
-              width={FLOATS[2].width}
-              height={FLOATS[2].height}
-              className="w-full h-auto rounded-xl"
-              unoptimized
-            />
+            <Image src={FLOATS[2].src} alt={FLOATS[2].alt} width={FLOATS[2].width} height={FLOATS[2].height} className="w-full h-auto rounded-xl" unoptimized />
           </div>
-
-          {/* Bas droite */}
           <div
-            className="absolute w-[38%] bottom-0 right-0"
+            className="absolute w-[36%] bottom-0 right-0"
             style={{
               transform: `rotate(${FLOATS[3].rotate}) translateY(8px)`,
               filter: "drop-shadow(0 12px 32px rgba(0,0,0,0.18))",
             }}
           >
-            <Image
-              src={FLOATS[3].src}
-              alt={FLOATS[3].alt}
-              width={FLOATS[3].width}
-              height={FLOATS[3].height}
-              className="w-full h-auto rounded-xl"
-              unoptimized
-            />
+            <Image src={FLOATS[3].src} alt={FLOATS[3].alt} width={FLOATS[3].width} height={FLOATS[3].height} className="w-full h-auto rounded-xl" unoptimized />
           </div>
         </div>
       </div>
 
       {/* Mobile : carousel horizontal */}
       <div className="md:hidden">
+        {/* Image hero agrandie en premier */}
         <div
-          className="flex gap-4 overflow-x-auto snap-x snap-mandatory px-6 pb-4"
+          className="w-full rounded-2xl overflow-hidden mb-4"
+          style={{ filter: "drop-shadow(0 12px 32px rgba(0,0,0,0.14))" }}
+        >
+          <Image
+            src={HERO_IMG.src}
+            alt={HERO_IMG.alt}
+            width={HERO_IMG.width}
+            height={HERO_IMG.height}
+            className="w-full h-auto"
+            priority
+            unoptimized
+          />
+        </div>
+
+        {/* Carousel des screenshots */}
+        <div
+          ref={carouselRef}
+          onScroll={handleScroll}
+          className="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-4"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
           {FLOATS.map((f, i) => (
@@ -153,23 +152,22 @@ export default function FormationScrollReveal() {
                 width={f.width}
                 height={f.height}
                 className="w-full h-auto"
-                priority={i === 0}
                 unoptimized
               />
             </div>
           ))}
         </div>
 
-        {/* Dots */}
-        <div className="flex justify-center gap-1.5 mt-3">
+        {/* Dots animés */}
+        <div className="flex justify-center items-center gap-2 mt-2">
           {FLOATS.map((_, i) => (
             <div
               key={i}
-              className="rounded-full"
+              className="rounded-full transition-all duration-300"
               style={{
-                width: i === 0 ? "20px" : "6px",
+                width: i === activeIndex ? "20px" : "6px",
                 height: "6px",
-                background: i === 0 ? "#B9945F" : "rgba(185,148,95,0.3)",
+                background: i === activeIndex ? "#B9945F" : "rgba(185,148,95,0.3)",
               }}
             />
           ))}
