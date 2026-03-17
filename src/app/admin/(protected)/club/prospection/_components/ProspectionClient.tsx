@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Prospect,
   ProspectStatus,
@@ -37,6 +37,78 @@ const CATEGORY_COLORS: Record<string, string> = {
 
 interface Props {
   initialProspects: Prospect[];
+}
+
+// EmailCell — dropdown pour afficher tous les emails
+function EmailCell({ emails, onEditFirst }: { emails: string[]; onEditFirst: () => void }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    if (open) document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [open]);
+
+  if (emails.length === 0) {
+    return (
+      <span
+        onClick={onEditFirst}
+        className="text-xs text-slate-300 italic cursor-pointer hover:text-slate-500 px-1 py-0.5 rounded hover:bg-violet-50 transition-colors"
+      >
+        Aucun email
+      </span>
+    );
+  }
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => emails.length > 1 ? setOpen(o => !o) : onEditFirst()}
+        className="flex items-center gap-1.5 w-full text-left group"
+      >
+        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0" />
+        <span className="text-xs text-slate-700 font-medium truncate max-w-[140px]">{emails[0]}</span>
+        {emails.length > 1 && (
+          <span className={`flex-shrink-0 text-[10px] font-bold px-1.5 py-0.5 rounded-full transition-colors ${
+            open ? "bg-violet-600 text-white" : "bg-violet-100 text-violet-600 group-hover:bg-violet-200"
+          }`}>
+            +{emails.length - 1}
+          </span>
+        )}
+      </button>
+
+      {open && emails.length > 1 && (
+        <div className="absolute left-0 top-full mt-1 z-50 bg-white rounded-xl shadow-lg border border-slate-100 py-1 min-w-[220px] max-w-[280px]">
+          <div className="px-3 py-1.5 border-b border-slate-50 mb-1">
+            <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+              {emails.length} email{emails.length > 1 ? "s" : ""} trouvé{emails.length > 1 ? "s" : ""}
+            </span>
+          </div>
+          {emails.map((email, i) => (
+            <div
+              key={email}
+              className="flex items-center gap-2 px-3 py-1.5 hover:bg-slate-50 transition-colors group/item"
+            >
+              <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${i === 0 ? "bg-emerald-400" : "bg-slate-300"}`} />
+              <span className="text-xs text-slate-700 truncate flex-1">{email}</span>
+              <button
+                onClick={e => { e.stopPropagation(); navigator.clipboard.writeText(email); }}
+                title="Copier"
+                className="opacity-0 group-hover/item:opacity-100 transition-opacity text-slate-400 hover:text-violet-600 flex-shrink-0"
+              >
+                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 }
 
 // EditableCell helper
@@ -413,30 +485,24 @@ export default function ProspectionClient({ initialProspects }: Props) {
 
                   {/* Email */}
                   <td className="px-3 py-2 min-w-[160px] max-w-[200px]">
-                    <EditableCell
-                      id={p.id} field="email" value={p.emails[0] ?? ""}
-                      {...editableCellProps}
-                      displayNode={
-                        p.emails.length > 0 ? (
-                          <div className="space-y-1">
-                            {/* Primary email */}
-                            <div className="flex items-center gap-1.5">
-                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0" />
-                              <span className="text-xs text-slate-700 truncate max-w-[150px] font-medium">{p.emails[0]}</span>
-                            </div>
-                            {/* Additional emails */}
-                            {p.emails.slice(1).map((email, i) => (
-                              <div key={i} className="flex items-center gap-1.5">
-                                <span className="w-1.5 h-1.5 rounded-full bg-slate-300 flex-shrink-0" />
-                                <span className="text-xs text-slate-400 truncate max-w-[150px]">{email}</span>
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <span className="text-xs text-slate-300 italic">Aucun email</span>
-                        )
-                      }
+                    <EmailCell
+                      emails={p.emails}
+                      onEditFirst={() => startEdit(p.id, "email", p.emails[0] ?? "")}
                     />
+                    {editingCell?.id === p.id && editingCell.field === "email" && (
+                      <input
+                        autoFocus
+                        type="email"
+                        value={editValue}
+                        onChange={e => setEditValue(e.target.value)}
+                        onBlur={saveEdit}
+                        onKeyDown={e => {
+                          if (e.key === "Enter") saveEdit();
+                          if (e.key === "Escape") setEditingCell(null);
+                        }}
+                        className="mt-1 w-full text-xs px-1.5 py-1 border border-violet-400 rounded focus:outline-none focus:ring-1 focus:ring-violet-400"
+                      />
+                    )}
                   </td>
 
                   {/* Description */}
@@ -607,17 +673,24 @@ export default function ProspectionClient({ initialProspects }: Props) {
               <div className="flex items-start gap-1.5">
                 <span className="text-slate-400 text-sm mt-0.5">✉</span>
                 <div className="flex-1 min-w-0">
-                  <EditableCell
-                    id={p.id} field="email" value={p.emails[0] ?? ""}
-                    {...editableCellProps}
-                    displayNode={
-                      p.emails.length > 0 ? (
-                        <span className="text-xs text-slate-700 truncate block">{p.emails[0]}</span>
-                      ) : (
-                        <span className="text-xs text-slate-300">Ajouter un email...</span>
-                      )
-                    }
+                  <EmailCell
+                    emails={p.emails}
+                    onEditFirst={() => startEdit(p.id, "email", p.emails[0] ?? "")}
                   />
+                  {editingCell?.id === p.id && editingCell.field === "email" && (
+                    <input
+                      autoFocus
+                      type="email"
+                      value={editValue}
+                      onChange={e => setEditValue(e.target.value)}
+                      onBlur={saveEdit}
+                      onKeyDown={e => {
+                        if (e.key === "Enter") saveEdit();
+                        if (e.key === "Escape") setEditingCell(null);
+                      }}
+                      className="mt-1 w-full text-xs px-1.5 py-1 border border-violet-400 rounded focus:outline-none focus:ring-1 focus:ring-violet-400"
+                    />
+                  )}
                 </div>
               </div>
 
