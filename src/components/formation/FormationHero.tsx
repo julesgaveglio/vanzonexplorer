@@ -1,6 +1,6 @@
-import Image from "next/image";
 import LiquidButton from "@/components/ui/LiquidButton";
 import CalendlyButton from "@/components/ui/CalendlyButton";
+import FormationScrollReveal from "./FormationScrollReveal";
 
 const pills = [
   { icon: "🙋‍♂️", label: "Accompagnement" },
@@ -55,17 +55,10 @@ export default function FormationHero() {
           </LiquidButton>
         </div>
 
-        <div className="relative mt-16 mx-auto max-w-4xl">
-          <Image
-            src="https://cdn.sanity.io/images/lewexa74/production/e38536d1d383c7b3b7224f83cb38f09b0c1fd072-1459x955.png"
-            alt="Presentation formation van business academy vanzon explorer"
-            width={1200}
-            height={800}
-            className="w-full h-auto"
-            priority
-          />
-        </div>
       </div>
+
+      {/* Scroll reveal section — outside the centered text block so it can be full-width */}
+      <FormationScrollReveal />
     </section>
   );
 }
