@@ -225,22 +225,10 @@ export default function FormationScrollReveal() {
         </div>
 
         {/* 4 floats in 2-column grid */}
-        <div
-          ref={(el) => {
-            // On mobile, use the same refs so the GSAP mobile animation still targets them
-            // The mobile floats are separate DOM nodes, so we attach them to indices 0-3
-          }}
-          className="grid grid-cols-2 gap-3"
-        >
+        <div className="grid grid-cols-2 gap-3">
           {FLOATS.map((f, i) => (
             <div
               key={i}
-              ref={(el) => {
-                // Only override if we're on mobile (desktop refs already set above)
-                if (typeof window !== "undefined" && window.innerWidth < 768) {
-                  floatRefs.current[i] = el;
-                }
-              }}
               className="drop-shadow-md"
             >
               <Image
