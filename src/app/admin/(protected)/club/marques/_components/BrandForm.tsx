@@ -15,6 +15,7 @@ interface Brand {
   affiliate_url_base?: string;
   is_partner?: boolean;
   status?: string;
+  contact_email?: string;
 }
 
 export default function BrandForm({ brand }: { brand?: Brand }) {
@@ -22,6 +23,7 @@ export default function BrandForm({ brand }: { brand?: Brand }) {
   const [isPending, startTransition] = useTransition();
   const [logoUrl, setLogoUrl] = useState(brand?.logo_url || "");
   const [uploading, setUploading] = useState(false);
+  const [showGmailModal, setShowGmailModal] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -201,6 +203,30 @@ export default function BrandForm({ brand }: { brand?: Brand }) {
               <option value="coming_soon">Coming soon</option>
             </select>
           </div>
+          <div className="col-span-2">
+            <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Email de contact</label>
+            <div className="flex gap-2">
+              <input
+                name="contact_email"
+                type="email"
+                defaultValue={brand?.contact_email}
+                className="flex-1 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-violet-300"
+                placeholder="contact@marque.com"
+              />
+              {brand?.id && (
+                <button
+                  type="button"
+                  onClick={() => setShowGmailModal(true)}
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border-2 border-violet-300 text-violet-700 hover:bg-violet-50 transition-colors whitespace-nowrap"
+                >
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/>
+                  </svg>
+                  Contacter via Gmail
+                </button>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -250,6 +276,14 @@ export default function BrandForm({ brand }: { brand?: Brand }) {
         </div>
       </div>
 
+      {/* Modal Gmail */}
+      {showGmailModal && brand?.id && (
+        <GmailModal
+          brand={brand}
+          onClose={() => setShowGmailModal(false)}
+        />
+      )}
+
       {/* Erreur */}
       {formError && (
         <div className="rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700 font-medium">
@@ -289,5 +323,95 @@ export default function BrandForm({ brand }: { brand?: Brand }) {
         </div>
       </div>
     </form>
+  );
+}
+
+// ── Gmail Modal ───────────────────────────────────────────────────
+
+function GmailModal({ brand, onClose }: { brand: Brand; onClose: () => void }) {
+  const defaultSubject = `Partenariat Vanzon Explorer × ${brand.name}`;
+  const defaultBody = `Bonjour,
+
+Je me permets de vous contacter au sujet d'un potentiel partenariat entre Vanzon Explorer et ${brand.name}.
+
+Vanzon Explorer est une plateforme dédiée aux voyageurs en van aménagé, proposant des bons plans, des équipements sélectionnés et une communauté de passionnés.
+
+Nous serions ravis de mettre en avant vos produits auprès de notre audience et d'explorer ensemble les modalités d'un partenariat (code promo, affiliation, mise en avant éditoriale...).
+
+Seriez-vous disponible pour un échange ?
+
+Cordialement,`;
+
+  const [to, setTo] = useState(brand.contact_email || "");
+  const [subject, setSubject] = useState(defaultSubject);
+  const [body, setBody] = useState(defaultBody);
+
+  function handleOpen() {
+    if (!to.trim()) return;
+    const url = `https://mail.google.com/mail/?view=cm&fs=1&tf=1&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.open(url, "_blank");
+    onClose();
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-xl">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+          <h2 className="text-lg font-semibold text-slate-800">
+            Contacter — <span className="text-violet-600">{brand.name}</span>
+          </h2>
+          <button onClick={onClose} aria-label="Fermer" className="text-slate-400 hover:text-slate-600 text-xl font-light leading-none">×</button>
+        </div>
+
+        <div className="px-6 py-5 space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1.5">À</label>
+            <input
+              type="email"
+              value={to}
+              onChange={e => setTo(e.target.value)}
+              placeholder="contact@marque.com"
+              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-violet-300"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1.5">Objet</label>
+            <input
+              type="text"
+              value={subject}
+              onChange={e => setSubject(e.target.value)}
+              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-violet-300"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1.5">Corps</label>
+            <textarea
+              value={body}
+              onChange={e => setBody(e.target.value)}
+              className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-violet-300 resize-y min-h-48"
+            />
+          </div>
+        </div>
+
+        <div className="px-6 py-4 border-t border-slate-100 flex justify-between items-center">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2.5 rounded-xl text-sm font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors"
+          >
+            Fermer
+          </button>
+          <button
+            type="button"
+            onClick={handleOpen}
+            disabled={!to.trim()}
+            className="px-5 py-2.5 rounded-xl text-sm font-semibold text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            style={{ background: "linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)" }}
+          >
+            Ouvrir dans Gmail
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }

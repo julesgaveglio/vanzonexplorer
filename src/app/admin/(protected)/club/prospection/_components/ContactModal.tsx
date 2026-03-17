@@ -36,7 +36,7 @@ export default function ContactModal({ open, prospect, subject, body, onClose, o
 
   function handleOpenGmail() {
     if (!to.trim()) return;
-    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(to)}&cc=${encodeURIComponent(cc)}&su=${encodeURIComponent(editSubject)}&body=${encodeURIComponent(editBody)}`;
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&tf=1&to=${encodeURIComponent(to)}&cc=${encodeURIComponent(cc)}&su=${encodeURIComponent(editSubject)}&body=${encodeURIComponent(editBody)}`;
     window.open(gmailUrl, "_blank");
   }
 

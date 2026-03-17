@@ -95,38 +95,41 @@ export async function POST(req: NextRequest) {
       messages: [
         {
           role: "user",
-          content: `Tu es le fondateur de Vanzon Explorer (vanzonexplorer.com), plateforme communautaire pour les passionnés de vanlife en France. Tu écris un email de prospection simple direct court efficace professionnel, humain et ultra-personnalisé à ${typedProspect.name} pour proposer un partenariat Club Privé.
+          content: `Tu rédiges un email de prise de contact B2B pour Vanzon Explorer (vanzonexplorer.com), une plateforme pour les passionnés de vanlife en France.
 
-Angle catégorie: ${categoryAngle}
+Destinataire : ${typedProspect.name}
+Site : ${typedProspect.website}
+Angle produit : ${categoryAngle}
+Contexte marque : ${typedProspect.description || typedProspect.strategic_interest || "équipement van"}
 
-Informations sur la marque:
-- Site: ${typedProspect.website}
-- Description: ${typedProspect.description || "à enrichir"}
-- Intérêt stratégique: ${typedProspect.strategic_interest || "partenariat équipement van"}
+Contenu site (pour personnalisation) :
+${siteContent.substring(0, 2000)}
 
-Contenu du site web:
-${siteContent.substring(0, 3000)}
+RÈGLES ABSOLUES :
+- Email très court : 5 à 7 lignes maximum, pas plus
+- Commence directement par une accroche liée à leurs produits spécifiques — jamais "Je me permets de..."
+- Ne te présente pas comme "fondateur" ou avec un titre — signe juste avec un prénom
+- Une seule proposition concrète : visibilité auprès d'une communauté de vanlifers acheteurs actifs, en échange d'un code promo exclusif membres
+- Mentionne le lien https://www.vanzonexplorer.com/club uniquement si ça s'intègre naturellement
+- Termine par une question ouverte simple pour générer une réponse
+- Ton : direct, humain, naturel — pas commercial, pas corporate
 
-Génère:
-1. Un objet d'email accrocheur et personnalisé (max 60 chars)
-2. Un corps d'email (300-400 mots) qui:
-   - Présente Vanzon Explorer et le Club Privé brièvement
-   - Mentionne un aspect SPÉCIFIQUE des produits/services de la marque (utilise le contenu du site)
-   - Propose clairement: code exclusif membres + article blog comparatif avec backlink SEO
-   - Précise que la communauté a une forte intention d'achat équipement van
-   - Lien Club: https://www.vanzonexplorer.com/club
-   - Ton: professionnel, humain, direct, crédible
+STRUCTURE :
+1. Accroche personnalisée sur leur produit (1 ligne)
+2. Ce qu'on propose en 2 lignes max
+3. Question de clôture (1 ligne)
+4. Signature simple (prénom + Vanzon Explorer)
 
-IMPORTANT — Format de réponse OBLIGATOIRE (respecte exactement ces balises) :
+Format de réponse OBLIGATOIRE :
 ###OBJET###
-[L'objet de l'email sur une seule ligne]
+[Objet court et spécifique, max 50 caractères]
 ###CORPS###
-[Le corps complet de l'email]
+[Corps de l'email]
 ###FIN###`,
         },
       ],
-      temperature: 0.7,
-      max_tokens: 2000,
+      temperature: 0.75,
+      max_tokens: 800,
     });
 
     const rawContent = groqResponse.choices[0]?.message?.content || "";

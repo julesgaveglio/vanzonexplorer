@@ -43,6 +43,7 @@ export async function upsertBrand(formData: FormData): Promise<{ success: boolea
       affiliate_url_base: (formData.get("affiliate_url_base") as string) || null,
       is_partner: formData.get("is_partner") === "true",
       status: (formData.get("status") as string) || "active",
+      contact_email: (formData.get("contact_email") as string) || null,
     };
 
     console.log("[upsertBrand] payload:", JSON.stringify(payload, null, 2));
