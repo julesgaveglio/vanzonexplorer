@@ -1,8 +1,7 @@
 import { NextRequest } from "next/server";
 
-// Gmail API direct send via OAuth2
-// Sends from jules@vanzonexplorer.com (must be a verified Send As alias in Gmail,
-// or re-authorize with OAuth credentials for the Workspace account directly)
+const SENDER_EMAIL = "jules@vanzonexplorer.com";
+const SENDER_NAME = "Jules - Vanzon Explorer"; // ASCII only in From header
 
 async function getGmailAccessToken(): Promise<string> {
   const res = await fetch("https://oauth2.googleapis.com/token", {
@@ -15,66 +14,72 @@ async function getGmailAccessToken(): Promise<string> {
       grant_type: "refresh_token",
     }),
   });
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`OAuth token error: ${err}`);
-  }
+  if (!res.ok) throw new Error(`OAuth token error: ${await res.text()}`);
   const data = await res.json();
   return data.access_token as string;
 }
 
-const SIGNATURE_HTML = `
-<br><br>
-<table style="font-family:Arial,sans-serif;font-size:13px;color:#333;border-collapse:collapse;">
-  <tr>
-    <td style="padding-right:16px;border-right:2px solid #7C3AED;vertical-align:middle;">
-      <strong style="font-size:14px;color:#1a1a1a;">Jules Gaveglio</strong><br>
-      <span style="color:#7C3AED;font-size:12px;">Vanzon Explorer</span><br>
-      <span style="color:#888;font-size:11px;">Fondateur</span>
-    </td>
-    <td style="padding-left:16px;vertical-align:middle;font-size:12px;color:#666;line-height:1.6;">
-      📧 <a href="mailto:jules@vanzonexplorer.com" style="color:#7C3AED;text-decoration:none;">jules@vanzonexplorer.com</a><br>
-      🌐 <a href="https://www.vanzonexplorer.com" style="color:#7C3AED;text-decoration:none;">vanzonexplorer.com</a><br>
-      📍 Pays Basque, France
-    </td>
-  </tr>
-</table>
-`;
+// Fetch the official Gmail signature for the sender alias
+async function getGmailSignature(accessToken: string): Promise<string> {
+  try {
+    const res = await fetch(
+      `https://gmail.googleapis.com/gmail/v1/users/me/settings/sendAs/${encodeURIComponent(SENDER_EMAIL)}`,
+      { headers: { Authorization: `Bearer ${accessToken}` } }
+    );
+    if (!res.ok) return "";
+    const data = await res.json();
+    // signature is HTML
+    return (data.signature as string) ?? "";
+  } catch {
+    return "";
+  }
+}
 
-// Convert plain text body to HTML and append signature
-function buildHtmlBody(plainText: string): string {
+// Convert plain text to HTML and append Gmail signature
+function buildHtmlBody(plainText: string, signature: string): string {
   const htmlBody = plainText
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/\n/g, "<br>");
-  return `<div style="font-family:Arial,sans-serif;font-size:14px;color:#333;line-height:1.6;">${htmlBody}</div>${SIGNATURE_HTML}`;
+
+  const signatureBlock = signature
+    ? `<br><br><div class="gmail_signature">${signature}</div>`
+    : "";
+
+  return `<div style="font-family:Arial,sans-serif;font-size:14px;color:#333;line-height:1.6;">${htmlBody}</div>${signatureBlock}`;
 }
 
-// Build MIME multipart message (plain text + HTML) and base64url-encode it
+// RFC 2047 encode a header value containing non-ASCII characters
+function encodeHeader(value: string): string {
+  // Only encode if non-ASCII chars present
+  if (/^[\x00-\x7F]*$/.test(value)) return value;
+  return `=?UTF-8?B?${Buffer.from(value, "utf-8").toString("base64")}?=`;
+}
+
+// Build MIME multipart/alternative message and base64url-encode it
 function buildRawMessage({
   to,
   cc,
   subject,
   plainBody,
   htmlBody,
-  from,
 }: {
   to: string;
   cc: string[];
   subject: string;
   plainBody: string;
   htmlBody: string;
-  from: string;
 }): string {
-  const boundary = "==vanzon_boundary_" + Date.now();
+  const boundary = `==vanzon_${Date.now()}`;
+  const from = `${SENDER_NAME} <${SENDER_EMAIL}>`;
 
   const lines: string[] = [
     `From: ${from}`,
     `To: ${to}`,
   ];
   if (cc.length > 0) lines.push(`Cc: ${cc.join(", ")}`);
-  lines.push(`Subject: =?UTF-8?B?${Buffer.from(subject).toString("base64")}?=`);
+  lines.push(`Subject: ${encodeHeader(subject)}`);
   lines.push(`MIME-Version: 1.0`);
   lines.push(`Content-Type: multipart/alternative; boundary="${boundary}"`);
   lines.push("");
@@ -85,7 +90,7 @@ function buildRawMessage({
   lines.push("");
   lines.push(Buffer.from(plainBody, "utf-8").toString("base64"));
   lines.push("");
-  // HTML part
+  // HTML part (with signature)
   lines.push(`--${boundary}`);
   lines.push(`Content-Type: text/html; charset=UTF-8`);
   lines.push(`Content-Transfer-Encoding: base64`);
@@ -114,11 +119,7 @@ export async function POST(req: NextRequest) {
 
   if (!process.env.GOOGLE_GMAIL_REFRESH_TOKEN) {
     return Response.json(
-      {
-        success: false,
-        error: "GOOGLE_GMAIL_REFRESH_TOKEN non configuré.",
-        setupRequired: true,
-      },
+      { success: false, error: "GOOGLE_GMAIL_REFRESH_TOKEN non configuré.", setupRequired: true },
       { status: 503 }
     );
   }
@@ -126,13 +127,15 @@ export async function POST(req: NextRequest) {
   try {
     const accessToken = await getGmailAccessToken();
 
+    // Fetch real Gmail signature for jules@vanzonexplorer.com
+    const signature = await getGmailSignature(accessToken);
+
     const rawMessage = buildRawMessage({
-      from: "Jules — Vanzon Explorer <jules@vanzonexplorer.com>",
       to,
       cc: Array.isArray(cc) ? cc : [],
       subject,
       plainBody: body,
-      htmlBody: buildHtmlBody(body),
+      htmlBody: buildHtmlBody(body, signature),
     });
 
     const gmailRes = await fetch(
@@ -149,31 +152,24 @@ export async function POST(req: NextRequest) {
 
     if (!gmailRes.ok) {
       const errText = await gmailRes.text();
-      // If rejected because of the From alias, give a clear explanation
-      if (errText.includes("Invalid From header") || errText.includes("alias")) {
+      if (errText.includes("Invalid From") || errText.includes("alias")) {
         return Response.json(
           {
             success: false,
             error:
-              "Pour envoyer depuis jules@vanzonexplorer.com, ajoute cette adresse comme alias vérifié dans les paramètres Gmail de gavegliojules@gmail.com (Paramètres → Comptes → Envoyer des e-mails en tant que).",
+              "Ajoute jules@vanzonexplorer.com comme alias vérifié dans Gmail → Paramètres → Comptes → Envoyer des e-mails en tant que.",
           },
           { status: 400 }
         );
       }
-      return Response.json(
-        { success: false, error: `Gmail API error: ${errText}` },
-        { status: 500 }
-      );
+      return Response.json({ success: false, error: `Gmail API: ${errText}` }, { status: 500 });
     }
 
     const result = await gmailRes.json();
     return Response.json({ success: true, messageId: result.id });
   } catch (error) {
     return Response.json(
-      {
-        success: false,
-        error: error instanceof Error ? error.message : String(error),
-      },
+      { success: false, error: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     );
   }
