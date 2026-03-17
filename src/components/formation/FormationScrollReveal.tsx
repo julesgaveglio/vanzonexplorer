@@ -16,11 +16,8 @@ const FLOATS = [
     alt: "Module formation van — étape 1",
     width: 1459,
     height: 850,
-    // desktop position
     desktopStyle: { left: 0, top: 0 } as React.CSSProperties,
     desktopRotate: "-2.5deg",
-    // mobile rotation (subtle)
-    mobileRotate: "-1.5deg",
   },
   {
     src: "https://cdn.sanity.io/images/lewexa74/production/5473f111cdb3199e8192ebd19c7c721c5b0ec77d-1459x784.png",
@@ -29,7 +26,6 @@ const FLOATS = [
     height: 784,
     desktopStyle: { right: 0, top: "12px" } as React.CSSProperties,
     desktopRotate: "2.5deg",
-    mobileRotate: "1.5deg",
   },
   {
     src: "https://cdn.sanity.io/images/lewexa74/production/d9c4c7fe7931c1be66649b8520bbefe4acda6091-1284x850.png",
@@ -38,7 +34,6 @@ const FLOATS = [
     height: 850,
     desktopStyle: { left: 0, bottom: 0 } as React.CSSProperties,
     desktopRotate: "2deg",
-    mobileRotate: "-1deg",
   },
   {
     src: "https://cdn.sanity.io/images/lewexa74/production/2f1f2a6a93df20af09a71176b79f82316d856447-1317x746.png",
@@ -47,7 +42,6 @@ const FLOATS = [
     height: 746,
     desktopStyle: { right: 0, bottom: "12px" } as React.CSSProperties,
     desktopRotate: "-2deg",
-    mobileRotate: "1deg",
   },
 ];
 
@@ -56,9 +50,10 @@ export default function FormationScrollReveal() {
   const desktopSectionRef = useRef<HTMLElement>(null);
   const desktopFloatRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  // Mobile refs — each float has its own ScrollTrigger
-  const mobileLaptopRef = useRef<HTMLDivElement>(null);
-  const mobileFloatRefs = useRef<(HTMLDivElement | null)[]>([]);
+  // Mobile refs — pinned stack
+  const mobileSectionRef = useRef<HTMLElement>(null);
+  // overlays[0] = FLOATS[1], overlays[1] = FLOATS[2], overlays[2] = FLOATS[3]
+  const mobileOverlayRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -72,68 +67,56 @@ export default function FormationScrollReveal() {
       ctx = gsap.context(() => {
 
         // ─────────────────────────────────────────────────────────────────
-        // MOBILE — individual scroll trigger per element, no pin
+        // MOBILE — pinned section, 3 overlays revealed one by one on scroll
         // ─────────────────────────────────────────────────────────────────
-        const mobileFloats = mobileFloatRefs.current.filter(Boolean) as HTMLDivElement[];
+        if (mobileSectionRef.current) {
+          const overlays = mobileOverlayRefs.current.filter(Boolean) as HTMLDivElement[];
 
-        if (mobileLaptopRef.current) {
-          gsap.from(mobileLaptopRef.current, {
-            opacity: 0,
-            y: 30,
-            duration: 0.8,
-            ease: "power2.out",
-            scrollTrigger: {
-              trigger: mobileLaptopRef.current,
-              start: "top 88%",
-            },
+          // Hide all overlays initially
+          gsap.set(overlays, { opacity: 0, y: 28, scale: 0.96, filter: "blur(6px)" });
+
+          const tl = gsap.timeline();
+
+          // 3 overlays, evenly spaced across the timeline
+          // Each appears cleanly at its own 1/3 scroll milestone
+          overlays.forEach((el, i) => {
+            tl.fromTo(
+              el,
+              { opacity: 0, y: 28, scale: 0.96, filter: "blur(6px)" },
+              { opacity: 1, y: 0, scale: 1, filter: "blur(0px)", duration: 0.3, ease: "power2.out" },
+              i * 0.34 // 0 → 0.34 → 0.68
+            );
+          });
+
+          ScrollTrigger.create({
+            trigger: mobileSectionRef.current,
+            pin: true,
+            pinSpacing: true,
+            start: "top top",
+            end: "+=300%", // 3 scroll steps = 3 × 100vh
+            scrub: 1.5,
+            animation: tl,
           });
         }
-
-        // Each mobile float triggers independently when entering viewport
-        mobileFloats.forEach((el) => {
-          gsap.from(el, {
-            opacity: 0,
-            y: 50,
-            scale: 0.94,
-            filter: "blur(6px)",
-            duration: 0.75,
-            ease: "power2.out",
-            scrollTrigger: {
-              trigger: el,
-              start: "top 88%",
-            },
-          });
-        });
 
         // ─────────────────────────────────────────────────────────────────
         // DESKTOP — pinned section, scrubbed timeline
         // ─────────────────────────────────────────────────────────────────
         if (!desktopSectionRef.current) return;
-
         const desktopFloats = desktopFloatRefs.current.filter(Boolean) as HTMLDivElement[];
         if (!desktopFloats.length) return;
 
-        // Initial hidden state
         gsap.set(desktopFloats, { opacity: 0, scale: 0.82, filter: "blur(10px)" });
 
         const tl = gsap.timeline();
-        const yOffsets = [-32, -32, 32, 32]; // top floats from above, bottom from below
+        const yOffsets = [-32, -32, 32, 32];
 
-        // Spread floats evenly across the timeline with NO overlap
-        // so each one reveals cleanly at its own scroll milestone
         desktopFloats.forEach((el, i) => {
           tl.fromTo(
             el,
             { opacity: 0, scale: 0.82, y: yOffsets[i], filter: "blur(10px)" },
-            {
-              opacity: 1,
-              scale: 1,
-              y: 0,
-              filter: "blur(0px)",
-              duration: 0.28,
-              ease: "power2.out",
-            },
-            i * 0.26 // evenly spaced, no overlap
+            { opacity: 1, scale: 1, y: 0, filter: "blur(0px)", duration: 0.28, ease: "power2.out" },
+            i * 0.26
           );
         });
 
@@ -142,7 +125,6 @@ export default function FormationScrollReveal() {
           pin: true,
           pinSpacing: true,
           start: "top top",
-          // 400% = very slow — user needs to scroll 4x viewport height before all 4 images appear
           end: "+=400%",
           scrub: 2.5,
           animation: tl,
@@ -157,62 +139,81 @@ export default function FormationScrollReveal() {
   return (
     <>
       {/* ═══════════════════════════════════════════════════════════════
-          MOBILE — shown below md breakpoint
-          Full-width cards revealed one by one on natural scroll
+          MOBILE — pinned stack
+          FLOATS[0] as base image, FLOATS[1–3] overlay on scroll
       ════════════════════════════════════════════════════════════════ */}
-      <div className="md:hidden mt-10 pb-8">
-
-        {/* Laptop — full width */}
+      <section
+        ref={mobileSectionRef}
+        aria-label="Formation Van Business Academy — aperçu mobile"
+        className="md:hidden relative mt-10 h-screen flex items-center justify-center overflow-hidden"
+        style={{ background: "linear-gradient(160deg, #FFFFFF 0%, #FAF6F0 70%, #F5EDE5 100%)" }}
+      >
+        {/* Glow */}
         <div
-          ref={mobileLaptopRef}
-          className="w-full px-4"
-          style={{ filter: "drop-shadow(0 12px 32px rgba(0,0,0,0.14))" }}
-        >
-          <Image
-            src={LAPTOP.src}
-            alt={LAPTOP.alt}
-            width={LAPTOP.width}
-            height={LAPTOP.height}
-            className="w-full h-auto rounded-2xl"
-            priority
-            unoptimized
-          />
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background: "radial-gradient(ellipse 80% 60% at 50% 50%, rgba(205,167,123,0.10) 0%, transparent 70%)",
+          }}
+        />
+
+        {/* Card stack container — all images share the same space */}
+        <div className="relative w-full px-5 z-10">
+          {/* Aspect-ratio wrapper based on FLOATS[0] (1459×850) */}
+          <div
+            className="relative w-full rounded-2xl overflow-hidden"
+            style={{
+              aspectRatio: "1459/850",
+              boxShadow: "0 20px 60px rgba(0,0,0,0.18), 0 4px 16px rgba(0,0,0,0.10)",
+            }}
+          >
+            {/* Base image — always visible */}
+            <Image
+              src={FLOATS[0].src}
+              alt={FLOATS[0].alt}
+              fill
+              style={{ objectFit: "cover" }}
+              priority
+              unoptimized
+            />
+
+            {/* Overlay images — revealed one by one on scroll */}
+            {[FLOATS[1], FLOATS[2], FLOATS[3]].map((f, i) => (
+              <div
+                key={i}
+                ref={(el) => { mobileOverlayRefs.current[i] = el; }}
+                className="absolute inset-0"
+                style={{ opacity: 0 }}
+              >
+                <Image
+                  src={f.src}
+                  alt={f.alt}
+                  fill
+                  style={{ objectFit: "cover" }}
+                  unoptimized
+                />
+              </div>
+            ))}
+          </div>
+
+          {/* Progress dots */}
+          <ProgressDots />
         </div>
 
-        {/* Floating windows — each full width, scrolls into view one by one */}
-        <div className="mt-6 space-y-5 px-3">
-          {FLOATS.map((f, i) => (
-            <div
-              key={i}
-              ref={(el) => { mobileFloatRefs.current[i] = el; }}
-              style={{
-                transform: `rotate(${f.mobileRotate})`,
-                filter: "drop-shadow(0 8px 24px rgba(0,0,0,0.14))",
-              }}
-            >
-              <Image
-                src={f.src}
-                alt={f.alt}
-                width={f.width}
-                height={f.height}
-                className="w-full h-auto rounded-2xl"
-                unoptimized
-              />
-            </div>
-          ))}
+        {/* Scroll hint */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 opacity-40">
+          <span className="text-[10px] text-slate-400 tracking-widest uppercase font-semibold">Scroll</span>
+          <div className="w-px h-6 bg-gradient-to-b from-slate-400 to-transparent" />
         </div>
-      </div>
+      </section>
 
       {/* ═══════════════════════════════════════════════════════════════
-          DESKTOP — pinned scroll section
-          4 floating windows revealed sequentially during 400vh of scroll
+          DESKTOP — pinned scroll section, unchanged
       ════════════════════════════════════════════════════════════════ */}
       <section
         ref={desktopSectionRef}
         aria-label="Système Van Business Academy"
         className="hidden md:flex relative mt-16 h-screen items-center justify-center overflow-hidden"
       >
-        {/* Radial glow */}
         <div
           className="pointer-events-none absolute inset-0 z-0"
           style={{
@@ -221,12 +222,11 @@ export default function FormationScrollReveal() {
           }}
         />
 
-        {/* Scene */}
         <div className="relative z-10 w-full max-w-5xl mx-auto px-6">
-
-          {/* Laptop — center z-10 */}
-          <div className="relative z-10 w-[50%] mx-auto"
-            style={{ filter: "drop-shadow(0 24px 48px rgba(0,0,0,0.18))" }}>
+          <div
+            className="relative z-10 w-[50%] mx-auto"
+            style={{ filter: "drop-shadow(0 24px 48px rgba(0,0,0,0.18))" }}
+          >
             <Image
               src={LAPTOP.src}
               alt={LAPTOP.alt}
@@ -238,7 +238,6 @@ export default function FormationScrollReveal() {
             />
           </div>
 
-          {/* Floating windows — z-20, animated */}
           {FLOATS.map((f, i) => (
             <div
               key={i}
@@ -263,12 +262,33 @@ export default function FormationScrollReveal() {
           ))}
         </div>
 
-        {/* Scroll hint */}
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 opacity-40">
           <span className="text-[10px] text-slate-400 tracking-widest uppercase font-semibold">Scroll</span>
           <div className="w-px h-7 bg-gradient-to-b from-slate-400 to-transparent" />
         </div>
       </section>
     </>
+  );
+}
+
+// ── Progress dots (4 total: 1 base + 3 overlays) ──────────────────────────
+// Uses IntersectionObserver-free approach: just GSAP-driven opacity on overlays
+function ProgressDots() {
+  // Static dots — GSAP doesn't easily drive this sub-component
+  // We render 4 dots, styling driven by CSS only (active = first one by default)
+  // The real visual feedback comes from the images themselves
+  return (
+    <div className="flex justify-center gap-2 mt-4">
+      {[0, 1, 2, 3].map((i) => (
+        <div
+          key={i}
+          className={`rounded-full transition-all ${
+            i === 0
+              ? "w-5 h-1.5 bg-amber-500"
+              : "w-1.5 h-1.5 bg-slate-300"
+          }`}
+        />
+      ))}
+    </div>
   );
 }
