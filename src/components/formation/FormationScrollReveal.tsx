@@ -3,8 +3,6 @@
 import { useEffect, useRef } from "react";
 import Image from "next/image";
 
-// ─── Assets ────────────────────────────────────────────────────────────────
-
 const LAPTOP = {
   src: "https://cdn.sanity.io/images/lewexa74/production/bfdc57ebcc01953c6b6cbee01e527f7062c786e9-1998x1392.png",
   alt: "Interface Van Business Academy",
@@ -12,57 +10,57 @@ const LAPTOP = {
   height: 1392,
 };
 
-// 4 floating windows — revealed one by one on scroll
-// Positions: TL → TR → BL → BR
 const FLOATS = [
   {
     src: "https://cdn.sanity.io/images/lewexa74/production/d3f70a292bbf7b03e5e2dfe71ec413920e087f1f-1459x850.png",
     alt: "Module formation van — étape 1",
     width: 1459,
     height: 850,
-    rotate: "-2.5deg",
-    // Desktop absolute position (% of scene container)
-    style: { left: 0, top: 0 } as React.CSSProperties,
-    mobileOrder: 1,
+    // desktop position
+    desktopStyle: { left: 0, top: 0 } as React.CSSProperties,
+    desktopRotate: "-2.5deg",
+    // mobile rotation (subtle)
+    mobileRotate: "-1.5deg",
   },
   {
     src: "https://cdn.sanity.io/images/lewexa74/production/5473f111cdb3199e8192ebd19c7c721c5b0ec77d-1459x784.png",
     alt: "Programme formation van — étape 2",
     width: 1459,
     height: 784,
-    rotate: "2.5deg",
-    style: { right: 0, top: "12px" } as React.CSSProperties,
-    mobileOrder: 2,
+    desktopStyle: { right: 0, top: "12px" } as React.CSSProperties,
+    desktopRotate: "2.5deg",
+    mobileRotate: "1.5deg",
   },
   {
     src: "https://cdn.sanity.io/images/lewexa74/production/d9c4c7fe7931c1be66649b8520bbefe4acda6091-1284x850.png",
     alt: "Ressources formation van — étape 3",
     width: 1284,
     height: 850,
-    rotate: "2deg",
-    style: { left: 0, bottom: 0 } as React.CSSProperties,
-    mobileOrder: 3,
+    desktopStyle: { left: 0, bottom: 0 } as React.CSSProperties,
+    desktopRotate: "2deg",
+    mobileRotate: "-1deg",
   },
   {
     src: "https://cdn.sanity.io/images/lewexa74/production/2f1f2a6a93df20af09a71176b79f82316d856447-1317x746.png",
     alt: "Outils formation van — étape 4",
     width: 1317,
     height: 746,
-    rotate: "-2deg",
-    style: { right: 0, bottom: "12px" } as React.CSSProperties,
-    mobileOrder: 4,
+    desktopStyle: { right: 0, bottom: "12px" } as React.CSSProperties,
+    desktopRotate: "-2deg",
+    mobileRotate: "1deg",
   },
 ];
 
-// ─── Component ─────────────────────────────────────────────────────────────
-
 export default function FormationScrollReveal() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const floatRefs = useRef<(HTMLDivElement | null)[]>([]);
+  // Desktop refs
+  const desktopSectionRef = useRef<HTMLElement>(null);
+  const desktopFloatRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  // Mobile refs — each float has its own ScrollTrigger
+  const mobileLaptopRef = useRef<HTMLDivElement>(null);
+  const mobileFloatRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
-    if (!sectionRef.current) return;
-
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let ctx: any;
 
@@ -71,178 +69,206 @@ export default function FormationScrollReveal() {
       const { ScrollTrigger } = await import("gsap/ScrollTrigger");
       gsap.registerPlugin(ScrollTrigger);
 
-      const isMobile = window.innerWidth < 768;
-      const floats = floatRefs.current.filter(Boolean) as HTMLDivElement[];
-
       ctx = gsap.context(() => {
-        // ── Mobile: simple stagger on scroll into view ──────────────────
-        if (isMobile) {
-          gsap.from(floats, {
+
+        // ─────────────────────────────────────────────────────────────────
+        // MOBILE — individual scroll trigger per element, no pin
+        // ─────────────────────────────────────────────────────────────────
+        const mobileFloats = mobileFloatRefs.current.filter(Boolean) as HTMLDivElement[];
+
+        if (mobileLaptopRef.current) {
+          gsap.from(mobileLaptopRef.current, {
             opacity: 0,
-            y: 24,
-            stagger: 0.12,
-            duration: 0.65,
+            y: 30,
+            duration: 0.8,
             ease: "power2.out",
             scrollTrigger: {
-              trigger: sectionRef.current,
-              start: "top 85%",
+              trigger: mobileLaptopRef.current,
+              start: "top 88%",
             },
           });
-          return;
         }
 
-        // ── Desktop: pin + scrubbed timeline ────────────────────────────
-        // Set all floats invisible before animation starts
-        gsap.set(floats, { opacity: 0, scale: 0.84, y: 0, filter: "blur(8px)" });
+        // Each mobile float triggers independently when entering viewport
+        mobileFloats.forEach((el) => {
+          gsap.from(el, {
+            opacity: 0,
+            y: 50,
+            scale: 0.94,
+            filter: "blur(6px)",
+            duration: 0.75,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: el,
+              start: "top 88%",
+            },
+          });
+        });
+
+        // ─────────────────────────────────────────────────────────────────
+        // DESKTOP — pinned section, scrubbed timeline
+        // ─────────────────────────────────────────────────────────────────
+        if (!desktopSectionRef.current) return;
+
+        const desktopFloats = desktopFloatRefs.current.filter(Boolean) as HTMLDivElement[];
+        if (!desktopFloats.length) return;
+
+        // Initial hidden state
+        gsap.set(desktopFloats, { opacity: 0, scale: 0.82, filter: "blur(10px)" });
 
         const tl = gsap.timeline();
+        const yOffsets = [-32, -32, 32, 32]; // top floats from above, bottom from below
 
-        // Each float animates in at evenly spaced scroll milestones
-        // Floats 0,1 (top) slide in from above (negative y offset at start)
-        // Floats 2,3 (bottom) slide in from below (positive y offset at start)
-        const yOffsets = [-28, -28, 28, 28];
-
-        floats.forEach((el, i) => {
+        // Spread floats evenly across the timeline with NO overlap
+        // so each one reveals cleanly at its own scroll milestone
+        desktopFloats.forEach((el, i) => {
           tl.fromTo(
             el,
-            { opacity: 0, scale: 0.84, y: yOffsets[i], filter: "blur(8px)" },
+            { opacity: 0, scale: 0.82, y: yOffsets[i], filter: "blur(10px)" },
             {
               opacity: 1,
               scale: 1,
               y: 0,
               filter: "blur(0px)",
-              duration: 0.3,
+              duration: 0.28,
               ease: "power2.out",
             },
-            // Start each float at 25% intervals with 5% overlap for flow
-            i * 0.22
+            i * 0.26 // evenly spaced, no overlap
           );
         });
 
         ScrollTrigger.create({
-          trigger: sectionRef.current,
+          trigger: desktopSectionRef.current,
           pin: true,
           pinSpacing: true,
           start: "top top",
-          end: "+=220%", // 220% of viewport = total scroll distance while pinned
-          scrub: 1.8,    // slight lag for premium feel
+          // 400% = very slow — user needs to scroll 4x viewport height before all 4 images appear
+          end: "+=400%",
+          scrub: 2.5,
           animation: tl,
         });
-      }, sectionRef);
+      });
     }
 
     init();
-
     return () => ctx?.revert();
   }, []);
 
   return (
     <>
-      {/* ── Desktop layout ────────────────────────────────────────────── */}
-      <section
-        ref={sectionRef}
-        aria-label="Système Van Business Academy"
-        className="
-          hidden md:flex
-          relative mt-16 h-screen items-center justify-center
-          overflow-hidden
-        "
-      >
-        {/* Subtle radial glow behind the scene */}
+      {/* ═══════════════════════════════════════════════════════════════
+          MOBILE — shown below md breakpoint
+          Full-width cards revealed one by one on natural scroll
+      ════════════════════════════════════════════════════════════════ */}
+      <div className="md:hidden mt-10 pb-8">
+
+        {/* Laptop — full width */}
         <div
-          className="pointer-events-none absolute inset-0 z-0"
-          style={{
-            background:
-              "radial-gradient(ellipse 70% 55% at 50% 52%, rgba(205,167,123,0.10) 0%, transparent 70%)",
-          }}
-        />
-
-        {/* Scene — relative parent for absolute-positioned floats */}
-        <div className="relative z-10 w-full max-w-5xl mx-auto px-6">
-
-          {/* ── Laptop (center, z-10) ───────────────────────────────── */}
-          <div className="relative z-10 w-[50%] mx-auto drop-shadow-2xl">
-            <Image
-              src={LAPTOP.src}
-              alt={LAPTOP.alt}
-              width={LAPTOP.width}
-              height={LAPTOP.height}
-              className="w-full h-auto rounded-lg"
-              priority
-              unoptimized
-            />
-          </div>
-
-          {/* ── Floating windows (z-20, animated by GSAP) ─────────── */}
-          {FLOATS.map((f, i) => (
-            <div
-              key={i}
-              ref={(el) => { floatRefs.current[i] = el; }}
-              className="absolute z-20 w-[42%]"
-              style={{
-                ...f.style,
-                transform: `rotate(${f.rotate})`,
-                // shadow rendered here so it's not affected by the blur filter animation
-                filter: "drop-shadow(0 16px 40px rgba(0,0,0,0.18))",
-                opacity: 0, // hidden until GSAP takes over
-              }}
-            >
-              {/* Inner wrapper carries the blur/scale animation via GSAP */}
-              <div>
-                <Image
-                  src={f.src}
-                  alt={f.alt}
-                  width={f.width}
-                  height={f.height}
-                  className="w-full h-auto rounded-xl"
-                  unoptimized
-                />
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Scroll hint — fades out once user starts scrolling */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 opacity-50">
-          <span className="text-xs text-slate-400 tracking-widest uppercase font-medium">Scroll</span>
-          <div className="w-px h-8 bg-gradient-to-b from-slate-400 to-transparent" />
-        </div>
-      </section>
-
-      {/* ── Mobile layout — static stacked reveal ─────────────────────── */}
-      <div className="md:hidden mt-12 px-4 space-y-4">
-        {/* Laptop first */}
-        <div className="w-full drop-shadow-xl">
+          ref={mobileLaptopRef}
+          className="w-full px-4"
+          style={{ filter: "drop-shadow(0 12px 32px rgba(0,0,0,0.14))" }}
+        >
           <Image
             src={LAPTOP.src}
             alt={LAPTOP.alt}
             width={LAPTOP.width}
             height={LAPTOP.height}
-            className="w-full h-auto rounded-xl"
+            className="w-full h-auto rounded-2xl"
             priority
             unoptimized
           />
         </div>
 
-        {/* 4 floats in 2-column grid */}
-        <div className="grid grid-cols-2 gap-3">
+        {/* Floating windows — each full width, scrolls into view one by one */}
+        <div className="mt-6 space-y-5 px-3">
           {FLOATS.map((f, i) => (
             <div
               key={i}
-              className="drop-shadow-md"
+              ref={(el) => { mobileFloatRefs.current[i] = el; }}
+              style={{
+                transform: `rotate(${f.mobileRotate})`,
+                filter: "drop-shadow(0 8px 24px rgba(0,0,0,0.14))",
+              }}
             >
               <Image
                 src={f.src}
                 alt={f.alt}
                 width={f.width}
                 height={f.height}
-                className="w-full h-auto rounded-lg"
+                className="w-full h-auto rounded-2xl"
                 unoptimized
               />
             </div>
           ))}
         </div>
       </div>
+
+      {/* ═══════════════════════════════════════════════════════════════
+          DESKTOP — pinned scroll section
+          4 floating windows revealed sequentially during 400vh of scroll
+      ════════════════════════════════════════════════════════════════ */}
+      <section
+        ref={desktopSectionRef}
+        aria-label="Système Van Business Academy"
+        className="hidden md:flex relative mt-16 h-screen items-center justify-center overflow-hidden"
+      >
+        {/* Radial glow */}
+        <div
+          className="pointer-events-none absolute inset-0 z-0"
+          style={{
+            background:
+              "radial-gradient(ellipse 70% 55% at 50% 52%, rgba(205,167,123,0.09) 0%, transparent 70%)",
+          }}
+        />
+
+        {/* Scene */}
+        <div className="relative z-10 w-full max-w-5xl mx-auto px-6">
+
+          {/* Laptop — center z-10 */}
+          <div className="relative z-10 w-[50%] mx-auto"
+            style={{ filter: "drop-shadow(0 24px 48px rgba(0,0,0,0.18))" }}>
+            <Image
+              src={LAPTOP.src}
+              alt={LAPTOP.alt}
+              width={LAPTOP.width}
+              height={LAPTOP.height}
+              className="w-full h-auto rounded-xl"
+              priority
+              unoptimized
+            />
+          </div>
+
+          {/* Floating windows — z-20, animated */}
+          {FLOATS.map((f, i) => (
+            <div
+              key={i}
+              ref={(el) => { desktopFloatRefs.current[i] = el; }}
+              className="absolute z-20 w-[42%]"
+              style={{
+                ...f.desktopStyle,
+                transform: `rotate(${f.desktopRotate})`,
+                filter: "drop-shadow(0 16px 40px rgba(0,0,0,0.18))",
+                opacity: 0,
+              }}
+            >
+              <Image
+                src={f.src}
+                alt={f.alt}
+                width={f.width}
+                height={f.height}
+                className="w-full h-auto rounded-xl"
+                unoptimized
+              />
+            </div>
+          ))}
+        </div>
+
+        {/* Scroll hint */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 opacity-40">
+          <span className="text-[10px] text-slate-400 tracking-widest uppercase font-semibold">Scroll</span>
+          <div className="w-px h-7 bg-gradient-to-b from-slate-400 to-transparent" />
+        </div>
+      </section>
     </>
   );
 }
