@@ -12,58 +12,146 @@ interface Props {
   onMarkedContacted: (id: string) => void;
 }
 
+// Roles that can make partnership decisions → best "To" candidates
+const DECISION_ROLES = ["ceo","directeur","direction","founder","fondateur","gérant","owner","head","responsable","partenariat","partnership","business","commercial","dg","président"];
+// Generic contact emails that are good for cold outreach
+const GENERIC_PREFIXES = /^(contact|hello|bonjour|info|collab|partenariat|partnership|commercial|equipe|team)@/i;
+
+function pickRecipients(prospect: Prospect): { to: string; ccList: string[] } {
+  const contacts = prospect.contacts ?? [];
+  const emails = prospect.emails ?? [];
+
+  // Generic emails (good for outreach)
+  const genericEmails = emails.filter(e => GENERIC_PREFIXES.test(e));
+
+  // Best "To": priority-1 contact → decision maker contact → generic email → first email
+  const p1 = contacts.find(c => c.priority === 1 && c.email);
+  const decisionMaker = contacts.find(c =>
+    DECISION_ROLES.some(r => (c.role ?? "").toLowerCase().includes(r)) && c.email
+  );
+  const toEmail =
+    p1?.email ||
+    decisionMaker?.email ||
+    genericEmails[0] ||
+    emails[0] ||
+    "";
+
+  // CC candidates: remaining contacts + generic emails not already used, deduped, max 4
+  const seen = new Set([toEmail]);
+  const ccCandidates: string[] = [];
+
+  // First: other contacts by priority
+  [...contacts]
+    .sort((a, b) => a.priority - b.priority)
+    .forEach(c => {
+      if (c.email && !seen.has(c.email)) { seen.add(c.email); ccCandidates.push(c.email); }
+    });
+
+  // Then: generic emails not yet included
+  genericEmails.forEach(e => {
+    if (!seen.has(e)) { seen.add(e); ccCandidates.push(e); }
+  });
+
+  // Then: remaining emails
+  emails.forEach(e => {
+    if (!seen.has(e)) { seen.add(e); ccCandidates.push(e); }
+  });
+
+  return { to: toEmail, ccList: ccCandidates.slice(0, 4) };
+}
+
 export default function ContactModal({ open, prospect, subject, body, onClose, onMarkedContacted }: Props) {
   const [to, setTo] = useState("");
-  const [cc, setCc] = useState("");
+  const [ccList, setCcList] = useState<string[]>([]);
   const [editSubject, setEditSubject] = useState(subject);
   const [editBody, setEditBody] = useState(body);
   const [isMarking, setIsMarking] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+  const [sendResult, setSendResult] = useState<{ ok: boolean; message: string } | null>(null);
 
   useEffect(() => {
     if (prospect) {
-      const primaryEmail =
-        prospect.contacts[0]?.email ||
-        prospect.emails[0] ||
-        "";
-      setTo(primaryEmail);
-      setCc("");
+      const { to: bestTo, ccList: bestCc } = pickRecipients(prospect);
+      setTo(bestTo);
+      setCcList(bestCc);
+      setSendResult(null);
     }
-    setEditSubject(subject);
+    setEditSubject(subject || (prospect ? `Collaboration Vanzon Explorer × ${prospect.name}` : ""));
     setEditBody(body);
   }, [prospect, subject, body]);
 
   if (!open || !prospect) return null;
 
+  const ccString = ccList.join(", ");
+
   function handleOpenGmail() {
     if (!to.trim()) return;
-    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&tf=1&to=${encodeURIComponent(to)}&cc=${encodeURIComponent(cc)}&su=${encodeURIComponent(editSubject)}&body=${encodeURIComponent(editBody)}`;
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&tf=1&to=${encodeURIComponent(to)}&cc=${encodeURIComponent(ccString)}&su=${encodeURIComponent(editSubject)}&body=${encodeURIComponent(editBody)}`;
     window.open(gmailUrl, "_blank");
+  }
+
+  async function handleSendDirect() {
+    if (!to.trim() || !prospect) return;
+    setIsSending(true);
+    setSendResult(null);
+    try {
+      const res = await fetch("/api/admin/club/prospect/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          prospectId: prospect.id,
+          to,
+          cc: ccList,
+          subject: editSubject,
+          body: editBody,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setSendResult({ ok: true, message: "Email envoyé avec succès !" });
+        await markContacted();
+      } else {
+        setSendResult({ ok: false, message: data.error ?? "Erreur lors de l'envoi" });
+      }
+    } catch (err) {
+      setSendResult({ ok: false, message: String(err) });
+    } finally {
+      setIsSending(false);
+    }
+  }
+
+  async function markContacted() {
+    if (!prospect) return;
+    await updateProspectStatus(prospect.id, "contacte");
+    await addContactHistory(prospect.id, {
+      date: new Date().toISOString(),
+      action: "Email envoyé",
+      notes: `Objet: ${editSubject}`,
+    });
+    onMarkedContacted(prospect.id);
   }
 
   async function handleMarkContacted() {
     if (!prospect) return;
     setIsMarking(true);
     try {
-      const statusResult = await updateProspectStatus(prospect.id, "contacte");
-      if (!statusResult.success) {
-        console.error("Erreur mise à jour statut:", statusResult);
-      }
-      const historyResult = await addContactHistory(prospect.id, {
-        date: new Date().toISOString(),
-        action: "Email envoyé",
-        notes: `Objet: ${editSubject}`,
-      });
-      if (!historyResult.success) {
-        console.error("Erreur ajout historique contact:", historyResult);
-      }
-      if (statusResult.success && historyResult.success) {
-        onMarkedContacted(prospect.id);
-      }
+      await markContacted();
       onClose();
     } catch (err) {
       console.error("Erreur marquage contacté:", err);
     } finally {
       setIsMarking(false);
+    }
+  }
+
+  function removeCc(email: string) {
+    setCcList(prev => prev.filter(e => e !== email));
+  }
+
+  function addCc(email: string) {
+    const trimmed = email.trim();
+    if (trimmed && !ccList.includes(trimmed)) {
+      setCcList(prev => [...prev, trimmed]);
     }
   }
 
@@ -82,7 +170,14 @@ export default function ContactModal({ open, prospect, subject, body, onClose, o
         <div className="px-6 py-5 space-y-4">
           {/* To */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">À</label>
+            <label className="block text-sm font-medium text-slate-700 mb-1.5">
+              À
+              {prospect.contacts.find(c => c.email === to) && (
+                <span className="ml-2 text-xs font-normal text-slate-400">
+                  {prospect.contacts.find(c => c.email === to)?.name} · {prospect.contacts.find(c => c.email === to)?.role}
+                </span>
+              )}
+            </label>
             <input
               type="email"
               value={to}
@@ -92,14 +187,42 @@ export default function ContactModal({ open, prospect, subject, body, onClose, o
             />
           </div>
 
-          {/* CC */}
+          {/* CC — pill tags */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">CC</label>
+            <label className="block text-sm font-medium text-slate-700 mb-1.5">
+              CC
+              <span className="ml-2 text-xs font-normal text-slate-400">{ccList.length} destinataire{ccList.length !== 1 ? "s" : ""}</span>
+            </label>
+            <div className="flex flex-wrap gap-1.5 mb-2">
+              {ccList.map(email => {
+                const contact = prospect.contacts.find(c => c.email === email);
+                return (
+                  <span
+                    key={email}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs bg-violet-50 text-violet-700 border border-violet-100"
+                  >
+                    {contact ? `${contact.name} (${email})` : email}
+                    <button
+                      onClick={() => removeCc(email)}
+                      className="text-violet-400 hover:text-violet-600 ml-0.5 leading-none"
+                    >
+                      ×
+                    </button>
+                  </span>
+                );
+              })}
+            </div>
             <input
-              type="text"
-              value={cc}
-              onChange={e => setCc(e.target.value)}
-              placeholder="cc@exemple.com"
+              type="email"
+              placeholder="Ajouter un email en copie..."
+              onKeyDown={e => {
+                if (e.key === "Enter" || e.key === ",") {
+                  e.preventDefault();
+                  addCc((e.target as HTMLInputElement).value);
+                  (e.target as HTMLInputElement).value = "";
+                }
+              }}
+              onBlur={e => { if (e.target.value) { addCc(e.target.value); e.target.value = ""; } }}
               className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-violet-300"
             />
           </div>
@@ -127,29 +250,37 @@ export default function ContactModal({ open, prospect, subject, body, onClose, o
             />
           </div>
 
-          {/* Other contacts hint */}
-          {prospect.contacts.length > 1 && (
-            <div className="text-xs text-slate-400">
-              Autres contacts :{" "}
-              {prospect.contacts.slice(1).map(c => c.email).filter(Boolean).join(", ")}
+          {/* Send result */}
+          {sendResult && (
+            <div className={`flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium ${
+              sendResult.ok ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-600"
+            }`}>
+              {sendResult.ok ? "✓" : "✗"} {sendResult.message}
             </div>
           )}
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-slate-100 flex justify-between items-center">
+        <div className="px-6 py-4 border-t border-slate-100 flex justify-between items-center flex-wrap gap-3">
           <button
             onClick={onClose}
             className="px-4 py-2.5 rounded-xl text-sm font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors"
           >
             Fermer
           </button>
-          <div className="flex gap-3">
+          <div className="flex gap-3 flex-wrap">
             <button
               onClick={handleOpenGmail}
               className="px-4 py-2.5 rounded-xl text-sm font-semibold border-2 border-violet-300 text-violet-700 hover:bg-violet-50 transition-colors"
             >
               Ouvrir Gmail
+            </button>
+            <button
+              onClick={handleSendDirect}
+              disabled={isSending || !to.trim()}
+              className="px-4 py-2.5 rounded-xl text-sm font-semibold border-2 border-emerald-300 text-emerald-700 hover:bg-emerald-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isSending ? "Envoi..." : "Envoyer directement"}
             </button>
             <button
               onClick={handleMarkContacted}

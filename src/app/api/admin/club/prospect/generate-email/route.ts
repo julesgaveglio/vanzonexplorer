@@ -135,7 +135,7 @@ RÈGLES :
 
 Format de réponse OBLIGATOIRE :
 ###OBJET###
-[Objet court et accrocheur, max 55 caractères — personnalisé sur leur produit/marché, sans le mot "partenariat"]
+[Objet au format exact : "Collaboration Vanzon Explorer × ${typedProspect.name}" — tu peux ajouter 2-3 mots max après le nom de marque si pertinent, jamais avant]
 ###CORPS###
 [Corps complet de l'email]
 ###FIN###`,
@@ -170,7 +170,7 @@ Format de réponse OBLIGATOIRE :
 
     // Last resort: extract from raw text
     if (!subject) {
-      subject = `Partenariat Vanzon Explorer × ${typedProspect.name}`;
+      subject = `Collaboration Vanzon Explorer × ${typedProspect.name}`;
     }
     if (!body) {
       body = rawContent.replace(/###\w+###/g, "").trim();
