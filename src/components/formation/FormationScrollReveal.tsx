@@ -135,25 +135,45 @@ export default function FormationScrollReveal() {
         </div>
       </div>
 
-      {/* Mobile : grille 2 colonnes */}
-      <div className="md:hidden grid grid-cols-2 gap-3">
-        {FLOATS.map((f, i) => (
-          <div
-            key={i}
-            className="rounded-xl overflow-hidden"
-            style={{ filter: "drop-shadow(0 8px 20px rgba(0,0,0,0.14))" }}
-          >
-            <Image
-              src={f.src}
-              alt={f.alt}
-              width={f.width}
-              height={f.height}
-              className="w-full h-auto"
-              priority={i === 0}
-              unoptimized
+      {/* Mobile : carousel horizontal */}
+      <div className="md:hidden">
+        <div
+          className="flex gap-4 overflow-x-auto snap-x snap-mandatory px-6 pb-4"
+          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+        >
+          {FLOATS.map((f, i) => (
+            <div
+              key={i}
+              className="flex-none w-[85vw] snap-center rounded-xl overflow-hidden"
+              style={{ filter: "drop-shadow(0 8px 20px rgba(0,0,0,0.14))" }}
+            >
+              <Image
+                src={f.src}
+                alt={f.alt}
+                width={f.width}
+                height={f.height}
+                className="w-full h-auto"
+                priority={i === 0}
+                unoptimized
+              />
+            </div>
+          ))}
+        </div>
+
+        {/* Dots */}
+        <div className="flex justify-center gap-1.5 mt-3">
+          {FLOATS.map((_, i) => (
+            <div
+              key={i}
+              className="rounded-full"
+              style={{
+                width: i === 0 ? "20px" : "6px",
+                height: "6px",
+                background: i === 0 ? "#B9945F" : "rgba(185,148,95,0.3)",
+              }}
             />
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );
