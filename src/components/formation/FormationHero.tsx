@@ -27,7 +27,7 @@ export default function FormationHero() {
         <h1 className="text-5xl md:text-7xl font-black text-slate-900 leading-[1.05] tracking-tight">
           De 0 à tes premiers revenus
           <br />
-          <span className="bg-clip-text text-transparent" style={{ backgroundImage: 'linear-gradient(90deg, #CDA77B, #B9945F)' }}>
+          <span className="bg-clip-text text-transparent" style={{ backgroundImage: 'linear-gradient(135deg, #B9945F 0%, #E4D398 100%)' }}>
             de location.
           </span>
         </h1>
