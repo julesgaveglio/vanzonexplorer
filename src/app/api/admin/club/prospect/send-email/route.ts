@@ -21,18 +21,16 @@ async function getGmailAccessToken(): Promise<string> {
 
 // Fetch the official Gmail signature for the sender alias
 async function getGmailSignature(accessToken: string): Promise<string> {
-  try {
-    const res = await fetch(
-      `https://gmail.googleapis.com/gmail/v1/users/me/settings/sendAs/${encodeURIComponent(SENDER_EMAIL)}`,
-      { headers: { Authorization: `Bearer ${accessToken}` } }
-    );
-    if (!res.ok) return "";
-    const data = await res.json();
-    // signature is HTML
-    return (data.signature as string) ?? "";
-  } catch {
-    return "";
+  const res = await fetch(
+    `https://gmail.googleapis.com/gmail/v1/users/me/settings/sendAs/${encodeURIComponent(SENDER_EMAIL)}`,
+    { headers: { Authorization: `Bearer ${accessToken}` } }
+  );
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Signature fetch failed (${res.status}): ${err} — re-authorize with gmail.settings.basic scope`);
   }
+  const data = await res.json();
+  return (data.signature as string) ?? "";
 }
 
 // Convert plain text to HTML and append Gmail signature
