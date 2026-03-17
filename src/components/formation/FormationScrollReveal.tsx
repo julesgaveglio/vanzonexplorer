@@ -117,22 +117,6 @@ export default function FormationScrollReveal() {
 
       {/* Mobile : carousel horizontal */}
       <div className="md:hidden">
-        {/* Image hero agrandie en premier */}
-        <div
-          className="w-full rounded-2xl overflow-hidden mb-4"
-          style={{ filter: "drop-shadow(0 12px 32px rgba(0,0,0,0.14))" }}
-        >
-          <Image
-            src={HERO_IMG.src}
-            alt={HERO_IMG.alt}
-            width={HERO_IMG.width}
-            height={HERO_IMG.height}
-            className="w-full h-auto"
-            priority
-            unoptimized
-          />
-        </div>
-
         {/* Carousel des screenshots */}
         <div
           ref={carouselRef}
