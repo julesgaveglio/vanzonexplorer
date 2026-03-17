@@ -16,14 +16,21 @@ export default function EnrichModal({ open, prospect, onClose, onDone }: Props) 
   const [emails, setEmails] = useState<string[]>([]);
   const [contacts, setContacts] = useState<ContactEntry[]>([]);
   const [newEmail, setNewEmail] = useState("");
+  const [autoSaved, setAutoSaved] = useState(false);
   const logsEndRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
+  // Refs to capture latest results for auto-save (avoids stale closure)
+  const latestEmailsRef = useRef<string[]>([]);
+  const latestContactsRef = useRef<ContactEntry[]>([]);
 
   useEffect(() => {
     if (prospect) {
       setEmails(prospect.emails ?? []);
       setContacts(prospect.contacts ?? []);
       setLogs([]);
+      setAutoSaved(false);
+      latestEmailsRef.current = prospect.emails ?? [];
+      latestContactsRef.current = prospect.contacts ?? [];
     }
   }, [prospect]);
 
@@ -80,9 +87,24 @@ export default function EnrichModal({ open, prospect, onClose, onDone }: Props) 
           try {
             const data = JSON.parse(line.slice(6));
             if (data.type === "log") setLogs(prev => [...prev, data.message]);
-            if (data.type === "emails") setEmails(data.emails);
-            if (data.type === "contacts") setContacts(data.contacts);
-            if (data.type === "done") setIsEnriching(false);
+            if (data.type === "result") {
+              // Fix: route sends type:"result" with emails+contacts
+              const foundEmails: string[] = data.emails ?? [];
+              const foundContacts: ContactEntry[] = data.contacts ?? [];
+              setEmails(foundEmails);
+              setContacts(foundContacts);
+              latestEmailsRef.current = foundEmails;
+              latestContactsRef.current = foundContacts;
+            }
+            if (data.type === "done") {
+              setIsEnriching(false);
+              // Auto-update the table immediately — no need to click "Sauvegarder"
+              if (prospect && latestEmailsRef.current.length > 0) {
+                onDone(prospect.id, latestEmailsRef.current, latestContactsRef.current);
+                setAutoSaved(true);
+                setLogs(prev => [...prev, `✓ Tableau mis à jour automatiquement`]);
+              }
+            }
           } catch {
             // ignore parse errors
           }
@@ -223,20 +245,30 @@ export default function EnrichModal({ open, prospect, onClose, onDone }: Props) 
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-slate-100 flex justify-end gap-3">
-          <button
-            onClick={onClose}
-            className="px-4 py-2.5 rounded-xl text-sm font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors"
-          >
-            Annuler
-          </button>
-          <button
-            onClick={handleSave}
-            className="px-5 py-2.5 rounded-xl text-sm font-semibold text-white"
-            style={{ background: "linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)" }}
-          >
-            Sauvegarder
-          </button>
+        <div className="px-6 py-4 border-t border-slate-100 flex justify-between items-center gap-3">
+          {autoSaved ? (
+            <span className="text-xs font-medium text-emerald-600 flex items-center gap-1.5">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+              Tableau mis à jour
+            </span>
+          ) : <span />}
+          <div className="flex gap-3">
+            <button
+              onClick={onClose}
+              className="px-4 py-2.5 rounded-xl text-sm font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors"
+            >
+              Fermer
+            </button>
+            <button
+              onClick={handleSave}
+              className="px-5 py-2.5 rounded-xl text-sm font-semibold text-white"
+              style={{ background: "linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)" }}
+            >
+              {autoSaved ? "Mettre à jour" : "Sauvegarder"}
+            </button>
+          </div>
         </div>
       </div>
     </div>
