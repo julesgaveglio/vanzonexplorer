@@ -22,6 +22,19 @@ const ALL_STATUSES: ProspectStatus[] = [
   "en_discussion","accepte","refuse","a_revoir",
 ];
 
+// Triage intelligent : les plus actionnables en premier
+const STATUS_PRIORITY: Record<ProspectStatus, number> = {
+  email_genere:  1, // email prêt → envoyer maintenant
+  en_discussion: 2, // deal actif → suivre
+  relance:       3, // relance à envoyer
+  enrichi:       4, // à contacter → générer email
+  a_traiter:     5, // à enrichir
+  contacte:      6, // en attente réponse
+  a_revoir:      7, // différé
+  accepte:       8, // fermé — gagné
+  refuse:        9, // fermé — perdu
+};
+
 const CATEGORIES = ["froid","énergie","chauffage","sanitaire","extérieur","accessoires","distributeur","tendance"];
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -208,18 +221,26 @@ export default function ProspectionClient({ initialProspects }: Props) {
   const enDiscussion = prospects.filter(p => p.status === "en_discussion").length;
   const acceptes = prospects.filter(p => p.status === "accepte").length;
 
-  // Filtered prospects
-  const filtered = prospects.filter(p => {
-    if (search && !p.name.toLowerCase().includes(search.toLowerCase()) &&
-        !(p.description ?? "").toLowerCase().includes(search.toLowerCase())) return false;
-    if (filterCategory && p.category !== filterCategory) return false;
-    if (filterStatus && p.status !== filterStatus) return false;
-    if (filterCountry) {
-      if (filterCountry === "France" && p.country !== "France") return false;
-      if (filterCountry === "other" && p.country === "France") return false;
-    }
-    return true;
-  });
+  // Filtered + sorted prospects (triage intelligent par statut actionnable)
+  const filtered = prospects
+    .filter(p => {
+      if (search && !p.name.toLowerCase().includes(search.toLowerCase()) &&
+          !(p.description ?? "").toLowerCase().includes(search.toLowerCase())) return false;
+      if (filterCategory && p.category !== filterCategory) return false;
+      if (filterStatus && p.status !== filterStatus) return false;
+      if (filterCountry) {
+        if (filterCountry === "France" && p.country !== "France") return false;
+        if (filterCountry === "other" && p.country === "France") return false;
+      }
+      return true;
+    })
+    .sort((a, b) => {
+      const pa = STATUS_PRIORITY[a.status] ?? 99;
+      const pb = STATUS_PRIORITY[b.status] ?? 99;
+      if (pa !== pb) return pa - pb;
+      // À égalité de statut : les plus récemment mis à jour en premier
+      return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
+    });
 
   async function handleStatusChange(id: string, newStatus: ProspectStatus) {
     const result = await updateProspectStatus(id, newStatus);
