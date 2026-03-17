@@ -46,15 +46,10 @@ const FLOATS = [
 ];
 
 export default function FormationScrollReveal() {
-  // Desktop refs
   const desktopSectionRef = useRef<HTMLElement>(null);
   const desktopFloatRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  // Mobile: CSS sticky wrapper (no GSAP pin)
-  const mobileWrapperRef = useRef<HTMLDivElement>(null);
-  // 3 invisible sentinels — each triggers one overlay pop
-  const sentinelRefs = useRef<(HTMLDivElement | null)[]>([]);
-  // 3 overlay image refs (FLOATS[1], [2], [3])
+  const mobileSectionRef = useRef<HTMLElement>(null);
   const mobileOverlayRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
@@ -68,50 +63,51 @@ export default function FormationScrollReveal() {
 
       ctx = gsap.context(() => {
 
-        // ─────────────────────────────────────────────────────────────────
-        // MOBILE — no pin, CSS sticky + sentinel-based pop animations
-        // ─────────────────────────────────────────────────────────────────
-        const overlays = mobileOverlayRefs.current.filter(Boolean) as HTMLDivElement[];
-        const sentinels = sentinelRefs.current.filter(Boolean) as HTMLDivElement[];
+        // ── MOBILE ───────────────────────────────────────────────────────
+        // Pinned at natural image height, 3 overlays scrubbed in/out
+        // end: +=120% = 40vh per image — tight, no wasted space
+        // ────────────────────────────────────────────────────────────────
+        if (mobileSectionRef.current) {
+          const overlays = mobileOverlayRefs.current.filter(Boolean) as HTMLDivElement[];
 
-        // Set overlays invisible initially
-        gsap.set(overlays, { opacity: 0, scale: 0.86, y: 18, filter: "blur(5px)" });
+          gsap.set(overlays, { opacity: 0, y: 14, scale: 0.97 });
 
-        // Each sentinel fires when it enters the viewport — triggers a distinct pop
-        sentinels.forEach((sentinel, i) => {
-          gsap.fromTo(
-            overlays[i],
-            { opacity: 0, scale: 0.86, y: 18, filter: "blur(5px)" },
-            {
-              opacity: 1,
-              scale: 1,
-              y: 0,
-              filter: "blur(0px)",
-              duration: 0.55,
-              ease: "back.out(1.6)", // bouncy pop feel
-              scrollTrigger: {
-                trigger: sentinel,
-                start: "top 85%",
-                toggleActions: "play none none reverse",
-              },
-            }
-          );
-        });
+          const tl = gsap.timeline();
 
-        // ─────────────────────────────────────────────────────────────────
-        // DESKTOP — pinned section, scrubbed timeline
-        // ─────────────────────────────────────────────────────────────────
+          overlays.forEach((el, i) => {
+            tl.fromTo(
+              el,
+              { opacity: 0, y: 14, scale: 0.97 },
+              { opacity: 1, y: 0, scale: 1, duration: 0.3, ease: "power2.inOut" },
+              i * 0.34  // evenly spaced: 0 / 0.34 / 0.68
+            );
+          });
+
+          ScrollTrigger.create({
+            trigger: mobileSectionRef.current,
+            pin: true,
+            pinSpacing: true,
+            start: "top top",
+            end: "+=120%", // 3 images × 40vh — snappy and tight
+            scrub: 0.6,   // nearly instant response to scroll direction
+            animation: tl,
+          });
+        }
+
+        // ── DESKTOP ──────────────────────────────────────────────────────
+        // Unchanged: 4 floats, 400% scroll, scrub 2.5
+        // ────────────────────────────────────────────────────────────────
         if (!desktopSectionRef.current) return;
         const desktopFloats = desktopFloatRefs.current.filter(Boolean) as HTMLDivElement[];
         if (!desktopFloats.length) return;
 
         gsap.set(desktopFloats, { opacity: 0, scale: 0.82, filter: "blur(10px)" });
 
-        const tl = gsap.timeline();
+        const tl2 = gsap.timeline();
         const yOffsets = [-32, -32, 32, 32];
 
         desktopFloats.forEach((el, i) => {
-          tl.fromTo(
+          tl2.fromTo(
             el,
             { opacity: 0, scale: 0.82, y: yOffsets[i], filter: "blur(10px)" },
             { opacity: 1, scale: 1, y: 0, filter: "blur(0px)", duration: 0.28, ease: "power2.out" },
@@ -126,7 +122,7 @@ export default function FormationScrollReveal() {
           start: "top top",
           end: "+=400%",
           scrub: 2.5,
-          animation: tl,
+          animation: tl2,
         });
       });
     }
@@ -137,68 +133,47 @@ export default function FormationScrollReveal() {
 
   return (
     <>
-      {/* ═══════════════════════════════════════════════════════════════
-          MOBILE — no pin, no section, images directly in page flow
-          CSS sticky keeps images visible while sentinels scroll past
-      ════════════════════════════════════════════════════════════════ */}
-      <div ref={mobileWrapperRef} className="md:hidden relative">
+      {/* ── MOBILE ────────────────────────────────────────────────────── */}
+      {/* Natural height section — pinned by GSAP, no h-screen waste     */}
+      <section
+        ref={mobileSectionRef}
+        aria-label="Formation Van Business Academy"
+        className="md:hidden relative"
+      >
+        <div className="relative w-full px-4">
+          {/* Base image — always visible, sets natural height */}
+          <Image
+            src={FLOATS[0].src}
+            alt={FLOATS[0].alt}
+            width={FLOATS[0].width}
+            height={FLOATS[0].height}
+            className="w-full h-auto"
+            priority
+            unoptimized
+          />
 
-        {/* Sticky image stack — stays visible as sentinels scroll by */}
-        <div className="sticky top-8 z-10">
-          <div className="relative w-full px-4">
-
-            {/* Base image — always visible, defines height */}
-            <Image
-              src={FLOATS[0].src}
-              alt={FLOATS[0].alt}
-              width={FLOATS[0].width}
-              height={FLOATS[0].height}
-              className="w-full h-auto"
-              priority
-              unoptimized
-            />
-
-            {/* Overlay images — pop in one by one */}
-            {[FLOATS[1], FLOATS[2], FLOATS[3]].map((f, i) => (
-              <div
-                key={i}
-                ref={(el) => { mobileOverlayRefs.current[i] = el; }}
-                className="absolute top-0 left-4 right-4"
-                style={{ opacity: 0 }}
-              >
-                <Image
-                  src={f.src}
-                  alt={f.alt}
-                  width={f.width}
-                  height={f.height}
-                  className="w-full h-auto"
-                  unoptimized
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/*
-          Invisible sentinels — scrolled past to trigger each pop.
-          Each is ~110px below the previous, giving 3 distinct scroll steps.
-          This spacing adds ~330px of height below the image stack.
-        */}
-        <div className="relative" style={{ height: 340 }}>
-          {[0, 1, 2].map((i) => (
+          {/* Overlays — scrubbed in/out directly with scroll */}
+          {[FLOATS[1], FLOATS[2], FLOATS[3]].map((f, i) => (
             <div
               key={i}
-              ref={(el) => { sentinelRefs.current[i] = el; }}
-              className="absolute w-full"
-              style={{ top: i * 110 }}
-            />
+              ref={(el) => { mobileOverlayRefs.current[i] = el; }}
+              className="absolute top-0 left-4 right-4"
+              style={{ opacity: 0 }}
+            >
+              <Image
+                src={f.src}
+                alt={f.alt}
+                width={f.width}
+                height={f.height}
+                className="w-full h-auto"
+                unoptimized
+              />
+            </div>
           ))}
         </div>
-      </div>
+      </section>
 
-      {/* ═══════════════════════════════════════════════════════════════
-          DESKTOP — pinned scroll section, unchanged
-      ════════════════════════════════════════════════════════════════ */}
+      {/* ── DESKTOP ───────────────────────────────────────────────────── */}
       <section
         ref={desktopSectionRef}
         aria-label="Système Van Business Academy"
@@ -211,7 +186,6 @@ export default function FormationScrollReveal() {
               "radial-gradient(ellipse 70% 55% at 50% 52%, rgba(205,167,123,0.09) 0%, transparent 70%)",
           }}
         />
-
         <div className="relative z-10 w-full max-w-5xl mx-auto px-6">
           <div
             className="relative z-10 w-[50%] mx-auto"
