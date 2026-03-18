@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import Image from "next/image";
 
 interface Agent {
@@ -32,89 +32,203 @@ interface AgentsClientProps {
   queueStats: QueueStats;
 }
 
+// ── Character definitions ────────────────────────────────────────────────────
+
 const CHARACTERS: Record<string, {
   name: string;
   img: string;
   color: string;
-  bgFrom: string;
-  bgTo: string;
+  bgGrad: [string, string];
   glow: string;
   border: string;
-  personality: string;
   role: string;
+  tagline: string;
 }> = {
   "blog-writer": {
     name: "Mario",
     img: "/agents/mario.png",
-    color: "#E52521",
-    bgFrom: "#3a0a08",
-    bgTo: "#1a0504",
-    glow: "rgba(229,37,33,0.5)",
-    border: "rgba(229,37,33,0.6)",
-    personality: "Le héros principal. Infatigable, toujours en action — il publie 3 articles par semaine sans jamais flancher.",
-    role: "Agent Rédaction SEO",
+    color: "#FF3B30",
+    bgGrad: ["#3a0a08", "#1a0504"],
+    glow: "rgba(255,59,48,0.45)",
+    border: "rgba(255,59,48,0.5)",
+    role: "Rédaction SEO",
+    tagline: "Le héros qui publie 3×/semaine, sans exception.",
   },
   "keyword-research-quarterly": {
     name: "Luigi",
     img: "/agents/luigi.png",
-    color: "#00A652",
-    bgFrom: "#062a14",
-    bgTo: "#031509",
-    glow: "rgba(0,166,82,0.5)",
-    border: "rgba(0,166,82,0.6)",
-    personality: "L'explorateur. Il part en mission chaque trimestre découvrir des territoires inconnus — les mots-clés que personne n'a encore explorés.",
-    role: "Agent Mots-Clés Trimestriel",
+    color: "#30D158",
+    bgGrad: ["#062a14", "#031509"],
+    glow: "rgba(48,209,88,0.4)",
+    border: "rgba(48,209,88,0.5)",
+    role: "Recherche Mots-Clés",
+    tagline: "Explore 4 segments, 200 mots-clés chacun, chaque trimestre.",
   },
   "queue-builder-monthly": {
     name: "Toad",
     img: "/agents/toad.png",
-    color: "#2196F3",
-    bgFrom: "#06192e",
-    bgTo: "#030d18",
-    glow: "rgba(33,150,243,0.5)",
-    border: "rgba(33,150,243,0.6)",
-    personality: "L'organisateur ultra-efficace. Chaque 1er du mois, il trie, priorise et alimente la queue d'articles avec précision.",
-    role: "Agent Queue Builder",
+    color: "#0A84FF",
+    bgGrad: ["#06192e", "#030d18"],
+    glow: "rgba(10,132,255,0.4)",
+    border: "rgba(10,132,255,0.5)",
+    role: "Queue Builder",
+    tagline: "Gap analysis + 8 briefs/mois. Zéro doublon.",
   },
   "article-optimizer-quarterly": {
     name: "Yoshi",
     img: "/agents/yoshi.png",
-    color: "#76C442",
-    bgFrom: "#162808",
-    bgTo: "#0b1504",
-    glow: "rgba(118,196,66,0.5)",
-    border: "rgba(118,196,66,0.6)",
-    personality: "Le booster de performance. Il revient sur chaque article et le propulse plus haut dans les résultats Google.",
-    role: "Agent Optimiseur Articles",
+    color: "#34C759",
+    bgGrad: ["#162808", "#0b1504"],
+    glow: "rgba(52,199,89,0.4)",
+    border: "rgba(52,199,89,0.5)",
+    role: "Optimiseur Articles",
+    tagline: "GSC + Gemini → snippets qui cliquent.",
   },
   "seo-checker": {
     name: "Rosalina",
     img: "",
-    color: "#7C6FF7",
-    bgFrom: "#160d35",
-    bgTo: "#0b0720",
-    glow: "rgba(124,111,247,0.5)",
-    border: "rgba(124,111,247,0.6)",
-    personality: "La gardienne cosmique. Depuis son observatoire, elle surveille chaque signal SEO du site chaque lundi matin.",
-    role: "Agent Audit SEO",
+    color: "#BF5AF2",
+    bgGrad: ["#160d35", "#0b0720"],
+    glow: "rgba(191,90,242,0.4)",
+    border: "rgba(191,90,242,0.5)",
+    role: "Audit SEO",
+    tagline: "Surveille les positions chaque lundi depuis son observatoire.",
   },
   "link-optimizer-monthly": {
     name: "Waluigi",
     img: "",
-    color: "#C060D8",
-    bgFrom: "#2a0835",
-    bgTo: "#15041a",
-    glow: "rgba(192,96,216,0.5)",
-    border: "rgba(192,96,216,0.6)",
-    personality: "Le chasseur de liens morts. Inlassable, il parcourt chaque article pour traquer les 404 et tisser un maillage interne parfait — sans jamais dépenser un seul token IA.",
-    role: "Agent Link Optimizer",
+    color: "#FF6961",
+    bgGrad: ["#2a0835", "#15041a"],
+    glow: "rgba(255,105,97,0.4)",
+    border: "rgba(255,105,97,0.5)",
+    role: "Link Optimizer",
+    tagline: "Chasse les 404 et tisse le maillage. 0 token IA.",
   },
 };
 
+// ── Technical details ─────────────────────────────────────────────────────────
+
+interface TechStep { n: number; label: string; detail: string }
+interface TechDetails {
+  model: string;
+  steps: TechStep[];
+  apiCalls: string;
+  tokenCost: string;
+  runTime: string;
+  output: string;
+  triggerDetail: string;
+}
+
+const TECH: Record<string, TechDetails> = {
+  "blog-writer": {
+    model: "Gemini Flash (méta) + Gemini 2.5 Pro (corps)",
+    triggerDetail: "Cron `0 7 * * 1,3,5` — lun/mer/ven 7h UTC",
+    steps: [
+      { n: 1, label: "Lecture queue", detail: "article-queue.json → filtre status=pending, trie par priority DESC → prend le #1" },
+      { n: 2, label: "DataForSEO Keywords", detail: "GET /keyword_ideas/live → volume mensuel + niveau concurrence + CPC pour le targetKeyword" },
+      { n: 3, label: "DataForSEO SERP", detail: "GET /serp/google/organic/live → top 5 URLs concurrentes → titre + URL pour bloc ancrage" },
+      { n: 4, label: "DataForSEO PAA", detail: "Extrait People Also Ask → injecté comme FAQ obligatoire dans le prompt" },
+      { n: 5, label: "Gemini Flash → méta", detail: "Prompt 200 tok → JSON : title (H1), seoTitle (60 ch), seoDescription (155 ch), excerpt (200 ch). Max 512 tokens sortie." },
+      { n: 6, label: "Gemini 2.5 Pro → corps", detail: "Prompt complet (persona + SEO data + structure adaptée wordCount) → article Markdown 900-2200 mots selon targetWordCount" },
+      { n: 7, label: "Post-process", detail: "injectInternalLinks() → regex sur tous les slugs Sanity publiés → wrap [texte](url) si keyword présent" },
+      { n: 8, label: "Pexels image", detail: "searchPexelsPhoto(targetKeyword) → 1er résultat → téléchargement + upload Sanity asset" },
+      { n: 9, label: "Sanity publish", detail: "client.createOrReplace() → type 'article', body PortableText, image + credit, seoTitle/seoDesc, publishedAt = now()" },
+      { n: 10, label: "Queue update", detail: "article-queue.json → status='published', sanityId, publishedAt, git commit [skip ci]" },
+    ],
+    apiCalls: "DataForSEO ×3 · Gemini Flash ×1 · Gemini 2.5 Pro ×1 · Pexels ×2 · Sanity ×2",
+    tokenCost: "~6k–16k tokens (Gemini 2.5 Pro selon wordCount)",
+    runTime: "~45–90s / article",
+    output: "Article publié dans Sanity CMS + queue.json mis à jour",
+  },
+  "keyword-research-quarterly": {
+    model: "Aucun LLM — 100% DataForSEO",
+    triggerDetail: "Cron `0 6 1 1,4,7,10 *` — 1er jan/avr/jul/oct 6h UTC",
+    steps: [
+      { n: 1, label: "Chargement segments", detail: "Lit prompts/keyword-research-quarterly.json → 4 segments (location, achat, club, formation) × seeds configurables" },
+      { n: 2, label: "DataForSEO Ideas ×4", detail: "POST /dataforseo_labs/google/keyword_ideas/live → seeds[] → max 200 idées/segment, FR, location_code=2250" },
+      { n: 3, label: "Scoring", detail: "score = searchVolume × facteur(LOW=1.5, MEDIUM=1.0, HIGH=0.5, TOP=0.3). Filtre: volume ≥ 50" },
+      { n: 4, label: "Déduplication", detail: "Cross-segments : si un keyword apparaît dans 2 segments, garde celui au score le plus élevé" },
+      { n: 5, label: "Ranking + save", detail: "Sort DESC par score, top 50/segment → keywords-research.json avec topOpportunities[] et keywords[]" },
+    ],
+    apiCalls: "DataForSEO /keyword_ideas/live ×4 (1 appel par segment)",
+    tokenCost: "0 token LLM",
+    runTime: "~20–30s",
+    output: "scripts/data/keywords-research.json — ~200 opportunités par segment scorées",
+  },
+  "queue-builder-monthly": {
+    model: "Gemini Flash (briefs articles)",
+    triggerDetail: "Cron `0 8 1 * *` — 1er du mois 8h UTC (après keyword-research si même jour)",
+    steps: [
+      { n: 1, label: "Chargement données", detail: "keywords-research.json (dernière analyse) + article-queue.json (état actuel) + prompts/queue-builder-monthly.md" },
+      { n: 2, label: "Filtrage scores", detail: "Garde uniquement les keywords avec score ≥ 100. Pool d'opportunités classé par (basePriority + score)" },
+      { n: 3, label: "Gap analysis", detail: "isAlreadyCovered() : compare keyword vs title/targetKeyword/secondaryKeywords de la queue existante. Overlap ≥ 2 mots = couvert." },
+      { n: 4, label: "Priorisation segment", detail: "Priorités de base : location=90, formation=70, achat=60, club=40. Score final = base + DataForSEO score normalisé" },
+      { n: 5, label: "Gemini Flash × N", detail: "Pour chaque opportunité retenue : génère brief JSON (title, slug, excerpt, secondaryKeywords[], category, tag, targetWordCount, wordCountNote)" },
+      { n: 6, label: "Ajout queue", detail: "Jusqu'à 8 nouveaux articles/mois ajoutés à article-queue.json avec status='pending', priority calculée, git commit" },
+    ],
+    apiCalls: "Gemini Flash ×(0–8) selon les gaps détectés",
+    tokenCost: "~300–500 tokens par brief (max 8 = ~4k tokens/run)",
+    runTime: "~30–60s",
+    output: "article-queue.json enrichi de 0–8 nouveaux briefs SEO",
+  },
+  "article-optimizer-quarterly": {
+    model: "Gemini Flash (optimisation snippets)",
+    triggerDetail: "Cron `0 7 15 2,5,8,11 *` — 15 fév/mai/août/nov 7h UTC",
+    steps: [
+      { n: 1, label: "Sélection candidats", detail: "Queue : status=published + sanityId présent + publishedAt ≥ 90 jours. Exclut les articles vérifiés < 30j." },
+      { n: 2, label: "OAuth2 GSC", detail: "POST /oauth2/token (refresh_token) → access_token → GET Search Console API pour les 90 derniers jours" },
+      { n: 3, label: "Données GSC", detail: "searchAnalytics/query → position, clicks, impressions, CTR par URL" },
+      { n: 4, label: "Critères d'optimisation", detail: "Position 6–30 OU CTR < 3% (avec ≥100 impressions) OU impressions > 500 et clicks < 15" },
+      { n: 5, label: "Sanity fetch", detail: "Fetch _id, title, body, seoTitle, seoDescription, excerpt pour chaque candidat sélectionné" },
+      { n: 6, label: "Gemini Flash × N", detail: "Prompt : article + données GSC + problème identifié → JSON : seoTitle (55–60 ch), seoDescription (150–160 ch), excerpt (100–120 ch), improvements" },
+      { n: 7, label: "Sanity patch", detail: "client.patch(_id).set({seoTitle, seoDescription, excerpt}).commit() → métadonnées mises à jour sans toucher le corps" },
+      { n: 8, label: "Queue update", detail: "lastSeoCheck = now(), seoPosition stockée. Git commit des timestamps." },
+    ],
+    apiCalls: "Google OAuth2 ×1 · GSC API ×1 (batch) · Sanity GET ×N · Gemini Flash ×N · Sanity PATCH ×N",
+    tokenCost: "~500 tokens par article optimisé (Gemini Flash)",
+    runTime: "~2–5 min selon nombre d'articles",
+    output: "Métadonnées SEO mises à jour dans Sanity (sans modifier le contenu)",
+  },
+  "seo-checker": {
+    model: "Aucun LLM — DataForSEO + Google Search Console",
+    triggerDetail: "Cron `0 9 * * 1` — chaque lundi 9h UTC",
+    steps: [
+      { n: 1, label: "Articles publiés", detail: "Lit article-queue.json → filtre status=published avec targetKeyword défini" },
+      { n: 2, label: "DataForSEO SERP", detail: "POST /serp/google/organic/live pour chaque targetKeyword → position actuelle de vanzonexplorer.com" },
+      { n: 3, label: "Queue update", detail: "Met à jour seoPosition et lastSeoCheck dans article-queue.json pour chaque article vérifié" },
+      { n: 4, label: "Rapport /admin/seo", detail: "Données visibles dans le dashboard SEO admin via lecture de la queue" },
+    ],
+    apiCalls: "DataForSEO /serp/organic/live × (nb articles publiés)",
+    tokenCost: "0 token LLM",
+    runTime: "~30–60s selon le nombre d'articles",
+    output: "seoPosition mis à jour dans article-queue.json — visible dans /admin/seo",
+  },
+  "link-optimizer-monthly": {
+    model: "Aucun LLM — 100% algorithmique",
+    triggerDetail: "Cron `0 10 1 * *` — 1er du mois 10h UTC",
+    steps: [
+      { n: 1, label: "Index interne", detail: "Construit Map<keyword, /articles/slug> depuis tous les articles publiés. Keywords triés: targetKeyword + secondaryKeywords ≥ 5 chars, du plus long au plus court." },
+      { n: 2, label: "Sélection articles", detail: "Articles publiés avec sanityId + lastLinkCheck > 30 jours (ou absent). Config via prompts/link-optimizer-monthly.json." },
+      { n: 3, label: "Sanity fetch body", detail: "GET *[_id == $id][0]{_id, body} pour chaque article à traiter. Fetch minimal — pas le contenu complet." },
+      { n: 4, label: "Audit liens externes", detail: "Extrait markDefs[_type='link'] → exclut vanzonexplorer.com + domaines ignorés. HEAD request × N avec retry ×2, timeout 8s. Concurrence max 5 simultanés." },
+      { n: 5, label: "Suppression 404", detail: "HTTP 404/410/451 → retire le markDef + nettoie les marks[] des spans orphelins dans le Portable Text." },
+      { n: 6, label: "Injection liens internes", detail: "Scanne blocs style='normal' (pas h2/h3, pas intro, spans non marqués). indexOf(keyword) + word boundary check → split span [avant | keyword lié | après]. Max 3 nouveaux liens / article, 1 cible max par article." },
+      { n: 7, label: "Sanity patch", detail: "client.patch(_id).set({body}).commit() uniquement si body modifié (externes ou internes)." },
+      { n: 8, label: "Queue update", detail: "lastLinkCheck = now() → article-queue.json → git commit [skip ci]" },
+    ],
+    apiCalls: "Sanity GET ×N · HEAD externes ×(total links) · Sanity PATCH ×(articles modifiés)",
+    tokenCost: "0 token LLM",
+    runTime: "~1–3 min selon le nombre de liens à vérifier",
+    output: "Articles Sanity avec liens morts supprimés + maillage interne injecté",
+  },
+};
+
+// ── Status / pipeline config ──────────────────────────────────────────────────
+
 const STATUS_CONFIG = {
-  active: { label: "EN LIGNE", color: "#00FF87", dot: "bg-[#00FF87] animate-pulse" },
-  inactive: { label: "HORS LIGNE", color: "#666", dot: "bg-gray-500" },
-  paused: { label: "EN PAUSE", color: "#FFB800", dot: "bg-amber-400" },
+  active:   { label: "EN LIGNE",  dot: "bg-emerald-400 animate-pulse", text: "text-emerald-400" },
+  inactive: { label: "OFFLINE",   dot: "bg-gray-500",                  text: "text-gray-500" },
+  paused:   { label: "EN PAUSE",  dot: "bg-amber-400",                 text: "text-amber-400" },
 };
 
 const PIPELINE_ORDER = [
@@ -125,352 +239,346 @@ const PIPELINE_ORDER = [
   "link-optimizer-monthly",
 ];
 
-type PanelTab = "info" | "prompt";
+type PanelTab = "info" | "tech" | "prompt";
 
-function CharacterImage({ char, agent, size }: {
+// ── Sub-components ─────────────────────────────────────────────────────────────
+
+function CharAvatar({ char, agent, size }: {
   char: typeof CHARACTERS[string];
   agent: Agent;
-  size: "card" | "panel";
+  size: "card" | "mini";
 }) {
   const [failed, setFailed] = useState(false);
-  const dim = size === "card" ? { w: 200, h: 220 } : { w: 80, h: 96 };
+  const px = size === "card" ? 180 : 64;
 
   if (!char.img || failed) {
     return (
       <div
-        className="relative z-10 flex items-center justify-center"
-        style={size === "card" ? { width: 144, height: 160 } : { width: 80, height: 96 }}
+        className="flex items-center justify-center rounded-2xl"
+        style={{
+          width: size === "card" ? 100 : 56,
+          height: size === "card" ? 100 : 56,
+          background: `${char.glow}`,
+          fontSize: size === "card" ? 52 : 28,
+        }}
       >
-        <span style={{ fontSize: size === "card" ? 72 : 40 }}>{agent.emoji}</span>
+        {agent.emoji}
       </div>
     );
   }
 
   return (
-    <Image
-      src={char.img}
-      alt={char.name}
-      width={dim.w}
-      height={dim.h}
-      loading="lazy"
-      className={`object-contain object-bottom w-full h-full ${size === "card" ? "char-img relative z-10" : "float-anim"}`}
-      onError={() => setFailed(true)}
-      unoptimized
-    />
+    <div
+      className="relative"
+      style={{ width: size === "card" ? 120 : 56, height: size === "card" ? 140 : 64 }}
+    >
+      <Image
+        src={char.img}
+        alt={char.name}
+        width={px}
+        height={px}
+        loading="lazy"
+        className="object-contain object-bottom w-full h-full drop-shadow-lg"
+        onError={() => setFailed(true)}
+        unoptimized
+      />
+    </div>
   );
 }
 
-function PromptEditor({ agentId, char }: { agentId: string; char: typeof CHARACTERS[string] }) {
+function PromptEditor({ agentId, char }: {
+  agentId: string;
+  char: typeof CHARACTERS[string];
+}) {
   const [content, setContent] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
-    if (content !== null) return;
-    setLoading(true);
     try {
       const res = await fetch(`/api/admin/agents/${agentId}/prompt`);
       const data = await res.json() as { content: string };
       setContent(data.content ?? "");
     } catch {
-      setError("Impossible de charger le prompt");
+      setError("Impossible de charger");
     } finally {
       setLoading(false);
     }
-  }, [agentId, content]);
+  }, [agentId]);
 
-  // Auto-load on mount
-  useState(() => { load(); });
+  useEffect(() => { load(); }, [load]);
 
   const save = async () => {
     if (content === null) return;
-    setSaving(true);
-    setSaved(false);
-    setError(null);
+    setSaving(true); setSaved(false); setError(null);
     try {
       const res = await fetch(`/api/admin/agents/${agentId}/prompt`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content }),
       });
-      if (!res.ok) throw new Error("Erreur serveur");
+      if (!res.ok) throw new Error();
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
-    } catch {
-      setError("Échec de la sauvegarde");
-    } finally {
-      setSaving(false);
-    }
+    } catch { setError("Échec sauvegarde"); }
+    finally { setSaving(false); }
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <span className="pixel-font text-[8px] animate-pulse" style={{ color: char.color }}>
-          CHARGEMENT...
-        </span>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="py-4 text-center">
-        <p className="text-red-400 text-xs">{error}</p>
-      </div>
-    );
-  }
+  if (loading) return (
+    <div className="flex items-center justify-center py-10">
+      <span className="text-xs text-gray-500 animate-pulse">Chargement du fichier…</span>
+    </div>
+  );
 
   return (
     <div className="space-y-3">
-      <p className="text-[11px] text-gray-400">
-        Ce fichier est lu par l&apos;agent à chaque exécution. Toute modification prend effet au prochain run automatique.
+      <p className="text-xs text-gray-400 leading-relaxed">
+        Ce fichier est lu par l&apos;agent à chaque exécution. Sauvegarde = effectif au prochain run.
       </p>
       <textarea
         value={content ?? ""}
         onChange={(e) => { setContent(e.target.value); setSaved(false); }}
-        rows={14}
-        className="w-full rounded-xl text-xs font-mono leading-relaxed resize-y focus:outline-none focus:ring-1 px-4 py-3"
+        rows={12}
+        spellCheck={false}
+        className="w-full rounded-xl text-xs font-mono leading-relaxed resize-y focus:outline-none px-4 py-3"
         style={{
-          background: "rgba(0,0,0,0.5)",
+          background: "rgba(0,0,0,0.55)",
           color: "#e2e8f0",
-          borderColor: `${char.color}44`,
-          border: `1px solid ${char.color}44`,
+          border: `1px solid ${char.border}`,
           caretColor: char.color,
         }}
-        spellCheck={false}
       />
       <div className="flex items-center justify-between">
-        <div>
-          {saved && (
-            <span className="pixel-font text-[8px]" style={{ color: "#00FF87" }}>
-              ✓ SAUVEGARDÉ
-            </span>
-          )}
-          {error && (
-            <span className="text-red-400 text-[10px]">{error}</span>
-          )}
-        </div>
+        <span className="text-xs" style={{ color: saved ? "#30D158" : "transparent" }}>
+          ✓ Sauvegardé
+        </span>
+        {error && <span className="text-xs text-red-400">{error}</span>}
         <button
           onClick={save}
-          disabled={saving || content === null}
-          className="px-4 py-2 rounded-lg text-xs font-bold transition-all disabled:opacity-40"
+          disabled={saving}
+          className="px-4 py-2 rounded-lg text-xs font-semibold transition-all disabled:opacity-40"
           style={{
-            background: saving ? "rgba(255,255,255,0.05)" : `${char.color}22`,
+            background: `${char.color}22`,
             color: char.color,
-            border: `1px solid ${char.color}55`,
-            boxShadow: saving ? "none" : `0 0 12px ${char.glow}`,
+            border: `1px solid ${char.border}`,
           }}
         >
-          {saving ? "SAUVEGARDE..." : "SAUVEGARDER LE PROMPT"}
+          {saving ? "Sauvegarde…" : "Sauvegarder"}
         </button>
       </div>
     </div>
   );
 }
 
+// ── Main component ────────────────────────────────────────────────────────────
+
 export default function AgentsClient({ agents, queueStats }: AgentsClientProps) {
-  // Only show autonomous (cron) agents
   const cronAgents = agents.filter((a) => a.trigger === "cron");
   const [selected, setSelected] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<PanelTab>("info");
+  const [tab, setTab] = useState<PanelTab>("tech");
   const activeCount = cronAgents.filter((a) => a.status === "active").length;
 
-  const selectedAgent = selected ? cronAgents.find((a) => a.id === selected) : null;
-  const selectedChar = selected ? CHARACTERS[selected] : null;
+  const selAgent = selected ? cronAgents.find((a) => a.id === selected) : null;
+  const selChar  = selected ? CHARACTERS[selected] : null;
+  const selTech  = selected ? TECH[selected] : null;
 
-  const handleCardClick = (id: string) => {
-    if (selected === id) {
-      setSelected(null);
-    } else {
-      setSelected(id);
-      setActiveTab("info");
-    }
+  const pick = (id: string) => {
+    if (selected === id) { setSelected(null); return; }
+    setSelected(id);
+    setTab("tech");
   };
 
   return (
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-
-        .pixel-font { font-family: 'Press Start 2P', monospace; }
-
-        .agent-card {
-          transition: transform 0.2s ease, box-shadow 0.2s ease;
-          cursor: pointer;
+        .px { font-family: 'Press Start 2P', monospace; }
+        .card-agent { cursor: pointer; transition: transform .18s ease, box-shadow .18s ease; }
+        .card-agent:hover { transform: translateY(-4px); }
+        .card-agent.sel { transform: translateY(-6px); }
+        @keyframes pulse-soft {
+          0%,100% { opacity:1; } 50% { opacity:.5; }
         }
-        .agent-card:hover { transform: translateY(-6px) scale(1.02); }
-        .agent-card.selected { transform: translateY(-8px) scale(1.03); }
-
-        .char-img { transition: transform 0.3s ease, filter 0.3s ease; }
-        .agent-card:hover .char-img,
-        .agent-card.selected .char-img {
-          transform: scale(1.08) translateY(-4px);
-          filter: drop-shadow(0 12px 24px rgba(0,0,0,0.6));
-        }
-
-        .scanline {
-          background: repeating-linear-gradient(
-            0deg, transparent, transparent 2px,
-            rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px
-          );
-          pointer-events: none;
-        }
-
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
+        .char-float { animation: float-y 3s ease-in-out infinite; }
+        @keyframes float-y {
+          0%,100% { transform: translateY(0); }
           50% { transform: translateY(-6px); }
         }
-        .float-anim { animation: float 3s ease-in-out infinite; }
-
-        @keyframes blink {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0; }
+        .blink { animation: blink-k 1s step-end infinite; }
+        @keyframes blink-k { 0%,100% { opacity:1; } 50% { opacity:0; } }
+        .scanline {
+          background: repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.035) 2px,rgba(0,0,0,.035) 4px);
+          pointer-events:none;
         }
-        .blink { animation: blink 1s step-end infinite; }
+        /* Bottom sheet on mobile */
+        .panel-sheet {
+          position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
+          max-height: 85vh; overflow-y: auto;
+          border-radius: 20px 20px 0 0;
+          animation: slide-up .22s ease;
+        }
+        @keyframes slide-up {
+          from { transform: translateY(100%); opacity: 0; }
+          to   { transform: translateY(0);    opacity: 1; }
+        }
+        @media (min-width: 768px) {
+          .panel-sheet {
+            position: static; max-height: none;
+            border-radius: 20px;
+            animation: none;
+          }
+        }
+        .step-line { border-left: 2px solid; padding-left: 12px; }
       `}</style>
 
       <div
         className="min-h-screen relative"
-        style={{ background: "linear-gradient(160deg, #080815 0%, #0d0d1f 50%, #080815 100%)" }}
+        style={{ background: "linear-gradient(160deg,#08081a 0%,#0d0d20 60%,#08081a 100%)" }}
       >
         {/* Pixel grid */}
-        <div
-          className="absolute inset-0 opacity-[0.04]"
+        <div className="absolute inset-0 opacity-[0.035] pointer-events-none"
           style={{
-            backgroundImage: "linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)",
+            backgroundImage: "linear-gradient(rgba(255,255,255,.5) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.5) 1px,transparent 1px)",
             backgroundSize: "32px 32px",
-          }}
-        />
+          }} />
         <div className="scanline absolute inset-0" />
 
-        <div className="relative z-10 max-w-6xl mx-auto px-6 py-10">
+        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
 
-          {/* Header */}
-          <div className="text-center mb-12">
-            <p className="pixel-font text-[10px] text-green-400 mb-3 tracking-widest">— VANZON EXPLORER —</p>
-            <h1 className="pixel-font text-xl md:text-2xl text-white mb-2 leading-relaxed"
-              style={{ textShadow: "0 0 20px rgba(255,255,255,0.3)" }}>
+          {/* ── Header ── */}
+          <div className="text-center mb-8 sm:mb-10">
+            <p className="px text-[8px] sm:text-[9px] text-emerald-400 mb-3 tracking-widest">
+              — VANZON EXPLORER —
+            </p>
+            <h1 className="px text-lg sm:text-2xl text-white mb-2 leading-relaxed"
+              style={{ textShadow: "0 0 24px rgba(255,255,255,.25)" }}>
               AGENTS IA
             </h1>
-            <p className="pixel-font text-[9px] text-gray-500 tracking-widest">
+            <p className="px text-[8px] text-gray-500">
               SELECT YOUR AGENT<span className="blink">_</span>
             </p>
           </div>
 
-          {/* KPI bar */}
-          <div className="grid grid-cols-3 gap-4 mb-10">
+          {/* ── KPIs ── */}
+          <div className="grid grid-cols-3 gap-3 sm:gap-4 mb-8">
             {[
-              { label: "ACTIFS", value: activeCount, sub: `/ ${cronAgents.length} agents`, color: "#00FF87" },
-              { label: "PUBLIÉS", value: queueStats.published, sub: "articles en ligne", color: "#FFB800" },
-              { label: "EN QUEUE", value: queueStats.pending, sub: "articles à venir", color: "#7C6FF7" },
-            ].map((kpi) => (
-              <div key={kpi.label} className="rounded-xl border px-4 py-4 text-center"
-                style={{
-                  background: "rgba(255,255,255,0.03)",
-                  borderColor: `${kpi.color}33`,
-                  boxShadow: `0 0 20px ${kpi.color}11`,
-                }}>
-                <p className="pixel-font text-[8px] mb-2" style={{ color: kpi.color }}>{kpi.label}</p>
-                <p className="pixel-font text-3xl text-white">{kpi.value}</p>
-                <p className="text-[10px] text-gray-500 mt-1">{kpi.sub}</p>
+              { label: "ACTIFS",   val: activeCount,          sub: `/ ${cronAgents.length}`, color: "#30D158" },
+              { label: "PUBLIÉS",  val: queueStats.published, sub: "articles",               color: "#FFD60A" },
+              { label: "EN QUEUE", val: queueStats.pending,   sub: "à rédiger",              color: "#BF5AF2" },
+            ].map((k) => (
+              <div key={k.label} className="rounded-2xl border px-3 sm:px-5 py-4 text-center"
+                style={{ background:"rgba(255,255,255,.025)", borderColor:`${k.color}30`, boxShadow:`0 0 24px ${k.color}10` }}>
+                <p className="px text-[7px] sm:text-[8px] mb-2" style={{ color: k.color }}>{k.label}</p>
+                <p className="px text-2xl sm:text-3xl text-white leading-none">{k.val}</p>
+                <p className="text-[10px] text-gray-500 mt-1">{k.sub}</p>
               </div>
             ))}
           </div>
 
-          {/* Pipeline */}
-          <div className="rounded-2xl border p-5 mb-10"
-            style={{ background: "rgba(255,255,255,0.02)", borderColor: "rgba(255,255,255,0.08)" }}>
-            <p className="pixel-font text-[8px] text-gray-500 mb-4 tracking-widest">PIPELINE AUTOMATISÉ</p>
-            <div className="flex items-center justify-center gap-1 flex-wrap">
+          {/* ── Pipeline strip ── */}
+          <div className="rounded-2xl border p-4 sm:p-5 mb-8 overflow-x-auto"
+            style={{ background:"rgba(255,255,255,.02)", borderColor:"rgba(255,255,255,.07)" }}>
+            <p className="px text-[7px] sm:text-[8px] text-gray-500 mb-3 tracking-widest">PIPELINE</p>
+            <div className="flex items-center gap-1.5 min-w-max">
               {PIPELINE_ORDER.map((id, i) => {
-                const char = CHARACTERS[id];
-                if (!char) return null;
+                const c = CHARACTERS[id];
+                if (!c) return null;
+                const isSel = selected === id;
                 return (
-                  <div key={id} className="flex items-center gap-1">
-                    <button
-                      onClick={() => handleCardClick(id)}
-                      className="flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all text-xs"
+                  <div key={id} className="flex items-center gap-1.5">
+                    <button onClick={() => pick(id)}
+                      className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs transition-all"
                       style={{
-                        background: selected === id ? char.bgFrom : "rgba(255,255,255,0.03)",
-                        borderColor: selected === id ? char.border : "rgba(255,255,255,0.1)",
-                        color: selected === id ? char.color : "#888",
-                        boxShadow: selected === id ? `0 0 12px ${char.glow}` : "none",
-                      }}
-                    >
-                      <span className="w-2 h-2 rounded-full" style={{ background: char.color }} />
-                      {char.name}
+                        background: isSel ? `${c.bgGrad[0]}` : "rgba(255,255,255,.03)",
+                        borderColor: isSel ? c.border : "rgba(255,255,255,.09)",
+                        color: isSel ? c.color : "#666",
+                        boxShadow: isSel ? `0 0 14px ${c.glow}` : "none",
+                      }}>
+                      <span className="w-2 h-2 rounded-full flex-none" style={{ background: c.color }} />
+                      <span className="font-medium">{c.name}</span>
                     </button>
                     {i < PIPELINE_ORDER.length - 1 && (
-                      <span className="pixel-font text-[8px] text-gray-600">→</span>
+                      <span className="px text-[8px] text-gray-700">→</span>
                     )}
                   </div>
                 );
               })}
-              <span className="pixel-font text-[8px] text-gray-600 ml-1">↩</span>
+              <span className="px text-[8px] text-gray-700 ml-1">↩</span>
             </div>
           </div>
 
-          {/* Cards grid — cron agents only */}
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
+          {/* ── Cards grid — mobile: 1 col, sm: 2 col, md: 3 col ── */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {cronAgents.map((agent) => {
-              const char = CHARACTERS[agent.id] ?? {
-                name: agent.name, img: "", color: "#ffffff", bgFrom: "#1a1a2e", bgTo: "#0d0d1a",
-                glow: "rgba(255,255,255,0.2)", border: "rgba(255,255,255,0.3)",
-                personality: agent.description, role: agent.name,
+              const c = CHARACTERS[agent.id] ?? {
+                name: agent.name, img: "", color: "#fff",
+                bgGrad: ["#1a1a2e","#0d0d1a"] as [string,string],
+                glow: "rgba(255,255,255,.2)", border: "rgba(255,255,255,.3)",
+                role: agent.name, tagline: agent.description,
               };
-              const status = STATUS_CONFIG[agent.status];
-              const isSelected = selected === agent.id;
+              const st = STATUS_CONFIG[agent.status];
+              const isSel = selected === agent.id;
 
               return (
-                <div
-                  key={agent.id}
-                  className={`agent-card rounded-2xl overflow-hidden flex flex-col ${isSelected ? "selected" : ""}`}
+                <div key={agent.id}
+                  className={`card-agent rounded-2xl overflow-hidden ${isSel ? "sel" : ""}`}
                   style={{
-                    background: `linear-gradient(180deg, ${char.bgFrom} 0%, ${char.bgTo} 100%)`,
-                    border: `1px solid ${isSelected ? char.border : "rgba(255,255,255,0.07)"}`,
-                    boxShadow: isSelected
-                      ? `0 0 40px ${char.glow}, 0 20px 60px rgba(0,0,0,0.5)`
-                      : "0 4px 24px rgba(0,0,0,0.4)",
+                    background: `linear-gradient(160deg, ${c.bgGrad[0]} 0%, ${c.bgGrad[1]} 100%)`,
+                    border: `1px solid ${isSel ? c.border : "rgba(255,255,255,.06)"}`,
+                    boxShadow: isSel
+                      ? `0 0 48px ${c.glow}, 0 16px 48px rgba(0,0,0,.5)`
+                      : "0 4px 20px rgba(0,0,0,.35)",
                   }}
-                  onClick={() => handleCardClick(agent.id)}
+                  onClick={() => pick(agent.id)}
                 >
-                  {/* Image area */}
-                  <div
-                    className="relative flex items-end justify-center pt-6 pb-0 overflow-hidden"
-                    style={{
-                      background: `radial-gradient(ellipse 80% 60% at 50% 80%, ${char.glow} 0%, transparent 70%)`,
-                      minHeight: "200px",
-                    }}
-                  >
-                    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-32 h-32 rounded-full blur-3xl opacity-40"
-                      style={{ background: char.color }} />
-                    <div className="w-36 h-40 flex items-end justify-center"
-                      style={{ animationDelay: `${Math.random() * 2}s` }}>
-                      <CharacterImage char={char} agent={agent} size="card" />
+                  {/* Card top: character + glow */}
+                  <div className="relative flex items-end justify-between px-5 pt-5 pb-0"
+                    style={{ minHeight: 130 }}>
+                    {/* Glow circle */}
+                    <div className="absolute bottom-0 left-8 w-24 h-24 rounded-full blur-3xl opacity-30"
+                      style={{ background: c.color }} />
+
+                    {/* Character avatar */}
+                    <div className={`relative z-10 ${isSel ? "char-float" : ""}`}>
+                      <CharAvatar char={c} agent={agent} size="card" />
+                    </div>
+
+                    {/* Status + cron badge */}
+                    <div className="relative z-10 flex flex-col items-end gap-2 pb-3">
+                      <span className={`flex items-center gap-1.5 text-[10px] font-semibold ${st.text}`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${st.dot}`} />
+                        {st.label}
+                      </span>
+                      <span className="px text-[7px] text-gray-600">
+                        {agent.trigger === "cron" ? "AUTO" : "MANUAL"}
+                      </span>
                     </div>
                   </div>
 
-                  {/* Card content */}
-                  <div className="flex-1 p-4">
-                    <div className="flex items-center justify-between mb-1">
-                      <p className="pixel-font text-[11px] leading-relaxed" style={{ color: char.color }}>
-                        {char.name.toUpperCase()}
-                      </p>
-                      <span className={`w-2 h-2 rounded-full ${status.dot}`} title={status.label} />
-                    </div>
-                    <p className="text-[11px] font-semibold text-white mb-3 leading-tight">{char.role}</p>
-                    <div className="w-full h-px mb-3" style={{ background: `linear-gradient(90deg, ${char.color}44, transparent)` }} />
-                    <div className="flex items-center gap-1.5 mb-2">
+                  {/* Card body */}
+                  <div className="px-5 py-4">
+                    {/* Name + role */}
+                    <p className="px text-[11px] mb-0.5" style={{ color: c.color }}>{c.name.toUpperCase()}</p>
+                    <p className="text-sm font-bold text-white mb-1 leading-tight">{c.role}</p>
+                    <p className="text-[11px] text-gray-400 mb-3 leading-relaxed">{c.tagline}</p>
+
+                    {/* Divider */}
+                    <div className="h-px mb-3" style={{ background:`linear-gradient(90deg,${c.color}33,transparent)` }} />
+
+                    {/* Schedule */}
+                    <div className="flex items-center gap-2 mb-2">
                       <span className="text-[10px]">⏰</span>
-                      <span className="text-[10px] text-gray-400">{agent.schedule}</span>
+                      <span className="text-[10px] text-gray-400 leading-snug">{agent.schedule}</span>
                     </div>
-                    <div className="flex flex-wrap gap-1">
-                      {agent.apis.slice(0, 3).map((api) => (
-                        <span key={api} className="text-[9px] px-1.5 py-0.5 rounded font-medium"
-                          style={{ background: `${char.color}18`, color: char.color }}>
+
+                    {/* API badges */}
+                    <div className="flex flex-wrap gap-1 mb-1">
+                      {agent.apis.map((api) => (
+                        <span key={api}
+                          className="text-[9px] px-1.5 py-0.5 rounded-md font-medium"
+                          style={{ background:`${c.color}18`, color:c.color }}>
                           {api}
                         </span>
                       ))}
@@ -481,100 +589,173 @@ export default function AgentsClient({ agents, queueStats }: AgentsClientProps) 
             })}
           </div>
 
-          {/* Detail + editor panel */}
-          {selectedAgent && selectedChar && (
-            <div
-              className="mt-6 rounded-2xl border transition-all"
-              style={{
-                background: `linear-gradient(135deg, ${selectedChar.bgFrom}ee, ${selectedChar.bgTo}ee)`,
-                borderColor: selectedChar.border,
-                boxShadow: `0 0 60px ${selectedChar.glow}`,
-              }}
-            >
-              {/* Tabs */}
-              <div className="flex border-b" style={{ borderColor: `${selectedChar.color}22` }}>
-                {(["info", "prompt"] as PanelTab[]).map((tab) => (
-                  <button
-                    key={tab}
-                    onClick={() => setActiveTab(tab)}
-                    className="px-6 py-3 pixel-font text-[8px] transition-all"
-                    style={{
-                      color: activeTab === tab ? selectedChar.color : "#555",
-                      borderBottom: activeTab === tab ? `2px solid ${selectedChar.color}` : "2px solid transparent",
-                      background: "transparent",
-                    }}
-                  >
-                    {tab === "info" ? "INFOS" : "MODIFIER PROMPT"}
-                  </button>
-                ))}
-                <div className="flex-1 flex justify-end items-center pr-4">
-                  <button
-                    onClick={() => setSelected(null)}
-                    className="text-gray-600 hover:text-gray-300 text-lg transition-colors"
-                  >
-                    ×
-                  </button>
+          {/* ── Detail panel — bottom sheet on mobile, inline on desktop ── */}
+          {selAgent && selChar && (
+            <>
+              {/* Mobile overlay backdrop */}
+              <div className="fixed inset-0 bg-black/50 z-40 md:hidden"
+                onClick={() => setSelected(null)} />
+
+              <div className={`panel-sheet md:mt-6 md:rounded-2xl md:border`}
+                style={{
+                  background: `linear-gradient(135deg, ${selChar.bgGrad[0]}f5, ${selChar.bgGrad[1]}f5)`,
+                  borderColor: selChar.border,
+                  boxShadow: `0 0 64px ${selChar.glow}`,
+                }}>
+
+                {/* Drag handle (mobile only) */}
+                <div className="md:hidden flex justify-center pt-3 pb-1">
+                  <div className="w-10 h-1 rounded-full bg-white/20" />
                 </div>
-              </div>
 
-              <div className="p-6">
-                {activeTab === "info" && (
-                  <div className="flex items-start gap-6">
-                    {/* Mini character */}
-                    <div className="flex-none w-20 h-24 relative">
-                      <CharacterImage char={selectedChar} agent={selectedAgent} size="panel" />
-                    </div>
+                {/* Tabs */}
+                <div className="flex items-center border-b"
+                  style={{ borderColor:`${selChar.color}1a` }}>
+                  {(["tech","info","prompt"] as PanelTab[]).map((t) => (
+                    <button key={t}
+                      onClick={() => setTab(t)}
+                      className="px-4 sm:px-5 py-3 text-[10px] sm:text-[11px] font-semibold transition-all capitalize"
+                      style={{
+                        color: tab === t ? selChar.color : "#444",
+                        borderBottom: tab === t ? `2px solid ${selChar.color}` : "2px solid transparent",
+                      }}>
+                      {t === "tech" ? "Technique" : t === "info" ? "Infos" : "Prompt"}
+                    </button>
+                  ))}
+                  <div className="flex-1 flex justify-end pr-4">
+                    <button onClick={() => setSelected(null)}
+                      className="text-gray-600 hover:text-white text-xl transition-colors leading-none">
+                      ×
+                    </button>
+                  </div>
+                </div>
 
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-3 mb-3 flex-wrap">
-                        <p className="pixel-font text-sm" style={{ color: selectedChar.color }}>
-                          {selectedChar.name.toUpperCase()}
-                        </p>
-                        <span className="pixel-font text-[8px] px-2 py-1 rounded"
-                          style={{ background: `${selectedChar.color}22`, color: selectedChar.color }}>
-                          {STATUS_CONFIG[selectedAgent.status].label}
-                        </span>
+                <div className="p-4 sm:p-6">
+
+                  {/* ── TAB: Technique ── */}
+                  {tab === "tech" && selTech && (
+                    <div>
+                      {/* Header row */}
+                      <div className="flex items-start gap-4 mb-5">
+                        <div className="flex-none">
+                          <CharAvatar char={selChar} agent={selAgent} size="mini" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="px text-[10px] sm:text-[11px] mb-1" style={{ color: selChar.color }}>
+                            {selChar.name.toUpperCase()}
+                          </p>
+                          <p className="text-sm font-bold text-white">{selChar.role}</p>
+                          <p className="text-[11px] text-gray-400 mt-1">{selTech.triggerDetail}</p>
+                        </div>
                       </div>
 
-                      <p className="text-sm text-gray-300 mb-4 leading-relaxed italic">
-                        &quot;{selectedChar.personality}&quot;
-                      </p>
-
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-xs mb-4">
+                      {/* Cost pills */}
+                      <div className="flex flex-wrap gap-2 mb-5">
                         {[
-                          { k: "Rôle", v: selectedChar.role },
-                          { k: "Schedule", v: selectedAgent.schedule },
-                          { k: "Cron", v: selectedAgent.cronExpression ?? "—" },
-                          { k: "APIs", v: selectedAgent.apis.join(", ") },
-                          { k: "Output", v: selectedAgent.output },
-                          { k: "Pipeline", v: selectedAgent.pipeline },
-                          { k: "Workflow", v: selectedAgent.workflow ?? "Manuel" },
-                        ].map(({ k, v }) => (
-                          <div key={k} className="flex gap-2">
-                            <span className="text-gray-500 flex-none">{k} :</span>
-                            <span className="text-gray-200 break-all">{v}</span>
+                          { label: "Modèle",  val: selTech.model },
+                          { label: "Tokens",  val: selTech.tokenCost },
+                          { label: "Durée",   val: selTech.runTime },
+                          { label: "APIs",    val: selTech.apiCalls },
+                        ].map(({ label, val }) => (
+                          <div key={label}
+                            className="rounded-xl px-3 py-2 flex-1 min-w-[140px]"
+                            style={{ background:"rgba(255,255,255,.04)", border:`1px solid ${selChar.color}22` }}>
+                            <p className="text-[9px] text-gray-500 mb-0.5 uppercase tracking-widest">{label}</p>
+                            <p className="text-[11px] text-gray-200 font-medium leading-snug">{val}</p>
                           </div>
                         ))}
                       </div>
 
-                      <code className="block text-[10px] px-3 py-2 rounded-lg"
-                        style={{ background: "rgba(0,0,0,0.4)", color: selectedChar.color }}>
-                        $ {selectedAgent.manualCommand}
+                      {/* Step-by-step */}
+                      <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-3 font-semibold">
+                        Fonctionnement interne
+                      </p>
+                      <div className="space-y-0">
+                        {selTech.steps.map((step, i) => (
+                          <div key={step.n}
+                            className="flex gap-3"
+                            style={{ paddingBottom: i < selTech.steps.length - 1 ? 16 : 0 }}>
+                            {/* Timeline */}
+                            <div className="flex flex-col items-center flex-none w-6">
+                              <div className="w-6 h-6 rounded-full flex items-center justify-center flex-none text-[9px] font-bold"
+                                style={{ background:`${selChar.color}25`, color:selChar.color }}>
+                                {step.n}
+                              </div>
+                              {i < selTech.steps.length - 1 && (
+                                <div className="flex-1 w-px mt-1" style={{ background:`${selChar.color}22` }} />
+                              )}
+                            </div>
+                            <div className="flex-1 pb-0">
+                              <p className="text-[11px] font-semibold text-white mb-0.5">{step.label}</p>
+                              <p className="text-[11px] text-gray-400 leading-relaxed">{step.detail}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Output */}
+                      <div className="mt-5 rounded-xl px-4 py-3"
+                        style={{ background:"rgba(0,0,0,.35)", border:`1px solid ${selChar.color}22` }}>
+                        <p className="text-[9px] text-gray-500 uppercase tracking-widest mb-1">Output</p>
+                        <p className="text-[11px] text-gray-200">{selTech.output}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* ── TAB: Infos ── */}
+                  {tab === "info" && (
+                    <div>
+                      <div className="flex items-start gap-4 mb-5">
+                        <div className="flex-none">
+                          <CharAvatar char={selChar} agent={selAgent} size="mini" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="px text-[10px] mb-1" style={{ color: selChar.color }}>
+                            {selChar.name.toUpperCase()}
+                          </p>
+                          <p className="text-sm font-bold text-white mb-1">{selChar.role}</p>
+                          <p className="text-[11px] text-gray-300 leading-relaxed italic">
+                            &quot;{selChar.tagline}&quot;
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-xs">
+                        {[
+                          { k: "Schedule",  v: selAgent.schedule },
+                          { k: "Cron",      v: selAgent.cronExpression ?? "—" },
+                          { k: "APIs",      v: selAgent.apis.join(", ") },
+                          { k: "Output",    v: selAgent.output },
+                          { k: "Pipeline",  v: selAgent.pipeline },
+                          { k: "Workflow",  v: selAgent.workflow ?? "Manuel" },
+                          { k: "Fichier",   v: selAgent.file },
+                        ].map(({ k, v }) => (
+                          <div key={k} className="flex gap-2">
+                            <span className="text-gray-500 flex-none w-20">{k} :</span>
+                            <span className="text-gray-200 break-all leading-snug">{v}</span>
+                          </div>
+                        ))}
+                      </div>
+
+                      <code className="mt-4 block text-[10px] px-3 py-2.5 rounded-xl break-all"
+                        style={{ background:"rgba(0,0,0,.4)", color:selChar.color }}>
+                        $ {selAgent.manualCommand}
                       </code>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                {activeTab === "prompt" && (
-                  <PromptEditor agentId={selectedAgent.id} char={selectedChar} />
-                )}
+                  {/* ── TAB: Prompt ── */}
+                  {tab === "prompt" && (
+                    <PromptEditor agentId={selAgent.id} char={selChar} />
+                  )}
+                </div>
               </div>
-            </div>
+            </>
           )}
 
           {/* Footer */}
-          <p className="pixel-font text-[8px] text-gray-600 text-center mt-10">
-            © VANZON EXPLORER — AI SQUAD — ADD AGENT → scripts/agents/registry.json
+          <p className="px text-[7px] text-gray-700 text-center mt-10">
+            © VANZON — AI SQUAD — scripts/agents/registry.json
           </p>
         </div>
       </div>
