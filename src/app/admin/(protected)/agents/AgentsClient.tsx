@@ -86,7 +86,7 @@ const CHARACTERS: Record<string, {
   },
   "seo-checker": {
     name: "Rosalina",
-    img: "",
+    img: "/agents/rosalina.png",
     color: "#BF5AF2",
     bgGrad: ["#160d35", "#0b0720"],
     glow: "rgba(191,90,242,0.4)",
@@ -96,7 +96,7 @@ const CHARACTERS: Record<string, {
   },
   "link-optimizer-monthly": {
     name: "Waluigi",
-    img: "",
+    img: "/agents/waluigi.png",
     color: "#FF6961",
     bgGrad: ["#2a0835", "#15041a"],
     glow: "rgba(255,105,97,0.4)",
