@@ -28,11 +28,18 @@
 
 import path from "path";
 import fs from "fs/promises";
+import fsSync from "fs";
 import { createClient } from "@sanity/client";
 
 const PROJECT_ROOT = path.resolve(path.dirname(__filename), "../..");
 const QUEUE_FILE = path.join(PROJECT_ROOT, "scripts/data/article-queue.json");
 const SITE_URL = "https://vanzonexplorer.com";
+const PROMPTS_DIR = path.join(PROJECT_ROOT, "scripts/agents/prompts");
+
+function loadAgentPrompt(name: string): string | null {
+  const mdPath = path.join(PROMPTS_DIR, `${name}.md`);
+  return fsSync.existsSync(mdPath) ? fsSync.readFileSync(mdPath, "utf-8").trim() : null;
+}
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -198,7 +205,10 @@ async function generateOptimizedMeta(
 ): Promise<OptimizedMeta> {
   const bodyPreview = extractBodyText(article.body).slice(0, 1500);
 
-  const prompt = `Tu es un expert SEO. Optimise les métadonnées de cet article pour améliorer son CTR et sa position Google.
+  const baseInstructions = loadAgentPrompt("article-optimizer-quarterly") ??
+    "Tu es un expert SEO. Optimise les métadonnées de cet article pour améliorer son CTR et sa position Google.";
+
+  const prompt = `${baseInstructions}
 
 ARTICLE :
 Titre actuel : "${article.title}"

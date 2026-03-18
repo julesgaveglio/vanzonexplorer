@@ -20,6 +20,7 @@
  *   NEXT_PUBLIC_SANITY_DATASET (optional, defaults to production)
  */
 
+import fs from "fs";
 import path from "path";
 import { createClient } from "@sanity/client";
 import { searchPexelsPhoto, downloadPexelsPhoto, buildPexelsCredit } from "../../src/lib/pexels";
@@ -28,6 +29,12 @@ import { searchPexelsPhoto, downloadPexelsPhoto, buildPexelsCredit } from "../..
 // scripts/agents/ → project root is two directories up
 const PROJECT_ROOT = path.resolve(path.dirname(__filename), "../..");
 const QUEUE_FILE = path.join(PROJECT_ROOT, "scripts/data/article-queue.json");
+const PROMPTS_DIR = path.join(PROJECT_ROOT, "scripts/agents/prompts");
+
+function loadAgentPrompt(name: string): string | null {
+  const mdPath = path.join(PROMPTS_DIR, `${name}.md`);
+  return fs.existsSync(mdPath) ? fs.readFileSync(mdPath, "utf-8").trim() : null;
+}
 const DFS_BASE = "https://api.dataforseo.com/v3";
 const DFS_LOCATION_CODE = 2250; // France
 const DFS_LANGUAGE_CODE = "fr";
@@ -782,7 +789,33 @@ Réponds UNIQUEMENT avec ce JSON valide (aucune explication):
 
   // ── Call 2: article body via Claude Sonnet 4.6 (quality + instruction-following) ──
   console.log(`  [Claude Sonnet 4.6] Generating article body...`);
-  const bodyPrompt = `Tu es Jules Gaveglio, co-fondateur de Vanzon Explorer — expert vanlife au Pays Basque depuis 5 ans. Tu rédiges des articles de blog SEO qui classent sur Google et convertissent des lecteurs en clients.
+  const styleBlock = loadAgentPrompt("blog-writer") ?? `Tu es Jules Gaveglio, co-fondateur de Vanzon Explorer — expert vanlife au Pays Basque depuis 5 ans. Tu rédiges des articles de blog SEO qui classent sur Google et convertissent des lecteurs en clients.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+MISE EN FORME (obligatoire, pas optionnel)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+• **gras** → mots-clés importants, données chiffrées, noms de lieux, points-clés
+• *italique* → termes techniques, mots basques (larrun, pottok, txakoli…), citations
+• Listes à puces → dès qu'il y a 3 éléments parallèles ou plus
+• ❌ JAMAIS de tableaux Markdown (syntaxe | col | col | INTERDITE — utilise des listes à puces à la place)
+• 1 callout par section H2 minimum (choisis selon le contexte):
+  ⚠️ Point de vigilance important
+  💡 Conseil pratique Vanzon Explorer
+  📍 Spot ou lieu précis avec contexte utile
+  ✅ Bonne pratique recommandée
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STYLE & TON
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+• Tutoiement chaleureux — tu parles à un vanlifer passionné
+• Phrases courtes et rythmées. Alterner court/développé.
+• Données concrètes: prix €, distances km, durées précises
+• Ancrage local: noms de lieux basques précis (Biarritz, Saint-Jean-de-Luz, Ascain, Col de Saint-Ignace, Bayonne, Bidart, Hossegor…)
+• Zéro superlatif creux ("incroyable", "révolutionnaire", "époustouflant")
+• Zéro ouverture bateau ("De nos jours…", "Dans un monde où…")
+• Écris comme un humain passionné qui connaît le terrain, pas comme une IA`;
+
+  const bodyPrompt = `${styleBlock}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 CONTRAINTE ABSOLUE DE LONGUEUR
@@ -810,34 +843,10 @@ STRUCTURE (utilise ## pour H2, ### pour H3 — jamais de # H1)
 ${structureBlock}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-MISE EN FORME (obligatoire, pas optionnel)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-• **gras** → mots-clés importants, données chiffrées, noms de lieux, points-clés
-• *italique* → termes techniques, mots basques (larrun, pottok, txakoli…), citations
-• Listes à puces → dès qu'il y a 3 éléments parallèles ou plus
-• ❌ JAMAIS de tableaux Markdown (syntaxe | col | col | INTERDITE — utilise des listes à puces à la place)
-• 1 callout par section H2 minimum (choisis selon le contexte):
-  ⚠️ Point de vigilance important
-  💡 Conseil pratique Vanzon Explorer
-  📍 Spot ou lieu précis avec contexte utile
-  ✅ Bonne pratique recommandée
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 LIENS EXTERNES
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ${externalLinksBlock}
 Format: [texte ancre descriptif](url) — seulement si ça apporte vraiment de la valeur.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-STYLE & TON
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-• Tutoiement chaleureux — tu parles à un vanlifer passionné
-• Phrases courtes et rythmées. Alterner court/développé.
-• Données concrètes: prix €, distances km, durées précises
-• Ancrage local: noms de lieux basques précis (Biarritz, Saint-Jean-de-Luz, Ascain, Col de Saint-Ignace, Bayonne, Bidart, Hossegor…)
-• Zéro superlatif creux ("incroyable", "révolutionnaire", "époustouflant")
-• Zéro ouverture bateau ("De nos jours…", "Dans un monde où…")
-• Écris comme un humain passionné qui connaît le terrain, pas comme une IA
 
 Réponds UNIQUEMENT avec le texte markdown. Aucune explication, aucune balise, aucun JSON.`;
 

@@ -23,16 +23,28 @@
 
 import path from "path";
 import fs from "fs/promises";
+import fsSync from "fs";
 
 const PROJECT_ROOT = path.resolve(path.dirname(__filename), "../..");
 const OUTPUT_FILE = path.join(PROJECT_ROOT, "scripts/data/keywords-research.json");
+const PROMPTS_DIR = path.join(PROJECT_ROOT, "scripts/agents/prompts");
 const DFS_BASE = "https://api.dataforseo.com/v3";
 const DFS_LOCATION_CODE = 2250; // France
 const DFS_LANGUAGE_CODE = "fr";
 
-// ── Segments stratégiques ────────────────────────────────────────────────────
+// ── Segments stratégiques (overridable via scripts/agents/prompts/keyword-research-quarterly.json) ─
 
-const SEGMENTS: Record<string, { label: string; seeds: string[] }> = {
+function loadSegments() {
+  const jsonPath = path.join(PROMPTS_DIR, "keyword-research-quarterly.json");
+  if (fsSync.existsSync(jsonPath)) {
+    try {
+      return JSON.parse(fsSync.readFileSync(jsonPath, "utf-8")) as Record<string, { label: string; seeds: string[] }>;
+    } catch { /* fall through to defaults */ }
+  }
+  return null;
+}
+
+const DEFAULT_SEGMENTS: Record<string, { label: string; seeds: string[] }> = {
   location: {
     label: "Location de van",
     seeds: [
@@ -76,6 +88,8 @@ const SEGMENTS: Record<string, { label: string; seeds: string[] }> = {
     ],
   },
 };
+
+const SEGMENTS = loadSegments() ?? DEFAULT_SEGMENTS;
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 

@@ -16,10 +16,17 @@
 
 import path from "path";
 import fs from "fs/promises";
+import fsSync from "fs";
 
 const PROJECT_ROOT = path.resolve(path.dirname(__filename), "../..");
 const QUEUE_FILE = path.join(PROJECT_ROOT, "scripts/data/article-queue.json");
 const KEYWORDS_FILE = path.join(PROJECT_ROOT, "scripts/data/keywords-research.json");
+const PROMPTS_DIR = path.join(PROJECT_ROOT, "scripts/agents/prompts");
+
+function loadAgentPrompt(name: string): string | null {
+  const mdPath = path.join(PROMPTS_DIR, `${name}.md`);
+  return fsSync.existsSync(mdPath) ? fsSync.readFileSync(mdPath, "utf-8").trim() : null;
+}
 
 // Max new articles to add per run (pour éviter une queue trop dense)
 const MAX_NEW_ARTICLES = 8;
@@ -125,9 +132,10 @@ async function generateArticleBrief(
     formation: "Formation Van Business Academy — apprendre à créer une activité de location de van. CTA vers /formation.",
   };
 
-  const prompt = `Tu es un expert SEO spécialisé en vanlife et location de vans au Pays Basque (France).
+  const baseInstructions = loadAgentPrompt("queue-builder-monthly") ??
+    `Tu es un expert SEO spécialisé en vanlife et location de vans au Pays Basque (France).\n\nGénère les métadonnées complètes d'un article de blog SEO pour Vanzon Explorer.\n\nRègles :\n- Tutoiement, ancrage Pays Basque (Biarritz, Bayonne, Saint-Jean-de-Luz)\n- targetWordCount entre 900 et 2200\n- wordCountNote doit mentionner l'angle éditorial unique et le CTA`;
 
-Génère les métadonnées complètes d'un article de blog SEO pour Vanzon Explorer.
+  const prompt = `${baseInstructions}
 
 Mot-clé cible : "${keyword}"
 Segment : ${segmentLabel}

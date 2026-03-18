@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import Image from "next/image";
 
 interface Agent {
@@ -45,7 +45,7 @@ const CHARACTERS: Record<string, {
 }> = {
   "blog-writer": {
     name: "Mario",
-    img: "https://www.mariowiki.com/images/2/27/MK8_Deluxe_Art_-_Mario_%28transparent%29.png",
+    img: "/agents/mario.png",
     color: "#E52521",
     bgFrom: "#3a0a08",
     bgTo: "#1a0504",
@@ -56,7 +56,7 @@ const CHARACTERS: Record<string, {
   },
   "keyword-research-quarterly": {
     name: "Luigi",
-    img: "https://www.mariowiki.com/images/7/7a/SMO-Luigi_Art.png",
+    img: "/agents/luigi.png",
     color: "#00A652",
     bgFrom: "#062a14",
     bgTo: "#031509",
@@ -67,7 +67,7 @@ const CHARACTERS: Record<string, {
   },
   "queue-builder-monthly": {
     name: "Toad",
-    img: "https://www.mariowiki.com/images/d/de/Toad_Artwork_-_Super_Mario_3D_World.png",
+    img: "/agents/toad.png",
     color: "#2196F3",
     bgFrom: "#06192e",
     bgTo: "#030d18",
@@ -78,7 +78,7 @@ const CHARACTERS: Record<string, {
   },
   "article-optimizer-quarterly": {
     name: "Yoshi",
-    img: "https://www.mariowiki.com/images/3/3d/MKWorld_Yoshi.png",
+    img: "/agents/yoshi.png",
     color: "#76C442",
     bgFrom: "#162808",
     bgTo: "#0b1504",
@@ -87,20 +87,9 @@ const CHARACTERS: Record<string, {
     personality: "Le booster de performance. Il revient sur chaque article et le propulse plus haut dans les résultats Google.",
     role: "Agent Optimiseur Articles",
   },
-  "keyword-researcher": {
-    name: "Peach",
-    img: "https://www.mariowiki.com/images/2/27/MKWorld_Peach.png",
-    color: "#F48FB1",
-    bgFrom: "#2d0a18",
-    bgTo: "#18050d",
-    glow: "rgba(244,143,177,0.5)",
-    border: "rgba(244,143,177,0.6)",
-    personality: "L'experte indépendante. Appelée ponctuellement pour une analyse ciblée, elle livre toujours des insights précieux.",
-    role: "Agent Mots-Clés Manuel",
-  },
   "seo-checker": {
     name: "Rosalina",
-    img: "https://www.mariowiki.com/images/6/6c/Rosalina_Artwork_-_Super_Mario_3D_World.png",
+    img: "",
     color: "#7C6FF7",
     bgFrom: "#160d35",
     bgTo: "#0b0720",
@@ -124,12 +113,170 @@ const PIPELINE_ORDER = [
   "article-optimizer-quarterly",
 ];
 
-export default function AgentsClient({ agents, queueStats }: AgentsClientProps) {
-  const [selected, setSelected] = useState<string | null>(null);
-  const activeCount = agents.filter((a) => a.status === "active").length;
+type PanelTab = "info" | "prompt";
 
-  const selectedAgent = selected ? agents.find((a) => a.id === selected) : null;
+function CharacterImage({ char, agent, size }: {
+  char: typeof CHARACTERS[string];
+  agent: Agent;
+  size: "card" | "panel";
+}) {
+  const [failed, setFailed] = useState(false);
+  const dim = size === "card" ? { w: 200, h: 220 } : { w: 80, h: 96 };
+
+  if (!char.img || failed) {
+    return (
+      <div
+        className="relative z-10 flex items-center justify-center"
+        style={size === "card" ? { width: 144, height: 160 } : { width: 80, height: 96 }}
+      >
+        <span style={{ fontSize: size === "card" ? 72 : 40 }}>{agent.emoji}</span>
+      </div>
+    );
+  }
+
+  return (
+    <Image
+      src={char.img}
+      alt={char.name}
+      width={dim.w}
+      height={dim.h}
+      loading="lazy"
+      className={`object-contain object-bottom w-full h-full ${size === "card" ? "char-img relative z-10" : "float-anim"}`}
+      onError={() => setFailed(true)}
+      unoptimized
+    />
+  );
+}
+
+function PromptEditor({ agentId, char }: { agentId: string; char: typeof CHARACTERS[string] }) {
+  const [content, setContent] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    if (content !== null) return;
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/admin/agents/${agentId}/prompt`);
+      const data = await res.json() as { content: string };
+      setContent(data.content ?? "");
+    } catch {
+      setError("Impossible de charger le prompt");
+    } finally {
+      setLoading(false);
+    }
+  }, [agentId, content]);
+
+  // Auto-load on mount
+  useState(() => { load(); });
+
+  const save = async () => {
+    if (content === null) return;
+    setSaving(true);
+    setSaved(false);
+    setError(null);
+    try {
+      const res = await fetch(`/api/admin/agents/${agentId}/prompt`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content }),
+      });
+      if (!res.ok) throw new Error("Erreur serveur");
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch {
+      setError("Échec de la sauvegarde");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <span className="pixel-font text-[8px] animate-pulse" style={{ color: char.color }}>
+          CHARGEMENT...
+        </span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="py-4 text-center">
+        <p className="text-red-400 text-xs">{error}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      <p className="text-[11px] text-gray-400">
+        Ce fichier est lu par l&apos;agent à chaque exécution. Toute modification prend effet au prochain run automatique.
+      </p>
+      <textarea
+        value={content ?? ""}
+        onChange={(e) => { setContent(e.target.value); setSaved(false); }}
+        rows={14}
+        className="w-full rounded-xl text-xs font-mono leading-relaxed resize-y focus:outline-none focus:ring-1 px-4 py-3"
+        style={{
+          background: "rgba(0,0,0,0.5)",
+          color: "#e2e8f0",
+          borderColor: `${char.color}44`,
+          border: `1px solid ${char.color}44`,
+          caretColor: char.color,
+        }}
+        spellCheck={false}
+      />
+      <div className="flex items-center justify-between">
+        <div>
+          {saved && (
+            <span className="pixel-font text-[8px]" style={{ color: "#00FF87" }}>
+              ✓ SAUVEGARDÉ
+            </span>
+          )}
+          {error && (
+            <span className="text-red-400 text-[10px]">{error}</span>
+          )}
+        </div>
+        <button
+          onClick={save}
+          disabled={saving || content === null}
+          className="px-4 py-2 rounded-lg text-xs font-bold transition-all disabled:opacity-40"
+          style={{
+            background: saving ? "rgba(255,255,255,0.05)" : `${char.color}22`,
+            color: char.color,
+            border: `1px solid ${char.color}55`,
+            boxShadow: saving ? "none" : `0 0 12px ${char.glow}`,
+          }}
+        >
+          {saving ? "SAUVEGARDE..." : "SAUVEGARDER LE PROMPT"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export default function AgentsClient({ agents, queueStats }: AgentsClientProps) {
+  // Only show autonomous (cron) agents
+  const cronAgents = agents.filter((a) => a.trigger === "cron");
+  const [selected, setSelected] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<PanelTab>("info");
+  const activeCount = cronAgents.filter((a) => a.status === "active").length;
+
+  const selectedAgent = selected ? cronAgents.find((a) => a.id === selected) : null;
   const selectedChar = selected ? CHARACTERS[selected] : null;
+
+  const handleCardClick = (id: string) => {
+    if (selected === id) {
+      setSelected(null);
+    } else {
+      setSelected(id);
+      setActiveTab("info");
+    }
+  };
 
   return (
     <>
@@ -142,16 +289,10 @@ export default function AgentsClient({ agents, queueStats }: AgentsClientProps) 
           transition: transform 0.2s ease, box-shadow 0.2s ease;
           cursor: pointer;
         }
-        .agent-card:hover {
-          transform: translateY(-6px) scale(1.02);
-        }
-        .agent-card.selected {
-          transform: translateY(-8px) scale(1.03);
-        }
+        .agent-card:hover { transform: translateY(-6px) scale(1.02); }
+        .agent-card.selected { transform: translateY(-8px) scale(1.03); }
 
-        .char-img {
-          transition: transform 0.3s ease, filter 0.3s ease;
-        }
+        .char-img { transition: transform 0.3s ease, filter 0.3s ease; }
         .agent-card:hover .char-img,
         .agent-card.selected .char-img {
           transform: scale(1.08) translateY(-4px);
@@ -160,11 +301,8 @@ export default function AgentsClient({ agents, queueStats }: AgentsClientProps) 
 
         .scanline {
           background: repeating-linear-gradient(
-            0deg,
-            transparent,
-            transparent 2px,
-            rgba(0,0,0,0.03) 2px,
-            rgba(0,0,0,0.03) 4px
+            0deg, transparent, transparent 2px,
+            rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px
           );
           pointer-events: none;
         }
@@ -180,21 +318,13 @@ export default function AgentsClient({ agents, queueStats }: AgentsClientProps) 
           50% { opacity: 0; }
         }
         .blink { animation: blink 1s step-end infinite; }
-
-        @keyframes glitch {
-          0% { text-shadow: 2px 0 #ff0000, -2px 0 #0000ff; }
-          25% { text-shadow: -2px 0 #ff0000, 2px 0 #0000ff; }
-          50% { text-shadow: 2px 2px #ff0000, -2px -2px #0000ff; }
-          75% { text-shadow: -2px 2px #ff0000, 2px -2px #0000ff; }
-          100% { text-shadow: 2px 0 #ff0000, -2px 0 #0000ff; }
-        }
       `}</style>
 
       <div
         className="min-h-screen relative"
         style={{ background: "linear-gradient(160deg, #080815 0%, #0d0d1f 50%, #080815 100%)" }}
       >
-        {/* Pixel grid background */}
+        {/* Pixel grid */}
         <div
           className="absolute inset-0 opacity-[0.04]"
           style={{
@@ -208,9 +338,7 @@ export default function AgentsClient({ agents, queueStats }: AgentsClientProps) 
 
           {/* Header */}
           <div className="text-center mb-12">
-            <p className="pixel-font text-[10px] text-green-400 mb-3 tracking-widest">
-              — VANZON EXPLORER —
-            </p>
+            <p className="pixel-font text-[10px] text-green-400 mb-3 tracking-widest">— VANZON EXPLORER —</p>
             <h1 className="pixel-font text-xl md:text-2xl text-white mb-2 leading-relaxed"
               style={{ textShadow: "0 0 20px rgba(255,255,255,0.3)" }}>
               AGENTS IA
@@ -223,22 +351,17 @@ export default function AgentsClient({ agents, queueStats }: AgentsClientProps) 
           {/* KPI bar */}
           <div className="grid grid-cols-3 gap-4 mb-10">
             {[
-              { label: "ACTIFS", value: activeCount, sub: `/ ${agents.length} agents`, color: "#00FF87" },
+              { label: "ACTIFS", value: activeCount, sub: `/ ${cronAgents.length} agents`, color: "#00FF87" },
               { label: "PUBLIÉS", value: queueStats.published, sub: "articles en ligne", color: "#FFB800" },
               { label: "EN QUEUE", value: queueStats.pending, sub: "articles à venir", color: "#7C6FF7" },
             ].map((kpi) => (
-              <div
-                key={kpi.label}
-                className="rounded-xl border px-4 py-4 text-center"
+              <div key={kpi.label} className="rounded-xl border px-4 py-4 text-center"
                 style={{
                   background: "rgba(255,255,255,0.03)",
                   borderColor: `${kpi.color}33`,
                   boxShadow: `0 0 20px ${kpi.color}11`,
-                }}
-              >
-                <p className="pixel-font text-[8px] mb-2" style={{ color: kpi.color }}>
-                  {kpi.label}
-                </p>
+                }}>
+                <p className="pixel-font text-[8px] mb-2" style={{ color: kpi.color }}>{kpi.label}</p>
                 <p className="pixel-font text-3xl text-white">{kpi.value}</p>
                 <p className="text-[10px] text-gray-500 mt-1">{kpi.sub}</p>
               </div>
@@ -246,10 +369,8 @@ export default function AgentsClient({ agents, queueStats }: AgentsClientProps) 
           </div>
 
           {/* Pipeline */}
-          <div
-            className="rounded-2xl border p-5 mb-10"
-            style={{ background: "rgba(255,255,255,0.02)", borderColor: "rgba(255,255,255,0.08)" }}
-          >
+          <div className="rounded-2xl border p-5 mb-10"
+            style={{ background: "rgba(255,255,255,0.02)", borderColor: "rgba(255,255,255,0.08)" }}>
             <p className="pixel-font text-[8px] text-gray-500 mb-4 tracking-widest">PIPELINE AUTOMATISÉ</p>
             <div className="flex items-center justify-center gap-1 flex-wrap">
               {PIPELINE_ORDER.map((id, i) => {
@@ -258,10 +379,10 @@ export default function AgentsClient({ agents, queueStats }: AgentsClientProps) 
                 return (
                   <div key={id} className="flex items-center gap-1">
                     <button
-                      onClick={() => setSelected(selected === id ? null : id)}
+                      onClick={() => handleCardClick(id)}
                       className="flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all text-xs"
                       style={{
-                        background: selected === id ? `${char.bgFrom}` : "rgba(255,255,255,0.03)",
+                        background: selected === id ? char.bgFrom : "rgba(255,255,255,0.03)",
                         borderColor: selected === id ? char.border : "rgba(255,255,255,0.1)",
                         color: selected === id ? char.color : "#888",
                         boxShadow: selected === id ? `0 0 12px ${char.glow}` : "none",
@@ -280,19 +401,13 @@ export default function AgentsClient({ agents, queueStats }: AgentsClientProps) 
             </div>
           </div>
 
-          {/* Cards grid */}
+          {/* Cards grid — cron agents only */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
-            {agents.map((agent) => {
+            {cronAgents.map((agent) => {
               const char = CHARACTERS[agent.id] ?? {
-                name: agent.name,
-                img: "",
-                color: "#ffffff",
-                bgFrom: "#1a1a2e",
-                bgTo: "#0d0d1a",
-                glow: "rgba(255,255,255,0.2)",
-                border: "rgba(255,255,255,0.3)",
-                personality: agent.description,
-                role: agent.name,
+                name: agent.name, img: "", color: "#ffffff", bgFrom: "#1a1a2e", bgTo: "#0d0d1a",
+                glow: "rgba(255,255,255,0.2)", border: "rgba(255,255,255,0.3)",
+                personality: agent.description, role: agent.name,
               };
               const status = STATUS_CONFIG[agent.status];
               const isSelected = selected === agent.id;
@@ -308,7 +423,7 @@ export default function AgentsClient({ agents, queueStats }: AgentsClientProps) 
                       ? `0 0 40px ${char.glow}, 0 20px 60px rgba(0,0,0,0.5)`
                       : "0 4px 24px rgba(0,0,0,0.4)",
                   }}
-                  onClick={() => setSelected(selected === agent.id ? null : agent.id)}
+                  onClick={() => handleCardClick(agent.id)}
                 >
                   {/* Image area */}
                   <div
@@ -318,64 +433,32 @@ export default function AgentsClient({ agents, queueStats }: AgentsClientProps) 
                       minHeight: "200px",
                     }}
                   >
-                    {/* Glow circle behind character */}
-                    <div
-                      className="absolute bottom-0 left-1/2 -translate-x-1/2 w-32 h-32 rounded-full blur-3xl opacity-40"
-                      style={{ background: char.color }}
-                    />
-
-                    {char.img ? (
-                      <div className="char-img relative z-10 w-36 h-40 flex items-end justify-center float-anim" style={{ animationDelay: `${Math.random() * 2}s` }}>
-                        <Image
-                          src={char.img}
-                          alt={char.name}
-                          width={200}
-                          height={220}
-                          className="object-contain object-bottom w-full h-full"
-                          unoptimized
-                        />
-                      </div>
-                    ) : (
-                      <div className="relative z-10 text-6xl pb-4">{agent.emoji}</div>
-                    )}
+                    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-32 h-32 rounded-full blur-3xl opacity-40"
+                      style={{ background: char.color }} />
+                    <div className="w-36 h-40 flex items-end justify-center"
+                      style={{ animationDelay: `${Math.random() * 2}s` }}>
+                      <CharacterImage char={char} agent={agent} size="card" />
+                    </div>
                   </div>
 
                   {/* Card content */}
                   <div className="flex-1 p-4">
-                    {/* Character name */}
                     <div className="flex items-center justify-between mb-1">
-                      <p
-                        className="pixel-font text-[11px] leading-relaxed"
-                        style={{ color: char.color }}
-                      >
+                      <p className="pixel-font text-[11px] leading-relaxed" style={{ color: char.color }}>
                         {char.name.toUpperCase()}
                       </p>
-                      {/* Status dot */}
                       <span className={`w-2 h-2 rounded-full ${status.dot}`} title={status.label} />
                     </div>
-
-                    {/* Agent role */}
-                    <p className="text-[11px] font-semibold text-white mb-3 leading-tight">
-                      {char.role}
-                    </p>
-
-                    {/* Divider */}
+                    <p className="text-[11px] font-semibold text-white mb-3 leading-tight">{char.role}</p>
                     <div className="w-full h-px mb-3" style={{ background: `linear-gradient(90deg, ${char.color}44, transparent)` }} />
-
-                    {/* Schedule */}
                     <div className="flex items-center gap-1.5 mb-2">
-                      <span className="text-[10px]">{agent.trigger === "cron" ? "⏰" : "🖐️"}</span>
+                      <span className="text-[10px]">⏰</span>
                       <span className="text-[10px] text-gray-400">{agent.schedule}</span>
                     </div>
-
-                    {/* APIs */}
                     <div className="flex flex-wrap gap-1">
                       {agent.apis.slice(0, 3).map((api) => (
-                        <span
-                          key={api}
-                          className="text-[9px] px-1.5 py-0.5 rounded font-medium"
-                          style={{ background: `${char.color}18`, color: char.color }}
-                        >
+                        <span key={api} className="text-[9px] px-1.5 py-0.5 rounded font-medium"
+                          style={{ background: `${char.color}18`, color: char.color }}>
                           {api}
                         </span>
                       ))}
@@ -386,69 +469,93 @@ export default function AgentsClient({ agents, queueStats }: AgentsClientProps) 
             })}
           </div>
 
-          {/* Detail panel — shown when card is selected */}
+          {/* Detail + editor panel */}
           {selectedAgent && selectedChar && (
             <div
-              className="mt-6 rounded-2xl border p-6 transition-all"
+              className="mt-6 rounded-2xl border transition-all"
               style={{
                 background: `linear-gradient(135deg, ${selectedChar.bgFrom}ee, ${selectedChar.bgTo}ee)`,
                 borderColor: selectedChar.border,
                 boxShadow: `0 0 60px ${selectedChar.glow}`,
               }}
             >
-              <div className="flex items-start gap-6">
-                {/* Mini character */}
-                <div className="flex-none w-20 h-24 relative">
-                  <Image
-                    src={selectedChar.img}
-                    alt={selectedChar.name}
-                    width={80}
-                    height={96}
-                    className="object-contain w-full h-full float-anim"
-                    unoptimized
-                  />
-                </div>
-
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-3 mb-3 flex-wrap">
-                    <p className="pixel-font text-sm" style={{ color: selectedChar.color }}>
-                      {selectedChar.name.toUpperCase()}
-                    </p>
-                    <span
-                      className="pixel-font text-[8px] px-2 py-1 rounded"
-                      style={{ background: `${selectedChar.color}22`, color: selectedChar.color }}
-                    >
-                      {STATUS_CONFIG[selectedAgent.status].label}
-                    </span>
-                  </div>
-
-                  <p className="text-sm text-gray-300 mb-4 leading-relaxed italic">
-                    &quot;{selectedChar.personality}&quot;
-                  </p>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-xs mb-4">
-                    {[
-                      { k: "Rôle", v: selectedChar.role },
-                      { k: "Schedule", v: selectedAgent.schedule },
-                      { k: "APIs", v: selectedAgent.apis.join(", ") },
-                      { k: "Output", v: selectedAgent.output },
-                      { k: "Pipeline", v: selectedAgent.pipeline },
-                      { k: "Workflow", v: selectedAgent.workflow ?? "Manuel" },
-                    ].map(({ k, v }) => (
-                      <div key={k} className="flex gap-2">
-                        <span className="text-gray-500 flex-none">{k} :</span>
-                        <span className="text-gray-200">{v}</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  <code
-                    className="block text-[10px] px-3 py-2 rounded-lg"
-                    style={{ background: "rgba(0,0,0,0.4)", color: selectedChar.color }}
+              {/* Tabs */}
+              <div className="flex border-b" style={{ borderColor: `${selectedChar.color}22` }}>
+                {(["info", "prompt"] as PanelTab[]).map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className="px-6 py-3 pixel-font text-[8px] transition-all"
+                    style={{
+                      color: activeTab === tab ? selectedChar.color : "#555",
+                      borderBottom: activeTab === tab ? `2px solid ${selectedChar.color}` : "2px solid transparent",
+                      background: "transparent",
+                    }}
                   >
-                    $ {selectedAgent.manualCommand}
-                  </code>
+                    {tab === "info" ? "INFOS" : "MODIFIER PROMPT"}
+                  </button>
+                ))}
+                <div className="flex-1 flex justify-end items-center pr-4">
+                  <button
+                    onClick={() => setSelected(null)}
+                    className="text-gray-600 hover:text-gray-300 text-lg transition-colors"
+                  >
+                    ×
+                  </button>
                 </div>
+              </div>
+
+              <div className="p-6">
+                {activeTab === "info" && (
+                  <div className="flex items-start gap-6">
+                    {/* Mini character */}
+                    <div className="flex-none w-20 h-24 relative">
+                      <CharacterImage char={selectedChar} agent={selectedAgent} size="panel" />
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-3 mb-3 flex-wrap">
+                        <p className="pixel-font text-sm" style={{ color: selectedChar.color }}>
+                          {selectedChar.name.toUpperCase()}
+                        </p>
+                        <span className="pixel-font text-[8px] px-2 py-1 rounded"
+                          style={{ background: `${selectedChar.color}22`, color: selectedChar.color }}>
+                          {STATUS_CONFIG[selectedAgent.status].label}
+                        </span>
+                      </div>
+
+                      <p className="text-sm text-gray-300 mb-4 leading-relaxed italic">
+                        &quot;{selectedChar.personality}&quot;
+                      </p>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-xs mb-4">
+                        {[
+                          { k: "Rôle", v: selectedChar.role },
+                          { k: "Schedule", v: selectedAgent.schedule },
+                          { k: "Cron", v: selectedAgent.cronExpression ?? "—" },
+                          { k: "APIs", v: selectedAgent.apis.join(", ") },
+                          { k: "Output", v: selectedAgent.output },
+                          { k: "Pipeline", v: selectedAgent.pipeline },
+                          { k: "Workflow", v: selectedAgent.workflow ?? "Manuel" },
+                        ].map(({ k, v }) => (
+                          <div key={k} className="flex gap-2">
+                            <span className="text-gray-500 flex-none">{k} :</span>
+                            <span className="text-gray-200 break-all">{v}</span>
+                          </div>
+                        ))}
+                      </div>
+
+                      <code className="block text-[10px] px-3 py-2 rounded-lg"
+                        style={{ background: "rgba(0,0,0,0.4)", color: selectedChar.color }}>
+                        $ {selectedAgent.manualCommand}
+                      </code>
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === "prompt" && (
+                  <PromptEditor agentId={selectedAgent.id} char={selectedChar} />
+                )}
               </div>
             </div>
           )}

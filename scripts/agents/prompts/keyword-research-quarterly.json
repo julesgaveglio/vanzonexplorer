@@ -1,0 +1,44 @@
+{
+  "location": {
+    "label": "Location de van",
+    "seeds": [
+      "louer van pays basque",
+      "location van aménagé",
+      "location campervan biarritz",
+      "louer fourgon aménagé france",
+      "van location été pays basque",
+      "location van surf atlantique"
+    ]
+  },
+  "achat": {
+    "label": "Achat de van",
+    "seeds": [
+      "acheter van aménagé occasion",
+      "prix van aménagé 2025",
+      "quel fourgon choisir vanlife",
+      "van clé en main france",
+      "fourgon aménagé pas cher"
+    ]
+  },
+  "club": {
+    "label": "Club Privé — Équipement",
+    "seeds": [
+      "batterie lithium van",
+      "panneau solaire camping-car",
+      "frigo 12v van",
+      "kit solaire van complet",
+      "réduction équipement van",
+      "bon plan vanlife"
+    ]
+  },
+  "formation": {
+    "label": "Formation — Business Van",
+    "seeds": [
+      "mettre van en location yescapa",
+      "revenus location van",
+      "créer activité location van",
+      "formation vanlife revenus",
+      "rentabiliser van location"
+    ]
+  }
+}
