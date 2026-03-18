@@ -1,0 +1,38 @@
+name: Monthly Link Optimizer
+
+on:
+  schedule:
+    - cron: "0 10 1 * *"   # 1er de chaque mois à 10h UTC
+  workflow_dispatch:
+
+jobs:
+  link-optimizer:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run link optimizer agent
+        env:
+          SANITY_API_WRITE_TOKEN: ${{ secrets.SANITY_API_WRITE_TOKEN }}
+          NEXT_PUBLIC_SANITY_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_SANITY_PROJECT_ID }}
+        run: npx tsx scripts/agents/link-optimizer-monthly.ts
+
+      - name: Commit updated queue (lastLinkCheck timestamps)
+        run: |
+          git config user.name "Vanzon Agent"
+          git config user.email "agent@vanzonexplorer.com"
+          git add scripts/data/article-queue.json
+          git diff --staged --quiet || git commit -m "chore: liens optimisés — $(date +%B\ %Y) [skip ci]"
+          git push

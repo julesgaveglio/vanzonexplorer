@@ -10,6 +10,7 @@ const AGENT_PROMPT_FILES: Record<string, string> = {
   "article-optimizer-quarterly": "article-optimizer-quarterly.md",
   "keyword-research-quarterly": "keyword-research-quarterly.json",
   "seo-checker": "seo-checker.md",
+  "link-optimizer-monthly": "link-optimizer-monthly.json",
 };
 
 export async function GET(

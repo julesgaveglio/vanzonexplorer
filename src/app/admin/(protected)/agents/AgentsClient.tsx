@@ -98,6 +98,17 @@ const CHARACTERS: Record<string, {
     personality: "La gardienne cosmique. Depuis son observatoire, elle surveille chaque signal SEO du site chaque lundi matin.",
     role: "Agent Audit SEO",
   },
+  "link-optimizer-monthly": {
+    name: "Waluigi",
+    img: "",
+    color: "#C060D8",
+    bgFrom: "#2a0835",
+    bgTo: "#15041a",
+    glow: "rgba(192,96,216,0.5)",
+    border: "rgba(192,96,216,0.6)",
+    personality: "Le chasseur de liens morts. Inlassable, il parcourt chaque article pour traquer les 404 et tisser un maillage interne parfait — sans jamais dépenser un seul token IA.",
+    role: "Agent Link Optimizer",
+  },
 };
 
 const STATUS_CONFIG = {
@@ -111,6 +122,7 @@ const PIPELINE_ORDER = [
   "queue-builder-monthly",
   "blog-writer",
   "article-optimizer-quarterly",
+  "link-optimizer-monthly",
 ];
 
 type PanelTab = "info" | "prompt";

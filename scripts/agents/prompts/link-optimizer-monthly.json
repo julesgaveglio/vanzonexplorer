@@ -1,0 +1,19 @@
+{
+  "maxInternalLinksPerArticle": 3,
+  "minDaysBetweenChecks": 30,
+  "minKeywordLength": 5,
+  "externalCheckTimeoutMs": 8000,
+  "externalCheckRetries": 2,
+  "skipExternalDomains": [
+    "google.com",
+    "google.fr",
+    "facebook.com",
+    "instagram.com",
+    "twitter.com",
+    "x.com",
+    "youtube.com",
+    "linkedin.com",
+    "yescapa.fr",
+    "campanda.fr"
+  ]
+}

@@ -100,5 +100,22 @@
     "manualCommand": "npx tsx scripts/agents/seo-checker.ts",
     "tags": ["SEO", "Audit", "Automatique"],
     "pipeline": "Standalone"
+  },
+  {
+    "id": "link-optimizer-monthly",
+    "name": "Agent Link Optimizer",
+    "emoji": "🔗",
+    "status": "active",
+    "description": "Vérifie chaque mois tous les liens des articles publiés. Phase 1 : audit des liens externes (HEAD request → suppression des 404). Phase 2 : injection intelligente de liens internes basée sur un index keyword→article. 0 token IA — 100% algorithmique.",
+    "trigger": "cron",
+    "schedule": "1er de chaque mois à 10h UTC",
+    "cronExpression": "0 10 1 * *",
+    "file": "scripts/agents/link-optimizer-monthly.ts",
+    "workflow": ".github/workflows/monthly-link-optimizer.yml",
+    "apis": ["Sanity"],
+    "output": "Articles mis à jour dans Sanity CMS + lastLinkCheck dans article-queue.json",
+    "manualCommand": "npx tsx scripts/agents/link-optimizer-monthly.ts --dry-run",
+    "tags": ["SEO", "Maillage", "Automatique"],
+    "pipeline": "5 → post-publication (après blog-writer)"
   }
 ]
