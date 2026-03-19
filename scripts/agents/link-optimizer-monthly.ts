@@ -124,7 +124,7 @@ interface PTBlock {
 
 interface SanityArticle {
   _id: string;
-  body: PTBlock[];
+  content: PTBlock[];
 }
 
 interface LinkCheckResult {
@@ -242,9 +242,22 @@ function buildInternalLinkIndex(
     if (item.status !== "published" || !item.sanityId) continue;
     if (item.slug === currentSlug) continue; // never link to self
 
-    const keywords = [item.targetKeyword, ...item.secondaryKeywords]
-      .filter((kw) => kw && kw.length >= config.minKeywordLength)
-      .map((kw) => kw.toLowerCase())
+    // Build keyword list: full phrases first, then individual significant words
+    const rawKeywords = [item.targetKeyword, ...item.secondaryKeywords]
+      .filter((kw) => kw && kw.trim().length > 0)
+      .map((kw) => kw.toLowerCase().trim());
+
+    const allKeywords: string[] = [];
+    for (const kw of rawKeywords) {
+      // Add full phrase if long enough
+      if (kw.length >= config.minKeywordLength) allKeywords.push(kw);
+      // Also add individual words ≥ minKeywordLength (excludes stopwords by length)
+      for (const word of kw.split(/\s+/)) {
+        if (word.length >= config.minKeywordLength) allKeywords.push(word);
+      }
+    }
+
+    const keywords = allKeywords
       // Remove duplicates
       .filter((kw, i, arr) => arr.indexOf(kw) === i)
       // Longest keywords first → prefer specific matches
@@ -395,7 +408,7 @@ function injectInternalLinks(
 
 async function main() {
   const isDryRun = process.argv.includes("--dry-run");
-  const targetSlug = process.argv.find((a) => !a.startsWith("--") && a !== process.argv[1]);
+  const targetSlug = process.argv.slice(2).find((a) => !a.startsWith("--"));
 
   console.log(`\n🔗 Agent Link Optimizer${isDryRun ? " [DRY RUN]" : ""}`);
   console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
@@ -433,16 +446,16 @@ async function main() {
 
     // Fetch Sanity body
     const article = await sanity.fetch<SanityArticle | null>(
-      `*[_id == $id][0]{_id, body}`,
+      `*[_id == $id][0]{_id, content}`,
       { id: item.sanityId }
     );
 
-    if (!article || !article.body) {
+    if (!article || !article.content) {
       console.log(`  ⚠️  Article non trouvé dans Sanity (sanityId: ${item.sanityId})`);
       continue;
     }
 
-    let body = article.body;
+    let body = article.content;
     let modified = false;
 
     // ── PHASE 1: External links ──────────────────────────────────────────────
