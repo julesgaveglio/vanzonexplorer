@@ -10,6 +10,7 @@ const FLOATS = [
     width: 1459,
     height: 850,
     rotate: "-2deg",
+    translateY: "-24px",
   },
   {
     src: "https://cdn.sanity.io/images/lewexa74/production/5473f111cdb3199e8192ebd19c7c721c5b0ec77d-1459x784.png",
@@ -17,6 +18,7 @@ const FLOATS = [
     width: 1459,
     height: 784,
     rotate: "2deg",
+    translateY: "0px",
   },
   {
     src: "https://cdn.sanity.io/images/lewexa74/production/d9c4c7fe7931c1be66649b8520bbefe4acda6091-1284x850.png",
@@ -24,6 +26,7 @@ const FLOATS = [
     width: 1284,
     height: 850,
     rotate: "1.5deg",
+    translateY: "0px",
   },
   {
     src: "https://cdn.sanity.io/images/lewexa74/production/2f1f2a6a93df20af09a71176b79f82316d856447-1317x746.png",
@@ -31,6 +34,7 @@ const FLOATS = [
     width: 1317,
     height: 746,
     rotate: "-1.5deg",
+    translateY: "0px",
   },
 ];
 
@@ -55,7 +59,7 @@ export default function FormationScrollReveal() {
           <div
             key={i}
             style={{
-              transform: `rotate(${f.rotate})`,
+              transform: `rotate(${f.rotate}) translateY(${f.translateY})`,
               filter: "drop-shadow(0 12px 32px rgba(0,0,0,0.16))",
             }}
           >
