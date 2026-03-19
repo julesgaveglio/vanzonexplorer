@@ -10,7 +10,7 @@ import { getGooglePlaceStats } from "@/lib/google-places";
 const BASE_URL = "https://vanzonexplorer.com";
 
 export const metadata: Metadata = {
-  title: "Location Van Aménagé Pays Basque — dès 65€/nuit | Vanzon Explorer",
+  title: "Louer un Van Aménagé au Pays Basque — dès 65€/nuit | Vanzon Explorer",
   description:
     "Louez un van aménagé tout équipé au Pays Basque dès 65€/nuit. Départ Bayonne, assurance tous risques incluse. Surf, montagne, road trip — explorez librement avec Vanzon Explorer.",
   alternates: {
@@ -139,11 +139,24 @@ export default async function LocationPage() {
 
   const destinations = destMeta;
 
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Accueil", item: BASE_URL },
+      { "@type": "ListItem", position: 2, name: "Location van aménagé Pays Basque", item: `${BASE_URL}/location` },
+    ],
+  };
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
 
       {/* ── Hero ── */}

@@ -28,5 +28,18 @@ export const metadata: Metadata = {
 
 export default async function ArticlesPage() {
   const sanityArticles = await sanityFetch<SanityArticle[]>(getAllArticlesQuery);
-  return <ArticlesPageClient sanityArticles={sanityArticles ?? []} />;
+  return (
+    <>
+      <div className="sr-only">
+        <h1>Guides & Articles Vanlife — Pays Basque</h1>
+        <p>
+          Tous les guides pratiques pour explorer le Pays Basque en van aménagé : itinéraires road trip,
+          spots bivouac, réglementation nuit en van, aménagement fourgon, recettes sans frigo, et conseils
+          pour lancer un business de location. Rédigés par Jules et Elio de Vanzon Explorer, qui louent des
+          vans depuis Cambo-les-Bains au cœur du Pays Basque.
+        </p>
+      </div>
+      <ArticlesPageClient sanityArticles={sanityArticles ?? []} />
+    </>
+  );
 }

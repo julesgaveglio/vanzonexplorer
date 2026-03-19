@@ -103,11 +103,54 @@ const schema = {
   ],
 };
 
-export function LocalBusinessJsonLd() {
+export function LocalBusinessJsonLd({
+  ratingValue,
+  reviewCount,
+}: {
+  ratingValue?: string;
+  reviewCount?: number;
+}) {
+  const fullSchema = {
+    ...schema,
+    ...(ratingValue && reviewCount
+      ? {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue,
+            reviewCount,
+            bestRating: "5",
+            worstRating: "1",
+          },
+        }
+      : {}),
+  };
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(fullSchema) }}
+    />
+  );
+}
+
+export function WebSiteJsonLd() {
+  const websiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Vanzon Explorer",
+    url: BASE_URL,
+    potentialAction: {
+      "@type": "SearchAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: `${BASE_URL}/articles?q={search_term_string}`,
+      },
+      "query-input": "required name=search_term_string",
+    },
+  };
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
     />
   );
 }
@@ -184,7 +227,9 @@ export function ArticleJsonLd({
       "url": BASE_URL,
       "logo": {
         "@type": "ImageObject",
-        "url": `${BASE_URL}/logo.png`,
+        "url": "https://cdn.sanity.io/images/lewexa74/production/1f483103ef15ee3549eab14ba2801d11b32a9055-313x313.png",
+        "width": 313,
+        "height": 313,
       },
     },
     "image": article.coverImage?.url,

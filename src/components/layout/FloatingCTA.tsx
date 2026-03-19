@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useArticleCategory } from "@/lib/contexts/ArticleCategoryContext";
@@ -209,16 +208,11 @@ export default function FloatingCTA() {
       : getCTAConfig(pathname);
 
   return (
-    <AnimatePresence>
-      {visible && (
-        <motion.div
-          key={pathname}
-          initial={{ y: 100, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: 100, opacity: 0 }}
-          transition={{ duration: 0.3, ease: "easeOut" }}
-          className="fixed bottom-6 left-4 right-4 z-30 lg:hidden"
-        >
+    <div
+      className={`fixed bottom-6 left-4 right-4 z-30 lg:hidden transition-transform duration-300 ease-out ${
+        visible ? "translate-y-0" : "translate-y-[calc(100%+1.5rem)]"
+      }`}
+    >
           <div
             className="glass-card flex items-center justify-between gap-3 px-4 py-3"
             style={{ boxShadow: "0 4px 24px rgba(0,0,0,0.10)" }}
@@ -271,8 +265,6 @@ export default function FloatingCTA() {
               </Link>
             )}
           </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+    </div>
   );
 }

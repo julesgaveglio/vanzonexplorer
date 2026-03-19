@@ -1,12 +1,12 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Bebas_Neue } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { frFR } from "@clerk/localizations";
 import { sanityFetch } from "@/lib/sanity/client";
 import { getSiteSettingsQuery } from "@/lib/sanity/queries";
+import { getGooglePlaceStats } from "@/lib/google-places";
 import CookieBanner from "@/components/ui/CookieBanner";
-import { LocalBusinessJsonLd } from "@/components/seo/JsonLd";
-import { GoogleAnalytics } from "@next/third-parties/google";
+import { LocalBusinessJsonLd, WebSiteJsonLd } from "@/components/seo/JsonLd";
 import Script from "next/script";
 import "./globals.css";
 
@@ -24,6 +24,10 @@ const bebasNeue = Bebas_Neue({
 });
 
 const BASE_URL = "https://vanzonexplorer.com";
+
+export const viewport: Viewport = {
+  themeColor: "#0F153A",
+};
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await sanityFetch<{
@@ -74,23 +78,27 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const placeStats = await getGooglePlaceStats();
+
   return (
     <ClerkProvider localization={frFR} signInUrl="/sign-in" signUpUrl="/sign-up">
       <html lang="fr">
         <body
           className={`${inter.variable} ${bebasNeue.variable} font-sans antialiased bg-bg-primary text-text-primary min-h-screen`}
         >
-          <LocalBusinessJsonLd />
+          <LocalBusinessJsonLd
+            ratingValue={placeStats.ratingDisplay}
+            reviewCount={placeStats.reviewCount}
+          />
+          <WebSiteJsonLd />
           {children}
           <CookieBanner />
-          <GoogleAnalytics gaId="G-D8NPYG2FDM" />
-          {/* Calendly popup widget */}
-          <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet" />
+          {/* Analytics chargé conditionnellement via CookieBanner après consentement */}
           <Script src="https://assets.calendly.com/assets/external/widget.js" strategy="lazyOnload" />
         </body>
       </html>

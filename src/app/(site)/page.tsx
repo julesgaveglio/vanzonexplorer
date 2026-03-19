@@ -11,15 +11,15 @@ import OtherServices from "@/components/ui/OtherServices";
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: "Location Van Aménagé Pays Basque — dès 65€/nuit | Vanzon Explorer",
+  title: "Vanzon Explorer — Location, Achat & Formation Van Aménagé | Pays Basque",
   description:
-    "Louez un van aménagé au Pays Basque dès 65€/nuit. Biarritz, Bayonne, Hossegor — vans tout équipés, assurance incluse, réservation simple. Surf, montagne, océan — vivez le Pays Basque en liberté.",
+    "Location de vans aménagés dès 65€/nuit, achat de fourgons aménagés et formation vanlife au Pays Basque. Biarritz, Bayonne, Hossegor — vivez le Pays Basque en liberté avec Vanzon Explorer.",
   alternates: {
     canonical: "https://vanzonexplorer.com/",
   },
   openGraph: {
-    title: "Location Van Aménagé Pays Basque — dès 65€/nuit | Vanzon Explorer",
-    description: "Louez un van aménagé au Pays Basque dès 65€/nuit. Vans tout équipés, assurance incluse. Surf, montagne, océan.",
+    title: "Vanzon Explorer — Location, Achat & Formation Van Aménagé | Pays Basque",
+    description: "Location de vans aménagés dès 65€/nuit, achat et formation vanlife au Pays Basque. Assurance incluse.",
     url: "https://vanzonexplorer.com/",
     images: [
       {
@@ -31,6 +31,14 @@ export const metadata: Metadata = {
     ],
   },
 };
+
+function getSeasonLabel(): string {
+  const month = new Date().getMonth(); // 0-11
+  if (month >= 5 && month <= 8) return "Vans disponibles cet été";
+  if (month >= 9 && month <= 10) return "Vans disponibles cet automne";
+  if (month >= 11 || month <= 1) return "Vans disponibles cet hiver";
+  return "Vans disponibles ce printemps";
+}
 
 export default async function HomePage() {
   const [vans, placeStats] = await Promise.all([
@@ -405,7 +413,7 @@ export default async function HomePage() {
         <div className="relative z-10 max-w-3xl mx-auto px-6 text-center">
           <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-2 mb-6">
             <span className="text-green-400">●</span>
-            <span className="text-white/90 text-sm font-medium">Vans disponibles cet été</span>
+            <span className="text-white/90 text-sm font-medium">{getSeasonLabel()}</span>
           </div>
 
           <h2 className="text-4xl md:text-5xl font-black text-white mb-5 leading-tight">
@@ -436,19 +444,6 @@ export default async function HomePage() {
           </p>
         </div>
       </section>
-
-      {vans && vans.length > 0 && (
-        <section className="bg-[#F8FAFC] py-16">
-          <div className="max-w-7xl mx-auto px-6">
-            <h2 className="text-2xl font-bold text-slate-900 mb-8">Plus de vans disponibles</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {vans.map((van) => (
-                <VanCard key={van._id} van={van} mode="location" />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
 
       <OtherServices current="location" bgColor="#F8FAFC" />
     </>

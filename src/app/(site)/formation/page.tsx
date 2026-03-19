@@ -106,9 +106,72 @@ const differentiators = [
 ];
 
 
+const courseJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Course",
+  name: "Van Business Academy",
+  description:
+    "Formation complète pour aménager ton fourgon et lancer un business de location de van. De l'achat du véhicule à la mise en location rentable — homologation VASP incluse.",
+  url: "https://vanzonexplorer.com/formation",
+  image:
+    "https://cdn.sanity.io/images/lewexa74/production/28a2c5acbe2ee16169d4ace1ab0522481c43d356-1170x2080.jpg",
+  provider: {
+    "@type": "Organization",
+    name: "Vanzon Explorer",
+    url: "https://vanzonexplorer.com",
+  },
+  instructor: [
+    {
+      "@type": "Person",
+      name: "Jules Gaveglio",
+      jobTitle: "Co-fondateur Vanzon Explorer",
+      url: "https://vanzonexplorer.com/a-propos",
+    },
+    {
+      "@type": "Person",
+      name: "Elio",
+      jobTitle: "Co-fondateur Vanzon Explorer",
+      url: "https://vanzonexplorer.com/a-propos",
+    },
+  ],
+  hasCourseInstance: {
+    "@type": "CourseInstance",
+    courseMode: "online",
+    inLanguage: "fr-FR",
+    offers: {
+      "@type": "Offer",
+      priceCurrency: "EUR",
+      availability: "https://schema.org/InStock",
+      seller: { "@type": "Organization", name: "Vanzon Explorer" },
+    },
+  },
+  educationalLevel: "Beginner",
+  inLanguage: "fr-FR",
+  teaches: [
+    "Choix et achat d'un fourgon aménageable",
+    "Aménagement intérieur van (isolation, électricité, menuiserie)",
+    "Homologation VASP",
+    "Création d'un business de location de van",
+    "Mise en ligne sur Yescapa et optimisation des annonces",
+    "Fiscalité et déclaration des revenus vanlife",
+  ],
+};
+
 export default function FormationPage() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(courseJsonLd) }}
+      />
+      {/* CSS Calendly — chargé uniquement sur cette page car le widget n'est utilisé qu'ici */}
+      <link
+        href="https://assets.calendly.com/assets/external/widget.css"
+        rel="stylesheet"
+        media="print"
+        // @ts-expect-error onLoad est valide pour les éléments link HTML
+        onLoad="this.media='all'"
+      />
       <FormationHero />
 
       <section className="py-20" style={{ background: '#FAF6F0' }}>
