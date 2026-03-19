@@ -3,13 +3,6 @@
 import { useRef, useState } from "react";
 import Image from "next/image";
 
-const HERO_IMG = {
-  src: "https://cdn.sanity.io/images/lewexa74/production/e8d8a66703e846a5bd916e38bd9a488b663ce433-1920x1080.png",
-  alt: "Aménagement intérieur de van - Van Business Academy",
-  width: 1920,
-  height: 1080,
-};
-
 const FLOATS = [
   {
     src: "https://cdn.sanity.io/images/lewexa74/production/d3f70a292bbf7b03e5e2dfe71ec413920e087f1f-1459x850.png",
@@ -56,63 +49,26 @@ export default function FormationScrollReveal() {
   return (
     <div className="w-full max-w-5xl mx-auto px-6 pb-16 pt-4">
 
-      {/* Desktop */}
-      <div className="hidden md:block relative">
-        {/* Image centrale agrandie */}
-        <div
-          className="relative z-10 w-[65%] mx-auto"
-          style={{ filter: "drop-shadow(0 24px 48px rgba(0,0,0,0.16))" }}
-        >
-          <Image
-            src={HERO_IMG.src}
-            alt={HERO_IMG.alt}
-            width={HERO_IMG.width}
-            height={HERO_IMG.height}
-            className="w-full h-auto rounded-2xl"
-            priority
-            unoptimized
-          />
-        </div>
-
-        {/* Screenshots flottants */}
-        <div className="absolute inset-0 pointer-events-none">
+      {/* Desktop : grille 2×2 */}
+      <div className="hidden md:grid grid-cols-2 gap-5">
+        {FLOATS.map((f, i) => (
           <div
-            className="absolute w-[36%] top-0 left-0"
+            key={i}
             style={{
-              transform: `rotate(${FLOATS[0].rotate}) translateY(-12px)`,
-              filter: "drop-shadow(0 12px 32px rgba(0,0,0,0.18))",
+              transform: `rotate(${f.rotate})`,
+              filter: "drop-shadow(0 12px 32px rgba(0,0,0,0.16))",
             }}
           >
-            <Image src={FLOATS[0].src} alt={FLOATS[0].alt} width={FLOATS[0].width} height={FLOATS[0].height} className="w-full h-auto rounded-xl" unoptimized />
+            <Image
+              src={f.src}
+              alt={f.alt}
+              width={f.width}
+              height={f.height}
+              className="w-full h-auto rounded-xl"
+              unoptimized
+            />
           </div>
-          <div
-            className="absolute w-[36%] top-0 right-0"
-            style={{
-              transform: `rotate(${FLOATS[1].rotate}) translateY(-8px)`,
-              filter: "drop-shadow(0 12px 32px rgba(0,0,0,0.18))",
-            }}
-          >
-            <Image src={FLOATS[1].src} alt={FLOATS[1].alt} width={FLOATS[1].width} height={FLOATS[1].height} className="w-full h-auto rounded-xl" unoptimized />
-          </div>
-          <div
-            className="absolute w-[36%] bottom-0 left-0"
-            style={{
-              transform: `rotate(${FLOATS[2].rotate}) translateY(12px)`,
-              filter: "drop-shadow(0 12px 32px rgba(0,0,0,0.18))",
-            }}
-          >
-            <Image src={FLOATS[2].src} alt={FLOATS[2].alt} width={FLOATS[2].width} height={FLOATS[2].height} className="w-full h-auto rounded-xl" unoptimized />
-          </div>
-          <div
-            className="absolute w-[36%] bottom-0 right-0"
-            style={{
-              transform: `rotate(${FLOATS[3].rotate}) translateY(8px)`,
-              filter: "drop-shadow(0 12px 32px rgba(0,0,0,0.18))",
-            }}
-          >
-            <Image src={FLOATS[3].src} alt={FLOATS[3].alt} width={FLOATS[3].width} height={FLOATS[3].height} className="w-full h-auto rounded-xl" unoptimized />
-          </div>
-        </div>
+        ))}
       </div>
 
       {/* Mobile : carousel horizontal */}
