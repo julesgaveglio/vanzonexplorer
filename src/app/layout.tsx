@@ -7,7 +7,6 @@ import { getSiteSettingsQuery } from "@/lib/sanity/queries";
 import { getGooglePlaceStats } from "@/lib/google-places";
 import CookieBanner from "@/components/ui/CookieBanner";
 import { LocalBusinessJsonLd, WebSiteJsonLd } from "@/components/seo/JsonLd";
-import Script from "next/script";
 import "./globals.css";
 
 const inter = Inter({
@@ -98,8 +97,7 @@ export default async function RootLayout({
           <WebSiteJsonLd />
           {children}
           <CookieBanner />
-          {/* Analytics chargé conditionnellement via CookieBanner après consentement */}
-          <Script src="https://assets.calendly.com/assets/external/widget.js" strategy="lazyOnload" />
+          {/* Calendly chargé dynamiquement via CalendlyModal uniquement à l'ouverture */}
         </body>
       </html>
     </ClerkProvider>

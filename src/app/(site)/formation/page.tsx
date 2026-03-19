@@ -164,14 +164,6 @@ export default function FormationPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(courseJsonLd) }}
       />
-      {/* CSS Calendly — chargé uniquement sur cette page car le widget n'est utilisé qu'ici */}
-      <link
-        href="https://assets.calendly.com/assets/external/widget.css"
-        rel="stylesheet"
-        media="print"
-        // @ts-expect-error onLoad est valide pour les éléments link HTML
-        onLoad="this.media='all'"
-      />
       <FormationHero />
 
       <section className="py-20" style={{ background: '#FAF6F0' }}>

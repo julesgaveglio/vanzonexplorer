@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import CalendlyModal from "@/components/ui/CalendlyModal";
 import { usePathname, useRouter } from "next/navigation";
 import { useArticleCategory } from "@/lib/contexts/ArticleCategoryContext";
 
@@ -238,13 +239,12 @@ export default function FloatingCTA() {
             </button>
 
             {config.calendly ? (
-              <button
-                onClick={() => (window as Window & { Calendly?: { initPopupWidget: (opts: { url: string }) => void } }).Calendly?.initPopupWidget({ url: "https://calendly.com/vanzonexplorer/accompagnement" })}
+              <CalendlyModal
                 className="btn-shine relative text-sm font-semibold px-4 py-2 rounded-full flex-shrink-0 whitespace-nowrap text-white active:scale-95 transition-transform"
                 style={{ background: config.gradient, boxShadow: config.glow }}
               >
                 {config.btnLabel}
-              </button>
+              </CalendlyModal>
             ) : config.scrollTarget ? (
               <button
                 onClick={() => {
