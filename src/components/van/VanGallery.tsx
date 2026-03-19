@@ -9,26 +9,28 @@ interface VanGalleryProps {
   vanName: string;
 }
 
+const MAX_THUMBS = 6;
+
 export default function VanGallery({ images, vanName }: VanGalleryProps) {
+  const [active, setActive] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
 
   const openLightbox = useCallback((index: number) => {
-    setCurrentIndex(index);
+    setLightboxIndex(index);
     setLightboxOpen(true);
   }, []);
 
   const closeLightbox = useCallback(() => setLightboxOpen(false), []);
 
   const goNext = useCallback(() => {
-    setCurrentIndex((prev) => (prev + 1) % images.length);
+    setLightboxIndex((prev) => (prev + 1) % images.length);
   }, [images.length]);
 
   const goPrev = useCallback(() => {
-    setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
+    setLightboxIndex((prev) => (prev - 1 + images.length) % images.length);
   }, [images.length]);
 
-  // Fermeture ESC + navigation clavier
   useEffect(() => {
     if (!lightboxOpen) return;
     const handleKey = (e: KeyboardEvent) => {
@@ -46,105 +48,125 @@ export default function VanGallery({ images, vanName }: VanGalleryProps) {
 
   if (!images || images.length === 0) return null;
 
-  const mainImage = images[0];
-  const sideImages = images.slice(1, 3);
+  const thumbImages = images.slice(0, MAX_THUMBS);
+  const hasMore = images.length > MAX_THUMBS;
 
   return (
     <>
-      {/* ── Grille desktop : 1 grande + 2 petites ── */}
-      <div className="hidden md:grid md:grid-cols-3 gap-3 rounded-2xl overflow-hidden">
-        {/* Grande image gauche (2/3) */}
+      <div className="flex flex-col gap-3">
+        {/* ── Image principale ── */}
         <button
-          onClick={() => openLightbox(0)}
-          className="relative col-span-2 aspect-[16/10] overflow-hidden cursor-pointer group"
+          onClick={() => openLightbox(active)}
+          className="relative w-full aspect-[16/9] md:aspect-[3/2] rounded-2xl overflow-hidden bg-slate-100 cursor-pointer group"
+          aria-label="Agrandir la photo"
         >
           <Image
-            src={mainImage.url}
-            alt={mainImage.alt || vanName}
+            src={images[active].url}
+            alt={images[active].alt || vanName}
             fill
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-            sizes="66vw"
+            className="object-cover transition-all duration-500"
+            sizes="(max-width: 768px) 100vw, 75vw"
             priority
           />
+
+          {/* Overlay hover */}
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/15 transition-colors duration-300 flex items-end justify-end p-4">
+            <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-white text-xs font-semibold bg-black/50 backdrop-blur-sm px-3 py-1.5 rounded-full flex items-center gap-1.5">
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
+              </svg>
+              Agrandir
+            </span>
+          </div>
+
+          {/* Compteur */}
+          <div className="absolute bottom-3 left-3 bg-black/50 backdrop-blur-sm text-white text-xs font-semibold px-2.5 py-1 rounded-full">
+            {active + 1} / {images.length}
+          </div>
         </button>
 
-        {/* 2 images droite (1/3) */}
-        <div className="flex flex-col gap-3">
-          {sideImages.map((img, i) => (
+        {/* ── Thumbnails ── */}
+        <div className={`grid gap-2 ${thumbImages.length <= 4 ? "grid-cols-4" : thumbImages.length === 5 ? "grid-cols-5" : "grid-cols-6"}`}>
+          {thumbImages.map((img, i) => (
             <button
               key={i}
-              onClick={() => openLightbox(i + 1)}
-              className="relative flex-1 overflow-hidden cursor-pointer group"
+              onClick={() => setActive(i)}
+              className={`relative aspect-[4/3] rounded-xl overflow-hidden border-2 transition-all duration-200 ${
+                i === active
+                  ? "border-[#4D5FEC] scale-[1.02] shadow-sm"
+                  : "border-transparent opacity-55 hover:opacity-85 hover:scale-[1.01]"
+              }`}
+              aria-label={`Photo ${i + 1}`}
             >
               <Image
                 src={img.url}
-                alt={img.alt || `${vanName} - photo ${i + 2}`}
+                alt={img.alt || `${vanName} ${i + 1}`}
                 fill
-                className="object-cover transition-transform duration-500 group-hover:scale-105"
-                sizes="33vw"
+                className="object-cover"
+                sizes="(max-width: 768px) 16vw, 120px"
               />
+              {/* Overlay "voir plus" sur la dernière thumbnail */}
+              {hasMore && i === MAX_THUMBS - 1 && (
+                <button
+                  onClick={(e) => { e.stopPropagation(); openLightbox(MAX_THUMBS - 1); }}
+                  className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center text-white text-xs font-bold"
+                >
+                  +{images.length - MAX_THUMBS}
+                </button>
+              )}
             </button>
           ))}
-          {/* Bouton "Voir toutes les photos" */}
-          {images.length > 3 && (
-            <button
-              onClick={() => openLightbox(0)}
-              className="absolute bottom-4 right-4 badge-glass !bg-white/95 shadow-md !text-slate-700 !px-4 !py-2 text-sm font-medium z-10"
-            >
-              Voir les {images.length} photos
-            </button>
-          )}
         </div>
+
+        {/* ── Bouton voir toutes les photos ── */}
+        <button
+          onClick={() => openLightbox(0)}
+          className="flex items-center gap-1.5 text-xs font-medium text-slate-400 hover:text-slate-700 transition-colors self-start"
+        >
+          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          Voir les {images.length} photos
+        </button>
       </div>
 
-      {/* ── Scroll horizontal mobile ── */}
-      <div className="md:hidden flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2 -mx-4 px-4">
-        {images.map((img, i) => (
-          <button
-            key={i}
-            onClick={() => openLightbox(i)}
-            className="relative flex-shrink-0 w-[85vw] aspect-[4/3] rounded-2xl overflow-hidden snap-center"
-          >
-            <Image
-              src={img.url}
-              alt={img.alt || `${vanName} - photo ${i + 1}`}
-              fill
-              className="object-cover"
-              sizes="85vw"
-              priority={i === 0}
-            />
-          </button>
-        ))}
+      {/* ── Mobile scroll (backup pour très petits écrans) ── */}
+      <div className="hidden">
+        <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2">
+          {images.map((img, i) => (
+            <button
+              key={i}
+              onClick={() => openLightbox(i)}
+              className="relative flex-shrink-0 w-[85vw] aspect-[4/3] rounded-2xl overflow-hidden snap-center"
+            >
+              <Image src={img.url} alt={img.alt || `${vanName} - photo ${i + 1}`} fill className="object-cover" sizes="85vw" priority={i === 0} />
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* ── Lightbox ── */}
       {lightboxOpen && (
-        <div
-          className="fixed inset-0 z-[60] flex items-center justify-center"
-          onClick={closeLightbox}
-        >
-          {/* Overlay */}
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
-
-          {/* Contenu */}
-          <div
-            className="relative z-10 max-w-5xl w-full mx-4"
-            onClick={(e) => e.stopPropagation()}
-          >
+        <div className="fixed inset-0 z-[60] flex items-center justify-center" onClick={closeLightbox}>
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
+          <div className="relative z-10 max-w-5xl w-full mx-4" onClick={(e) => e.stopPropagation()}>
             {/* Fermer */}
             <button
               onClick={closeLightbox}
-              className="absolute -top-12 right-0 text-white/80 hover:text-white text-sm font-medium flex items-center gap-1"
+              className="absolute -top-12 right-0 text-white/80 hover:text-white text-sm font-medium flex items-center gap-1.5 transition-colors"
               aria-label="Fermer la galerie"
             >
-              Fermer ✕
+              Fermer
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
             </button>
 
             {/* Image */}
-            <div className="relative aspect-[16/10] rounded-2xl overflow-hidden bg-white/10">
+            <div className="relative aspect-[16/10] rounded-2xl overflow-hidden bg-slate-900">
               <Image
-                src={images[currentIndex].url}
-                alt={images[currentIndex].alt || `${vanName} - photo ${currentIndex + 1}`}
+                src={images[lightboxIndex].url}
+                alt={images[lightboxIndex].alt || `${vanName} - photo ${lightboxIndex + 1}`}
                 fill
                 className="object-contain"
                 sizes="90vw"
@@ -155,22 +177,43 @@ export default function VanGallery({ images, vanName }: VanGalleryProps) {
             <div className="flex items-center justify-between mt-4">
               <button
                 onClick={goPrev}
-                className="glass-card !rounded-full w-10 h-10 flex items-center justify-center text-slate-700 hover:bg-white/90"
+                className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm flex items-center justify-center text-white transition-colors"
                 aria-label="Photo précédente"
               >
-                ←
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
               </button>
-              <span className="text-white/80 text-sm font-medium">
-                {currentIndex + 1} / {images.length}
+              <span className="text-white/70 text-sm font-medium tabular-nums">
+                {lightboxIndex + 1} / {images.length}
               </span>
               <button
                 onClick={goNext}
-                className="glass-card !rounded-full w-10 h-10 flex items-center justify-center text-slate-700 hover:bg-white/90"
+                className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm flex items-center justify-center text-white transition-colors"
                 aria-label="Photo suivante"
               >
-                →
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
               </button>
             </div>
+
+            {/* Thumbnail strip dans lightbox */}
+            {images.length > 1 && (
+              <div className="flex gap-2 mt-4 overflow-x-auto pb-1">
+                {images.map((img, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setLightboxIndex(i)}
+                    className={`relative flex-shrink-0 w-16 h-11 rounded-lg overflow-hidden border-2 transition-all duration-200 ${
+                      i === lightboxIndex ? "border-white" : "border-white/20 opacity-50 hover:opacity-80"
+                    }`}
+                  >
+                    <Image src={img.url} alt="" fill className="object-cover" sizes="64px" />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}
