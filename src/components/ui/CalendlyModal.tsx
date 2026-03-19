@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
+import { createPortal } from "react-dom";
 
 const CALENDLY_URL = "https://calendly.com/vanzonexplorer/accompagnement";
 
@@ -91,9 +92,9 @@ export default function CalendlyModal({ children, className = "", style }: Calen
         {children}
       </button>
 
-      {isOpen && (
+      {isOpen && createPortal(
         <div
-          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
+          className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-0 sm:p-4"
           style={{ background: "rgba(15, 21, 58, 0.88)", backdropFilter: "blur(10px)" }}
         >
           {/* Clic backdrop → fermer */}
@@ -160,7 +161,8 @@ export default function CalendlyModal({ children, className = "", style }: Calen
               )}
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
