@@ -874,6 +874,7 @@ import { z } from 'zod'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   INTERETS_OPTIONS,
+  InteretValue,
   MOIS_OPTIONS,
   STYLE_VOYAGE_OPTIONS,
   PROFIL_VOYAGEUR_OPTIONS,
