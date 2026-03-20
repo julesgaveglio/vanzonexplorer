@@ -68,6 +68,9 @@ async function generateItineraire(
   input: RoadTripInput,
   tavilyContext: string
 ): Promise<ItineraireData> {
+  if (!process.env.GROQ_API_KEY) {
+    throw new Error('[road-trip] GROQ_API_KEY is not set')
+  }
   const groq = new Groq({ apiKey: process.env.GROQ_API_KEY })
 
   const interetsLabels = input.interets
@@ -135,7 +138,8 @@ Important : génère exactement ${input.duree} jours. Chaque jour = 2-3 spots. S
       max_tokens: 3000,
     })
     const raw = completion.choices[0]?.message?.content ?? ''
-    return JSON.parse(raw) as ItineraireData
+    const cleaned = raw.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim()
+    return JSON.parse(cleaned) as ItineraireData
   }
 
   try {
@@ -292,6 +296,9 @@ export async function POST(req: NextRequest) {
     })
 
     // Send email via Resend
+    if (!process.env.RESEND_API_KEY) {
+      throw new Error('[road-trip] RESEND_API_KEY is not set')
+    }
     const resend = new Resend(process.env.RESEND_API_KEY)
     await resend.emails.send({
       from: 'Vanzon Explorer <roadtrip@vanzonexplorer.com>',
@@ -315,10 +322,11 @@ export async function POST(req: NextRequest) {
     console.error('[road-trip/generate]', err)
 
     // Mark as error in Supabase
-    await supabase
+    const { error: updateErr } = await supabase
       .from('road_trip_requests')
       .update({ status: 'error' })
       .eq('id', record.id)
+    if (updateErr) console.error('[road-trip/generate] failed to set error status', updateErr)
 
     return NextResponse.json(
       { success: false, error: 'Erreur interne, réessaie dans quelques instants.' },
