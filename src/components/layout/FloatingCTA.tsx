@@ -105,6 +105,16 @@ function getCTAConfig(pathname: string): CTAConfig {
     };
   }
 
+  // Road Trip Personnalisé
+  if (pathname === '/road-trip-personnalise') {
+    return {
+      btnLabel: 'Générer mon itinéraire',
+      href: '#wizard',
+      scrollTarget: 'wizard',
+      ...PALETTE.blue,
+    }
+  }
+
   // Pays Basque & road trip
   if (
     pathname.startsWith("/pays-basque") ||

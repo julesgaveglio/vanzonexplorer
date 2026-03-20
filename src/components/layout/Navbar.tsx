@@ -13,6 +13,7 @@ const navLinks = [
   { label: "Formation", href: "/formation", desc: "Van Business Academy", emoji: "🎓" },
   { label: "Club Privé", href: "/club", desc: "Réductions exclusives", emoji: "🔮" },
   { label: "Pays Basque", href: "/pays-basque", desc: "Vantrips & spots", emoji: "🏄" },
+  { label: "Road Trip", href: "/road-trip-personnalise", desc: "Itinéraire sur mesure", emoji: "🗺️" },
   { label: "Articles", href: "/articles", desc: "Guides vanlife", emoji: "📖" },
   { label: "À propos", href: "/a-propos", desc: "Notre histoire", emoji: "👋" },
   { label: "Contact", href: "/contact", desc: "Contactez-nous", emoji: "✉️" },

@@ -79,12 +79,14 @@ The `(club)` group has its own DM Mono font and `bg-cream text-earth` color sche
 
 ### Admin panel (`/admin`)
 
-Sections: Dashboard, SEO Analytics, Mots-Clés, Performance (PSI), Blog, Vans, Marques, Produits, Spots, Media, Prospection.
+Sections: Dashboard, SEO Analytics, Mots-Clés, Performance (PSI), Blog, Vans, Marques, Produits, Spots, Media, Prospection, Road Trips.
 
 **Prospection** (`/admin/club/prospection`) — internal CRM for partner brand outreach. Separate `prospects` Supabase table (distinct from `brands`). Three AI-powered API routes using SSE streaming:
 - `/api/admin/club/prospect/discover` — Tavily search + Groq analysis
 - `/api/admin/club/prospect/enrich` — Jina AI site scraping + Groq contact extraction
 - `/api/admin/club/prospect/generate-email` — Groq personalized email generation
+
+**Road Trip Personnalisé** (`/road-trip-personnalise`) — AI-powered itinerary generator. Wizard collects region/duration/interests/profile → Tavily search + Groq (llama-3.3-70b) → Resend email. Stores requests in Supabase `road_trip_requests` table. Rate limited (3 req/IP/hour). Admin at `/admin/road-trips`.
 
 ## Environment Variables
 
