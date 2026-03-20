@@ -515,7 +515,7 @@ export default function RoadTripWizard() {
               transition={{ duration: 0.3, ease: 'easeInOut' }}
             >
               <h2 className="text-xl font-bold text-[var(--text-primary)] mb-2">
-                Récapitulatif 🎯
+                Confirmation 🎯
               </h2>
               <p className="text-sm text-[var(--text-muted)] mb-6">
                 Vérifie tes informations avant de générer ton road trip.
@@ -578,10 +578,17 @@ export default function RoadTripWizard() {
                 </div>
               </div>
 
-              {/* Error message */}
+              {/* Error message + retry */}
               {status === 'error' && (
-                <div className="mb-4 p-4 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm">
-                  {errorMessage}
+                <div className="mb-4 p-4 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm flex flex-col gap-3">
+                  <p>{errorMessage}</p>
+                  <button
+                    type="button"
+                    onClick={() => setStatus('idle')}
+                    className="btn-ghost self-start text-sm px-4 py-2 border border-red-300 rounded-lg text-red-600 hover:bg-red-100 transition-colors"
+                  >
+                    Réessayer
+                  </button>
                 </div>
               )}
 
