@@ -97,7 +97,6 @@ export default function RoadTripWizard() {
     trigger,
     watch,
     setValue,
-    getValues,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -210,7 +209,7 @@ export default function RoadTripWizard() {
   }
 
   // ── Main form ──────────────────────────────────────────────────────────────
-  const values = getValues()
+  const values = watch()
   const selectedInterets = watch('interets') as InteretValue[]
   const selectedStyle = watch('style_voyage')
   const selectedProfil = watch('profil_voyageur')
@@ -259,9 +258,10 @@ export default function RoadTripWizard() {
 
               <div className="space-y-5">
                 <div>
-                  <label className={labelClass}>Ton prénom</label>
+                  <label htmlFor="field-prenom" className={labelClass}>Ton prénom</label>
                   <input
                     {...register('prenom')}
+                    id="field-prenom"
                     type="text"
                     placeholder="Ex : Marie"
                     className={`${inputClass} mt-1.5`}
@@ -272,9 +272,10 @@ export default function RoadTripWizard() {
                 </div>
 
                 <div>
-                  <label className={labelClass}>Ton email</label>
+                  <label htmlFor="field-email" className={labelClass}>Ton email</label>
                   <input
                     {...register('email')}
+                    id="field-email"
                     type="email"
                     placeholder="marie@example.com"
                     className={`${inputClass} mt-1.5`}
@@ -285,11 +286,12 @@ export default function RoadTripWizard() {
                 </div>
 
                 <div>
-                  <label className={labelClass}>
+                  <label htmlFor="field-region" className={labelClass}>
                     Région souhaitée
                   </label>
                   <input
                     {...register('region')}
+                    id="field-region"
                     type="text"
                     placeholder="Ex : Pays Basque, Bretagne, Provence…"
                     className={`${inputClass} mt-1.5`}
@@ -300,8 +302,8 @@ export default function RoadTripWizard() {
                 </div>
 
                 <div>
-                  <label className={labelClass}>Durée du voyage</label>
-                  <select {...register('duree', { valueAsNumber: true })} className={`${inputClass} mt-1.5`}>
+                  <label htmlFor="field-duree" className={labelClass}>Durée du voyage</label>
+                  <select {...register('duree', { valueAsNumber: true })} id="field-duree" className={`${inputClass} mt-1.5`}>
                     {DUREE_OPTIONS.map((n) => (
                       <option key={n} value={n}>
                         {n} jour{n > 1 ? 's' : ''}
@@ -344,6 +346,7 @@ export default function RoadTripWizard() {
                         <button
                           key={opt.value}
                           type="button"
+                          aria-pressed={selected}
                           onClick={() => toggleInteret(opt.value as InteretValue)}
                           className={[
                             'px-3 py-2.5 rounded-lg border text-sm font-medium transition-all duration-200 text-left',
@@ -370,6 +373,7 @@ export default function RoadTripWizard() {
                       <button
                         key={opt.value}
                         type="button"
+                        aria-pressed={selectedStyle === opt.value}
                         onClick={() => setValue('style_voyage', opt.value)}
                         className={radioCardClass(selectedStyle === opt.value)}
                       >
@@ -429,6 +433,7 @@ export default function RoadTripWizard() {
                       <button
                         key={opt.value}
                         type="button"
+                        aria-pressed={selectedProfil === opt.value}
                         onClick={() => setValue('profil_voyageur', opt.value)}
                         className={[
                           radioCardClass(selectedProfil === opt.value),
@@ -455,6 +460,7 @@ export default function RoadTripWizard() {
                       <button
                         key={opt.value}
                         type="button"
+                        aria-pressed={selectedBudget === opt.value}
                         onClick={() => setValue('budget', opt.value)}
                         className={radioCardClass(selectedBudget === opt.value)}
                       >
@@ -476,6 +482,7 @@ export default function RoadTripWizard() {
                   <div className="flex gap-3 mt-2">
                     <button
                       type="button"
+                      aria-pressed={!selectedExperience}
                       onClick={() => setValue('experience_van', false)}
                       className={[
                         'flex-1 py-3 rounded-xl border text-sm font-medium transition-all duration-200',
@@ -488,6 +495,7 @@ export default function RoadTripWizard() {
                     </button>
                     <button
                       type="button"
+                      aria-pressed={selectedExperience}
                       onClick={() => setValue('experience_van', true)}
                       className={[
                         'flex-1 py-3 rounded-xl border text-sm font-medium transition-all duration-200',
@@ -593,12 +601,14 @@ export default function RoadTripWizard() {
               )}
 
               {/* Submit button */}
-              <button
-                type="submit"
-                className="btn-primary w-full text-base py-3.5"
-              >
-                Générer mon road trip 🚐
-              </button>
+              {status !== 'error' && (
+                <button
+                  type="submit"
+                  className="btn-primary w-full text-base py-3.5"
+                >
+                  Générer mon road trip 🚐
+                </button>
+              )}
             </motion.div>
           )}
         </AnimatePresence>
