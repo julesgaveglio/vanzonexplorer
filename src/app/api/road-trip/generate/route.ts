@@ -300,12 +300,15 @@ export async function POST(req: NextRequest) {
       throw new Error('[road-trip] RESEND_API_KEY is not set')
     }
     const resend = new Resend(process.env.RESEND_API_KEY)
-    await resend.emails.send({
-      from: 'Vanzon Explorer <roadtrip@vanzonexplorer.com>',
+    const { error: resendError } = await resend.emails.send({
+      from: 'Vanzon Explorer <noreply@vanzonexplorer.com>',
       to: input.email,
       subject,
       html,
     })
+    if (resendError) {
+      throw new Error(`[road-trip] Resend error: ${JSON.stringify(resendError)}`)
+    }
 
     // Update Supabase (sent)
     await supabase
