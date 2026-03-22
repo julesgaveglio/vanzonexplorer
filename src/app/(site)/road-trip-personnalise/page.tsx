@@ -30,19 +30,19 @@ const steps = [
     number: '01',
     icon: '🗺️',
     title: 'Tu remplis le formulaire',
-    description: 'Région, durée, tes intérêts, ton profil… 4 étapes simples pour tout personnaliser.',
+    description: 'Région, durée, tes intérêts, ton profil de voyageur… 4 étapes simples.',
   },
   {
     number: '02',
     icon: '🤖',
     title: "L'IA construit ton itinéraire",
-    description: 'Notre algorithme scrute des centaines de spots, campings et activités pour te créer le road trip parfait.',
+    description: 'Notre algorithme scrute des centaines de spots et campings pour créer le plan parfait.',
   },
   {
     number: '03',
     icon: '📬',
     title: 'Tu reçois tout par email',
-    description: 'Spots jour par jour, aires de camping, conseils van — un guide complet dans ta boîte mail.',
+    description: 'Spots jour par jour, campings, conseils pratiques — livré en moins de 60 secondes.',
   },
 ]
 
@@ -54,7 +54,7 @@ const testimonials = [
     emoji: '🌊',
   },
   {
-    quote: "Parfait pour préparer mon premier road trip en van. Les conseils pratiques m'ont vraiment aidé à ne rien oublier.",
+    quote: "Parfait pour mon premier road trip en van. Les conseils pratiques m'ont vraiment aidé à ne rien oublier.",
     author: 'Julien',
     context: 'Solo · Alpes · 10 jours',
     emoji: '⛰️',
@@ -67,66 +67,69 @@ const testimonials = [
   },
 ]
 
+const stats = [
+  { value: '13+', label: 'régions couvertes' },
+  { value: '100+', label: 'spots référencés' },
+  { value: '< 60s', label: 'de génération' },
+  { value: '0 €', label: 'pour toujours' },
+]
+
 export default function RoadTripPersonnalisePage() {
   return (
-    <>
+    <div className="bg-white">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(webAppJsonLd) }}
       />
 
       {/* ── 1. Hero ──────────────────────────────────────────────────────────── */}
-      <section
-        className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden px-6 py-24"
-        style={{
-          background: 'linear-gradient(160deg, #0a0f1e 0%, #0d1b35 40%, #0f172a 70%, #0c1225 100%)',
-        }}
-      >
-        {/* Glowing orbs */}
+      <section className="relative overflow-hidden bg-white pt-28 pb-20 md:pt-36 md:pb-28">
+        {/* Subtle background decorations */}
         <div
-          className="absolute top-[-10%] left-[-5%] w-[500px] h-[500px] rounded-full opacity-20 blur-[120px] pointer-events-none"
-          style={{ background: 'radial-gradient(circle, #3B82F6 0%, transparent 70%)' }}
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[600px] opacity-[0.07] pointer-events-none"
+          style={{
+            background: 'radial-gradient(ellipse at 50% 0%, #3B82F6 0%, transparent 65%)',
+          }}
         />
         <div
-          className="absolute bottom-[-5%] right-[-5%] w-[600px] h-[600px] rounded-full opacity-15 blur-[140px] pointer-events-none"
-          style={{ background: 'radial-gradient(circle, #B9945F 0%, transparent 70%)' }}
+          className="absolute top-20 right-0 w-72 h-72 opacity-[0.06] rounded-full blur-3xl pointer-events-none"
+          style={{ background: '#B9945F' }}
         />
         <div
-          className="absolute top-[30%] right-[10%] w-[300px] h-[300px] rounded-full opacity-10 blur-[100px] pointer-events-none"
-          style={{ background: 'radial-gradient(circle, #8b5cf6 0%, transparent 70%)' }}
+          className="absolute bottom-0 left-0 w-96 h-96 opacity-[0.05] rounded-full blur-3xl pointer-events-none"
+          style={{ background: '#3B82F6' }}
         />
 
-        {/* Subtle grid overlay */}
+        {/* Dot grid */}
         <div
-          className="absolute inset-0 opacity-[0.03] pointer-events-none"
+          className="absolute inset-0 pointer-events-none opacity-[0.025]"
           style={{
-            backgroundImage: 'linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)',
-            backgroundSize: '60px 60px',
+            backgroundImage: 'radial-gradient(circle, #94a3b8 1px, transparent 1px)',
+            backgroundSize: '32px 32px',
           }}
         />
 
-        {/* Content */}
-        <div className="relative z-10 max-w-4xl mx-auto text-center">
-
-          {/* Badge IA */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8 text-sm font-medium"
+        <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
+          {/* Badge */}
+          <div
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8 text-sm font-medium"
             style={{
-              background: 'rgba(59,130,246,0.12)',
-              border: '1px solid rgba(59,130,246,0.3)',
-              color: '#93c5fd',
+              background: 'linear-gradient(135deg, #eff6ff 0%, #fefce8 100%)',
+              border: '1px solid #bfdbfe',
+              color: '#2563eb',
             }}
           >
-            <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse inline-block" />
+            <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse inline-block" />
             Propulsé par l&apos;intelligence artificielle
           </div>
 
           {/* H1 */}
-          <h1 className="text-5xl md:text-7xl font-bold leading-[1.05] tracking-tight mb-6">
-            <span className="text-white">Ton road trip van</span>
+          <h1 className="text-5xl md:text-7xl font-bold leading-[1.05] tracking-tight text-slate-900 mb-6">
+            Ton road trip van
             <br />
             <span
               style={{
-                background: 'linear-gradient(135deg, #63b3ed 0%, #B9945F 50%, #E4D398 100%)',
+                background: 'linear-gradient(135deg, #2563eb 0%, #B9945F 60%, #d97706 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text',
@@ -135,14 +138,14 @@ export default function RoadTripPersonnalisePage() {
               ultra-personnalisé
             </span>
             <br />
-            <span className="text-white">partout en France</span>
+            partout en France
           </h1>
 
           {/* Subheadline */}
-          <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed mb-10">
-            Dis-nous où tu veux aller, l&apos;IA génère ton itinéraire jour par jour —
-            spots secrets, campings, conseils pratiques.{' '}
-            <span className="text-white font-semibold">Reçu dans ta boîte mail en 60 secondes.</span>
+          <p className="text-xl text-slate-500 max-w-2xl mx-auto leading-relaxed mb-10">
+            Dis-nous où tu veux aller — l&apos;IA génère ton itinéraire jour par jour.
+            Spots secrets, campings, conseils van.{' '}
+            <span className="text-slate-900 font-semibold">Reçu par email en 60 secondes.</span>
           </p>
 
           {/* Feature pills */}
@@ -150,11 +153,7 @@ export default function RoadTripPersonnalisePage() {
             {features.map((f) => (
               <span
                 key={f.label}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium text-slate-300"
-                style={{
-                  background: 'rgba(255,255,255,0.06)',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                }}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-slate-50 text-slate-600 border border-slate-200"
               >
                 {f.icon} {f.label}
               </span>
@@ -164,73 +163,57 @@ export default function RoadTripPersonnalisePage() {
           {/* CTA */}
           <a
             href="#wizard"
-            className="btn-shine inline-flex items-center gap-3 px-8 py-4 rounded-full text-base font-semibold text-white transition-transform active:scale-95"
+            className="inline-flex items-center gap-3 px-8 py-4 rounded-full text-base font-semibold text-white transition-all active:scale-95 hover:shadow-xl"
             style={{
-              background: 'linear-gradient(135deg, #3B82F6 0%, #0EA5E9 100%)',
-              boxShadow: '0 4px 24px rgba(59,130,246,0.45), 0 1px 4px rgba(14,165,233,0.3)',
+              background: 'linear-gradient(135deg, #2563eb 0%, #0ea5e9 100%)',
+              boxShadow: '0 4px 20px rgba(37,99,235,0.35)',
             }}
           >
-            <span>Générer mon road trip</span>
+            Générer mon road trip gratuit
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
             </svg>
           </a>
-
-          <p className="text-slate-600 text-sm mt-4">Gratuit · Aucune inscription requise</p>
+          <p className="text-slate-400 text-sm mt-4">Gratuit · Aucune inscription requise</p>
         </div>
 
-        {/* Floating icons */}
-        <div className="absolute bottom-10 left-8 text-4xl opacity-20 hidden lg:block" style={{ filter: 'blur(1px)' }}>🏔️</div>
-        <div className="absolute top-20 right-12 text-3xl opacity-15 hidden lg:block" style={{ filter: 'blur(1px)' }}>🌊</div>
-        <div className="absolute bottom-24 right-20 text-3xl opacity-20 hidden lg:block" style={{ filter: 'blur(1px)' }}>🌲</div>
-        <div className="absolute top-1/3 left-8 text-2xl opacity-15 hidden lg:block" style={{ filter: 'blur(1px)' }}>⛺</div>
+        {/* Floating decorative text */}
+        <div className="hidden lg:block absolute bottom-12 left-12 text-6xl opacity-10 select-none">🏔️</div>
+        <div className="hidden lg:block absolute top-24 right-16 text-5xl opacity-10 select-none">🌊</div>
+        <div className="hidden lg:block absolute bottom-20 right-28 text-5xl opacity-10 select-none">🌲</div>
       </section>
 
       {/* ── 2. Stats bar ─────────────────────────────────────────────────────── */}
-      <section
-        style={{
-          background: 'linear-gradient(90deg, #0d1b35 0%, #0f172a 100%)',
-          borderTop: '1px solid rgba(255,255,255,0.06)',
-          borderBottom: '1px solid rgba(255,255,255,0.06)',
-        }}
-      >
-        <div className="max-w-5xl mx-auto px-6 py-8 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-          {[
-            { value: '13', label: 'régions couvertes' },
-            { value: '100+', label: 'spots référencés' },
-            { value: '60s', label: 'temps de génération' },
-            { value: '0€', label: 'pour toujours' },
-          ].map((stat) => (
-            <div key={stat.label}>
+      <section className="border-y border-slate-100 bg-slate-50">
+        <div className="max-w-4xl mx-auto px-6 py-8 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+          {stats.map((s) => (
+            <div key={s.label}>
               <div
                 className="text-3xl font-bold"
                 style={{
-                  background: 'linear-gradient(135deg, #63b3ed, #E4D398)',
+                  background: 'linear-gradient(135deg, #2563eb, #B9945F)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                   backgroundClip: 'text',
                 }}
               >
-                {stat.value}
+                {s.value}
               </div>
-              <div className="text-slate-500 text-sm mt-1">{stat.label}</div>
+              <div className="text-slate-500 text-sm mt-1">{s.label}</div>
             </div>
           ))}
         </div>
       </section>
 
       {/* ── 3. Wizard ────────────────────────────────────────────────────────── */}
-      <section
-        id="wizard"
-        className="py-20"
-        style={{ background: 'var(--bg-primary)' }}
-      >
+      <section id="wizard" className="py-20 bg-white">
         <div className="max-w-2xl mx-auto px-6">
           <div className="text-center mb-10">
-            <h2 className="text-3xl md:text-4xl font-bold text-[var(--text-primary)]">
+            <p className="text-blue-600 text-sm font-semibold uppercase tracking-widest mb-3">Le générateur</p>
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
               Crée ton itinéraire en 4 étapes
             </h2>
-            <p className="text-[var(--text-secondary)] mt-3">
+            <p className="text-slate-500 mt-3">
               L&apos;IA s&apos;occupe du reste — tu reçois tout par email.
             </p>
           </div>
@@ -239,43 +222,29 @@ export default function RoadTripPersonnalisePage() {
       </section>
 
       {/* ── 4. Comment ça marche ─────────────────────────────────────────────── */}
-      <section
-        className="py-24"
-        style={{ background: 'linear-gradient(160deg, #0a0f1e 0%, #0d1b35 100%)' }}
-      >
+      <section className="py-24 bg-slate-50">
         <div className="max-w-5xl mx-auto px-6">
           <div className="text-center mb-16">
-            <p className="text-blue-400 text-sm font-semibold uppercase tracking-widest mb-3">Comment ça marche</p>
-            <h2 className="text-3xl md:text-4xl font-bold text-white">
+            <p className="text-blue-600 text-sm font-semibold uppercase tracking-widest mb-3">Comment ça marche</p>
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
               De zéro à ton road trip en 3 étapes
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {steps.map((step, i) => (
-              <div key={step.number} className="relative">
-                {/* Connector line */}
-                {i < steps.length - 1 && (
-                  <div className="hidden md:block absolute top-8 left-[calc(100%+1rem)] w-[calc(100%-2rem)] h-px"
-                    style={{ background: 'linear-gradient(90deg, rgba(59,130,246,0.4) 0%, transparent 100%)' }}
-                  />
-                )}
-                <div
-                  className="glass-card p-8 h-full"
-                  style={{ border: '1px solid rgba(59,130,246,0.15)', background: 'rgba(59,130,246,0.04)' }}
-                >
-                  <div className="flex items-center gap-3 mb-5">
-                    <span className="text-3xl">{step.icon}</span>
-                    <span
-                      className="text-xs font-bold tracking-widest"
-                      style={{ color: '#63b3ed' }}
-                    >
-                      ÉTAPE {step.number}
-                    </span>
-                  </div>
-                  <h3 className="text-lg font-bold text-white mb-3">{step.title}</h3>
-                  <p className="text-slate-400 text-sm leading-relaxed">{step.description}</p>
+              <div
+                key={step.number}
+                className="bg-white rounded-2xl p-8 border border-slate-100 shadow-sm hover:shadow-md transition-shadow"
+              >
+                <div className="flex items-center gap-3 mb-5">
+                  <span className="text-3xl">{step.icon}</span>
+                  <span className="text-xs font-bold tracking-widest text-blue-500 uppercase">
+                    Étape {i + 1}
+                  </span>
                 </div>
+                <h3 className="text-lg font-bold text-slate-900 mb-3">{step.title}</h3>
+                <p className="text-slate-500 text-sm leading-relaxed">{step.description}</p>
               </div>
             ))}
           </div>
@@ -283,10 +252,7 @@ export default function RoadTripPersonnalisePage() {
       </section>
 
       {/* ── 5. Témoignages ───────────────────────────────────────────────────── */}
-      <section
-        className="py-24"
-        style={{ background: 'var(--bg-primary)' }}
-      >
+      <section className="py-24 bg-white">
         <div className="max-w-5xl mx-auto px-6">
           <div className="text-center mb-16">
             <p
@@ -295,7 +261,7 @@ export default function RoadTripPersonnalisePage() {
             >
               Ils ont testé
             </p>
-            <h2 className="text-3xl md:text-4xl font-bold text-[var(--text-primary)]">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
               Des road trips qui ont vraiment eu lieu
             </h2>
           </div>
@@ -304,26 +270,22 @@ export default function RoadTripPersonnalisePage() {
             {testimonials.map((t) => (
               <div
                 key={t.author}
-                className="glass-card p-6 flex flex-col gap-4"
-                style={{ border: '1px solid rgba(185,148,95,0.15)' }}
+                className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm flex flex-col gap-4"
               >
                 <div className="flex items-center justify-between">
                   <span className="text-2xl">{t.emoji}</span>
                   <div className="flex gap-0.5">
                     {[...Array(5)].map((_, i) => (
-                      <span key={i} className="text-yellow-400 text-sm">★</span>
+                      <span key={i} className="text-amber-400 text-sm">★</span>
                     ))}
                   </div>
                 </div>
-                <p className="text-[var(--text-secondary)] text-sm leading-relaxed flex-1 italic">
+                <p className="text-slate-600 text-sm leading-relaxed flex-1 italic">
                   &ldquo;{t.quote}&rdquo;
                 </p>
                 <div>
-                  <p className="font-semibold text-[var(--text-primary)] text-sm">{t.author}</p>
-                  <p
-                    className="text-xs mt-0.5"
-                    style={{ color: '#B9945F' }}
-                  >
+                  <p className="font-semibold text-slate-900 text-sm">{t.author}</p>
+                  <p className="text-xs mt-0.5 font-medium" style={{ color: '#B9945F' }}>
                     {t.context}
                   </p>
                 </div>
@@ -336,37 +298,39 @@ export default function RoadTripPersonnalisePage() {
       {/* ── 6. Secondary CTA ─────────────────────────────────────────────────── */}
       <section
         className="py-24 relative overflow-hidden"
-        style={{ background: 'linear-gradient(135deg, #0a0f1e 0%, #0d1b35 100%)' }}
+        style={{
+          background: 'linear-gradient(135deg, #eff6ff 0%, #fefce8 50%, #f0f9ff 100%)',
+        }}
       >
         <div
-          className="absolute inset-0 opacity-10 pointer-events-none"
-          style={{ background: 'radial-gradient(ellipse at center, #3B82F6 0%, transparent 70%)' }}
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage: 'radial-gradient(circle, #94a3b8 1px, transparent 1px)',
+            backgroundSize: '32px 32px',
+            opacity: 0.04,
+          }}
         />
         <div className="relative z-10 max-w-2xl mx-auto px-6 text-center">
           <div className="text-5xl mb-6">🚐</div>
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
             Prêt pour l&apos;aventure ?
           </h2>
-          <p className="text-slate-400 leading-relaxed mb-8 max-w-lg mx-auto">
+          <p className="text-slate-500 leading-relaxed mb-10 max-w-lg mx-auto">
             Loue un van Vanzon Explorer tout équipé — literie, cuisine, GPS — et pars sur la route dès demain.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
               href="#wizard"
-              className="btn-shine inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full text-sm font-semibold text-white"
-              style={{
-                background: 'rgba(255,255,255,0.08)',
-                border: '1px solid rgba(255,255,255,0.15)',
-              }}
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full text-sm font-semibold text-slate-700 bg-white border border-slate-200 hover:border-slate-300 hover:shadow-sm transition-all"
             >
               Générer mon itinéraire gratuit
             </a>
             <Link
               href="/location"
-              className="btn-shine inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full text-sm font-semibold text-white"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full text-sm font-semibold text-white transition-all hover:shadow-lg active:scale-95"
               style={{
-                background: 'linear-gradient(135deg, #3B82F6 0%, #0EA5E9 100%)',
-                boxShadow: '0 4px 18px rgba(59,130,246,0.4)',
+                background: 'linear-gradient(135deg, #2563eb 0%, #0ea5e9 100%)',
+                boxShadow: '0 4px 16px rgba(37,99,235,0.3)',
               }}
             >
               Voir les vans disponibles →
@@ -374,6 +338,6 @@ export default function RoadTripPersonnalisePage() {
           </div>
         </div>
       </section>
-    </>
+    </div>
   )
 }

@@ -162,7 +162,7 @@ export default function RoadTripWizard() {
   // ── Loading state ──────────────────────────────────────────────────────────
   if (status === 'loading') {
     return (
-      <div className="glass-card p-8 flex flex-col items-center justify-center gap-6 min-h-[320px]">
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 flex flex-col items-center justify-center gap-6 min-h-[320px]">
         <div className="relative w-16 h-16">
           <div className="absolute inset-0 rounded-full border-4 border-slate-100" />
           <div className="absolute inset-0 rounded-full border-4 border-[var(--accent-blue)] border-t-transparent animate-spin" />
@@ -184,7 +184,7 @@ export default function RoadTripWizard() {
         initial={{ scale: 0.92, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: 'spring', duration: 0.5 }}
-        className="glass-card p-8 flex flex-col items-center justify-center gap-6 min-h-[320px] text-center"
+        className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 flex flex-col items-center justify-center gap-6 min-h-[320px] text-center"
       >
         <div className="w-20 h-20 rounded-full bg-[var(--accent-blue)]/10 flex items-center justify-center text-4xl">
           🚐
@@ -217,7 +217,7 @@ export default function RoadTripWizard() {
   const selectedExperience = watch('experience_van')
 
   return (
-    <div className="glass-card p-8">
+    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8">
       {/* Progress bar */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-2">
