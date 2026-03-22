@@ -49,12 +49,26 @@ const RoadTripSchema = z.object({
 
 type RoadTripInput = z.infer<typeof RoadTripSchema>
 
-// ── Groq itinerary generation ─────────────────────────────────────────────────
+// ── Types ─────────────────────────────────────────────────────────────────────
+interface SpotBase {
+  nom: string
+  description: string
+  type: string
+  search_query?: string
+}
+
+interface SpotEnriched extends SpotBase {
+  mapsUrl: string
+  photo?: { url: string; photographer: string; photoUrl: string }
+  wiki?: { extract: string; url: string; thumbnail?: string }
+}
+
 interface JourItineraire {
   numero: number
   titre: string
-  spots: Array<{ nom: string; description: string; type: string }>
+  spots: SpotBase[] | SpotEnriched[]
   camping: string
+  campingMapsUrl?: string
   tips: string
 }
 
@@ -64,6 +78,7 @@ interface ItineraireData {
   conseils_pratiques: string[]
 }
 
+// ── Groq itinerary generation ─────────────────────────────────────────────────
 async function generateItineraire(
   input: RoadTripInput,
   tavilyContext: string
@@ -99,15 +114,20 @@ async function generateItineraire(
   const systemPrompt = `Tu es un expert du voyage en van en France. Tu génères des itinéraires road trip détaillés, authentiques et pratiques.
 Réponds UNIQUEMENT avec du JSON valide, sans texte avant ou après. Le JSON doit respecter exactement ce schéma :
 {
-  "intro": "string (2-3 phrases d'intro sur la région et le voyage)",
+  "intro": "string (2-3 phrases d'intro poétiques et évocatrices sur la région et le voyage)",
   "jours": [
     {
       "numero": 1,
       "titre": "string (titre évocateur du jour)",
       "spots": [
-        { "nom": "string", "description": "string (2-3 phrases)", "type": "string (Village, Plage, Montagne, Forêt, etc.)" }
+        {
+          "nom": "string (nom précis du lieu, tel qu'on le trouverait sur Wikipedia ou Google Maps)",
+          "description": "string (2-3 phrases riches et évocatrices, imagées, qui donnent envie de s'y rendre — pas factuelle sèche)",
+          "type": "string (Village, Plage, Montagne, Forêt, Cascade, Lac, Gorges, Col, Cap, Abbaye, Marché, etc.)",
+          "search_query": "string (requête en anglais optimisée pour chercher une belle photo du lieu, ex: 'Étretat cliffs Normandy France')"
+        }
       ],
-      "camping": "string (lieu précis où dormir ce soir)",
+      "camping": "string (lieu précis où dormir ce soir, avec le nom du camping ou du spot)",
       "tips": "string (astuce pratique van pour ce jour)"
     }
   ],
@@ -125,7 +145,11 @@ Expérience van : ${input.experience_van ? 'habitué' : 'première fois'}
 Informations trouvées sur la région (utilise-les comme inspiration) :
 ${tavilyContext || 'Pas de contexte supplémentaire — utilise tes connaissances générales.'}
 
-Important : génère exactement ${input.duree} jours. Chaque jour = 2-3 spots. Spots réels et précis.`
+Important :
+- Génère exactement ${input.duree} jours. Chaque jour = 2-3 spots.
+- Spots réels, précis et connus (pas inventés).
+- Descriptions en 2-3 phrases imagées et poétiques qui donnent vraiment envie de visiter.
+- search_query en anglais, précise et optimisée pour trouver une belle photo (inclure pays/région).`
 
   async function callGroq(temperature: number): Promise<ItineraireData> {
     const completion = await groq.chat.completions.create({
@@ -135,7 +159,7 @@ Important : génère exactement ${input.duree} jours. Chaque jour = 2-3 spots. S
         { role: 'user', content: userPrompt },
       ],
       temperature,
-      max_tokens: 3000,
+      max_tokens: 3500,
     })
     const raw = completion.choices[0]?.message?.content ?? ''
     const cleaned = raw.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim()
@@ -150,6 +174,121 @@ Important : génère exactement ${input.duree} jours. Chaque jour = 2-3 spots. S
     // propagate to the outer catch in POST handler → status = 'error'.
     return await callGroq(0)
   }
+}
+
+// ── Enrichissement helpers ────────────────────────────────────────────────────
+
+async function fetchPexelsPhoto(
+  query: string
+): Promise<{ url: string; photographer: string; photoUrl: string } | null> {
+  try {
+    if (!process.env.PEXELS_API_KEY) return null
+    const res = await fetch(
+      `https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=1&orientation=landscape`,
+      { headers: { Authorization: process.env.PEXELS_API_KEY } }
+    )
+    if (!res.ok) return null
+    const data = (await res.json()) as {
+      photos?: Array<{
+        src: { large: string }
+        photographer: string
+        url: string
+      }>
+    }
+    const photo = data.photos?.[0]
+    if (!photo) return null
+    return {
+      url: photo.src.large,
+      photographer: photo.photographer,
+      photoUrl: photo.url,
+    }
+  } catch {
+    return null
+  }
+}
+
+async function fetchGoogleMapsUrl(spotName: string, region: string): Promise<string> {
+  try {
+    const query = `${spotName}, ${region}, France`
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1&countrycodes=fr`,
+      { headers: { 'User-Agent': 'VanzonExplorer/1.0 (contact@vanzonexplorer.com)' } }
+    )
+    if (!res.ok) throw new Error('nominatim error')
+    const data = (await res.json()) as Array<{ lat?: string; lon?: string }>
+    if (data[0]?.lat && data[0]?.lon) {
+      return `https://www.google.com/maps?q=${data[0].lat},${data[0].lon}`
+    }
+  } catch {
+    // fall through to text-based fallback
+  }
+  return `https://maps.google.com/?q=${encodeURIComponent(spotName + ' ' + region + ' France')}`
+}
+
+async function fetchWikipedia(
+  spotName: string
+): Promise<{ extract: string; url: string; thumbnail?: string } | null> {
+  try {
+    const res = await fetch(
+      `https://fr.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(spotName)}`,
+      { headers: { 'User-Agent': 'VanzonExplorer/1.0' } }
+    )
+    if (!res.ok) return null
+    const data = (await res.json()) as {
+      type?: string
+      extract?: string
+      content_urls?: { desktop?: { page?: string } }
+      thumbnail?: { source?: string }
+    }
+    if (data.type === 'disambiguation') return null
+    return {
+      extract: data.extract?.slice(0, 200) ?? '',
+      url: data.content_urls?.desktop?.page ?? '',
+      thumbnail: data.thumbnail?.source,
+    }
+  } catch {
+    return null
+  }
+}
+
+async function enrichItineraire(
+  itineraire: ItineraireData,
+  region: string
+): Promise<ItineraireData> {
+  const enrichedJours = await Promise.all(
+    itineraire.jours.map(async (jour) => {
+      const enrichedSpots = await Promise.all(
+        jour.spots.map(async (spot) => {
+          const searchQuery =
+            (spot as SpotBase).search_query || `${spot.nom} ${region} France`
+
+          const [photoResult, mapsResult, wikiResult] = await Promise.allSettled([
+            fetchPexelsPhoto(searchQuery),
+            fetchGoogleMapsUrl(spot.nom, region),
+            fetchWikipedia(spot.nom),
+          ])
+
+          return {
+            ...spot,
+            mapsUrl:
+              mapsResult.status === 'fulfilled'
+                ? mapsResult.value
+                : `https://maps.google.com/?q=${encodeURIComponent(spot.nom + ' France')}`,
+            photo:
+              photoResult.status === 'fulfilled' ? photoResult.value ?? undefined : undefined,
+            wiki:
+              wikiResult.status === 'fulfilled' ? wikiResult.value ?? undefined : undefined,
+          } as SpotEnriched
+        })
+      )
+
+      const campingMapsUrl = `https://maps.google.com/?q=${encodeURIComponent(jour.camping + ' ' + region + ' France camping')}`
+
+      return { ...jour, spots: enrichedSpots, campingMapsUrl }
+    })
+  )
+
+  return { ...itineraire, jours: enrichedJours }
 }
 
 // ── Tavily search ─────────────────────────────────────────────────────────────
@@ -285,13 +424,16 @@ export async function POST(req: NextRequest) {
     // Groq generation
     const itineraire = await generateItineraire(input, tavilyContext)
 
+    // Enrich spots with Pexels photos, Google Maps links, Wikipedia summaries
+    const enrichedItineraire = await enrichItineraire(itineraire, input.region)
+
     // Build email
     const emailEncoded = encodeURIComponent(input.email)
     const { subject, html } = buildRoadTripEmail({
       prenom: input.prenom,
       region: input.region,
       duree: input.duree,
-      itineraire,
+      itineraire: enrichedItineraire,
       emailEncoded,
     })
 
@@ -315,7 +457,7 @@ export async function POST(req: NextRequest) {
       .from('road_trip_requests')
       .update({
         status: 'sent',
-        itineraire_json: itineraire,
+        itineraire_json: enrichedItineraire,
         sent_at: new Date().toISOString(),
       })
       .eq('id', record.id)
