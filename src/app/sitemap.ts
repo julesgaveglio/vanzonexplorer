@@ -25,6 +25,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/pays-basque`, lastModified: new Date("2025-12-01"), changeFrequency: "monthly", priority: 0.7 },
     { url: `${BASE_URL}/road-trip-pays-basque-van`, lastModified: new Date("2026-03-05"), changeFrequency: "monthly", priority: 0.7 },
     { url: `${BASE_URL}/articles`, lastModified: new Date("2026-01-01"), changeFrequency: "weekly", priority: 0.6 },
+    { url: `${BASE_URL}/road-trip-personnalise`, lastModified: new Date("2026-03-23"), changeFrequency: "monthly", priority: 0.7 },
     { url: `${BASE_URL}/contact`, lastModified: new Date("2025-01-01"), changeFrequency: "yearly", priority: 0.5 },
     { url: `${BASE_URL}/a-propos`, lastModified: new Date("2025-06-01"), changeFrequency: "yearly", priority: 0.5 },
   ];

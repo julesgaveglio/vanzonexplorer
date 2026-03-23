@@ -6,6 +6,9 @@ export const metadata: Metadata = {
   title: 'Crée ton road trip en van personnalisé | Vanzon Explorer',
   description:
     'Génère gratuitement ton itinéraire road trip en van sur mesure. Spots, activités, camping selon tes envies et ta destination en France.',
+  alternates: {
+    canonical: 'https://vanzonexplorer.com/road-trip-personnalise',
+  },
 }
 
 const webAppJsonLd = {

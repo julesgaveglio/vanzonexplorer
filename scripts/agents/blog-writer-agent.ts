@@ -818,6 +818,12 @@ STYLE & TON
   const bodyPrompt = `${styleBlock}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ARTICLE À RÉDIGER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Titre H1: "${article.title}"
+${article.wordCountNote ? `Format et contraintes spécifiques: ${article.wordCountNote}` : ""}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 CONTRAINTE ABSOLUE DE LONGUEUR
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ${wordCountInstruction}
@@ -850,8 +856,11 @@ Format: [texte ancre descriptif](url) — seulement si ça apporte vraiment de l
 
 Réponds UNIQUEMENT avec le texte markdown. Aucune explication, aucune balise, aucun JSON.`;
 
-  // Scale max tokens to target word count (≈1.3 tokens/word, +2000 buffer)
-  const maxTokensForBody = Math.min(16000, Math.ceil(targetWords * 1.5) + 2000);
+  // Scale max tokens to target word count.
+  // For Gemini 2.5 Pro, maxOutputTokens includes thinking tokens (≈2000-4000 consumed by reasoning).
+  // Formula: content tokens (≈1.5 tokens/word) + thinking buffer (4000) + safety margin (1000).
+  // Minimum of 8000 to ensure thinking + full content always fit.
+  const maxTokensForBody = Math.max(8000, Math.min(16000, Math.ceil(targetWords * 1.5) + 5000));
   // Use Gemini 2.5 Pro for body (better quality, higher context window)
   console.log(`  [Gemini 2.5 Pro] Generating article body...`);
   const rawBody = await callGemini(geminiKey, bodyPrompt, { maxTokens: maxTokensForBody, model: "gemini-2.5-pro" });
