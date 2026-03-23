@@ -227,9 +227,7 @@ create table cmo_actions (
 
 ---
 
-## Spécifications par sous-agent
-
-### Relation avec les agents existants
+## Relation avec les agents existants
 
 Le système CMO **délègue** aux agents existants — il ne les remplace pas :
 
