@@ -57,6 +57,13 @@ Full instructions: `agents/orchestrator.md`
 | Blog Writer | `agents/blog-writer.md` | `/write-article` | SEO article writer for the French vanlife market |
 | SEO Analyzer | `agents/seo-analyzer.md` | `/analyze-seo` | DataForSEO-powered keyword and competitor audits |
 | Orchestrator | `agents/orchestrator.md` | `/create-agent` | Creates new agents and slash commands |
+| CMO Orchestrateur | `agents/cmo.md` | `/cmo` | Directeur marketing 360° — diagnostic, routing, plan d'action ICE-scoré |
+| CMO Acquisition | `agents/cmo-acquisition.md` | — | SEO local, Yescapa, briefs paid ads |
+| CMO Content | `agents/cmo-content.md` | — | Blog, réseaux sociaux, calendrier éditorial |
+| CMO Retention | `agents/cmo-retention.md` | — | Club Privé, email nurturing, tunnel vente van |
+| CMO Réputation | `agents/cmo-reputation.md` | — | Avis Google, UGC, communauté van life |
+| CMO Intelligence | `agents/cmo-intelligence.md` | — | Veille concurrentielle, pricing, positionnement |
+| CMO Report | `agents/cmo-report.md` | `/cmo-weekly` `/cmo-monthly` | Rapports hebdo/mensuel autonomes |
 
 ---
 
