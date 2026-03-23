@@ -43,11 +43,20 @@ Le système fonctionne en deux modes : conversationnel à la demande via `/cmo`,
 | `scripts/agents/cmo-weekly-agent.ts` | Hebdomadaire (lundi matin) | Scan SEO + veille concurrents + 3 actions prioritaires |
 | `scripts/agents/cmo-monthly-agent.ts` | Mensuel (1er du mois) | Audit 360° complet, plan d'action ICE-scoré |
 
+**Mécanisme de déclenchement** : GitHub Actions cron (cohérent avec le pattern existant du projet).
+- `.github/workflows/cmo-weekly.yml` — schedule `0 7 * * 1` (lundi 7h UTC)
+- `.github/workflows/cmo-monthly.yml` — schedule `0 7 1 * *` (1er du mois 7h UTC)
+
+Les scripts CLI sont également déclenchables manuellement depuis le dashboard (`/admin/marketing`) via l'API route.
+
 ### Interface admin
 
 - Nouvelle route : `src/app/admin/(protected)/marketing/page.tsx`
-- Table Supabase : `cmo_reports`
-- API route : `src/app/api/admin/cmo/`
+- Table Supabase : `cmo_reports` + `cmo_actions`
+- API routes :
+  - `POST /api/admin/cmo/run` — `{ type: 'weekly' | 'monthly' | 'adhoc', subagent?: string }` → déclenche le script correspondant
+  - `POST /api/admin/cmo/ask` — `{ question: string }` → SSE stream, réponse de l'orchestrateur
+  - `PATCH /api/admin/cmo/actions/[id]` — `{ status: 'todo' | 'in_progress' | 'done', notes?: string }` → met à jour le statut d'une action
 
 ---
 
@@ -73,6 +82,22 @@ Chaque recommandation produite par l'agent est scorée :
 - **Ease** (1-10) : facilité d'exécution pour une PME
 
 Score final = (I × C × E) / 100 → classement automatique des priorités.
+
+### Health Score (0-100)
+
+Score calculé à chaque rapport mensuel, pondéré par canal :
+
+| Composante | Poids | Source de données |
+|---|---|---|
+| Acquisition SEO | 25% | GSC : évolution positions + clics vs mois précédent |
+| Contenu | 20% | Sanity : articles publiés ce mois vs objectif (4/mois) |
+| Rétention | 20% | Supabase : nouveaux membres club + road trip requests |
+| Réputation | 20% | Tavily scraping : note Google Business + volume avis |
+| Intelligence concurrentielle | 15% | Estimation LLM : Vanzon mieux/pareil/moins bien positionné |
+
+Chaque composante est notée 0-100 (données mesurables) ou 0/50/100 (estimation LLM binaire/ternaire). Le health score global = somme pondérée.
+
+Si une source de données est indisponible pour une composante, celle-ci est exclue du calcul et les poids sont renormalisés.
 
 ### Seasonal Matrix
 
@@ -162,10 +187,11 @@ Pas de nouvelle intégration requise au lancement.
 - Filtre par canal
 
 **Onglet Actions**
-- Kanban : À faire / En cours / Fait
-- Chaque carte : titre, canal, ICE score, effort estimé, source (quel sous-agent)
-- Bouton "Déclencher" pour les actions automatisables
-- Persistance en Supabase
+- Liste filtrée par statut : À faire / En cours / Fait (3 onglets, pas de kanban drag & drop)
+- Chaque ligne : titre, canal, ICE score, effort estimé, source (quel sous-agent), boutons "En cours" / "Fait"
+- Bouton "Déclencher" pour les actions automatisables (ex. ajouter un article en queue)
+- Persistance en Supabase via `PATCH /api/admin/cmo/actions/[id]`
+- **Règle de déduplication** : à chaque nouveau rapport, avant d'insérer les actions, le script vérifie si une action avec le même `title` et `channel` existe en statut `done` dans les 30 derniers jours — si oui, elle n'est pas recréée
 
 **Onglet Analyse**
 - Boutons : Lancer analyse hebdo / mensuelle / par sous-agent
@@ -203,8 +229,25 @@ create table cmo_actions (
 
 ## Spécifications par sous-agent
 
+### Relation avec les agents existants
+
+Le système CMO **délègue** aux agents existants — il ne les remplace pas :
+
+| Agent existant | Appelé par | Mode |
+|---|---|---|
+| `agents/seo-analyzer.md` | `cmo-acquisition.md` | Délégation via Agent tool pour les audits SEO détaillés |
+| `agents/competitor-tracker.md` | `cmo-intelligence.md` | Délégation pour la veille concurrentielle |
+| `agents/blog-writer.md` | `cmo-content.md` | Délégation pour la rédaction effective des articles |
+| `/write-article` | `cmo-report.md` | Déclenchement soumis à confirmation (règle d'autonomie) |
+
+Les sous-agents CMO jouent un rôle **stratégique** (quoi faire, pourquoi, quand) ; les agents existants jouent un rôle **exécutif** (comment faire).
+
+---
+
+## Spécifications par sous-agent
+
 ### `cmo-acquisition.md`
-- Audit SEO local (Google Business Profile, citations NAP, schema LocalBusiness)
+- Audit SEO local (Google Business Profile, citations NAP, schema LocalBusiness) — délègue à `seo-analyzer.md` pour les détails
 - Analyse keywords géolocalisés Pays Basque (DataForSEO)
 - Monitoring Yescapa/Goboony : prix concurrents, disponibilités, avis
 - Briefs campagnes Google Ads / Meta (audiences, copy, budget recommandé)
@@ -232,7 +275,7 @@ create table cmo_actions (
 - Veille mentions Vanzon sur les réseaux sociaux et forums van life
 
 ### `cmo-intelligence.md`
-- Benchmark concurrents directs : Nomads Surfing, Van It Easy, etc.
+- Benchmark concurrents directs : Nomads Surfing, Van It Easy, etc. — délègue à `competitor-tracker.md` pour la collecte de données
 - Analyse pricing concurrentiel (location + vente)
 - Gaps de positionnement : ce que Vanzon fait que les concurrents ne font pas
 - Opportunités de différenciation non exploitées
