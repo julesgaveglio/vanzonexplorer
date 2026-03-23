@@ -1,0 +1,19 @@
+name: CMO Weekly Report
+on:
+  schedule:
+    - cron: '0 7 * * 1'  # Lundi 7h UTC
+  workflow_dispatch:
+
+jobs:
+  cmo-weekly:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci
+      - run: npx tsx scripts/agents/cmo-weekly-agent.ts
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
