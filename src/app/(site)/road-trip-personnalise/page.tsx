@@ -49,33 +49,6 @@ const steps = [
   },
 ]
 
-const testimonials = [
-  {
-    quote: "J'ai reçu un itinéraire complet pour la Bretagne en moins d'une minute. Les spots sont vraiment hors des sentiers battus.",
-    author: 'Marie & Tom',
-    context: 'Road trip Bretagne · 7 jours',
-    emoji: '🌊',
-  },
-  {
-    quote: "Parfait pour mon premier road trip en van. Les conseils pratiques m'ont vraiment aidé à ne rien oublier.",
-    author: 'Julien',
-    context: 'Solo · Alpes · 10 jours',
-    emoji: '⛰️',
-  },
-  {
-    quote: "On a suivi l'itinéraire Provence à la lettre. Chaque spot était une pépite, aucun camping décevant.",
-    author: 'Lisa & Max',
-    context: 'Couple · Provence · 5 jours',
-    emoji: '🌻',
-  },
-]
-
-const stats = [
-  { value: '13+', label: 'régions couvertes' },
-  { value: '100+', label: 'spots référencés' },
-  { value: '< 60s', label: 'de génération' },
-  { value: '0 €', label: 'pour toujours' },
-]
 
 export default function RoadTripPersonnalisePage() {
   return (
@@ -163,49 +136,12 @@ export default function RoadTripPersonnalisePage() {
             ))}
           </div>
 
-          {/* CTA */}
-          <a
-            href="#wizard"
-            className="inline-flex items-center gap-3 px-8 py-4 rounded-full text-base font-semibold text-white transition-all active:scale-95 hover:shadow-xl"
-            style={{
-              background: 'linear-gradient(135deg, #2563eb 0%, #0ea5e9 100%)',
-              boxShadow: '0 4px 20px rgba(37,99,235,0.35)',
-            }}
-          >
-            Générer mon road trip gratuit
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-            </svg>
-          </a>
-          <p className="text-slate-400 text-sm mt-4">Gratuit · Aucune inscription requise</p>
         </div>
 
         {/* Floating decorative text */}
         <div className="hidden lg:block absolute bottom-12 left-12 text-6xl opacity-10 select-none">🏔️</div>
         <div className="hidden lg:block absolute top-24 right-16 text-5xl opacity-10 select-none">🌊</div>
         <div className="hidden lg:block absolute bottom-20 right-28 text-5xl opacity-10 select-none">🌲</div>
-      </section>
-
-      {/* ── 2. Stats bar ─────────────────────────────────────────────────────── */}
-      <section className="border-y border-slate-100 bg-slate-50">
-        <div className="max-w-4xl mx-auto px-6 py-8 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-          {stats.map((s) => (
-            <div key={s.label}>
-              <div
-                className="text-3xl font-bold"
-                style={{
-                  background: 'linear-gradient(135deg, #2563eb, #B9945F)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                }}
-              >
-                {s.value}
-              </div>
-              <div className="text-slate-500 text-sm mt-1">{s.label}</div>
-            </div>
-          ))}
-        </div>
       </section>
 
       {/* ── 3. Wizard ────────────────────────────────────────────────────────── */}
@@ -248,50 +184,6 @@ export default function RoadTripPersonnalisePage() {
                 </div>
                 <h3 className="text-lg font-bold text-slate-900 mb-3">{step.title}</h3>
                 <p className="text-slate-500 text-sm leading-relaxed">{step.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── 5. Témoignages ───────────────────────────────────────────────────── */}
-      <section className="py-24 bg-white">
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <p
-              className="text-sm font-semibold uppercase tracking-widest mb-3"
-              style={{ color: '#B9945F' }}
-            >
-              Ils ont testé
-            </p>
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
-              Des road trips qui ont vraiment eu lieu
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {testimonials.map((t) => (
-              <div
-                key={t.author}
-                className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm flex flex-col gap-4"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-2xl">{t.emoji}</span>
-                  <div className="flex gap-0.5">
-                    {[...Array(5)].map((_, i) => (
-                      <span key={i} className="text-amber-400 text-sm">★</span>
-                    ))}
-                  </div>
-                </div>
-                <p className="text-slate-600 text-sm leading-relaxed flex-1 italic">
-                  &ldquo;{t.quote}&rdquo;
-                </p>
-                <div>
-                  <p className="font-semibold text-slate-900 text-sm">{t.author}</p>
-                  <p className="text-xs mt-0.5 font-medium" style={{ color: '#B9945F' }}>
-                    {t.context}
-                  </p>
-                </div>
               </div>
             ))}
           </div>
