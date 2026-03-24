@@ -241,32 +241,39 @@ function injectInternalLinks(markdown: string, publishedSlugs: Set<string> = new
   // Helper: only include article-specific rules if the slug is published
   const articleUrl = (slug: string) =>
     publishedSlugs.size === 0 || publishedSlugs.has(slug)
-      ? `/vanzon/articles/${slug}`
+      ? `/articles/${slug}`
       : null;
 
   const allRules: Array<{ pattern: RegExp; url: string | null }> = [
-    // /vanzon/location — louer/réserver un van
-    { pattern: new RegExp(`${W}(lou(?:er?|ez) (?:un |votre |son |notre |leur )?van(?:\\s+aménagé)?)${w}`, "i"), url: "/vanzon/location" },
-    { pattern: new RegExp(`${W}(location de van(?:\\s+aménagé)?)${w}`, "i"), url: "/vanzon/location" },
-    { pattern: new RegExp(`${W}(van en location)${w}`, "i"), url: "/vanzon/location" },
-    { pattern: new RegExp(`${W}(réserver (?:un |ton |votre )?van)${w}`, "i"), url: "/vanzon/location" },
-    { pattern: new RegExp(`${W}(vanlife)${w}`, "i"), url: "/vanzon/location" },
-    // /vanzon/achat — acheter un van
-    { pattern: new RegExp(`${W}(acheter (?:un |votre |ton |son )?van(?:\\s+aménagé)?)${w}`, "i"), url: "/vanzon/achat" },
-    { pattern: new RegExp(`${W}(van aménagé à (?:vendre|la vente|acheter))${w}`, "i"), url: "/vanzon/achat" },
-    { pattern: new RegExp(`${W}(van aménagé)${w}`, "i"), url: "/vanzon/achat" }, // first mention of "van aménagé"
-    // /vanzon/articles/ou-dormir-van-pays-basque — bivouac & nuit en van
-    { pattern: new RegExp(`${W}(bivouac(?:er|ant|quer)?)${w}`, "i"), url: articleUrl("ou-dormir-van-pays-basque") },
-    { pattern: new RegExp(`${W}(dormir (?:dans |en |à bord de )?(?:son |ton |votre )?van)${w}`, "i"), url: articleUrl("ou-dormir-van-pays-basque") },
-    { pattern: new RegExp(`${W}(nuit(?:s)? (?:dans |en |à bord de )?(?:son |ton |votre )?van)${w}`, "i"), url: articleUrl("ou-dormir-van-pays-basque") },
-    // /vanzon/articles/road-trip-pays-basque-van — road trip
-    { pattern: new RegExp(`${W}(road[- ]trip (?:au |en van au |au )?Pays Basque)${w}`, "i"), url: articleUrl("road-trip-pays-basque-van") },
-    { pattern: new RegExp(`${W}(road[- ]trip)${w}`, "i"), url: articleUrl("road-trip-pays-basque-van") },
-    { pattern: new RegExp(`${W}(itinéraire (?:de |du |au )?Pays Basque)${w}`, "i"), url: articleUrl("road-trip-pays-basque-van") },
-    // /vanzon/pays-basque — guide/spots Pays Basque
-    { pattern: new RegExp(`${W}(guide (?:du |de )?Pays Basque)${w}`, "i"), url: "/vanzon/pays-basque" },
-    { pattern: new RegExp(`${W}(spots? (?:du |au |en )?Pays Basque)${w}`, "i"), url: "/vanzon/pays-basque" },
-    { pattern: new RegExp(`${W}(Pays Basque vanlife)${w}`, "i"), url: "/vanzon/pays-basque" },
+    // /location — louer/réserver un van
+    { pattern: new RegExp(`${W}(lou(?:er?|ez) (?:un |votre |son |notre |leur )?van(?:\\s+aménagé)?)${w}`, "i"), url: "/location" },
+    { pattern: new RegExp(`${W}(location de van(?:\\s+aménagé)?)${w}`, "i"), url: "/location" },
+    { pattern: new RegExp(`${W}(van en location)${w}`, "i"), url: "/location" },
+    { pattern: new RegExp(`${W}(réserver (?:un |ton |votre )?van)${w}`, "i"), url: "/location" },
+    { pattern: new RegExp(`${W}(vanlife)${w}`, "i"), url: "/location" },
+    // /achat — acheter un van
+    { pattern: new RegExp(`${W}(acheter (?:un |votre |ton |son )?van(?:\\s+aménagé)?)${w}`, "i"), url: "/achat" },
+    { pattern: new RegExp(`${W}(van aménagé à (?:vendre|la vente|acheter))${w}`, "i"), url: "/achat" },
+    { pattern: new RegExp(`${W}(van aménagé)${w}`, "i"), url: "/achat" }, // first mention of "van aménagé"
+    // /articles/spots-dormir-van-pays-basque-legaux — bivouac & nuit en van
+    { pattern: new RegExp(`${W}(bivouac(?:er|ant|quer)?)${w}`, "i"), url: articleUrl("spots-dormir-van-pays-basque-legaux") },
+    { pattern: new RegExp(`${W}(dormir (?:dans |en |à bord de )?(?:son |ton |votre )?van)${w}`, "i"), url: articleUrl("spots-dormir-van-pays-basque-legaux") },
+    { pattern: new RegExp(`${W}(nuit(?:s)? (?:dans |en |à bord de )?(?:son |ton |votre )?van)${w}`, "i"), url: articleUrl("spots-dormir-van-pays-basque-legaux") },
+    // /road-trip-pays-basque-van — road trip (page statique)
+    { pattern: new RegExp(`${W}(road[- ]trip (?:au |en van au |au )?Pays Basque)${w}`, "i"), url: "/road-trip-pays-basque-van" },
+    { pattern: new RegExp(`${W}(road[- ]trip)${w}`, "i"), url: "/road-trip-pays-basque-van" },
+    { pattern: new RegExp(`${W}(itinéraire (?:de |du |au )?Pays Basque)${w}`, "i"), url: "/road-trip-pays-basque-van" },
+    // /road-trip-personnalise — générateur IA
+    { pattern: new RegExp(`${W}(planifier (?:son |ton |votre )?(?:road[- ]trip|itinéraire))${w}`, "i"), url: "/road-trip-personnalise" },
+    { pattern: new RegExp(`${W}(itinéraire personnalisé)${w}`, "i"), url: "/road-trip-personnalise" },
+    // /pays-basque — guide/spots Pays Basque
+    { pattern: new RegExp(`${W}(guide (?:du |de )?Pays Basque)${w}`, "i"), url: "/pays-basque" },
+    { pattern: new RegExp(`${W}(spots? (?:du |au |en )?Pays Basque)${w}`, "i"), url: "/pays-basque" },
+    { pattern: new RegExp(`${W}(Pays Basque vanlife)${w}`, "i"), url: "/pays-basque" },
+    // /formation — Van Business Academy
+    { pattern: new RegExp(`${W}(se lancer dans la location de van)${w}`, "i"), url: "/formation" },
+    { pattern: new RegExp(`${W}(Van Business Academy)${w}`, "i"), url: "/formation" },
+    { pattern: new RegExp(`${W}(aménager (?:son |votre |ton )?fourgon)${w}`, "i"), url: "/formation" },
   ];
 
   // Filter out rules with null URL (unpublished article targets)
