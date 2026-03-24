@@ -1,0 +1,17 @@
+name: Facebook Daily Reminder
+
+on:
+  schedule:
+    - cron: '0 17 * * 1-5'   # 18h Paris (UTC+1) du lundi au vendredi
+  workflow_dispatch:           # déclenchement manuel possible
+
+jobs:
+  send-daily:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger send-daily API
+        run: |
+          curl -X POST https://vanzonexplorer.com/api/telegram/send-daily \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "Content-Type: application/json" \
+            --fail-with-body
