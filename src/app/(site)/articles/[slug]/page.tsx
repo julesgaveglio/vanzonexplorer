@@ -15,6 +15,7 @@ import ReadingProgressBar from "./_components/ReadingProgressBar";
 import ArticleFAQ from "./_components/ArticleFAQ";
 import ArticleCategorySync from "./_components/ArticleCategorySync";
 import ShareButton from "./_components/ShareButton";
+import RoadTripCTA from "@/components/ui/RoadTripCTA";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -758,6 +759,9 @@ export default async function ArticleDetailPage({
               </ul>
             </div>
           )}
+
+          {/* ── Road Trip CTA ── */}
+          <RoadTripCTA />
 
           {/* ── Footer CTA ── */}
           <div className="mt-12 pt-10 border-t border-slate-100">

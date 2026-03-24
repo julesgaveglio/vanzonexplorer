@@ -6,6 +6,7 @@ import { getAllLocationVansQuery } from "@/lib/sanity/queries";
 import type { VanCard as VanCardType } from "@/lib/sanity/types";
 import VanCard from "@/components/van/VanCard";
 import { getGooglePlaceStats } from "@/lib/google-places";
+import RoadTripCTA from "@/components/ui/RoadTripCTA";
 
 const BASE_URL = "https://vanzonexplorer.com";
 
@@ -471,6 +472,8 @@ export default async function LocationPage() {
           </p>
         </div>
       </section>
+
+      <RoadTripCTA />
     </>
   );
 }
