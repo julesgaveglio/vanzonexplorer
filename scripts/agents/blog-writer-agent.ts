@@ -789,6 +789,7 @@ Réponds UNIQUEMENT avec ce JSON valide (aucune explication):
 
   // ── Call 2: article body via Claude Sonnet 4.6 (quality + instruction-following) ──
   console.log(`  [Claude Sonnet 4.6] Generating article body...`);
+  const internalLinksBlock = loadAgentPrompt("internal-links");
   const styleBlock = loadAgentPrompt("blog-writer") ?? `Tu es Jules Gaveglio, co-fondateur de Vanzon Explorer — expert vanlife au Pays Basque depuis 5 ans. Tu rédiges des articles de blog SEO qui classent sur Google et convertissent des lecteurs en clients.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -847,6 +848,11 @@ ${paaBlock}
 STRUCTURE (utilise ## pour H2, ### pour H3 — jamais de # H1)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ${structureBlock}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+LIENS INTERNES VANZON EXPLORER (maillage interne)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${internalLinksBlock ?? "Pas de fichier internal-links.md trouvé — applique quand même des liens vers /location, /road-trip-personnalise et /formation quand c'est pertinent."}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 LIENS EXTERNES
