@@ -1230,10 +1230,10 @@
     ],
     "targetWordCount": 1500,
     "wordCountNote": "Comparatif 3 modèles phares — tableau odeur/prix/taille/entretien + expérience terrain. Club Privé angle : Trelino et Trobolo sont des marques partenaires potentielles — deals membres sur commandes groupées. CTA /club. Article très ciblé autonomie totale = profil Club Privé idéal.",
-    "status": "pending",
+    "status": "published",
     "priority": 1,
-    "sanityId": null,
-    "publishedAt": null,
+    "sanityId": "J7HjgD8mhJ85p7z8uLGJRy",
+    "publishedAt": "2026-03-25T07:50:03.819Z",
     "lastSeoCheck": null,
     "seoPosition": null
   },
@@ -1487,7 +1487,7 @@
     },
     "status": "published",
     "priority": -6,
-"sanityId": "2XVcja2XUIm0wCrDgDLLm4",
+    "sanityId": "2XVcja2XUIm0wCrDgDLLm4",
     "publishedAt": "2026-03-23T10:06:25.789Z",
     "lastSeoCheck": null,
     "seoPosition": null
