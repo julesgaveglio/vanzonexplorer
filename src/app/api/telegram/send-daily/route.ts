@@ -6,19 +6,11 @@ const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN!;
 const CHAT_ID = process.env.TELEGRAM_CHAT_ID!;
 const CRON_SECRET = process.env.CRON_SECRET!;
 
-async function sendTelegramWithButtons(
-  text: string,
-  buttons: Array<Array<{ text: string; callback_data: string }>>
-) {
+async function sendTelegram(text: string, extra?: object) {
   const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      chat_id: CHAT_ID,
-      text,
-      parse_mode: "HTML",
-      reply_markup: { inline_keyboard: buttons },
-    }),
+    body: JSON.stringify({ chat_id: CHAT_ID, text, parse_mode: "HTML", ...extra }),
   });
   return res.json();
 }
@@ -74,17 +66,21 @@ export async function POST(req: NextRequest) {
       `utm_content=template_${slot.template_id}`
     );
 
-    const text =
-      `📣 <b>Post Facebook du jour</b> — Template ${slot.template_id}\n\n` +
-      `<b>Groupe :</b> ${group.group_name}\n` +
-      `<b>URL :</b> ${group.group_url}\n\n` +
-      `<b>Message à copier-coller :</b>\n\n` +
-      `<code>${messageText}</code>`;
+    // Message 1 — texte brut à copier-coller directement
+    await sendTelegram(messageText);
 
-    await sendTelegramWithButtons(text, [[
-      { text: "✅ Posté !", callback_data: `posted:${slot.id}` },
-      { text: "⏭ Reporter", callback_data: `skip:${slot.id}` },
-    ]]);
+    // Message 2 — infos + boutons
+    const info =
+      `📣 <b>Post Facebook</b> · Template ${slot.template_id}\n` +
+      `👥 <b>${group.group_name}</b>\n` +
+      `🔗 ${group.group_url}`;
+
+    await sendTelegram(info, {
+      reply_markup: { inline_keyboard: [[
+        { text: "✅ Posté !", callback_data: `posted:${slot.id}` },
+        { text: "⏭ Reporter", callback_data: `skip:${slot.id}` },
+      ]]},
+    });
   }
 
   return NextResponse.json({ sent: slots.length });
