@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: CI — Type Check & Lint
 
 on:
   push:
@@ -6,46 +6,29 @@ on:
   pull_request:
     branches: [ main ]
 
+# Le déploiement est géré automatiquement par Vercel à chaque push sur main.
+# Ce workflow fait uniquement la vérification TypeScript et ESLint.
+
 jobs:
-  build:
+  typecheck:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'npm'
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
 
-    - name: Install dependencies
-      run: npm ci --ignore-scripts
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
 
-    - name: Build project
-      run: npm run build
-      env:
-        NODE_ENV: production
-
-    - name: Setup Pages
-      uses: actions/configure-pages@v4
-
-    - name: Upload artifact
-      uses: actions/upload-pages-artifact@v3
-      with:
-        path: './out'
-
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    if: github.ref == 'refs/heads/main'
-    permissions:
-      pages: write
-      id-token: write
-    steps:
-    - name: Deploy to GitHub Pages
-      id: deployment
-      uses: actions/deploy-pages@v4
+      - name: TypeScript type check
+        run: npx tsc --noEmit
+        env:
+          NEXT_PUBLIC_SANITY_PROJECT_ID: lewexa74
+          NEXT_PUBLIC_SANITY_DATASET: production
+          NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder
+          NEXT_PUBLIC_SITE_URL: https://vanzonexplorer.com
