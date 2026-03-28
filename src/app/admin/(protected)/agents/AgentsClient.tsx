@@ -424,7 +424,7 @@ function PromptEditor({ agentId, char }: {
 // ── Main component ────────────────────────────────────────────────────────────
 
 export default function AgentsClient({ agents, queueStats }: AgentsClientProps) {
-  const cronAgents = agents.filter((a) => a.trigger === "cron");
+  const cronAgents = agents.filter((a) => a.trigger === "cron" || a.trigger === "webhook" || a.trigger === "manual");
   const [selected, setSelected] = useState<string | null>(null);
   const [tab, setTab] = useState<PanelTab>("tech");
   const activeCount = cronAgents.filter((a) => a.status === "active").length;
