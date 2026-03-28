@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { X, Search, ImageIcon, Loader2 } from "lucide-react";
+import { X, Search, ImageIcon, Loader2, RefreshCw } from "lucide-react";
 
 type MediaItem = {
   _id: string;
@@ -16,6 +16,7 @@ type MediaItem = {
 interface MediaPickerModalProps {
   onSelect: (url: string, alt: string) => void;
   onClose: () => void;
+  refreshTrigger?: number;
 }
 
 const CATEGORIES = [
@@ -28,18 +29,24 @@ const CATEGORIES = [
   { value: "divers", label: "Divers" },
 ];
 
-export default function MediaPickerModal({ onSelect, onClose }: MediaPickerModalProps) {
+export default function MediaPickerModal({ onSelect, onClose, refreshTrigger }: MediaPickerModalProps) {
   const [items, setItems] = useState<MediaItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
 
-  useEffect(() => {
+  const fetchItems = useCallback(() => {
+    setLoading(true);
     fetch("/api/admin/media")
       .then((r) => r.json())
-      .then((data) => { setItems(data); setLoading(false); })
+      .then((data) => {
+        setItems(Array.isArray(data) ? data : []);
+        setLoading(false);
+      })
       .catch(() => setLoading(false));
   }, []);
+
+  useEffect(() => { fetchItems(); }, [fetchItems, refreshTrigger]);
 
   const filtered = items.filter((item) => {
     const matchCat = category === "all" || item.category === category;
@@ -71,9 +78,14 @@ export default function MediaPickerModal({ onSelect, onClose }: MediaPickerModal
             <h2 className="font-bold text-slate-900">Médiathèque</h2>
             {!loading && <span className="text-xs text-slate-400 ml-1">({filtered.length} images)</span>}
           </div>
-          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-500 transition-colors">
-            <X className="w-4 h-4" />
-          </button>
+          <div className="flex items-center gap-1">
+            <button onClick={fetchItems} disabled={loading} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors" title="Rafraîchir">
+              <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+            </button>
+            <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-500 transition-colors">
+              <X className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
         {/* Filters */}

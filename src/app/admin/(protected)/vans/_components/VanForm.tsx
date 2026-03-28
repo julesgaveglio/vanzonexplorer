@@ -86,6 +86,7 @@ export default function VanForm({ van }: { van?: VanData }) {
 
   // Media picker
   const [showMediaPicker, setShowMediaPicker] = useState<"main" | "gallery" | null>(null);
+  const [mediaRefreshTrigger, setMediaRefreshTrigger] = useState(0);
 
   // Équipements conditionnels
   const [hasShower, setHasShower] = useState(van?.eq_shower ?? false);
@@ -114,7 +115,7 @@ export default function VanForm({ van }: { van?: VanData }) {
     setUploadingMain(true);
     const result = await uploadImage(file);
     setUploadingMain(false);
-    if (result) { setMainImageRef(result.ref); setMainImageUrl(result.url); }
+    if (result) { setMainImageRef(result.ref); setMainImageUrl(result.url); setMediaRefreshTrigger(t => t + 1); }
   }
 
   async function handleGalleryUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -130,6 +131,7 @@ export default function VanForm({ van }: { van?: VanData }) {
           url: result.url,
           alt: "",
         }]);
+        setMediaRefreshTrigger(t => t + 1);
       }
     }
     setUploadingGallery(false);
@@ -601,6 +603,7 @@ export default function VanForm({ van }: { van?: VanData }) {
 
     {showMediaPicker && (
       <MediaPickerModal
+        refreshTrigger={mediaRefreshTrigger}
         onSelect={(url, alt) => {
           if (showMediaPicker === "main") {
             setMainImageUrl(url);
