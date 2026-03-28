@@ -203,7 +203,7 @@ export default async function AProposPage() {
             <div className="grid grid-cols-2 gap-3">
               <div className="relative aspect-[3/4] rounded-2xl overflow-hidden">
                 <Image
-                  src="https://cdn.sanity.io/images/lewexa74/production/16f9120e659bdd4bba47e663e9df9a1a9293fe3f-1170x2080.jpg"
+                  src="https://cdn.sanity.io/images/lewexa74/production/16f9120e659bdd4bba47e663e9df9a1a9293fe3f-1170x2080.jpg?auto=format&q=82"
                   alt="Jules, fondateur de Vanzon Explorer"
                   fill
                   className="object-cover"
@@ -212,7 +212,7 @@ export default async function AProposPage() {
               <div className="flex flex-col gap-3">
                 <div className="relative aspect-square rounded-2xl overflow-hidden">
                   <Image
-                    src="https://cdn.sanity.io/images/lewexa74/production/28a2c5acbe2ee16169d4ace1ab0522481c43d356-1170x2080.jpg"
+                    src="https://cdn.sanity.io/images/lewexa74/production/28a2c5acbe2ee16169d4ace1ab0522481c43d356-1170x2080.jpg?auto=format&q=82"
                     alt="Jules et Elio, co-fondateurs Vanzon Explorer"
                     fill
                     className="object-cover"
@@ -220,7 +220,7 @@ export default async function AProposPage() {
                 </div>
                 <div className="relative aspect-square rounded-2xl overflow-hidden">
                   <Image
-                    src="https://cdn.sanity.io/images/lewexa74/production/325f3ebf1d68fd890487229864c73cc65bef20d3-1186x1654.png"
+                    src="https://cdn.sanity.io/images/lewexa74/production/325f3ebf1d68fd890487229864c73cc65bef20d3-1186x1654.png?auto=format&q=82"
                     alt="Elio, co-fondateur Vanzon Explorer"
                     fill
                     className="object-cover"
@@ -403,7 +403,7 @@ export default async function AProposPage() {
             "@type": "Organization",
             name: "Vanzon Explorer",
             url: "https://vanzonexplorer.com",
-            logo: "https://cdn.sanity.io/images/lewexa74/production/1f483103ef15ee3549eab14ba2801d11b32a9055-313x313.png",
+            logo: "https://cdn.sanity.io/images/lewexa74/production/1f483103ef15ee3549eab14ba2801d11b32a9055-313x313.png?auto=format&q=82",
             description:
               "Écosystème vanlife 360° — location, achat, formation et Club Privé au Pays Basque. Fondé en 2024 par Jules Gaveglio et Elio.",
             foundingDate: "2024",

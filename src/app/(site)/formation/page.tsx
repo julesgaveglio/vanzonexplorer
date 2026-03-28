@@ -114,7 +114,7 @@ const courseJsonLd = {
     "Formation complète pour aménager ton fourgon et lancer un business de location de van. De l'achat du véhicule à la mise en location rentable — homologation VASP incluse.",
   url: "https://vanzonexplorer.com/formation",
   image:
-    "https://cdn.sanity.io/images/lewexa74/production/28a2c5acbe2ee16169d4ace1ab0522481c43d356-1170x2080.jpg",
+    "https://cdn.sanity.io/images/lewexa74/production/28a2c5acbe2ee16169d4ace1ab0522481c43d356-1170x2080.jpg?auto=format&q=82",
   provider: {
     "@type": "Organization",
     name: "Vanzon Explorer",
@@ -224,7 +224,7 @@ export default function FormationPage() {
 
             <div className="flex justify-center">
               <Image
-                src="https://cdn.sanity.io/images/lewexa74/production/e8d8a66703e846a5bd916e38bd9a488b663ce433-1920x1080.png?v=1"
+                src="https://cdn.sanity.io/images/lewexa74/production/e8d8a66703e846a5bd916e38bd9a488b663ce433-1920x1080.png?auto=format&q=82"
                 alt="Aménagement intérieur de van - Van Business Academy"
                 width={800}
                 height={600}
@@ -251,7 +251,7 @@ export default function FormationPage() {
           <div className="grid grid-cols-3 gap-3 md:gap-4 rounded-2xl overflow-hidden">
             <div className="relative aspect-[3/4] rounded-2xl overflow-hidden">
               <Image
-                src="https://cdn.sanity.io/images/lewexa74/production/16f9120e659bdd4bba47e663e9df9a1a9293fe3f-1170x2080.jpg"
+                src="https://cdn.sanity.io/images/lewexa74/production/16f9120e659bdd4bba47e663e9df9a1a9293fe3f-1170x2080.jpg?auto=format&q=82"
                 alt="Jules co-fondateur Vanzon Explorer - formateur vanlife et aménagement van Pays Basque"
                 fill
                 className="object-cover hover:scale-105 transition-transform duration-500"
@@ -259,7 +259,7 @@ export default function FormationPage() {
             </div>
             <div className="relative aspect-[3/4] rounded-2xl overflow-hidden">
               <Image
-                src="https://cdn.sanity.io/images/lewexa74/production/28a2c5acbe2ee16169d4ace1ab0522481c43d356-1170x2080.jpg"
+                src="https://cdn.sanity.io/images/lewexa74/production/28a2c5acbe2ee16169d4ace1ab0522481c43d356-1170x2080.jpg?auto=format&q=82"
                 alt="Jules et Elio fondateurs Vanzon Explorer - experts location van aménagé Pays Basque"
                 fill
                 className="object-cover hover:scale-105 transition-transform duration-500"
@@ -267,7 +267,7 @@ export default function FormationPage() {
             </div>
             <div className="relative aspect-[3/4] rounded-2xl overflow-hidden">
               <Image
-                src="https://cdn.sanity.io/images/lewexa74/production/325f3ebf1d68fd890487229864c73cc65bef20d3-1186x1654.png"
+                src="https://cdn.sanity.io/images/lewexa74/production/325f3ebf1d68fd890487229864c73cc65bef20d3-1186x1654.png?auto=format&q=82"
                 alt="Elio co-fondateur Vanzon Explorer - expert mécanique et construction van aménagé"
                 fill
                 className="object-cover hover:scale-105 transition-transform duration-500"

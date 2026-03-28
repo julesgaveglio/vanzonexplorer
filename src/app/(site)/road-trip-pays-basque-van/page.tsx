@@ -141,12 +141,12 @@ const jsonLdArticle = {
     url: "https://vanzonexplorer.com",
     logo: {
       "@type": "ImageObject",
-      url: "https://cdn.sanity.io/images/lewexa74/production/9de5b0e768fa1fcc5ea5aa6f41ac816c249af9b0-1042x417.png",
+      url: "https://cdn.sanity.io/images/lewexa74/production/9de5b0e768fa1fcc5ea5aa6f41ac816c249af9b0-1042x417.png?auto=format&q=82",
     },
   },
   datePublished: "2025-06-01",
   dateModified: "2026-03-05",
-  image: "https://cdn.sanity.io/images/lewexa74/production/d445397965472d300e3dc13d6b1c37503fe8ba25-1920x1080.png",
+  image: "https://cdn.sanity.io/images/lewexa74/production/d445397965472d300e3dc13d6b1c37503fe8ba25-1920x1080.png?auto=format&q=82",
   mainEntityOfPage: {
     "@type": "WebPage",
     "@id": "https://vanzonexplorer.com/road-trip-pays-basque-van",
@@ -206,7 +206,7 @@ export default function RoadTripPaysBasquePage() {
       <section className="relative min-h-[80vh] flex items-end overflow-hidden">
         <div className="absolute inset-0">
           <Image
-            src="https://cdn.sanity.io/images/lewexa74/production/d445397965472d300e3dc13d6b1c37503fe8ba25-1920x1080.png"
+            src="https://cdn.sanity.io/images/lewexa74/production/d445397965472d300e3dc13d6b1c37503fe8ba25-1920x1080.png?auto=format&q=82"
             alt="Van aménagé au bord de l'océan au Pays Basque pour un road trip"
             fill
             sizes="100vw"
@@ -505,7 +505,7 @@ export default function RoadTripPaysBasquePage() {
       <section className="relative py-28 overflow-hidden">
         <div className="absolute inset-0">
           <Image
-            src="https://cdn.sanity.io/images/lewexa74/production/e9664378c5fdc652c33ae7342dfc52cc4960c8bf-1080x750.png"
+            src="https://cdn.sanity.io/images/lewexa74/production/e9664378c5fdc652c33ae7342dfc52cc4960c8bf-1080x750.png?auto=format&q=82"
             alt="Van Vanzon Explorer au Pays Basque"
             fill
             sizes="100vw"

@@ -5,32 +5,32 @@ import Image from "next/image";
 
 const FLOATS = [
   {
-    src: "https://cdn.sanity.io/images/lewexa74/production/d3f70a292bbf7b03e5e2dfe71ec413920e087f1f-1459x850.png",
-    alt: "Module formation van",
+    src: "https://cdn.sanity.io/images/lewexa74/production/d3f70a292bbf7b03e5e2dfe71ec413920e087f1f-1459x850.png?auto=format&q=80",
+    alt: "Module formation van aménagé — Van Business Academy",
     width: 1459,
     height: 850,
     rotate: "-2deg",
     translateY: "-24px",
   },
   {
-    src: "https://cdn.sanity.io/images/lewexa74/production/5473f111cdb3199e8192ebd19c7c721c5b0ec77d-1459x784.png",
-    alt: "Programme formation van",
+    src: "https://cdn.sanity.io/images/lewexa74/production/5473f111cdb3199e8192ebd19c7c721c5b0ec77d-1459x784.png?auto=format&q=80",
+    alt: "Programme complet formation vanlife — Van Business Academy",
     width: 1459,
     height: 784,
     rotate: "2deg",
     translateY: "0px",
   },
   {
-    src: "https://cdn.sanity.io/images/lewexa74/production/d9c4c7fe7931c1be66649b8520bbefe4acda6091-1284x850.png",
-    alt: "Ressources formation van",
+    src: "https://cdn.sanity.io/images/lewexa74/production/d9c4c7fe7931c1be66649b8520bbefe4acda6091-1284x850.png?auto=format&q=80",
+    alt: "Ressources et outils formation aménagement van",
     width: 1284,
     height: 850,
     rotate: "1.5deg",
     translateY: "0px",
   },
   {
-    src: "https://cdn.sanity.io/images/lewexa74/production/2f1f2a6a93df20af09a71176b79f82316d856447-1317x746.png",
-    alt: "Outils formation van",
+    src: "https://cdn.sanity.io/images/lewexa74/production/2f1f2a6a93df20af09a71176b79f82316d856447-1317x746.png?auto=format&q=80",
+    alt: "Outils IA et Airtable inclus — formation van business",
     width: 1317,
     height: 746,
     rotate: "-1.5deg",
@@ -69,7 +69,6 @@ export default function FormationScrollReveal() {
               width={f.width}
               height={f.height}
               className="w-full h-auto rounded-xl"
-              unoptimized
             />
           </div>
         ))}
@@ -96,8 +95,7 @@ export default function FormationScrollReveal() {
                 width={f.width}
                 height={f.height}
                 className="w-full h-auto"
-                unoptimized
-              />
+                />
             </div>
           ))}
         </div>

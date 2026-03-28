@@ -67,7 +67,7 @@ export default function Footer() {
           <div className="md:col-span-2">
             <Link href="/" className="inline-flex items-center group">
               <Image
-                src="https://cdn.sanity.io/images/lewexa74/production/9de5b0e768fa1fcc5ea5aa6f41ac816c249af9b0-1042x417.png"
+                src="https://cdn.sanity.io/images/lewexa74/production/9de5b0e768fa1fcc5ea5aa6f41ac816c249af9b0-1042x417.png?auto=format&q=82"
                 alt="Vanzon Explorer"
                 width={160}
                 height={48}

@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   },
 };
 
-const FALLBACK_IMG = "https://cdn.sanity.io/images/lewexa74/production/e9664378c5fdc652c33ae7342dfc52cc4960c8bf-1080x750.png";
+const FALLBACK_IMG = "https://cdn.sanity.io/images/lewexa74/production/e9664378c5fdc652c33ae7342dfc52cc4960c8bf-1080x750.png?auto=format&q=82";
 
 const highlights = [
   { icon: "🏛️", label: "Vieille ville de Bayonne", desc: "Cathédrale Sainte-Marie, remparts Vauban, rues médiévales à explorer" },

@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   },
 };
 
-const FALLBACK_IMG = "https://cdn.sanity.io/images/lewexa74/production/d445397965472d300e3dc13d6b1c37503fe8ba25-1920x1080.png";
+const FALLBACK_IMG = "https://cdn.sanity.io/images/lewexa74/production/d445397965472d300e3dc13d6b1c37503fe8ba25-1920x1080.png?auto=format&q=82";
 
 const highlights = [
   { icon: "🏄", label: "La Gravière", desc: "Le spot de surf le plus puissant d'Europe, étape du World Surf League" },
@@ -189,7 +189,7 @@ export default async function LocationHossegorPage() {
 
       <PracticalInfoSection
         title="Infos pratiques — Hossegor en van"
-        image="https://cdn.sanity.io/images/lewexa74/production/04d93973d30c5eede51f954d1432a50a5f82ef9b-1080x750.png"
+        image="https://cdn.sanity.io/images/lewexa74/production/04d93973d30c5eede51f954d1432a50a5f82ef9b-1080x750.png?auto=format&q=82"
         imageAlt="Van Xalbat Vanzon Explorer en route vers Hossegor"
         rows={[
           { label: "Récupération du van", value: "Cambo-les-Bains (45 min d'Hossegor) — route simple via A63" },

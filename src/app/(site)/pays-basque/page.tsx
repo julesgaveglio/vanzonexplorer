@@ -199,7 +199,7 @@ export default function PaysBasquePage() {
       <section className="relative overflow-hidden min-h-[72vh] flex items-end">
         <div className="absolute inset-0">
           <Image
-            src="https://cdn.sanity.io/images/lewexa74/production/0b3f81d08627ba0b4423224029cb5016d0e7ed25-2048x1365.jpg"
+            src="https://cdn.sanity.io/images/lewexa74/production/0b3f81d08627ba0b4423224029cb5016d0e7ed25-2048x1365.jpg?auto=format&q=82"
             alt="Pays Basque depuis un van - ikurriña et paysage basque Vanzon Explorer"
             fill
             sizes="100vw"
@@ -332,7 +332,7 @@ export default function PaysBasquePage() {
             </div>
             <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-xl">
               <Image
-                src="https://cdn.sanity.io/images/lewexa74/production/d445397965472d300e3dc13d6b1c37503fe8ba25-1920x1080.png"
+                src="https://cdn.sanity.io/images/lewexa74/production/d445397965472d300e3dc13d6b1c37503fe8ba25-1920x1080.png?auto=format&q=82"
                 alt="Van aménagé Vanzon Explorer en bivouac dans les Pyrénées basques"
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
@@ -414,7 +414,7 @@ export default function PaysBasquePage() {
               <div className="hidden md:block relative min-h-[320px] overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-r from-white/30 to-transparent z-10" />
                 <Image
-                  src="https://cdn.sanity.io/images/lewexa74/production/d445397965472d300e3dc13d6b1c37503fe8ba25-1920x1080.png"
+                  src="https://cdn.sanity.io/images/lewexa74/production/d445397965472d300e3dc13d6b1c37503fe8ba25-1920x1080.png?auto=format&q=82"
                   alt="Road trip Pays Basque en van — itinéraire 7 jours Vanzon Explorer"
                   fill
                   sizes="50vw"
@@ -457,7 +457,7 @@ export default function PaysBasquePage() {
       <section className="relative overflow-hidden py-28">
         <div className="absolute inset-0">
           <Image
-            src="https://cdn.sanity.io/images/lewexa74/production/0b3f81d08627ba0b4423224029cb5016d0e7ed25-2048x1365.jpg"
+            src="https://cdn.sanity.io/images/lewexa74/production/0b3f81d08627ba0b4423224029cb5016d0e7ed25-2048x1365.jpg?auto=format&q=82"
             alt="Van Vanzon Explorer au Pays Basque — prêt à partir"
             fill
             sizes="100vw"

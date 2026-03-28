@@ -62,7 +62,7 @@ const schema = {
   url: BASE_URL,
   telephone: "+33618476378",
   email: "contact@vanzonexplorer.com",
-  image: "https://cdn.sanity.io/images/lewexa74/production/1f483103ef15ee3549eab14ba2801d11b32a9055-313x313.png",
+  image: "https://cdn.sanity.io/images/lewexa74/production/1f483103ef15ee3549eab14ba2801d11b32a9055-313x313.png?auto=format&q=82",
   address: {
     "@type": "PostalAddress",
     streetAddress: "Cambo-les-Bains",
@@ -227,7 +227,7 @@ export function ArticleJsonLd({
       "url": BASE_URL,
       "logo": {
         "@type": "ImageObject",
-        "url": "https://cdn.sanity.io/images/lewexa74/production/1f483103ef15ee3549eab14ba2801d11b32a9055-313x313.png",
+        "url": "https://cdn.sanity.io/images/lewexa74/production/1f483103ef15ee3549eab14ba2801d11b32a9055-313x313.png?auto=format&q=82",
         "width": 313,
         "height": 313,
       },

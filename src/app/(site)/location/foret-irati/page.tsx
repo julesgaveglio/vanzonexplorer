@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   },
 };
 
-const FALLBACK_IMG = "https://cdn.sanity.io/images/lewexa74/production/d445397965472d300e3dc13d6b1c37503fe8ba25-1920x1080.png";
+const FALLBACK_IMG = "https://cdn.sanity.io/images/lewexa74/production/d445397965472d300e3dc13d6b1c37503fe8ba25-1920x1080.png?auto=format&q=82";
 
 const highlights = [
   { icon: "🌲", label: "Hêtraie millénaire", desc: "La plus grande forêt de hêtres d'Europe — 17 000 hectares entre France et Espagne" },
@@ -190,7 +190,7 @@ export default async function LocationForetIratiPage() {
 
       <PracticalInfoSection
         title="Infos pratiques — Forêt d'Irati en van"
-        image="https://cdn.sanity.io/images/lewexa74/production/04d93973d30c5eede51f954d1432a50a5f82ef9b-1080x750.png"
+        image="https://cdn.sanity.io/images/lewexa74/production/04d93973d30c5eede51f954d1432a50a5f82ef9b-1080x750.png?auto=format&q=82"
         imageAlt="Van Xalbat Vanzon Explorer en direction de la Forêt d'Irati"
         rows={[
           { label: "Récupération du van", value: "Cambo-les-Bains (45 min d'Irati) — route via col d'Ispéguy" },

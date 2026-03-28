@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   },
 };
 
-const FALLBACK_IMG = "https://cdn.sanity.io/images/lewexa74/production/d445397965472d300e3dc13d6b1c37503fe8ba25-1920x1080.png";
+const FALLBACK_IMG = "https://cdn.sanity.io/images/lewexa74/production/d445397965472d300e3dc13d6b1c37503fe8ba25-1920x1080.png?auto=format&q=82";
 
 const weekendIdeas = [
   {
@@ -281,7 +281,7 @@ export default async function LocationWeekEndPage() {
       <section className="relative py-24 overflow-hidden">
         <div className="absolute inset-0">
           <Image
-            src="https://cdn.sanity.io/images/lewexa74/production/e9664378c5fdc652c33ae7342dfc52cc4960c8bf-1080x750.png"
+            src="https://cdn.sanity.io/images/lewexa74/production/e9664378c5fdc652c33ae7342dfc52cc4960c8bf-1080x750.png?auto=format&q=82"
             alt="Van Vanzon Explorer week-end Pays Basque"
             fill
             sizes="100vw"

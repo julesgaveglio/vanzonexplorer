@@ -164,7 +164,7 @@ export default async function LocationPage() {
       <section className="relative -mt-16 min-h-screen flex items-end overflow-hidden">
         <div className="absolute inset-0">
           <Image
-            src="https://cdn.sanity.io/images/lewexa74/production/d445397965472d300e3dc13d6b1c37503fe8ba25-1920x1080.png"
+            src="https://cdn.sanity.io/images/lewexa74/production/d445397965472d300e3dc13d6b1c37503fe8ba25-1920x1080.png?auto=format&q=82"
             alt="Van aménagé au Pays Basque face à l'Atlantique"
             fill
             sizes="100vw"
@@ -432,8 +432,8 @@ export default async function LocationPage() {
         <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, #0F153A 0%, #1e2d6b 100%)" }} />
         <div className="absolute inset-0 opacity-20">
           <Image
-            src="https://cdn.sanity.io/images/lewexa74/production/660105a28e577c33f642a8fdff528d88925642e3-1080x750.png"
-            alt=""
+            src="https://cdn.sanity.io/images/lewexa74/production/660105a28e577c33f642a8fdff528d88925642e3-1080x750.png?auto=format&q=80"
+            alt="Van aménagé Vanzon Explorer au Pays Basque"
             fill
             sizes="100vw"
             className="object-cover"

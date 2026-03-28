@@ -20,12 +20,12 @@ const navLinks = [
 ];
 
 const LOGOS: { path: string; src: string }[] = [
-  { path: "/formation", src: "https://cdn.sanity.io/images/lewexa74/production/6def39a22812318d764df11a677e5c5260e5a224-1042x417.png" },
-  { path: "/club",      src: "https://cdn.sanity.io/images/lewexa74/production/46fde443f104fa1d21287a8aaeb96812096c768a-1042x417.png" },
-  { path: "/location",  src: "https://cdn.sanity.io/images/lewexa74/production/9de5b0e768fa1fcc5ea5aa6f41ac816c249af9b0-1042x417.png" },
+  { path: "/formation", src: "https://cdn.sanity.io/images/lewexa74/production/6def39a22812318d764df11a677e5c5260e5a224-1042x417.png?auto=format&q=82" },
+  { path: "/club",      src: "https://cdn.sanity.io/images/lewexa74/production/46fde443f104fa1d21287a8aaeb96812096c768a-1042x417.png?auto=format&q=82" },
+  { path: "/location",  src: "https://cdn.sanity.io/images/lewexa74/production/9de5b0e768fa1fcc5ea5aa6f41ac816c249af9b0-1042x417.png?auto=format&q=82" },
 ];
-const HOME_LOGO    = "https://cdn.sanity.io/images/lewexa74/production/9de5b0e768fa1fcc5ea5aa6f41ac816c249af9b0-1042x417.png";
-const DEFAULT_LOGO = "https://cdn.sanity.io/images/lewexa74/production/9de5b0e768fa1fcc5ea5aa6f41ac816c249af9b0-1042x417.png";
+const HOME_LOGO    = "https://cdn.sanity.io/images/lewexa74/production/9de5b0e768fa1fcc5ea5aa6f41ac816c249af9b0-1042x417.png?auto=format&q=82";
+const DEFAULT_LOGO = "https://cdn.sanity.io/images/lewexa74/production/9de5b0e768fa1fcc5ea5aa6f41ac816c249af9b0-1042x417.png?auto=format&q=82";
 
 function getNavLogo(pathname: string): string {
   if (pathname === "/") return HOME_LOGO;

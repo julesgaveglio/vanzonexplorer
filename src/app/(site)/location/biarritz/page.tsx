@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   },
 };
 
-const FALLBACK_IMG = "https://cdn.sanity.io/images/lewexa74/production/d445397965472d300e3dc13d6b1c37503fe8ba25-1920x1080.png";
+const FALLBACK_IMG = "https://cdn.sanity.io/images/lewexa74/production/d445397965472d300e3dc13d6b1c37503fe8ba25-1920x1080.png?auto=format&q=82";
 
 const highlights = [
   { icon: "🌊", label: "Côte des Basques", desc: "Le spot de surf le plus célèbre de France, à 10 min du van" },
@@ -190,7 +190,7 @@ export default async function LocationBiarritzPage() {
 
       <PracticalInfoSection
         title="Infos pratiques — Biarritz en van"
-        image="https://cdn.sanity.io/images/lewexa74/production/660105a28e577c33f642a8fdff528d88925642e3-1080x750.png"
+        image="https://cdn.sanity.io/images/lewexa74/production/660105a28e577c33f642a8fdff528d88925642e3-1080x750.png?auto=format&q=82"
         imageAlt="Van Yoni Vanzon Explorer ouvert près de Biarritz"
         rows={[
           { label: "Récupération du van", value: "Cambo-les-Bains (25 min de Biarritz) ou livraison sur demande" },

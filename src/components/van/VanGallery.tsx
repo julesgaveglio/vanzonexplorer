@@ -209,7 +209,7 @@ export default function VanGallery({ images, vanName }: VanGalleryProps) {
                       i === lightboxIndex ? "border-white" : "border-white/20 opacity-50 hover:opacity-80"
                     }`}
                   >
-                    <Image src={img.url} alt="" fill className="object-cover" sizes="64px" />
+                    <Image src={img.url} alt={`${vanName} — photo ${i + 1}`} fill className="object-cover" sizes="64px" />
                   </button>
                 ))}
               </div>

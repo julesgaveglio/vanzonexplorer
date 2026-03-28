@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   },
 };
 
-const FALLBACK_IMG = "https://cdn.sanity.io/images/lewexa74/production/0b3f81d08627ba0b4423224029cb5016d0e7ed25-2048x1365.jpg";
+const FALLBACK_IMG = "https://cdn.sanity.io/images/lewexa74/production/0b3f81d08627ba0b4423224029cb5016d0e7ed25-2048x1365.jpg?auto=format&q=82";
 
 const highlights = [
   { icon: "⛵", label: "Le port", desc: "L'un des plus beaux ports de pêche de la côte Atlantique française" },
@@ -191,7 +191,7 @@ export default async function LocationSaintJeanDeLuzPage() {
 
       <PracticalInfoSection
         title="Infos pratiques — Saint-Jean-de-Luz en van"
-        image="https://cdn.sanity.io/images/lewexa74/production/660105a28e577c33f642a8fdff528d88925642e3-1080x750.png"
+        image="https://cdn.sanity.io/images/lewexa74/production/660105a28e577c33f642a8fdff528d88925642e3-1080x750.png?auto=format&q=82"
         imageAlt="Van Yoni Vanzon Explorer à Saint-Jean-de-Luz"
         rows={[
           { label: "Récupération du van", value: "Cambo-les-Bains (20 min de Saint-Jean-de-Luz) — route côtière panoramique" },

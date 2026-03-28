@@ -707,7 +707,7 @@ export default async function ArticleDetailPage({
                 <div className="flex -space-x-3 flex-shrink-0">
                   <div className="relative w-11 h-11 rounded-full overflow-hidden border-2 border-white shadow-sm">
                     <Image
-                      src="https://cdn.sanity.io/images/lewexa74/production/16f9120e659bdd4bba47e663e9df9a1a9293fe3f-1170x2080.jpg"
+                      src="https://cdn.sanity.io/images/lewexa74/production/16f9120e659bdd4bba47e663e9df9a1a9293fe3f-1170x2080.jpg?auto=format&q=82"
                       alt="Jules Gaveglio — Co-fondateur Vanzon Explorer"
                       fill
                       sizes="44px"
@@ -716,7 +716,7 @@ export default async function ArticleDetailPage({
                   </div>
                   <div className="relative w-11 h-11 rounded-full overflow-hidden border-2 border-white shadow-sm">
                     <Image
-                      src="https://cdn.sanity.io/images/lewexa74/production/325f3ebf1d68fd890487229864c73cc65bef20d3-1186x1654.png"
+                      src="https://cdn.sanity.io/images/lewexa74/production/325f3ebf1d68fd890487229864c73cc65bef20d3-1186x1654.png?auto=format&q=82"
                       alt="Elio — Co-fondateur Vanzon Explorer"
                       fill
                       sizes="44px"

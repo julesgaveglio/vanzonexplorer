@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 interface BrandCardProps {
   brand: {
@@ -16,10 +17,10 @@ export default function BrandCard({ brand }: BrandCardProps) {
   return (
     <Link href={`/club/marques/${brand.slug}`}>
       <div className="rounded-xl border border-border bg-white p-6 text-center transition hover:border-rust/30">
-        <div className="mx-auto w-20 h-20 rounded-full bg-cream border border-border/30 overflow-hidden flex items-center justify-center">
+        <div className="relative mx-auto w-20 h-20 rounded-full bg-cream border border-border/30 overflow-hidden flex items-center justify-center">
+          {/* audit-images:ok — logos from external Supabase storage, domains unknown */}
           {hasLogo ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={brand.logo} alt={brand.name} className="w-full h-full object-cover" />
+            <Image src={brand.logo} alt={brand.name} fill className="object-contain p-1" unoptimized sizes="80px" />
           ) : (
             <span className="font-display text-3xl text-earth">{brand.name.charAt(0)}</span>
           )}

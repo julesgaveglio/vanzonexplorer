@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     url: "https://vanzonexplorer.com/",
     images: [
       {
-        url: "https://cdn.sanity.io/images/lewexa74/production/d445397965472d300e3dc13d6b1c37503fe8ba25-1920x1080.png",
+        url: "https://cdn.sanity.io/images/lewexa74/production/d445397965472d300e3dc13d6b1c37503fe8ba25-1920x1080.png?auto=format&q=82",
         width: 1920,
         height: 1080,
         alt: "Van aménagé au bord de l'océan au Pays Basque — Vanzon Explorer",
@@ -233,7 +233,7 @@ export default async function HomePage() {
               {/* Panorama pleine largeur */}
               <div className="relative col-span-2 aspect-[16/7] rounded-3xl overflow-hidden shadow-lg">
                 <Image
-                  src="https://cdn.sanity.io/images/lewexa74/production/0b3f81d08627ba0b4423224029cb5016d0e7ed25-2048x1365.jpg"
+                  src="https://cdn.sanity.io/images/lewexa74/production/0b3f81d08627ba0b4423224029cb5016d0e7ed25-2048x1365.jpg?auto=format&q=82"
                   alt="Paysage Pays Basque en van"
                   fill
                   sizes="(max-width: 768px) 100vw, calc(50vw + 200px)"
@@ -243,7 +243,7 @@ export default async function HomePage() {
               {/* 2 images côte à côte */}
               <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-lg">
                 <Image
-                  src="https://cdn.sanity.io/images/lewexa74/production/7e04357061492ab4193c49d03351310cf245a106-1540x976.png"
+                  src="https://cdn.sanity.io/images/lewexa74/production/7e04357061492ab4193c49d03351310cf245a106-1540x976.png?auto=format&q=82"
                   alt="Van aménagé Vanzon Explorer"
                   fill
                   sizes="(max-width: 768px) 100vw, 33vw"
@@ -252,7 +252,7 @@ export default async function HomePage() {
               </div>
               <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-lg">
                 <Image
-                  src="https://cdn.sanity.io/images/lewexa74/production/4ee40c1abb03d029487868808a159216a641e3ad-3829x2872.jpg"
+                  src="https://cdn.sanity.io/images/lewexa74/production/4ee40c1abb03d029487868808a159216a641e3ad-3829x2872.jpg?auto=format&q=82"
                   alt="Van life Pays Basque"
                   fill
                   sizes="(max-width: 768px) 100vw, 33vw"
@@ -387,7 +387,7 @@ export default async function HomePage() {
             {/* Image droite */}
             <div className="relative flex items-center justify-center">
               <Image
-                src="https://cdn.sanity.io/images/lewexa74/production/e8d8a66703e846a5bd916e38bd9a488b663ce433-1920x1080.png"
+                src="https://cdn.sanity.io/images/lewexa74/production/e8d8a66703e846a5bd916e38bd9a488b663ce433-1920x1080.png?auto=format&q=82"
                 alt="Van Business Academy — Formation vanlife aménagement"
                 width={960}
                 height={540}
@@ -402,7 +402,7 @@ export default async function HomePage() {
       <section className="relative py-28 overflow-hidden">
         <div className="absolute inset-0">
           <Image
-            src="https://cdn.sanity.io/images/lewexa74/production/e9664378c5fdc652c33ae7342dfc52cc4960c8bf-1080x750.png"
+            src="https://cdn.sanity.io/images/lewexa74/production/e9664378c5fdc652c33ae7342dfc52cc4960c8bf-1080x750.png?auto=format&q=82"
             alt="Van Xalbat Vanzon Explorer"
             fill
             sizes="100vw"
