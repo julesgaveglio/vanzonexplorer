@@ -11,7 +11,7 @@ import PriceDisplay from "@/components/van/PriceDisplay";
 import Badge from "@/components/ui/Badge";
 import YescapaReassurance from "@/components/van/YescapaReassurance";
 
-export const revalidate = 60;
+export const revalidate = 3600;
 
 // ── Génération statique des slugs ──
 export async function generateStaticParams() {

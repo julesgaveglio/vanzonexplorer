@@ -153,6 +153,8 @@ const nextConfig = {
       { protocol: "https", hostname: "www.tourisme64.com" },
       { protocol: "https", hostname: "dynamic-media-cdn.tripadvisor.com" },
       { protocol: "https", hostname: "www.vanlifemag.fr" },
+      { protocol: "https", hostname: "images.unsplash.com" },
+      { protocol: "https", hostname: "plus.unsplash.com" },
     ],
   },
   allowedDevOrigins: ["127.0.0.1"],

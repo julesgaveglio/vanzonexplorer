@@ -9,7 +9,7 @@ import { getGooglePlaceStats } from "@/lib/google-places";
 import OtherServices from "@/components/ui/OtherServices";
 import RoadTripCTA from "@/components/ui/RoadTripCTA";
 
-export const revalidate = 60;
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Vanzon Explorer — Location, Achat & Formation Van Aménagé | Pays Basque",
@@ -76,7 +76,7 @@ export default async function HomePage() {
             </a>
 
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[1.05] mb-6">
-              L&apos;aventure<br />
+              Location Van Aménagé<br />
               au Pays Basque,<br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4BC3E3] to-[#4D5FEC]">
                 à votre rythme.

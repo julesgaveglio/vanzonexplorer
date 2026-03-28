@@ -5,6 +5,7 @@ import BrandsClient from "@/components/club/brands/BrandsClient";
 export const metadata: Metadata = {
   title: "Marques Partenaires — Club Privé Vanzon",
   description: "Toutes les marques partenaires du Club Privé Vanzon avec leurs offres et codes promo exclusifs.",
+  robots: { index: false, follow: false },
 };
 
 export const dynamic = "force-dynamic";
