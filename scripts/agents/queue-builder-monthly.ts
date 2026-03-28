@@ -17,6 +17,7 @@
 import path from "path";
 import fs from "fs/promises";
 import fsSync from "fs";
+import { notifyTelegram } from "../lib/telegram";
 
 const PROJECT_ROOT = path.resolve(path.dirname(__filename), "../..");
 const QUEUE_FILE = path.join(PROJECT_ROOT, "scripts/data/article-queue.json");
@@ -300,7 +301,10 @@ async function main() {
   console.log(`\n✅ Queue mise à jour — ${updatedQueue.length} articles total`);
 }
 
-main().catch((err) => {
-  console.error("❌ Fatal:", err.message);
-  process.exit(1);
-});
+main()
+  .then(() => notifyTelegram("🗂️ *Queue Builder* — Nouveaux briefs d'articles ajoutés à la queue."))
+  .catch(async (err) => {
+    await notifyTelegram(`❌ *Queue Builder* — Erreur : ${(err as Error).message}`);
+    console.error("❌ Fatal:", (err as Error).message);
+    process.exit(1);
+  });

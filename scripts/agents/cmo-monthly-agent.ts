@@ -6,6 +6,7 @@
  */
 
 import Groq from "groq-sdk";
+import { notifyTelegram } from "../lib/telegram";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://vanzonexplorer.com";
 const API_URL = `${SITE_URL}/api/admin/cmo/run`;
@@ -95,4 +96,9 @@ async function main() {
   }
 }
 
-main();
+main()
+  .then(() => notifyTelegram("📊 *CMO Monthly* — Audit mensuel complet généré. Visible sur /admin/marketing."))
+  .catch(async (err) => {
+    await notifyTelegram(\`❌ *CMO Monthly* — Erreur : \${(err as Error).message}\`);
+    process.exit(1);
+  });

@@ -24,6 +24,7 @@
 import path from "path";
 import fs from "fs/promises";
 import fsSync from "fs";
+import { notifyTelegram } from "../lib/telegram";
 
 const PROJECT_ROOT = path.resolve(path.dirname(__filename), "../..");
 const OUTPUT_FILE = path.join(PROJECT_ROOT, "scripts/data/keywords-research.json");
@@ -245,7 +246,10 @@ async function main() {
   console.log(`   ${segmentReports.reduce((sum, s) => sum + s.keywords.length, 0)} mots-clés au total`);
 }
 
-main().catch((err) => {
-  console.error("❌ Fatal:", err.message);
-  process.exit(1);
-});
+main()
+  .then(() => notifyTelegram("🔍 *Keywords* — Analyse trimestrielle terminée. Résultats dans /admin/seo."))
+  .catch(async (err) => {
+    await notifyTelegram(`❌ *Keywords* — Erreur : ${(err as Error).message}`);
+    console.error("❌ Fatal:", (err as Error).message);
+    process.exit(1);
+  });

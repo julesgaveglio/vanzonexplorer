@@ -24,6 +24,7 @@ import fs from "fs";
 import path from "path";
 import { createClient } from "@sanity/client";
 import { searchPexelsPhoto, downloadPexelsPhoto, buildPexelsCredit } from "../../src/lib/pexels";
+import { notifyTelegram } from "../lib/telegram";
 
 // ── Constants ──────────────────────────────────────────────────────────────────
 // scripts/agents/ → project root is two directories up
@@ -1254,6 +1255,7 @@ async function main(): Promise<void> {
     console.log(`  Published:  ${publishedAt}`);
     console.log("=".repeat(60));
     console.log(`\nView in Studio: https://vanzon.sanity.studio/desk/article`);
+    await notifyTelegram(`✍️ *Blog Writer* — Article publié : "${generatedContent.title}"\n🔗 vanzonexplorer.com/articles/${article.slug}`);
   } catch (err) {
     // Restore status to "pending" so the article can be retried
     if (!publishedSuccessfully) {
@@ -1267,7 +1269,8 @@ async function main(): Promise<void> {
   }
 }
 
-main().catch((err) => {
+main().catch(async (err) => {
+  await notifyTelegram(`❌ *Blog Writer* — Erreur : ${(err as Error).message}`);
   console.error(`\nFatal error: ${(err as Error).message}`);
   if (process.env.DEBUG) {
     console.error(err);

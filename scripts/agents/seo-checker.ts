@@ -15,6 +15,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { fileURLToPath } from "url";
+import { notifyTelegram } from "../lib/telegram";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -300,7 +301,10 @@ ${reportLines.join("\n")}
 `);
 }
 
-main().catch((err) => {
-  console.error("Fatal error:", err);
-  process.exit(1);
-});
+main()
+  .then(() => notifyTelegram("📊 *SEO Checker* — Vérification hebdomadaire des positions terminée."))
+  .catch(async (err) => {
+    await notifyTelegram(`❌ *SEO Checker* — Erreur : ${(err as Error).message}`);
+    console.error("Fatal error:", err);
+    process.exit(1);
+  });

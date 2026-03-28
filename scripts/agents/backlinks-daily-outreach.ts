@@ -13,6 +13,7 @@
 
 import { createClient } from "@supabase/supabase-js";
 import { Resend } from "resend";
+import { notifyTelegram } from "../lib/telegram";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://vanzonexplorer.com";
 const ADMIN_EMAIL = "jules@vanzonexplorer.com";
@@ -180,6 +181,7 @@ async function main() {
   });
 
   log("=== Terminé ===");
+  await notifyTelegram(`✅ *Backlinks Daily* — Email envoyé à ${emailDiscovery.email} (${prospect.domain}) · Score ${prospect.score}/10`);
 }
 
 main().catch((err) => {

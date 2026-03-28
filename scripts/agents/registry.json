@@ -1,8 +1,25 @@
 [
   {
+    "id": "telegram-agent",
+    "name": "Agent Telegram",
+    "emoji": "📱",
+    "status": "active",
+    "description": "Envoie une notification Telegram à Jules dès qu'un agent automatique termine une tâche. Non-bloquant : une erreur Telegram ne fait jamais échouer l'agent appelant. Intégré dans tous les agents via scripts/lib/telegram.ts.",
+    "trigger": "webhook",
+    "schedule": "Déclenché à la fin de chaque agent",
+    "cronExpression": null,
+    "file": "scripts/lib/telegram.ts",
+    "workflow": null,
+    "apis": ["Telegram Bot API"],
+    "output": "Notification push sur Telegram",
+    "manualCommand": "— (utilitaire partagé, non exécutable seul)",
+    "tags": ["Notifications", "Automatique", "Transversal"],
+    "pipeline": "Transversal — appelé par tous les agents"
+  },
+  {
     "id": "backlinks-daily-outreach",
     "name": "Agent Backlinks Daily Outreach",
-    "emoji": "🔗",
+    "emoji": "🎯",
     "status": "active",
     "description": "Chaque jour ouvré (lun→ven), sélectionne automatiquement le meilleur prospect backlink non encore contacté (score le plus élevé, statut \"découvert\"), génère un email personnalisé via Hunter.io + Jina AI + Groq, l'envoie via Resend et te notifie par email récap.",
     "trigger": "cron",

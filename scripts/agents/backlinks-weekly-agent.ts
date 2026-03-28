@@ -12,6 +12,7 @@
 
 import Groq from "groq-sdk";
 import { createClient } from "@supabase/supabase-js";
+import { notifyTelegram } from "../lib/telegram";
 
 // ── Supabase ───────────────────────────────────────────────────────────────────
 
@@ -311,7 +312,10 @@ async function main() {
   console.log(`   ${newProspects} nouveaux prospects | ${followUps} relances`);
 }
 
-main().catch((e) => {
-  console.error("Erreur fatale:", e);
-  process.exit(1);
-});
+main()
+  .then(() => notifyTelegram("🔗 *Backlinks Weekly* — Discovery + relances terminés. Voir /admin/backlinks."))
+  .catch(async (e) => {
+    await notifyTelegram(\`❌ *Backlinks Weekly* — Erreur : \${(e as Error).message}\`);
+    console.error("Erreur fatale:", e);
+    process.exit(1);
+  });

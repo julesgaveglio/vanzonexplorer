@@ -30,6 +30,8 @@ import path from "path";
 import fs from "fs/promises";
 import fsSync from "fs";
 import { createClient } from "@sanity/client";
+import { notifyTelegram } from "../lib/telegram";
+import { notifyTelegram } from "../lib/telegram";
 
 const PROJECT_ROOT = path.resolve(path.dirname(__filename), "../..");
 const QUEUE_FILE = path.join(PROJECT_ROOT, "scripts/data/article-queue.json");
@@ -358,7 +360,10 @@ async function main() {
   console.log(`\n${dryRun ? "🔍 DRY RUN — " : ""}✅ ${optimized} articles optimisés`);
 }
 
-main().catch((err) => {
-  console.error("❌ Fatal:", err.message);
-  process.exit(1);
-});
+main()
+  .then(() => notifyTelegram("⚡ *Article Optimizer* — Optimisation trimestrielle terminée."))
+  .catch(async (err) => {
+    await notifyTelegram(`❌ *Article Optimizer* — Erreur : ${(err as Error).message}`);
+    console.error("❌ Fatal:", (err as Error).message);
+    process.exit(1);
+  });

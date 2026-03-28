@@ -31,6 +31,7 @@ import path from "path";
 import fs from "fs/promises";
 import fsSync from "fs";
 import { createClient } from "@sanity/client";
+import { notifyTelegram } from "../lib/telegram";
 
 const PROJECT_ROOT = path.resolve(path.dirname(__filename), "../..");
 const QUEUE_FILE = path.join(PROJECT_ROOT, "scripts/data/article-queue.json");
@@ -543,7 +544,10 @@ async function main() {
   console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
 }
 
-main().catch((err) => {
-  console.error("❌ Erreur agent link-optimizer:", err);
-  process.exit(1);
-});
+main()
+  .then(() => notifyTelegram("🔗 *Link Optimizer* — Liens morts supprimés, maillage interne mis à jour."))
+  .catch(async (err) => {
+    await notifyTelegram(`❌ *Link Optimizer* — Erreur : ${(err as Error).message}`);
+    console.error("❌ Erreur agent link-optimizer:", err);
+    process.exit(1);
+  });

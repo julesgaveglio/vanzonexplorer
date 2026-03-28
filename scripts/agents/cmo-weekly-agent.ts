@@ -6,6 +6,7 @@
  */
 
 import Groq from "groq-sdk";
+import { notifyTelegram } from "../lib/telegram";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://vanzonexplorer.com";
 const API_URL = `${SITE_URL}/api/admin/cmo/run`;
@@ -95,4 +96,9 @@ async function main() {
   }
 }
 
-main();
+main()
+  .then(() => notifyTelegram("📈 *CMO Weekly* — Rapport hebdomadaire généré. Visible sur /admin/marketing."))
+  .catch(async (err) => {
+    await notifyTelegram(\`❌ *CMO Weekly* — Erreur : \${(err as Error).message}\`);
+    process.exit(1);
+  });
