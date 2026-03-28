@@ -42,7 +42,7 @@ export default function ConfidentialitePage() {
                 </li>
                 <li className="flex gap-3">
                   <span className="text-accent-blue font-bold mt-0.5">—</span>
-                  <span><strong>Paiement (Stripe) :</strong> les paiements liés au Club Privé sont traités par Stripe. Vanzon Explorer ne stocke aucune donnée bancaire. Seul un identifiant client Stripe est conservé pour la gestion de l&apos;abonnement.</span>
+                  <span><strong>Profil Club Privé (Supabase) :</strong> le Club Privé est gratuit et ne nécessite aucun paiement. Seul votre statut d&apos;inscription est conservé pour vous donner accès aux deals et codes promo.</span>
                 </li>
                 <li className="flex gap-3">
                   <span className="text-accent-blue font-bold mt-0.5">—</span>
@@ -64,7 +64,7 @@ export default function ConfidentialitePage() {
               <h2 className="text-lg font-bold text-slate-900 mb-3">3. Finalités du traitement</h2>
               <ul className="text-slate-600 space-y-2 list-none pl-0">
                 <li className="flex gap-3"><span className="text-accent-blue font-bold mt-0.5">—</span><span>Gestion des comptes utilisateurs et authentification</span></li>
-                <li className="flex gap-3"><span className="text-accent-blue font-bold mt-0.5">—</span><span>Gestion des abonnements Club Privé et traitement des paiements</span></li>
+                <li className="flex gap-3"><span className="text-accent-blue font-bold mt-0.5">—</span><span>Gestion des accès gratuits au Club Privé</span></li>
                 <li className="flex gap-3"><span className="text-accent-blue font-bold mt-0.5">—</span><span>Traitement des demandes de contact et devis formation</span></li>
                 <li className="flex gap-3"><span className="text-accent-blue font-bold mt-0.5">—</span><span>Distribution automatique du contenu éditorial sur Pinterest</span></li>
                 <li className="flex gap-3"><span className="text-accent-blue font-bold mt-0.5">—</span><span>Amélioration de l&apos;expérience utilisateur</span></li>
@@ -127,7 +127,7 @@ export default function ConfidentialitePage() {
               </p>
               <ul className="text-slate-600 space-y-2 list-none pl-0">
                 <li className="flex gap-3"><span className="text-accent-blue font-bold mt-0.5">—</span><span><strong>Clerk</strong> (auth) — <a href="https://clerk.com/privacy" target="_blank" rel="noopener noreferrer" className="text-accent-blue hover:underline">clerk.com/privacy</a></span></li>
-                <li className="flex gap-3"><span className="text-accent-blue font-bold mt-0.5">—</span><span><strong>Stripe</strong> (paiement) — <a href="https://stripe.com/fr/privacy" target="_blank" rel="noopener noreferrer" className="text-accent-blue hover:underline">stripe.com/fr/privacy</a></span></li>
+
                 <li className="flex gap-3"><span className="text-accent-blue font-bold mt-0.5">—</span><span><strong>Yescapa</strong> (réservation) — <a href="https://www.yescapa.fr/fr/politique-de-confidentialite" target="_blank" rel="noopener noreferrer" className="text-accent-blue hover:underline">yescapa.fr/politique-de-confidentialite</a></span></li>
                 <li className="flex gap-3"><span className="text-accent-blue font-bold mt-0.5">—</span><span><strong>Pinterest</strong> (distribution contenu) — <a href="https://policy.pinterest.com/fr/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-accent-blue hover:underline">policy.pinterest.com/fr/privacy-policy</a></span></li>
                 <li className="flex gap-3"><span className="text-accent-blue font-bold mt-0.5">—</span><span><strong>Google Analytics 4</strong> (analytics) — <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-accent-blue hover:underline">policies.google.com/privacy</a></span></li>

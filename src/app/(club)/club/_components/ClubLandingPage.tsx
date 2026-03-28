@@ -229,7 +229,7 @@ const FALLBACK_PRODUCTS: Product[] = [
 
 export default function ClubLandingPage({ previewProducts, allProducts, brands, categories, isLoggedIn = false }: ClubLandingPageProps) {
   const ctaHref  = isLoggedIn ? "/club/deals" : "/sign-up";
-  const ctaLabel = isLoggedIn ? "Accéder aux deals" : "Commencer";
+  const ctaLabel = isLoggedIn ? "Accéder aux deals" : "Rejoindre gratuitement";
 
   const [activeCategory, setActiveCategory] = useState<string>("tous");
   const [showAll, setShowAll] = useState(false);
@@ -318,7 +318,7 @@ export default function ClubLandingPage({ previewProducts, allProducts, brands, 
 
             {/* Sous-titre */}
             <motion.p variants={fadeUp} className="mt-8 max-w-md text-base leading-relaxed text-cream/45">
-              Codes promo et réductions exclusives de nos marques partenaires, centralisés et vérifiés. Un seul abonnement.
+              Codes promo et réductions exclusives de nos marques partenaires, centralisés et vérifiés. Entièrement gratuit.
             </motion.p>
 
             {/* CTAs */}
@@ -377,7 +377,7 @@ export default function ClubLandingPage({ previewProducts, allProducts, brands, 
           >
             <div>
               <span className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-500 mb-4 block">
-                Accès membres
+                Accès gratuit
               </span>
               <h2 className="font-display text-[clamp(2.5rem,6vw,4.5rem)] leading-[0.9] tracking-[0.03em] text-earth">
                 Des offres exclusives<br />t&apos;attendent.
@@ -460,14 +460,14 @@ export default function ClubLandingPage({ previewProducts, allProducts, brands, 
                       <div className="flex h-12 w-12 items-center justify-center rounded-full border border-white/25 bg-white/10 mb-3">
                         <Lock className="h-5 w-5 text-white" />
                       </div>
-                      <p className="text-sm font-semibold text-white">Réservé aux membres</p>
-                      <p className="mt-0.5 text-xs text-white/60">9,99€/mois · Sans engagement</p>
+                      <p className="text-sm font-semibold text-white">Crée un compte gratuit</p>
+                      <p className="mt-0.5 text-xs text-white/60">100% gratuit · Inscription en 30 sec</p>
                       <Link
                         href="/sign-up"
                         className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-violet-600 px-5 py-2 text-xs font-semibold text-white transition-colors hover:bg-violet-700 active:scale-95"
                         onClick={(e) => e.stopPropagation()}
                       >
-                        Rejoindre le club
+                        Rejoindre gratuitement
                         <ArrowRight className="h-3 w-3" />
                       </Link>
                     </div>
@@ -563,7 +563,7 @@ export default function ClubLandingPage({ previewProducts, allProducts, brands, 
             </Link>
             {!isLoggedIn && (
               <p className="mt-3 text-xs text-slate-400">
-                Codes promo réservés aux membres · <Link href="/sign-up" className="text-violet-500 hover:underline">S&apos;inscrire pour 9,99€/mois</Link>
+                Codes promo gratuits · <Link href="/sign-up" className="text-violet-500 hover:underline">S&apos;inscrire gratuitement</Link>
               </p>
             )}
           </motion.div>
@@ -604,15 +604,15 @@ export default function ClubLandingPage({ previewProducts, allProducts, brands, 
                 Le calcul est simple
               </span>
               <div className="font-display text-[clamp(5rem,14vw,9rem)] leading-none tracking-wide text-cream">
-                9,99€
+                0€
               </div>
-              <div className="font-display text-xl tracking-wide text-cream/40 mt-1">/mois</div>
+              <div className="font-display text-xl tracking-wide text-cream/40 mt-1">pour toujours</div>
               <div className="mt-8 h-px w-12 bg-cream/20" />
               <p className="mt-8 max-w-xs text-sm leading-relaxed text-cream/55">
                 Un aménagement van coûte entre 3 000€ et 15 000€. Nos deals te font économiser en moyenne{" "}
-                <strong className="text-cream font-semibold">10 à 30%</strong> sur chaque achat auprès de nos partenaires.
+                <strong className="text-cream font-semibold">10 à 30%</strong> sur chaque achat auprès de nos partenaires. Et c&apos;est gratuit.
               </p>
-              <p className="mt-3 text-xs text-cream/25">Résiliable à tout moment · Sans engagement</p>
+              <p className="mt-3 text-xs text-cream/25">Aucune carte bancaire · Aucun engagement</p>
             </motion.div>
 
             {/* Droite — features */}
@@ -678,11 +678,11 @@ export default function ClubLandingPage({ previewProducts, allProducts, brands, 
               </p>
 
               <div className="flex items-end justify-center gap-1 mb-1">
-                <span className="font-display text-[5.5rem] leading-none tracking-wide text-cream">9,99€</span>
-                <span className="mb-3 text-base text-cream/30">/mois</span>
+                <span className="font-display text-[5.5rem] leading-none tracking-wide text-cream">0€</span>
+                <span className="mb-3 text-base text-cream/30">pour toujours</span>
               </div>
               <p className="text-xs text-cream/30 text-center mb-10">
-                0,33€/jour · Résiliable à tout moment
+                Aucune carte bancaire requise
               </p>
 
               <ul className="flex flex-col gap-3 mb-10">
@@ -712,7 +712,7 @@ export default function ClubLandingPage({ previewProducts, allProducts, brands, 
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </Link>
 
-              <p className="mt-4 text-center text-xs text-cream/20">Sans engagement · Résiliation en 1 clic</p>
+              <p className="mt-4 text-center text-xs text-cream/20">Aucune carte bancaire · Inscription en 30 sec</p>
             </div>
           </motion.div>
         </div>
@@ -740,7 +740,7 @@ export default function ClubLandingPage({ previewProducts, allProducts, brands, 
             </span>
           </h2>
           <p className="mx-auto max-w-sm text-sm leading-relaxed text-cream/35 mb-10">
-            Pour 9,99€/mois, accède aux meilleures réductions négociées directement avec nos marques partenaires.
+            Gratuitement, accède aux meilleures réductions négociées directement avec nos marques partenaires.
           </p>
           <Link
             href={ctaHref}
@@ -749,7 +749,7 @@ export default function ClubLandingPage({ previewProducts, allProducts, brands, 
             {ctaLabel}
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
           </Link>
-          <p className="mt-5 text-xs text-cream/20">Sans engagement · Résiliation en 1 clic</p>
+          <p className="mt-5 text-xs text-cream/20">Aucune carte bancaire · Inscription en 30 secondes</p>
         </motion.div>
       </section>
 

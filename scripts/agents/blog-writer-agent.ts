@@ -11,17 +11,20 @@
  *   npx tsx scripts/agents/blog-writer-agent.ts next      # explicit "next" mode
  *
  * Required env vars:
- *   GEMINI_API_KEY
+ *   ANTHROPIC_API_KEY
  *   SANITY_API_WRITE_TOKEN
  *   PEXELS_API_KEY
- *   DATAFORSEO_LOGIN
+ *   DATAFORSEO_LOGIN (optional — keyword data skipped if absent)
  *   DATAFORSEO_PASSWORD
+ *   TAVILY_API_KEY (optional — external sources skipped if absent)
+ *   TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID (optional — notifications)
  *   NEXT_PUBLIC_SANITY_PROJECT_ID (optional, defaults to lewexa74)
  *   NEXT_PUBLIC_SANITY_DATASET (optional, defaults to production)
  */
 
 import fs from "fs";
 import path from "path";
+import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@sanity/client";
 import { searchPexelsPhoto, downloadPexelsPhoto, buildPexelsCredit } from "../../src/lib/pexels";
 import { notifyTelegram } from "../lib/telegram";
@@ -191,6 +194,12 @@ interface TavilySource {
   title: string;
 }
 
+interface PublishedArticle {
+  slug: string;
+  title: string;
+  targetKeyword: string;
+}
+
 async function fetchExternalSources(keyword: string): Promise<TavilySource[]> {
   const apiKey = process.env.TAVILY_API_KEY;
   if (!apiKey) return [];
@@ -199,20 +208,9 @@ async function fetchExternalSources(keyword: string): Promise<TavilySource[]> {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
       body: JSON.stringify({
-        query: keyword,
+        query: keyword + " site:fr OR site:.fr OR site:wikipedia.org",
         search_depth: "basic",
-        max_results: 5,
-        include_domains: [
-          "wikipedia.org",
-          "ffrandonnee.fr",
-          "pyrenees-atlantiques.fr",
-          "pays-basque.fr",
-          "tourisme64.com",
-          "sncf.com",
-          "lescrêtes.fr",
-          "bassussarry.fr",
-          "ascain.fr",
-        ],
+        max_results: 8,
       }),
     });
     if (!res.ok) return [];
@@ -581,41 +579,21 @@ async function analyzeSERP(keyword: string): Promise<SerpAnalysis> {
   }
 }
 
-// ── Claude Sonnet 4.6 via session token ────────────────────────────────────────
-// Uses CLAUDE_CODE_SESSION_ACCESS_TOKEN (already authenticated in Claude Code CLI).
+// ── Claude Sonnet 4.5 via Anthropic SDK ───────────────────────────────────────
 async function callClaude(prompt: string, opts: { maxTokens?: number } = {}): Promise<string> {
-  const token = process.env.CLAUDE_CODE_SESSION_ACCESS_TOKEN;
-  if (!token) throw new Error("CLAUDE_CODE_SESSION_ACCESS_TOKEN not found — run inside a Claude Code session");
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) throw new Error("ANTHROPIC_API_KEY is required");
 
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: {
-      "x-api-key": token,
-      "anthropic-version": "2023-06-01",
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-      model: "claude-sonnet-4-6",
-      max_tokens: opts.maxTokens ?? 8000,
-      temperature: 1, // required for extended thinking budget
-      thinking: { type: "enabled", budget_tokens: 2000 },
-      messages: [{ role: "user", content: prompt }],
-    }),
+  const client = new Anthropic({ apiKey });
+  const response = await client.messages.create({
+    model: "claude-sonnet-4-5",
+    max_tokens: opts.maxTokens ?? 8000,
+    messages: [{ role: "user", content: prompt }],
   });
 
-  if (!res.ok) {
-    const errText = await res.text();
-    throw new Error(`Claude API error ${res.status}: ${errText}`);
-  }
-
-  const json = await res.json() as {
-    content?: Array<{ type: string; text?: string }>;
-  };
-
-  // Extract text blocks only (skip thinking blocks)
-  const text = (json.content ?? [])
+  const text = response.content
     .filter((b) => b.type === "text")
-    .map((b) => b.text ?? "")
+    .map((b) => (b as { type: "text"; text: string }).text)
     .join("");
 
   if (!text) throw new Error("Claude returned empty response");
@@ -664,17 +642,71 @@ async function callGemini(
   return text;
 }
 
+// ── FAQ extraction from markdown ──────────────────────────────────────────────
+function extractFaqFromMarkdown(markdown: string): Array<{ question: string; answer: string }> {
+  const items: Array<{ question: string; answer: string }> = [];
+  const lines = markdown.split("\n");
+  let inFaqSection = false;
+  let currentQuestion: string | null = null;
+  const currentAnswerLines: string[] = [];
+
+  const saveCurrentItem = () => {
+    if (currentQuestion && currentAnswerLines.length > 0) {
+      items.push({ question: currentQuestion, answer: currentAnswerLines.join(" ").trim() });
+      currentAnswerLines.length = 0;
+    }
+  };
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!inFaqSection) {
+      if (/^##\s.*(FAQ|Questions\s+fr)/i.test(trimmed)) inFaqSection = true;
+      continue;
+    }
+    // End FAQ section on next H2
+    if (trimmed.startsWith("## ") && !/FAQ/i.test(trimmed)) {
+      saveCurrentItem();
+      break;
+    }
+    // New question (H3)
+    if (trimmed.startsWith("### ")) {
+      saveCurrentItem();
+      currentQuestion = trimmed.slice(4).replace(/\*\*/g, "").trim();
+      continue;
+    }
+    // Answer line
+    if (currentQuestion && trimmed && !trimmed.startsWith("#") && !trimmed.startsWith(">")) {
+      currentAnswerLines.push(trimmed.replace(/\*\*/g, "").replace(/\*/g, "").replace(/\[([^\]]+)\]\([^)]+\)/g, "$1"));
+    }
+  }
+  saveCurrentItem();
+
+  return items.slice(0, 8);
+}
+
+function buildFaqJsonLd(faqItems: Array<{ question: string; answer: string }>): string {
+  if (faqItems.length === 0) return "";
+  return JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqItems.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  });
+}
+
 // ── Step 3: Generate article ────────────────────────────────────────────────────
-// Strategy: Gemini Flash for metadata (fast JSON) + Claude Sonnet 4.6 for body (quality).
+// Strategy: Claude Sonnet 4.5 for both metadata (JSON) and body (quality).
 async function generateArticle(
   article: ArticleQueueItem,
   keywordData: KeywordData,
   serpAnalysis: SerpAnalysis,
   externalSources: TavilySource[],
-  publishedSlugs: Set<string> = new Set()
+  publishedSlugs: Set<string> = new Set(),
+  publishedArticles: PublishedArticle[] = []
 ): Promise<GeneratedContent> {
-  const geminiKey = process.env.GEMINI_API_KEY;
-  if (!geminiKey) throw new Error("GEMINI_API_KEY is required for metadata generation");
 
   const { paaQuestions, topResults } = serpAnalysis;
 
@@ -768,12 +800,18 @@ Liste à puces comparative obligatoire. ❌ INTERDIT : tableaux Markdown (| col 
 
   const externalLinksBlock =
     externalSources.length > 0
-      ? `SOURCES EXTERNES VÉRIFIÉES (URLs réelles — utilise 1 à 2 là où elles apportent vraiment de la valeur):
+      ? `SOURCES EXTERNES VÉRIFIÉES (URLs réelles — intègre 2 à 3 de ces sources là où elles apportent de la valeur):
 ${externalSources.map((s) => `- [${s.title}](${s.url})`).join("\n")}`
-      : "Aucune source externe vérifiée — n'invente aucune URL.";
+      : `Aucune source externe fournie par Tavily. OBLIGATION : inclure 2-3 liens vers des sources d'autorité officielles françaises que tu connais avec certitude (ex: fr.wikipedia.org, légifrance.gouv.fr, service-public.fr, insee.fr, offices de tourisme officiels). Les liens cassés seront supprimés automatiquement après vérification.`;
 
-  // ── Call 1: metadata via Gemini Flash (fast + cheap) ────────────────────────
-  console.log(`  [Gemini] Generating metadata JSON...`);
+  const publishedArticlesBlock =
+    publishedArticles.length > 0
+      ? `ARTICLES BLOG VANZON DÉJÀ PUBLIÉS (liens internes articles — intègre 2 à 3 liens pertinents si le contexte s'y prête):
+${publishedArticles.slice(0, 15).map((a) => `- [${a.title}](/articles/${a.slug}) — keyword: "${a.targetKeyword}"`).join("\n")}`
+      : "";
+
+  // ── Call 1: metadata via Claude Sonnet 4.5 ───────────────────────────────────
+  console.log(`  [Claude] Generating metadata JSON...`);
   const metaPrompt = `Tu génères des métadonnées SEO pour un article de blog.
 
 Site: Vanzon Explorer — location et vente de van aménagé au Pays Basque
@@ -781,22 +819,22 @@ Article: "${article.title}"
 Keyword cible: "${article.targetKeyword}"
 Mots-clés secondaires: ${article.secondaryKeywords.join(", ")}
 
-Réponds UNIQUEMENT avec ce JSON valide (aucune explication):
+Réponds UNIQUEMENT avec ce JSON valide (aucune explication, aucune balise markdown):
 {"title":"H1 accrocheur avec keyword principal (60-80 chars)","seoTitle":"title tag SEO max 60 chars","seoDescription":"meta description 140-155 chars avec CTA","excerpt":"accroche article 180-220 chars"}`;
 
-  const metaText = await callGemini(geminiKey, metaPrompt, { json: true, maxTokens: 512 });
+  const metaText = await callClaude(metaPrompt, { maxTokens: 512 });
   let meta: Pick<GeminiRawContent, "title" | "seoTitle" | "seoDescription" | "excerpt">;
   try {
     const cleaned = metaText.replace(/^```(?:json)?\s*/i, "").replace(/\s*```\s*$/, "").trim();
     meta = JSON.parse(cleaned);
   } catch {
     const match = metaText.match(/\{[\s\S]*\}/);
-    if (!match) throw new Error("Gemini metadata: invalid JSON — " + metaText.slice(0, 200));
+    if (!match) throw new Error("Claude metadata: invalid JSON — " + metaText.slice(0, 200));
     meta = JSON.parse(match[0]);
   }
 
-  // ── Call 2: article body via Claude Sonnet 4.6 (quality + instruction-following) ──
-  console.log(`  [Claude Sonnet 4.6] Generating article body...`);
+  // ── Call 2: article body via Claude Sonnet 4.5 ────────────────────────────────
+  console.log(`  [Claude Sonnet 4.5] Generating article body...`);
   const internalLinksBlock = loadAgentPrompt("internal-links");
   const styleBlock = loadAgentPrompt("blog-writer") ?? `Tu es Jules Gaveglio, co-fondateur de Vanzon Explorer — expert vanlife au Pays Basque depuis 5 ans. Tu rédiges des articles de blog SEO qui classent sur Google et convertissent des lecteurs en clients.
 
@@ -858,26 +896,39 @@ STRUCTURE (utilise ## pour H2, ### pour H3 — jamais de # H1)
 ${structureBlock}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+OBLIGATIONS SEO ABSOLUES (non négociables)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. **Keyword "${article.targetKeyword}" dans les 100 premiers mots** — intègre-le naturellement dès la première phrase ou le deuxième paragraphe.
+2. **Minimum 5 liens internes** — utilise les pages Vanzon listées ci-dessous dans des phrases naturelles. Les liens en liste nue sont INTERDITS.
+3. **Minimum 2 liens externes** — vers des sources d'autorité officielles françaises (Légifrance, Wikipedia FR, INSEE, service-public.fr, offices de tourisme). Les liens cassés sont supprimés automatiquement, donc ne t'inquiète pas si tu n'es pas sûr à 100%.
+4. **H2 avec keywords secondaires** — au moins 2 titres H2 doivent inclure un de ces mots-clés : ${article.secondaryKeywords.slice(0, 4).join(", ")}.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 LIENS INTERNES VANZON EXPLORER (maillage interne)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ${internalLinksBlock ?? "Pas de fichier internal-links.md trouvé — applique quand même des liens vers /location, /road-trip-personnalise et /formation quand c'est pertinent."}
+
+${publishedArticlesBlock}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 LIENS EXTERNES
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ${externalLinksBlock}
-Format: [texte ancre descriptif](url) — seulement si ça apporte vraiment de la valeur.
+Format: [texte ancre descriptif](url) — intègre dans des phrases naturelles, jamais en liste nue.
 
 Réponds UNIQUEMENT avec le texte markdown. Aucune explication, aucune balise, aucun JSON.`;
 
   // Scale max tokens to target word count.
-  // For Gemini 2.5 Pro, maxOutputTokens includes thinking tokens (≈2000-4000 consumed by reasoning).
-  // Formula: content tokens (≈1.5 tokens/word) + thinking buffer (4000) + safety margin (1000).
-  // Minimum of 8000 to ensure thinking + full content always fit.
-  const maxTokensForBody = Math.max(8000, Math.min(16000, Math.ceil(targetWords * 1.5) + 5000));
-  // Use Gemini 2.5 Pro for body (better quality, higher context window)
-  console.log(`  [Gemini 2.5 Pro] Generating article body...`);
-  const rawBody = await callGemini(geminiKey, bodyPrompt, { maxTokens: maxTokensForBody, model: "gemini-2.5-pro" });
+  // Formula: content tokens (≈1.5 tokens/word) + safety margin (2000).
+  // Minimum of 6000 to ensure full content fits.
+  const maxTokensForBody = Math.max(6000, Math.min(16000, Math.ceil(targetWords * 1.5) + 2000));
+  const rawBody = await callClaude(bodyPrompt, { maxTokens: maxTokensForBody });
+
+  // Extract FAQ items for Schema.org JSON-LD (before link injection modifies text)
+  const faqItems = extractFaqFromMarkdown(rawBody);
+  if (faqItems.length > 0) {
+    console.log(`  [FAQ] ${faqItems.length} FAQ item(s) extracted for JSON-LD schema`);
+  }
 
   // Post-process: inject internal links automatically (guaranteed, Claude-independent)
   // Only injects article links for slugs confirmed to exist in Sanity
@@ -892,6 +943,7 @@ Réponds UNIQUEMENT avec le texte markdown. Aucune explication, aucune balise, a
     seoDescription: meta.seoDescription,
     excerpt: meta.excerpt,
     content,
+    faqItems: faqItems.length > 0 ? faqItems : undefined,
   };
 
   console.log(`  Article generated: "${parsed.title}" (${parsed.content.length} blocks)`);
@@ -1094,6 +1146,10 @@ async function createSanityArticle(
   imageAsset: { _id: string },
   credit: string
 ): Promise<string> {
+  const faqJsonLd = generatedContent.faqItems && generatedContent.faqItems.length > 0
+    ? buildFaqJsonLd(generatedContent.faqItems)
+    : undefined;
+
   const doc = {
     _type: "article",
     title: generatedContent.title,
@@ -1113,6 +1169,7 @@ async function createSanityArticle(
     content: generatedContent.content,
     seoTitle: generatedContent.seoTitle,
     seoDescription: generatedContent.seoDescription,
+    ...(faqJsonLd ? { faqSchema: faqJsonLd } : {}),
   };
 
   console.log(`  Creating Sanity document...`);
@@ -1121,16 +1178,59 @@ async function createSanityArticle(
   return created._id;
 }
 
+// ── Google Search Console — sitemap submission ─────────────────────────────────
+async function submitSitemapToGSC(): Promise<void> {
+  const clientId = process.env.GOOGLE_GSC_CLIENT_ID;
+  const clientSecret = process.env.GOOGLE_GSC_CLIENT_SECRET;
+  const refreshToken = process.env.GOOGLE_REFRESH_TOKEN;
+
+  if (!clientId || !clientSecret || !refreshToken) {
+    console.log("  [GSC] Credentials manquants — soumission sitemap ignorée");
+    return;
+  }
+
+  try {
+    const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        client_id: clientId,
+        client_secret: clientSecret,
+        refresh_token: refreshToken,
+        grant_type: "refresh_token",
+      }),
+    });
+    const { access_token } = await tokenRes.json() as { access_token?: string };
+    if (!access_token) throw new Error("Impossible d'obtenir un access token GSC");
+
+    const site = encodeURIComponent("https://vanzonexplorer.com/");
+    const sitemap = encodeURIComponent("https://vanzonexplorer.com/sitemap.xml");
+    const res = await fetch(
+      `https://www.googleapis.com/webmasters/v3/sites/${site}/sitemaps/${sitemap}`,
+      { method: "PUT", headers: { Authorization: `Bearer ${access_token}` } }
+    );
+
+    if (res.status === 204) {
+      console.log("  [GSC] ✅ Sitemap soumis à Google Search Console");
+    } else {
+      const err = await res.text();
+      console.warn(`  [GSC] Réponse inattendue (${res.status}): ${err}`);
+    }
+  } catch (err) {
+    // Non-bloquant
+    console.warn(`  [GSC] Erreur soumission sitemap : ${(err as Error).message}`);
+  }
+}
+
 // ── Main ──────────────────────────────────────────────────────────────────────
 async function main(): Promise<void> {
   // Validate required env vars
   const missingVars: string[] = [];
-  if (!process.env.GEMINI_API_KEY) missingVars.push("GEMINI_API_KEY");
+  if (!process.env.ANTHROPIC_API_KEY) missingVars.push("ANTHROPIC_API_KEY");
   if (!process.env.SANITY_API_WRITE_TOKEN) missingVars.push("SANITY_API_WRITE_TOKEN");
   if (!process.env.PEXELS_API_KEY) missingVars.push("PEXELS_API_KEY");
-  // DataForSEO and CLAUDE_CODE_SESSION are optional — functions degrade gracefully
+  // DataForSEO is optional — functions degrade gracefully
   if (!process.env.DATAFORSEO_LOGIN) console.warn("  ⚠️  DATAFORSEO_LOGIN not set — keyword data will be skipped");
-  if (!process.env.CLAUDE_CODE_SESSION_ACCESS_TOKEN) console.warn("  ⚠️  CLAUDE_CODE_SESSION_ACCESS_TOKEN not set — body uses Gemini");
   if (missingVars.length > 0) {
     console.error(`\nMissing required environment variables:\n  ${missingVars.join("\n  ")}`);
     process.exit(1);
@@ -1205,9 +1305,15 @@ async function main(): Promise<void> {
     console.log("\n[4/7] Fetching published article slugs from Sanity...");
     const publishedSlugs = await getPublishedSlugs();
 
-    // Step 6: Generate article — Gemini for metadata, Claude Sonnet 4.6 for body
-    console.log("\n[5/7] Generating article (Gemini metadata + Claude Sonnet body)...");
-    const generatedContent = await generateArticle(article, keywordData, serpAnalysis, externalSources, publishedSlugs);
+    // Build published articles list for dynamic internal links in prompt
+    const publishedArticles: PublishedArticle[] = queue
+      .filter((a) => a.status === "published" && a.slug && a.id !== article!.id)
+      .map((a) => ({ slug: a.slug, title: a.title, targetKeyword: a.targetKeyword }));
+    console.log(`  ${publishedArticles.length} published article(s) available for internal links`);
+
+    // Step 6: Generate article — Claude Sonnet 4.5 for metadata + body
+    console.log("\n[5/7] Generating article (Claude Sonnet 4.5)...");
+    const generatedContent = await generateArticle(article, keywordData, serpAnalysis, externalSources, publishedSlugs, publishedArticles);
 
     // Step 6.1: Verify external links — strip broken ones before publishing
     console.log("\n[5.5/7] Verifying external links...");
@@ -1255,6 +1361,10 @@ async function main(): Promise<void> {
     console.log(`  Published:  ${publishedAt}`);
     console.log("=".repeat(60));
     console.log(`\nView in Studio: https://vanzon.sanity.studio/desk/article`);
+
+    // Step 10: Submit sitemap to Google Search Console (non-blocking)
+    await submitSitemapToGSC();
+
     await notifyTelegram(`✍️ *Blog Writer* — Article publié : "${generatedContent.title}"\n🔗 vanzonexplorer.com/articles/${article.slug}`);
   } catch (err) {
     // Restore status to "pending" so the article can be retried

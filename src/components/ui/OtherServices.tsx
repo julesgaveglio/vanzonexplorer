@@ -46,7 +46,7 @@ const SERVICES: Record<ServiceKey, {
     emoji: "✨",
     label: "Club Privé",
     title: "Deals & codes promo vanlife",
-    desc: "Accédez aux meilleures réductions sur l'équipement van : literie, énergie, cuisine, sécurité… Dès 9,99 €/mois.",
+    desc: "Accédez gratuitement aux meilleures réductions sur l'équipement van : literie, énergie, cuisine, sécurité… 100% gratuit.",
     zone: "Toute la France",
     href: "/club",
     gradient: "from-[#8B5CF6] to-[#7C3AED]",

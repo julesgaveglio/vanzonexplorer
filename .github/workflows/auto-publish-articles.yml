@@ -33,11 +33,17 @@ jobs:
 
       - name: Run blog writer agent
         env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           SANITY_API_WRITE_TOKEN: ${{ secrets.SANITY_API_WRITE_TOKEN }}
           PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
           DATAFORSEO_LOGIN: ${{ secrets.DATAFORSEO_LOGIN }}
           DATAFORSEO_PASSWORD: ${{ secrets.DATAFORSEO_PASSWORD }}
+          TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          GOOGLE_GSC_CLIENT_ID: ${{ secrets.GOOGLE_GSC_CLIENT_ID }}
+          GOOGLE_GSC_CLIENT_SECRET: ${{ secrets.GOOGLE_GSC_CLIENT_SECRET }}
+          GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
           NEXT_PUBLIC_SANITY_PROJECT_ID: lewexa74
           NEXT_PUBLIC_SANITY_DATASET: production
         run: npx tsx scripts/agents/blog-writer-agent.ts

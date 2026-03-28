@@ -66,7 +66,7 @@
 **À utiliser quand** : on invite le lecteur à explorer d'autres contenus
 
 ### /club — Club Privé Vanzon (deals équipement)
-**Objectif** : Abonnement 9,99€/mois pour accès aux codes promo équipement van
+**Objectif** : Accès 100% gratuit aux codes promo équipement van
 **Ancres naturelles** : "codes promo équipement van", "réductions vanlife", "le Club Privé Vanzon", "deals équipement van"
 **À utiliser quand** : on parle d'équipement van, d'acheter du matériel, de réduire ses coûts d'aménagement
 
