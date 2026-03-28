@@ -477,7 +477,7 @@ export default function BacklinksClient({ initialData }: { initialData: InitialD
                     <a href={o.backlink_url} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline truncate flex-1">
                       {o.backlink_url}
                     </a>
-                    {o.anchor_text && <span className="text-xs text-slate-400 shrink-0">"{o.anchor_text}"</span>}
+                    {o.anchor_text && <span className="text-xs text-slate-400 shrink-0">&ldquo;{o.anchor_text}&rdquo;</span>}
                     {o.dr_score && <span className="text-xs font-mono bg-slate-100 px-1.5 py-0.5 rounded text-slate-600 shrink-0">DR {o.dr_score}</span>}
                     <span className="text-xs text-slate-400 shrink-0">{o.date_obtained}</span>
                   </div>
