@@ -248,19 +248,12 @@ export default function Navbar() {
 
             {/* ── Desktop right side: CTA + Burger ── */}
             <div className="hidden lg:flex items-center gap-3">
-              {isSignedIn ? (
+              {isSignedIn && (
                 <Link
                   href="/dashboard"
                   className="text-sm font-medium text-text-muted hover:text-text-primary transition-colors px-3 py-2 rounded-lg hover:bg-slate-50"
                 >
                   Mon espace
-                </Link>
-              ) : (
-                <Link
-                  href="/location"
-                  className="btn-primary text-sm !py-2.5 !px-5 active:scale-95 transition-transform"
-                >
-                  Louer un van →
                 </Link>
               )}
               <button
