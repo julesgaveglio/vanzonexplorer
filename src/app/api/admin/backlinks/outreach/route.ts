@@ -105,8 +105,10 @@ export async function POST(req: NextRequest) {
     const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
     // Best contact name for salutation
+    const INVALID_NAMES = ["—", "non spécifié", "inconnu", "unknown", "n/a", "na", "contact", "admin", "webmaster", "info"];
     const bestContact = discovery.contacts.sort((a, b) => (a.priority || 99) - (b.priority || 99))[0];
-    const contactName = bestContact?.name && bestContact.name !== "—" ? bestContact.name : null;
+    const rawName = bestContact?.name?.trim() ?? "";
+    const contactName = rawName && !INVALID_NAMES.includes(rawName.toLowerCase()) ? rawName : null;
     const salutation = contactName
       ? (() => {
           const parts = contactName.trim().split(" ");

@@ -71,12 +71,6 @@ export async function POST(
       `<p style="margin: 0 0 16px 0;">${para.replace(/\n/g, "<br>")}</p>`
     )
     .join("")}
-  <hr style="border: none; border-top: 1px solid #e5e5e5; margin: 24px 0;">
-  <p style="color: #666; font-size: 13px; margin: 0;">
-    Jules Gaveglio — <a href="https://vanzonexplorer.com" style="color: #2563eb; text-decoration: none;">Vanzon Explorer</a><br>
-    Location vans aménagés · Pays Basque<br>
-    <a href="mailto:jules@vanzonexplorer.com" style="color: #2563eb; text-decoration: none;">jules@vanzonexplorer.com</a>
-  </p>
 </body>
 </html>`.trim();
 
