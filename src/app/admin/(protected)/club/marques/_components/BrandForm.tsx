@@ -3,6 +3,7 @@
 import { useState, useRef, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { upsertBrand, deleteBrand } from "../../actions";
+import MediaPickerModal from "@/components/admin/MediaPickerModal";
 
 interface Brand {
   id?: string;
@@ -24,6 +25,7 @@ export default function BrandForm({ brand }: { brand?: Brand }) {
   const [logoUrl, setLogoUrl] = useState(brand?.logo_url || "");
   const [uploading, setUploading] = useState(false);
   const [showGmailModal, setShowGmailModal] = useState(false);
+  const [showMediaPicker, setShowMediaPicker] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -69,6 +71,7 @@ export default function BrandForm({ brand }: { brand?: Brand }) {
   }
 
   return (
+    <>
     <form onSubmit={handleSubmit} className="space-y-8">
       {brand?.id && <input type="hidden" name="id" value={brand.id} />}
 
@@ -114,14 +117,21 @@ export default function BrandForm({ brand }: { brand?: Brand }) {
               {logoUrl ? "Logo uploadé ✓" : "Aucun logo"}
             </p>
             <p className="text-xs text-slate-400 mb-3">Cliquer sur le cadre pour uploader. PNG avec fond transparent recommandé.</p>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
+              <button
+                type="button"
+                onClick={() => setShowMediaPicker(true)}
+                className="text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-colors"
+              >
+                📷 Médiathèque
+              </button>
               <button
                 type="button"
                 onClick={() => fileRef.current?.click()}
                 disabled={uploading}
                 className="text-xs font-semibold text-violet-600 hover:text-violet-700 bg-violet-50 hover:bg-violet-100 px-3 py-1.5 rounded-lg transition-colors"
               >
-                {uploading ? "Upload en cours…" : logoUrl ? "Changer le logo" : "Uploader un logo"}
+                {uploading ? "Upload en cours…" : "Depuis l'ordi"}
               </button>
               {logoUrl && (
                 <button
@@ -323,6 +333,14 @@ export default function BrandForm({ brand }: { brand?: Brand }) {
         </div>
       </div>
     </form>
+
+    {showMediaPicker && (
+      <MediaPickerModal
+        onSelect={(url) => setLogoUrl(url)}
+        onClose={() => setShowMediaPicker(false)}
+      />
+    )}
+    </>
   );
 }
 

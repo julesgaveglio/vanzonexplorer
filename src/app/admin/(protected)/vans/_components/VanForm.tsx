@@ -4,6 +4,7 @@ import { useState, useRef, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { upsertVan, deleteVan } from "../actions";
 import { extractText } from "../utils";
+import MediaPickerModal from "@/components/admin/MediaPickerModal";
 
 interface GalleryItem { _key: string; ref: string; url: string; alt: string; }
 
@@ -82,6 +83,9 @@ export default function VanForm({ van }: { van?: VanData }) {
   const [gallery, setGallery] = useState<GalleryItem[]>(van?.gallery || []);
   const [uploadingGallery, setUploadingGallery] = useState(false);
   const galleryFileRef = useRef<HTMLInputElement>(null);
+
+  // Media picker
+  const [showMediaPicker, setShowMediaPicker] = useState<"main" | "gallery" | null>(null);
 
   // Équipements conditionnels
   const [hasShower, setHasShower] = useState(van?.eq_shower ?? false);
@@ -173,6 +177,7 @@ export default function VanForm({ van }: { van?: VanData }) {
   }
 
   return (
+    <>
     <form onSubmit={handleSubmit} className="space-y-10 pb-20">
       {/* ── IDENTITÉ ── */}
       <section className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 space-y-5">
@@ -251,12 +256,16 @@ export default function VanForm({ van }: { van?: VanData }) {
             )}
             <div className="flex-1 space-y-3">
               <input ref={mainFileRef} type="file" accept="image/*" className="hidden" onChange={handleMainImage} />
-              {!mainImageUrl && (
-                <button type="button" onClick={() => mainFileRef.current?.click()}
-                  className="text-sm font-medium text-blue-600 hover:text-blue-700 underline">
-                  Choisir une image
+              <div className="flex gap-2 flex-wrap">
+                <button type="button" onClick={() => setShowMediaPicker("main")}
+                  className="text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-colors">
+                  📷 Médiathèque
                 </button>
-              )}
+                <button type="button" onClick={() => mainFileRef.current?.click()}
+                  className="text-xs font-semibold text-slate-600 bg-slate-50 hover:bg-slate-100 px-3 py-1.5 rounded-lg transition-colors">
+                  Depuis l&apos;ordi
+                </button>
+              </div>
               <input value={mainImageAlt} onChange={e => setMainImageAlt(e.target.value)}
                 className={inputCls} placeholder="Texte alternatif (description de l'image)" />
             </div>
@@ -278,12 +287,21 @@ export default function VanForm({ van }: { van?: VanData }) {
                   className="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full text-xs hidden group-hover:flex items-center justify-center hover:bg-red-600">✕</button>
               </div>
             ))}
-            <div onClick={() => galleryFileRef.current?.click()}
-              className="aspect-[4/3] border-2 border-dashed border-slate-200 rounded-xl flex flex-col items-center justify-center gap-1 text-slate-400 cursor-pointer hover:border-blue-300 hover:text-blue-400 transition-colors">
-              {uploadingGallery ? <span className="text-xs animate-pulse">Upload…</span> : <>
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-                <span className="text-xs font-medium">Ajouter</span>
-              </>}
+            <div className="aspect-[4/3] border-2 border-dashed border-slate-200 rounded-xl flex flex-col items-center justify-center gap-1 text-slate-400">
+              {uploadingGallery ? (
+                <span className="text-xs animate-pulse">Upload…</span>
+              ) : (
+                <div className="flex flex-col items-center gap-1.5">
+                  <button type="button" onClick={() => setShowMediaPicker("gallery")}
+                    className="text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 px-2.5 py-1 rounded-lg transition-colors">
+                    📷 Médiathèque
+                  </button>
+                  <button type="button" onClick={() => galleryFileRef.current?.click()}
+                    className="text-xs text-slate-400 hover:text-slate-600 underline">
+                    ou depuis l&apos;ordi
+                  </button>
+                </div>
+              )}
             </div>
           </div>
           <input ref={galleryFileRef} type="file" accept="image/*" multiple className="hidden" onChange={handleGalleryUpload} />
@@ -580,5 +598,23 @@ export default function VanForm({ van }: { van?: VanData }) {
         </div>
       )}
     </form>
+
+    {showMediaPicker && (
+      <MediaPickerModal
+        onSelect={(url, alt) => {
+          if (showMediaPicker === "main") {
+            setMainImageUrl(url);
+            if (alt && !mainImageAlt) setMainImageAlt(alt);
+          } else {
+            setGallery((prev) => [
+              ...prev,
+              { _key: `media-${Date.now()}`, ref: "", url, alt: alt ?? "" },
+            ]);
+          }
+        }}
+        onClose={() => setShowMediaPicker(null)}
+      />
+    )}
+    </>
   );
 }

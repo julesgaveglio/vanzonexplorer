@@ -3,6 +3,7 @@
 import { useState, useRef, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { upsertProduct, deleteProduct } from "../../actions";
+import MediaPickerModal from "@/components/admin/MediaPickerModal";
 
 interface Brand { id: string; name: string; slug: string; }
 interface Category { id: string; name: string; slug: string; }
@@ -42,6 +43,7 @@ export default function ProductForm({
   const [uploading, setUploading] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [showMediaPicker, setShowMediaPicker] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const brandId = typeof product?.brand_id === "object" ? (product.brand_id as Brand).id : product?.brand_id;
@@ -90,6 +92,7 @@ export default function ProductForm({
   }
 
   return (
+    <>
     <form onSubmit={handleSubmit} className="space-y-6">
       {product?.id && <input type="hidden" name="id" value={product.id} />}
 
@@ -130,10 +133,14 @@ export default function ProductForm({
           <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
           <div className="flex-1">
             <p className="text-sm font-medium text-slate-700 mb-2">{imageUrl ? "Image uploadée ✓" : "Aucune image"}</p>
-            <div className="flex gap-2 mb-3">
+            <div className="flex gap-2 mb-3 flex-wrap">
+              <button type="button" onClick={() => setShowMediaPicker(true)}
+                className="text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-colors">
+                📷 Médiathèque
+              </button>
               <button type="button" onClick={() => fileRef.current?.click()} disabled={uploading}
                 className="text-xs font-semibold text-emerald-600 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-lg transition-colors">
-                {uploading ? "Upload…" : imageUrl ? "Changer" : "Uploader"}
+                {uploading ? "Upload…" : "Depuis l'ordi"}
               </button>
               {imageUrl && (
                 <button type="button" onClick={() => setImageUrl("")}
@@ -306,5 +313,13 @@ export default function ProductForm({
         </div>
       </div>
     </form>
+
+    {showMediaPicker && (
+      <MediaPickerModal
+        onSelect={(url) => setImageUrl(url)}
+        onClose={() => setShowMediaPicker(false)}
+      />
+    )}
+    </>
   );
 }
