@@ -1,0 +1,22 @@
+name: Backlinks Daily Outreach
+
+on:
+  schedule:
+    - cron: '0 9 * * 1-5'  # Lundi→Vendredi à 9h UTC
+  workflow_dispatch:
+
+jobs:
+  daily-outreach:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci
+      - run: npx tsx scripts/agents/backlinks-daily-outreach.ts
+        env:
+          NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}

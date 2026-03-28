@@ -1,5 +1,22 @@
 [
   {
+    "id": "backlinks-daily-outreach",
+    "name": "Agent Backlinks Daily Outreach",
+    "emoji": "🔗",
+    "status": "active",
+    "description": "Chaque jour ouvré (lun→ven), sélectionne automatiquement le meilleur prospect backlink non encore contacté (score le plus élevé, statut \"découvert\"), génère un email personnalisé via Hunter.io + Jina AI + Groq, l'envoie via Resend et te notifie par email récap.",
+    "trigger": "cron",
+    "schedule": "Lundi→Vendredi à 9h UTC",
+    "cronExpression": "0 9 * * 1-5",
+    "file": "scripts/agents/backlinks-daily-outreach.ts",
+    "workflow": ".github/workflows/backlinks-daily-outreach.yml",
+    "apis": ["Supabase", "Hunter.io", "Jina AI", "Groq", "Resend"],
+    "output": "Email envoyé + prospect passé en statut \"contacté\" + récap admin",
+    "manualCommand": "npx tsx scripts/agents/backlinks-daily-outreach.ts",
+    "tags": ["Backlinks", "SEO", "Outreach", "Automatique"],
+    "pipeline": "Standalone"
+  },
+  {
     "id": "keyword-research-quarterly",
     "name": "Agent Recherche Mots-Clés",
     "emoji": "🔍",
