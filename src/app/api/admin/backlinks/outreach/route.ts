@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import Groq from "groq-sdk";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
+import { discoverEmails } from "@/lib/email-discovery";
 
 interface BacklinkProspect {
   id: string;
@@ -9,12 +10,6 @@ interface BacklinkProspect {
   type: "blog" | "forum" | "partenaire" | "annuaire" | "media";
   score: number;
   notes: string;
-}
-
-interface EmailCandidate {
-  email: string;
-  confidence: number;
-  source: "hunter" | "snov" | "scraped";
 }
 
 // ── Email Templates ────────────────────────────────────────────────────────────
@@ -33,131 +28,20 @@ STRUCTURE :
 OBJECTIF : proposer nos ressources gratuites à la communauté, obtenir une mention ou un fil dédié.
 STRUCTURE :
 - Présentation courte et chaleureuse : Vanzon Explorer, location et ressources van life Pays Basque
-- Ce qu'on apporte à leur communauté (guides gratuits, conseils itinéraires Pays Basque, partage d'expérience)
+- Ce qu'on apporte à leur communauté (guides gratuits, conseils itinéraires Pays Basque)
 - Proposition : partager un lien dans leur section ressources
-- Ton décontracté, communautaire, pas commercial du tout
+- Ton décontracté, communautaire, pas commercial
 - Signature Jules`,
 
   partenaire: `Tu rédiges un email de partenariat éditorial entre vanzonexplorer.com et un média / site de voyage / outdoor.
 OBJECTIF : échange de liens ou articles invités dans un partenariat éditorial gagnant-gagnant.
 STRUCTURE :
-- Accroche sur leur positionnement éditorial avec un détail précis de leur contenu (1 phrase)
-- Présentation Vanzon Explorer : location de vans aménagés au Pays Basque, blog spécialisé van life, audience qualifiée
-- Proposition de partenariat concret : article invité sur leur site avec mention de nos services, backlink en échange
-- Mettre en avant la complémentarité audiences
+- Accroche sur leur positionnement éditorial avec un détail précis (1 phrase)
+- Présentation Vanzon Explorer : location de vans aménagés au Pays Basque, blog spécialisé van life
+- Proposition concrète : article invité sur leur site en échange d'un lien/mention
+- Complémentarité audiences
 - Signature Jules Gaveglio — Vanzon Explorer`,
 };
-
-// ── Hunter.io email discovery ──────────────────────────────────────────────────
-
-async function findEmailsHunter(domain: string): Promise<EmailCandidate[]> {
-  if (!process.env.HUNTER_API_KEY) return [];
-  try {
-    const url = `https://api.hunter.io/v2/domain-search?domain=${encodeURIComponent(domain)}&api_key=${process.env.HUNTER_API_KEY}&limit=5&type=personal`;
-    const resp = await fetch(url, { signal: AbortSignal.timeout(10000) });
-    if (!resp.ok) return [];
-    const data = await resp.json();
-    const emails: { value: string; confidence: number }[] = data?.data?.emails || [];
-    return emails
-      .filter((e) => e.confidence >= 50)
-      .map((e) => ({ email: e.value, confidence: e.confidence, source: "hunter" as const }))
-      .sort((a, b) => b.confidence - a.confidence)
-      .slice(0, 3);
-  } catch {
-    return [];
-  }
-}
-
-// ── Snov.io email discovery ────────────────────────────────────────────────────
-
-async function getSnovToken(): Promise<string | null> {
-  try {
-    const resp = await fetch("https://api.snov.io/v1/get-access-token", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        client_id: process.env.SNOV_CLIENT_ID,
-        client_secret: process.env.SNOV_CLIENT_SECRET,
-      }),
-      signal: AbortSignal.timeout(8000),
-    });
-    if (!resp.ok) return null;
-    const data = await resp.json();
-    return data.access_token || null;
-  } catch {
-    return null;
-  }
-}
-
-async function findEmailsSnov(domain: string): Promise<EmailCandidate[]> {
-  if (!process.env.SNOV_CLIENT_ID || !process.env.SNOV_CLIENT_SECRET) return [];
-  try {
-    const token = await getSnovToken();
-    if (!token) return [];
-
-    const resp = await fetch("https://api.snov.io/v2/domain-emails-with-info", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        access_token: token,
-        domain,
-        type: "all",
-        limit: 5,
-      }),
-      signal: AbortSignal.timeout(10000),
-    });
-    if (!resp.ok) return [];
-    const data = await resp.json();
-    const emails: { email: string; firstName?: string; lastName?: string }[] = data?.emails || [];
-    return emails.slice(0, 3).map((e) => ({
-      email: e.email,
-      confidence: 70,
-      source: "snov" as const,
-    }));
-  } catch {
-    return [];
-  }
-}
-
-// ── Jina scraping + regex extraction ──────────────────────────────────────────
-
-async function scrapePageJina(url: string): Promise<string> {
-  try {
-    const resp = await fetch(`https://r.jina.ai/${url}`, {
-      headers: {
-        Authorization: `Bearer ${process.env.JINA_API_KEY}`,
-        Accept: "text/plain",
-        "X-Return-Format": "markdown",
-        "X-Timeout": "12",
-      },
-      signal: AbortSignal.timeout(15000),
-    });
-    if (!resp.ok) return "";
-    return (await resp.text()).substring(0, 4000);
-  } catch {
-    return "";
-  }
-}
-
-function extractEmailsFromText(text: string): EmailCandidate[] {
-  const regex = /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g;
-  const found = Array.from(new Set(text.match(regex) || []));
-
-  const SKIP_DOMAINS = ["example.com", "yourdomain.com", "gmail.com", "hotmail.com", "placeholder"];
-  const PREFERRED_PREFIXES = ["contact", "hello", "bonjour", "info", "redaction", "presse", "editor", "blog"];
-
-  return found
-    .filter((email) => !SKIP_DOMAINS.some((d) => email.includes(d)))
-    .map((email) => {
-      const prefix = email.split("@")[0].toLowerCase();
-      const score = PREFERRED_PREFIXES.some((p) => prefix.includes(p)) ? 60 : 40;
-      return { email, confidence: score, source: "scraped" as const };
-    })
-    .sort((a, b) => b.confidence - a.confidence)
-    .slice(0, 3);
-}
-
-// ── Main route ─────────────────────────────────────────────────────────────────
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}));
@@ -182,35 +66,38 @@ export async function POST(req: NextRequest) {
 
     const p = prospect as BacklinkProspect;
 
-    // ── 1. Email discovery ─────────────────────────────────────────────────────
+    // ── 1. Email discovery — pipeline complet ──────────────────────────────────
+    // Jina × 12 pages + Hunter.io + Snov.io + ZeroBounce + Groq consolidation
 
-    let emailCandidates: EmailCandidate[] = [];
+    const logs: string[] = [];
+    const discovery = await discoverEmails(`https://${p.domain}`, {
+      context: "outreach SEO backlink — blog / forum / site voyage van life France",
+      onLog: (level, message) => {
+        logs.push(`[${level}] ${message}`);
+      },
+    });
 
-    // Hunter.io (best source — confidence-scored)
-    emailCandidates = await findEmailsHunter(p.domain);
+    // ── 2. Scrape homepage for email personalization (already in discovery) ────
+    // On utilise le contenu Jina déjà récupéré pendant la discovery
+    // On refait un scrape ciblé de la page cible pour personnalisation supplémentaire
 
-    // Snov.io fallback
-    if (emailCandidates.length === 0) {
-      emailCandidates = await findEmailsSnov(p.domain);
+    let targetPageContent = "";
+    if (p.url && p.url !== `https://${p.domain}`) {
+      try {
+        const res = await fetch(`https://r.jina.ai/${p.url}`, {
+          headers: {
+            Authorization: `Bearer ${process.env.JINA_API_KEY}`,
+            Accept: "text/plain",
+            "X-Return-Format": "markdown",
+            "X-Timeout": "12",
+          },
+          signal: AbortSignal.timeout(15000),
+        });
+        if (res.ok) targetPageContent = (await res.text()).substring(0, 2000);
+      } catch { /* non-bloquant */ }
     }
 
-    // Jina scraping fallback — scrape /contact and homepage in parallel
-    if (emailCandidates.length === 0) {
-      const [homepageText, contactText] = await Promise.all([
-        scrapePageJina(`https://${p.domain}`),
-        scrapePageJina(`https://${p.domain}/contact`),
-      ]);
-      const combined = homepageText + "\n" + contactText;
-      emailCandidates = extractEmailsFromText(combined);
-    }
-
-    const bestEmail = emailCandidates[0] || null;
-
-    // ── 2. Scrape site for personalization ─────────────────────────────────────
-
-    const siteContent = await scrapePageJina(`https://${p.domain}`);
-
-    // ── 3. Generate email with Groq ────────────────────────────────────────────
+    // ── 3. Generate personalized email with Groq ───────────────────────────────
 
     const templateType = (["blog", "forum", "partenaire"].includes(p.type)
       ? p.type
@@ -218,6 +105,11 @@ export async function POST(req: NextRequest) {
     const templateInstructions = EMAIL_TEMPLATES[templateType];
 
     const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+
+    // Build personalization context from discovered contacts
+    const contactContext = discovery.contacts.slice(0, 3)
+      .map((c) => `${c.name} (${c.role})`)
+      .join(", ");
 
     const groqResponse = await groq.chat.completions.create({
       model: "llama-3.3-70b-versatile",
@@ -228,24 +120,27 @@ export async function POST(req: NextRequest) {
 
 SITE CIBLE :
 - Domaine : ${p.domain}
-- URL cible : ${p.url}
+- URL page cible : ${p.url}
 - Type : ${p.type}
 - Score pertinence : ${p.score}/10
 - Notes : ${p.notes || "—"}
+${contactContext ? `- Contact(s) identifié(s) : ${contactContext}` : ""}
+${discovery.bestEmail ? `- Email destinataire : ${discovery.bestEmail}` : ""}
 
-CONTENU DU SITE (pour personnalisation) :
-${siteContent || "(contenu non disponible — utilise le domaine pour deviner le positionnement)"}
+CONTENU PAGE CIBLE :
+${targetPageContent || "(non disponible)"}
 
 RÈGLES ABSOLUES :
 - Email court : 150-200 mots maximum
-- Première phrase : TOUJOURS mentionner un élément concret et spécifique du site (article, rubrique, sujet traité). Si le contenu est vide, deviner d'après le domaine.
+- Première phrase : mentionner un élément concret et spécifique du site
 - Ne jamais inventer de chiffres ou statistiques
-- Ne jamais écrire le mot "backlink" — dire "lien", "mention", "référence"
-- Ton humain, chaleureux, authentique — pas robotique
+- Ne jamais écrire le mot "backlink" — dire "lien", "mention", "collaboration éditoriale"
+- Ton humain, chaleureux, authentique
 - Mentionner que vanzonexplorer.com est basé au Pays Basque
+${contactContext ? `- Si possible, adresser l'email au contact identifié` : ""}
 - Signer "Jules — Vanzon Explorer"
 
-Format OBLIGATOIRE (respecte exactement ces délimiteurs) :
+Format OBLIGATOIRE :
 ###OBJET###
 [Objet : court, accrocheur, max 8 mots, personnalisé]
 ###CORPS###
@@ -258,7 +153,6 @@ Format OBLIGATOIRE (respecte exactement ces délimiteurs) :
     });
 
     const rawContent = groqResponse.choices[0]?.message?.content || "";
-
     const subjectMatch = rawContent.match(/###OBJET###\s*([\s\S]*?)\s*###CORPS###/);
     const bodyMatch = rawContent.match(/###CORPS###\s*([\s\S]*?)\s*###FIN###/);
 
@@ -268,16 +162,19 @@ Format OBLIGATOIRE (respecte exactement ces délimiteurs) :
     if (!subject) subject = `Collaboration vanzonexplorer.com — ${p.domain}`;
     if (!emailBody) emailBody = rawContent.replace(/###\w+###/g, "").trim();
 
-    // ── 4. Store draft in DB ───────────────────────────────────────────────────
+    // ── 4. Store / upsert draft in DB ──────────────────────────────────────────
 
-    // Upsert: delete old draft for this prospect if exists
-    await supabase.from("backlink_outreach").delete().eq("prospect_id", prospectId).eq("approved", false);
+    await supabase
+      .from("backlink_outreach")
+      .delete()
+      .eq("prospect_id", prospectId)
+      .eq("approved", false);
 
     const { data: outreach, error: insertError } = await supabase
       .from("backlink_outreach")
       .insert({
         prospect_id: prospectId,
-        recipient_email: bestEmail?.email || null,
+        recipient_email: discovery.bestEmail || null,
         email_subject: subject,
         email_body: emailBody,
         template_type: templateType,
@@ -287,7 +184,10 @@ Format OBLIGATOIRE (respecte exactement ces délimiteurs) :
       .single();
 
     if (insertError) {
-      return Response.json({ success: false, error: `Erreur insertion: ${insertError.message}` }, { status: 500 });
+      return Response.json(
+        { success: false, error: `Erreur insertion: ${insertError.message}` },
+        { status: 500 }
+      );
     }
 
     return Response.json({
@@ -297,13 +197,21 @@ Format OBLIGATOIRE (respecte exactement ces délimiteurs) :
       body: emailBody,
       templateType,
       emailDiscovery: {
-        found: !!bestEmail,
-        email: bestEmail?.email || null,
-        confidence: bestEmail?.confidence || null,
-        source: bestEmail?.source || null,
-        allCandidates: emailCandidates,
+        found: !!discovery.bestEmail,
+        email: discovery.bestEmail,
+        emails: discovery.emails,
+        contacts: discovery.contacts,
+        zbStatuses: discovery.zbStatuses,
+        sourceSummary: discovery.sourceSummary,
+        allCandidates: discovery.emails.map((e) => ({
+          email: e,
+          confidence: discovery.zbStatuses[e] === "valid" ? 95
+            : discovery.zbStatuses[e] === "catch-all" ? 75
+            : 50,
+          source: discovery.contacts.find((c) => c.email === e)?.source || "scraped",
+        })),
       },
-      siteScraped: siteContent.length > 0,
+      logs,
     });
   } catch (error) {
     return Response.json(
