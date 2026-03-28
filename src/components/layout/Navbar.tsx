@@ -167,15 +167,12 @@ export default function Navbar() {
                     <Link
                       href={link.href}
                       onClick={() => setDesktopOpen(false)}
-                      className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors duration-150 ${
+                      className={`flex items-center px-4 py-3 rounded-xl transition-colors duration-150 ${
                         active
                           ? "text-accent-blue bg-blue-50"
                           : "text-slate-700 hover:text-slate-900 hover:bg-slate-50"
                       }`}
                     >
-                      <span className="text-lg leading-none w-7 text-center flex-shrink-0">
-                        {link.emoji}
-                      </span>
                       <div>
                         <span className="text-sm font-semibold block">{link.label}</span>
                         <span className="text-xs text-slate-400 block">{link.desc}</span>
