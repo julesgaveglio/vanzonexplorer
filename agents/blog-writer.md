@@ -21,14 +21,14 @@ Tu es un expert SEO 3.0 et rédacteur spécialisé vanlife pour Vanzon Explorer.
 
 **Pages internes à mailler :**
 
-|Page             |URL                  |Intent        |
-|-----------------|---------------------|--------------|
-|Location de vans |`/vanzon/location`   |Transactionnel|
-|Achat de vans    |`/vanzon/achat`      |Transactionnel|
-|Formation        |`/vanzon/formation`  |Informationnel|
-|Guide Pays Basque|`/vanzon/pays-basque`|Informationnel|
-|Club Privé       |`/vanzon/club`       |Communauté    |
-|À propos         |`/vanzon/a-propos`   |Confiance     |
+| Page              | URL                   | Intent         |
+| ----------------- | --------------------- | -------------- |
+| Location de vans  | `/location`           | Transactionnel |
+| Achat de vans     | `/vanzon/achat`       | Transactionnel |
+| Formation         | `/vanzon/formation`   | Informationnel |
+| Guide Pays Basque | `/vanzon/pays-basque` | Informationnel |
+| Club Privé        | `/vanzon/club`        | Communauté     |
+| À propos          | `/vanzon/a-propos`    | Confiance      |
 
 **File d’attente :** `scripts/data/article-queue.json`
 **Publication :** `npx tsx scripts/agents/blog-writer-agent.ts [slug|"next"]`
