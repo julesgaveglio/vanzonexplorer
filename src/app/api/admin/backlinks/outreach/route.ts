@@ -12,36 +12,35 @@ interface BacklinkProspect {
   notes: string;
 }
 
-// ── Email Templates ────────────────────────────────────────────────────────────
+// ── Prompt principal ───────────────────────────────────────────────────────────
+// Un seul prompt, adapté au type via la variable ${type}
 
-const EMAIL_TEMPLATES: Record<string, string> = {
-  blog: `Tu rédiges un email de demande de backlink pour vanzonexplorer.com vers un blogueur/créateur de contenu van life / road trip.
-OBJECTIF : obtenir un lien naturel dans un de leurs articles existants ou une collaboration éditoriale.
-STRUCTURE :
-- Accroche ultra-personnalisée sur leur contenu spécifique (1 phrase avec un détail concret de leur site)
-- Qui est Vanzon Explorer : location de vans aménagés au Pays Basque, blog et ressources vanlifers
-- Proposition concrète : lien vers un de nos guides (vanzonexplorer.com/articles) dans un de leurs articles sur road trip / van life France
-- Ouverture pour collaboration (article invité, mention, etc.)
-- Signature Jules Gaveglio — Vanzon Explorer`,
+const OUTREACH_PROMPT = `Tu rédiges un email de prise de contact pour obtenir un backlink / mention vers vanzonexplorer.com.
 
-  forum: `Tu rédiges un message de prise de contact pour un forum ou communauté van life / fourgon aménagé.
-OBJECTIF : proposer nos ressources gratuites à la communauté, obtenir une mention ou un fil dédié.
-STRUCTURE :
-- Présentation courte et chaleureuse : Vanzon Explorer, location et ressources van life Pays Basque
-- Ce qu'on apporte à leur communauté (guides gratuits, conseils itinéraires Pays Basque)
-- Proposition : partager un lien dans leur section ressources
-- Ton décontracté, communautaire, pas commercial
-- Signature Jules`,
+EXEMPLE PARFAIT À IMITER (structure, ton, longueur) :
+---
+Bonjour E. Stierlen,
 
-  partenaire: `Tu rédiges un email de partenariat éditorial entre vanzonexplorer.com et un média / site de voyage / outdoor.
-OBJECTIF : échange de liens ou articles invités dans un partenariat éditorial gagnant-gagnant.
-STRUCTURE :
-- Accroche sur leur positionnement éditorial avec un détail précis (1 phrase)
-- Présentation Vanzon Explorer : location de vans aménagés au Pays Basque, blog spécialisé van life
-- Proposition concrète : article invité sur leur site en échange d'un lien/mention
-- Complémentarité audiences
-- Signature Jules Gaveglio — Vanzon Explorer`,
-};
+J'ai lu votre guide sur la van life en France — la partie itinéraires est particulièrement bien faite.
+
+Je gère Vanzon Explorer, une plateforme van life basée au Pays Basque. On couvre des sujets que vous n'abordez peut-être pas encore : aménagement de van, homologation VASP, achat/revente, location — des angles qui pourraient compléter votre guide et apporter de la valeur à vos lecteurs.
+
+Est-ce que vous seriez ouvert à une mention ou à un échange de contenu ?
+
+Bonne journée,
+Jules
+---
+
+RÈGLES STRICTES :
+1. Salutation : "Bonjour [Prénom Initial. Nom]" si contact connu, sinon "Bonjour,"
+2. Ligne 1 : 1 phrase qui montre que tu as LU leur contenu — cite quelque chose de SPÉCIFIQUE (article, rubrique, sujet). Jamais générique.
+3. Ligne 2 : "Je gère Vanzon Explorer, une plateforme van life basée au Pays Basque." + 1 phrase sur ce qu'on couvre qui pourrait compléter LEUR contenu.
+4. Ligne 3 : 1 question simple et directe — "Seriez-vous ouvert à une mention ?" ou "Est-ce qu'un échange de contenu vous intéresserait ?"
+5. Signature : "Bonne journée,\nJules"
+6. Maximum 5 phrases au total (hors salutation et signature)
+7. AUCUN mot en gras, AUCUNE liste, AUCUN titre
+8. Jamais le mot "backlink", "SEO", "lien entrant", "netlinking"
+9. Ton : direct, humain, entre collègues — pas un commercial, pas un robot`;
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}));
@@ -102,54 +101,49 @@ export async function POST(req: NextRequest) {
     const templateType = (["blog", "forum", "partenaire"].includes(p.type)
       ? p.type
       : "blog") as "blog" | "forum" | "partenaire";
-    const templateInstructions = EMAIL_TEMPLATES[templateType];
 
     const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-    // Build personalization context from discovered contacts
-    const contactContext = discovery.contacts.slice(0, 3)
-      .map((c) => `${c.name} (${c.role})`)
-      .join(", ");
+    // Best contact name for salutation
+    const bestContact = discovery.contacts.sort((a, b) => (a.priority || 99) - (b.priority || 99))[0];
+    const contactName = bestContact?.name && bestContact.name !== "—" ? bestContact.name : null;
+    const salutation = contactName
+      ? (() => {
+          const parts = contactName.trim().split(" ");
+          if (parts.length >= 2) {
+            return `${parts[0].charAt(0).toUpperCase()}. ${parts.slice(1).join(" ")}`;
+          }
+          return parts[0];
+        })()
+      : null;
 
     const groqResponse = await groq.chat.completions.create({
       model: "llama-3.3-70b-versatile",
       messages: [
         {
           role: "user",
-          content: `${templateInstructions}
+          content: `${OUTREACH_PROMPT}
 
 SITE CIBLE :
 - Domaine : ${p.domain}
 - URL page cible : ${p.url}
-- Type : ${p.type}
-- Score pertinence : ${p.score}/10
-- Notes : ${p.notes || "—"}
-${contactContext ? `- Contact(s) identifié(s) : ${contactContext}` : ""}
-${discovery.bestEmail ? `- Email destinataire : ${discovery.bestEmail}` : ""}
+- Type : ${p.type} (${templateType === "forum" ? "communauté / forum" : templateType === "partenaire" ? "média / site voyage" : "blog / créateur contenu"})
+- Notes sur le site : ${p.notes || "—"}
+${salutation ? "- Salutation : Bonjour " + salutation + "," : "- Pas de contact identifié — commencer par Bonjour,"}
 
-CONTENU PAGE CIBLE :
-${targetPageContent || "(non disponible)"}
-
-RÈGLES ABSOLUES :
-- Email court : 150-200 mots maximum
-- Première phrase : mentionner un élément concret et spécifique du site
-- Ne jamais inventer de chiffres ou statistiques
-- Ne jamais écrire le mot "backlink" — dire "lien", "mention", "collaboration éditoriale"
-- Ton humain, chaleureux, authentique
-- Mentionner que vanzonexplorer.com est basé au Pays Basque
-${contactContext ? `- Si possible, adresser l'email au contact identifié` : ""}
-- Signer "Jules — Vanzon Explorer"
+CONTENU DU SITE (extrait) :
+${targetPageContent || "(non disponible — imagine le contenu d'après le domaine et les notes)"}
 
 Format OBLIGATOIRE :
 ###OBJET###
-[Objet : court, accrocheur, max 8 mots, personnalisé]
+[Objet : 5-7 mots max, sans "RE:", sans emoji, naturel]
 ###CORPS###
-[Corps complet de l'email en français]
+[Email complet]
 ###FIN###`,
         },
       ],
-      temperature: 0.8,
-      max_tokens: 800,
+      temperature: 0.75,
+      max_tokens: 400,
     });
 
     const rawContent = groqResponse.choices[0]?.message?.content || "";
