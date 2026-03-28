@@ -129,7 +129,7 @@ const courseJsonLd = {
     },
     {
       "@type": "Person",
-      name: "Elio",
+      name: "Elio Dubernet",
       jobTitle: "Co-fondateur Vanzon Explorer",
       url: "https://vanzonexplorer.com/a-propos",
     },

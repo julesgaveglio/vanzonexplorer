@@ -99,7 +99,7 @@ const schema = {
   foundingDate: "2024",
   founder: [
     { "@type": "Person", name: "Jules Gaveglio" },
-    { "@type": "Person", name: "Elio" },
+    { "@type": "Person", name: "Elio Dubernet" },
   ],
 };
 
