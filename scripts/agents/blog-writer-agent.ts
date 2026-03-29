@@ -28,11 +28,12 @@ import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@sanity/client";
 import { searchPexelsPhoto, downloadPexelsPhoto, buildPexelsCredit } from "../../src/lib/pexels";
 import { notifyTelegram } from "../lib/telegram";
+import { claimPendingArticle, updateQueueItem, getQueueItems, type ArticleQueueItem } from "../lib/queue";
+import { startRun, finishRun } from "../lib/agent-runs";
 
 // ── Constants ──────────────────────────────────────────────────────────────────
 // scripts/agents/ → project root is two directories up
 const PROJECT_ROOT = path.resolve(path.dirname(__filename), "../..");
-const QUEUE_FILE = path.join(PROJECT_ROOT, "scripts/data/article-queue.json");
 const PROMPTS_DIR = path.join(PROJECT_ROOT, "scripts/agents/prompts");
 
 function loadAgentPrompt(name: string): string | null {
@@ -44,26 +45,6 @@ const DFS_LOCATION_CODE = 2250; // France
 const DFS_LANGUAGE_CODE = "fr";
 
 // ── Interfaces ─────────────────────────────────────────────────────────────────
-interface ArticleQueueItem {
-  id: string;
-  slug: string;
-  title: string;
-  excerpt: string;
-  category: string;
-  tag: string | null;
-  readTime: string;
-  targetKeyword: string;
-  secondaryKeywords: string[];
-  targetWordCount?: number; // target word count — drives structure & prompt constraints
-  wordCountNote?: string;   // rationale (for humans reading the queue)
-  status: "pending" | "writing" | "published" | "needs-improvement";
-  priority: number;
-  sanityId: string | null;
-  publishedAt: string | null;
-  lastSeoCheck: string | null;
-  seoPosition: number | null;
-}
-
 interface PortableTextBlock {
   _type: "block";
   _key: string;
@@ -154,18 +135,6 @@ async function dfsPost<T = unknown>(endpoint: string, body: unknown): Promise<T>
   }
 
   return json.tasks?.[0]?.result?.[0] as T;
-}
-
-// ── Queue helpers ──────────────────────────────────────────────────────────────
-async function readQueue(): Promise<ArticleQueueItem[]> {
-  const fs = await import("fs/promises");
-  const raw = await fs.readFile(QUEUE_FILE, "utf-8");
-  return JSON.parse(raw) as ArticleQueueItem[];
-}
-
-async function updateQueue(queue: ArticleQueueItem[]): Promise<void> {
-  const fs = await import("fs/promises");
-  await fs.writeFile(QUEUE_FILE, JSON.stringify(queue, null, 2), "utf-8");
 }
 
 // ── Random key generator for Portable Text ─────────────────────────────────────
@@ -1250,51 +1219,27 @@ async function main(): Promise<void> {
   const slugArg = process.argv[2];
   const isNextMode = !slugArg || slugArg === "next";
 
-  // Step 1: Read queue
-  console.log("\nReading article queue...");
-  const queue = await readQueue();
+  const runId = await startRun("blog-writer", { slugArg: slugArg ?? "next" });
 
-  // Step 2: Find target article
-  let article: ArticleQueueItem | undefined;
+  // Step 1: Claim article atomically from Supabase
+  console.log("\nClaiming article from queue...");
+  const article = await claimPendingArticle(isNextMode ? undefined : slugArg);
 
-  if (isNextMode) {
-    // Find lowest-priority pending article
-    const pending = queue
-      .filter((a) => a.status === "pending")
-      .sort((a, b) => a.priority - b.priority);
-    article = pending[0];
-    if (!article) {
-      console.log("No pending articles in queue. All done!");
-      process.exit(0);
-    }
-  } else {
-    // Find by slug
-    article = queue.find((a) => a.slug === slugArg);
-    if (!article) {
-      console.error(`No article found with slug: "${slugArg}"`);
-      process.exit(1);
-    }
-    if (article.status !== "pending") {
-      console.warn(
-        `Article "${article.slug}" has status "${article.status}" (not pending). Proceeding anyway...`
-      );
-    }
+  if (!article) {
+    console.log(isNextMode ? "No pending articles in queue. All done!" : `No article found with slug: "${slugArg}"`);
+    await finishRun(runId, { status: "success", itemsProcessed: 0 });
+    process.exit(0);
   }
 
+  console.log(`\n[Queue] Claimed article: ${article.slug}`);
   console.log(`\nSelected article: "${article.title}"`);
   console.log(`  Slug: ${article.slug}`);
   console.log(`  Category: ${article.category}`);
   console.log(`  Target keyword: ${article.targetKeyword}`);
   console.log(`  Target word count: ${article.targetWordCount ?? 1400} mots`);
   console.log(`  Priority: ${article.priority}`);
-
-  // Step 3: Mark as "writing" in queue
-  const articleIndex = queue.findIndex((a) => a.id === article!.id);
-  queue[articleIndex].status = "writing";
-  await updateQueue(queue);
   console.log(`\nStatus updated to "writing"`);
 
-  // Track whether we need to restore status on error
   let publishedSuccessfully = false;
 
   try {
@@ -1316,8 +1261,9 @@ async function main(): Promise<void> {
     const publishedSlugs = await getPublishedSlugs();
 
     // Build published articles list for dynamic internal links in prompt
-    const publishedArticles: PublishedArticle[] = queue
-      .filter((a) => a.status === "published" && a.slug && a.id !== article!.id)
+    const allPublished = await getQueueItems({ status: "published" });
+    const publishedArticles: PublishedArticle[] = allPublished
+      .filter((a) => a.slug && a.id !== article.id)
       .map((a) => ({ slug: a.slug, title: a.title, targetKeyword: a.targetKeyword }));
     console.log(`  ${publishedArticles.length} published article(s) available for internal links`);
 
@@ -1353,12 +1299,14 @@ async function main(): Promise<void> {
 
     // Step 9: Update queue — mark as published
     const publishedAt = new Date().toISOString();
-    queue[articleIndex].status = "published";
-    queue[articleIndex].sanityId = sanityId;
-    queue[articleIndex].publishedAt = publishedAt;
-    await updateQueue(queue);
+    await updateQueueItem(article.id, {
+      status: "published",
+      sanityId,
+      publishedAt,
+    });
 
     publishedSuccessfully = true;
+    await finishRun(runId, { status: "success", itemsProcessed: 1, metadata: { slug: article.slug, sanityId } });
 
     // Success log
     console.log("\n" + "=".repeat(60));
@@ -1380,10 +1328,10 @@ async function main(): Promise<void> {
     // Restore status to "pending" so the article can be retried
     if (!publishedSuccessfully) {
       console.error(`\nError occurred — restoring article status to "pending"...`);
-      queue[articleIndex].status = "pending";
-      await updateQueue(queue).catch((writeErr) => {
-        console.error(`  Failed to restore queue status: ${(writeErr as Error).message}`);
+      await updateQueueItem(article.id, { status: "pending" }).catch((writeErr: Error) => {
+        console.error(`  Failed to restore queue status: ${writeErr.message}`);
       });
+      await finishRun(runId, { status: "error", error: (err as Error).message, metadata: { slug: article.slug } });
     }
     throw err;
   }

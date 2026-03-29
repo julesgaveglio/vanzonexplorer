@@ -27,14 +27,14 @@
  */
 
 import path from "path";
-import fs from "fs/promises";
 import fsSync from "fs";
 import { createClient } from "@sanity/client";
 import Anthropic from "@anthropic-ai/sdk";
 import { notifyTelegram } from "../lib/telegram";
+import { getQueueItems, updateQueueItem } from "../lib/queue";
+import { startRun, finishRun } from "../lib/agent-runs";
 
 const PROJECT_ROOT = path.resolve(path.dirname(__filename), "../..");
-const QUEUE_FILE = path.join(PROJECT_ROOT, "scripts/data/article-queue.json");
 const SITE_URL = "https://vanzonexplorer.com";
 const PROMPTS_DIR = path.join(PROJECT_ROOT, "scripts/agents/prompts");
 
@@ -44,19 +44,6 @@ function loadAgentPrompt(name: string): string | null {
 }
 
 // ── Types ─────────────────────────────────────────────────────────────────────
-
-interface ArticleQueueItem {
-  id: string;
-  slug: string;
-  title: string;
-  targetKeyword: string;
-  secondaryKeywords: string[];
-  status: "pending" | "published";
-  sanityId: string | null;
-  publishedAt: string | null;
-  lastSeoCheck: string | null;
-  seoPosition: number | null;
-}
 
 interface GscRow {
   url: string;
@@ -248,9 +235,10 @@ async function main() {
   console.log(`⚡ Agent Optimiseur d'Articles${dryRun ? " (DRY RUN)" : ""}`);
   console.log(`Date : ${new Date().toLocaleDateString("fr-FR")}\n`);
 
+  const runId = await startRun("article-optimizer-quarterly");
+
   // Load queue
-  const rawQueue = await fs.readFile(QUEUE_FILE, "utf-8");
-  const queue = JSON.parse(rawQueue) as ArticleQueueItem[];
+  const queue = await getQueueItems({ status: "published" });
 
   // Filter published articles 90+ days old with a Sanity ID
   const ninetyDaysAgo = new Date();
@@ -310,7 +298,6 @@ async function main() {
   console.log(`\n🔧 ${targets.length} articles à optimiser :\n`);
 
   let optimized = 0;
-  const updatedQueue = [...queue];
 
   for (const { article, gsc, reason } of targets) {
     console.log(`\n▶ "${article.title}"`);
@@ -329,10 +316,7 @@ async function main() {
 
       if (!dryRun) {
         await updateSanityMeta(article.sanityId!, meta);
-
-        // Update queue item
-        const idx = updatedQueue.findIndex((a) => a.id === article.id);
-        if (idx >= 0) updatedQueue[idx].lastSeoCheck = new Date().toISOString();
+        await updateQueueItem(article.id, { lastOptimizedAt: new Date().toISOString() });
       }
 
       optimized++;
@@ -341,10 +325,7 @@ async function main() {
     }
   }
 
-  if (!dryRun && optimized > 0) {
-    await fs.writeFile(QUEUE_FILE, JSON.stringify(updatedQueue, null, 2), "utf-8");
-  }
-
+  await finishRun(runId, { status: "success", itemsProcessed: targets.length, itemsCreated: optimized });
   console.log(`\n${dryRun ? "🔍 DRY RUN — " : ""}✅ ${optimized} articles optimisés`);
 }
 

@@ -4,8 +4,20 @@ import { useState } from "react";
 import type { ArticleQueueItem } from "../types";
 import { CATEGORY_COLORS } from "../types";
 
+interface AgentRunRow {
+  id: string;
+  agentName: string;
+  startedAt: string;
+  finishedAt: string | null;
+  status: "running" | "success" | "error";
+  itemsProcessed: number;
+  itemsCreated: number;
+  errorMessage: string | null;
+}
+
 interface AgentPanelProps {
   publishedArticles: ArticleQueueItem[];
+  agentRuns?: AgentRunRow[];
 }
 
 interface AuditData {
@@ -146,7 +158,7 @@ function WordCountBar({ label, count, max }: { label: string; count: number; max
   );
 }
 
-export default function AgentPanel({ publishedArticles }: AgentPanelProps) {
+export default function AgentPanel({ publishedArticles, agentRuns = [] }: AgentPanelProps) {
   const [activeAgent, setActiveAgent] = useState<"competitor" | "audit" | "improve" | null>(null);
   const [logs, setLogs] = useState<string[]>([]);
   const [competitorResult, setCompetitorResult] = useState<CompetitorResult | null>(null);
@@ -777,6 +789,45 @@ export default function AgentPanel({ publishedArticles }: AgentPanelProps) {
                 </div>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Agent Runs History */}
+      {agentRuns.length > 0 && (
+        <div className="mt-6 bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+          <div className="px-5 py-4 border-b border-slate-50">
+            <h3 className="text-sm font-bold text-slate-700">Historique des agents (50 derniers)</h3>
+          </div>
+          <div className="divide-y divide-slate-50">
+            {agentRuns.slice(0, 20).map((run) => {
+              const dot = run.status === "success" ? "bg-green-400" : run.status === "error" ? "bg-red-400" : "bg-amber-400 animate-pulse";
+              const ago = run.finishedAt
+                ? (() => {
+                    const diff = Date.now() - new Date(run.finishedAt).getTime();
+                    if (diff < 60000) return "à l'instant";
+                    if (diff < 3600000) return `il y a ${Math.floor(diff / 60000)} min`;
+                    if (diff < 86400000) return `il y a ${Math.floor(diff / 3600000)} h`;
+                    return `il y a ${Math.floor(diff / 86400000)} j`;
+                  })()
+                : "en cours…";
+              return (
+                <div key={run.id} className="flex items-center gap-3 px-5 py-2.5">
+                  <span className={`w-2 h-2 rounded-full flex-shrink-0 ${dot}`} />
+                  <span className="text-xs font-mono text-slate-600 w-44 truncate">{run.agentName}</span>
+                  <span className="text-xs text-slate-400 flex-1">{ago}</span>
+                  {run.itemsCreated > 0 && (
+                    <span className="text-xs bg-green-50 text-green-600 font-semibold px-2 py-0.5 rounded-full">+{run.itemsCreated}</span>
+                  )}
+                  {run.itemsProcessed > 0 && (
+                    <span className="text-xs text-slate-400">{run.itemsProcessed} traité{run.itemsProcessed > 1 ? "s" : ""}</span>
+                  )}
+                  {run.errorMessage && (
+                    <span className="text-xs text-red-500 truncate max-w-xs">{run.errorMessage}</span>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       )}

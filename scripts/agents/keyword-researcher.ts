@@ -17,41 +17,17 @@
 
 import path from "path";
 import Anthropic from "@anthropic-ai/sdk";
+import { getQueueItems, insertQueueItem, type ArticleQueueItem } from "../lib/queue";
+import { startRun, finishRun } from "../lib/agent-runs";
 
 // ── Constants ──────────────────────────────────────────────────────────────────
 // scripts/agents/ → project root is two directories up
 const PROJECT_ROOT = path.resolve(path.dirname(__filename), "../..");
-const QUEUE_FILE = path.join(PROJECT_ROOT, "scripts/data/article-queue.json");
 const DFS_BASE = "https://api.dataforseo.com/v3";
 const DFS_LOCATION_CODE = 2250; // France
 const DFS_LANGUAGE_CODE = "fr";
 
 // ── Interfaces ─────────────────────────────────────────────────────────────────
-interface ArticleQueueItem {
-  id: string;
-  slug: string;
-  title: string;
-  excerpt: string;
-  category: string;
-  tag: string | null;
-  readTime: string;
-  targetKeyword: string;
-  secondaryKeywords: string[];
-  targetWordCount?: number;
-  wordCountNote?: string;
-  status: "pending" | "writing" | "published" | "needs-improvement";
-  priority: number;
-  sanityId: string | null;
-  publishedAt: string | null;
-  lastSeoCheck: string | null;
-  seoPosition: number | null;
-  // SEO research fields
-  searchVolume?: number;
-  competitionLevel?: string;  // "LOW" | "MEDIUM" | "HIGH"
-  seoScore?: number;          // searchVolume × competition factor
-  createdAt?: string;         // ISO date added to queue
-}
-
 interface DfsKeywordIdeasResult {
   items?: Array<{
     keyword: string;
@@ -115,18 +91,6 @@ async function dfsPost<T = unknown>(endpoint: string, body: unknown): Promise<T>
   return json.tasks?.[0]?.result?.[0] as T;
 }
 
-// ── Queue helpers ──────────────────────────────────────────────────────────────
-async function readQueue(): Promise<ArticleQueueItem[]> {
-  const fs = await import("fs/promises");
-  const raw = await fs.readFile(QUEUE_FILE, "utf-8");
-  return JSON.parse(raw) as ArticleQueueItem[];
-}
-
-async function updateQueue(queue: ArticleQueueItem[]): Promise<void> {
-  const fs = await import("fs/promises");
-  await fs.writeFile(QUEUE_FILE, JSON.stringify(queue, null, 2), "utf-8");
-}
-
 // ── Claude: generate article metadata ──────────────────────────────────────────
 async function callClaude(prompt: string, opts: { maxTokens?: number } = {}): Promise<string> {
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -187,7 +151,6 @@ interface SummaryRow {
 
 async function processCategory(
   category: string,
-  queue: ArticleQueueItem[],
 ): Promise<SummaryRow[]> {
   const seedKeywords = SEED_KEYWORDS[category];
   if (!seedKeywords) {
@@ -260,12 +223,13 @@ async function processCategory(
 
   console.log(`  ${scored.length} keyword(s) pass filter (vol>=200, competition LOW|MEDIUM)`);
 
-  // ── Step 3: Check existing queue slugs ──────────────────────────────────────
+  // ── Step 3: Load current queue for deduplication ─────────────────────────────
+  const queue = await getQueueItems();
   const existingKeywords = new Set(queue.map((item) => item.targetKeyword.toLowerCase().trim()));
   const existingSlugs = new Set(queue.map((item) => item.slug.toLowerCase().trim()));
 
   const summaryRows: SummaryRow[] = [];
-  const newItems: ArticleQueueItem[] = [];
+  let insertedCount = 0;
 
   for (const item of scored) {
     // Check if keyword already exists in queue
@@ -300,7 +264,7 @@ async function processCategory(
       continue;
     }
 
-    // Ensure slug is unique — if collision, append suffix
+    // Ensure slug is unique locally (Supabase unique constraint handles race conditions)
     let slug = meta.slug;
     let slugSuffix = 1;
     while (existingSlugs.has(slug.toLowerCase().trim())) {
@@ -321,7 +285,7 @@ async function processCategory(
       targetWordCount: meta.targetWordCount,
       wordCountNote: meta.wordCountNote,
       status: "pending",
-      priority: queue.length + newItems.length,
+      priority: queue.length + insertedCount,
       sanityId: null,
       publishedAt: null,
       lastSeoCheck: null,
@@ -332,28 +296,28 @@ async function processCategory(
       createdAt: new Date().toISOString(),
     };
 
-    newItems.push(queueItem);
-    existingKeywords.add(item.keyword.toLowerCase().trim());
-    existingSlugs.add(slug.toLowerCase().trim());
+    const { inserted } = await insertQueueItem(queueItem);
+    if (!inserted) {
+      console.log(`  [SKIP] Déjà dans la queue: ${slug}`);
+    } else {
+      insertedCount++;
+      existingKeywords.add(item.keyword.toLowerCase().trim());
+      existingSlugs.add(slug.toLowerCase().trim());
+      console.log(`  + Added: "${meta.title}" [slug: ${slug}]`);
+    }
 
-    console.log(`  + Added: "${meta.title}" [slug: ${slug}]`);
     summaryRows.push({
       keyword: item.keyword,
       searchVolume: item.searchVolume,
       competitionLevel: item.competitionLevel,
       seoScore: item.score,
       title: meta.title,
-      status: "added",
+      status: inserted ? "added" : "skipped",
     });
   }
 
-  // ── Step 5: Persist new items to queue ──────────────────────────────────────
-  if (newItems.length > 0) {
-    for (const newItem of newItems) {
-      queue.push(newItem);
-    }
-    await updateQueue(queue);
-    console.log(`  Saved ${newItems.length} new article(s) to queue.`);
+  if (insertedCount > 0) {
+    console.log(`  Saved ${insertedCount} new article(s) to queue.`);
   } else {
     console.log(`  No new articles added for this category.`);
   }
@@ -392,24 +356,19 @@ async function main(): Promise<void> {
 
   console.log("=== Vanzon Keyword Researcher ===");
   console.log(`Categories to process: ${categoriesToProcess.join(", ")}`);
-  console.log(`Queue file: ${QUEUE_FILE}`);
   console.log("");
 
-  // Load queue once
-  let queue = await readQueue();
-  console.log(`Current queue size: ${queue.length} article(s)`);
+  const runId = await startRun("keyword-researcher", { categories: categoriesToProcess });
 
   // Process each category
   const allSummaryRows: (SummaryRow & { category: string })[] = [];
 
   for (const category of categoriesToProcess) {
     try {
-      const rows = await processCategory(category, queue);
+      const rows = await processCategory(category);
       for (const row of rows) {
         allSummaryRows.push({ ...row, category });
       }
-      // Reload queue after each category to get the latest state
-      queue = await readQueue();
     } catch (err) {
       console.error(`ERROR processing category "${category}": ${(err as Error).message}`);
     }
@@ -417,10 +376,13 @@ async function main(): Promise<void> {
 
   // ── Final summary ──────────────────────────────────────────────────────────
   console.log("\n=== Summary ===");
+  const added = allSummaryRows.filter((r) => r.status === "added").length;
+  const skipped = allSummaryRows.filter((r) => r.status === "skipped").length;
+  const errors = allSummaryRows.filter((r) => r.status === "error").length;
+
   if (allSummaryRows.length === 0) {
     console.log("No keywords processed.");
   } else {
-    // Format as table
     const tableData = allSummaryRows.map((row) => ({
       category: row.category,
       keyword: row.keyword.length > 30 ? row.keyword.slice(0, 27) + "..." : row.keyword,
@@ -432,17 +394,13 @@ async function main(): Promise<void> {
     }));
 
     console.table(tableData);
-
-    const added = allSummaryRows.filter((r) => r.status === "added").length;
-    const skipped = allSummaryRows.filter((r) => r.status === "skipped").length;
-    const errors = allSummaryRows.filter((r) => r.status === "error").length;
-
     console.log(`\nTotal: ${added} added, ${skipped} skipped, ${errors} errors`);
-    console.log(`Queue now has ${queue.length} article(s)`);
   }
+
+  await finishRun(runId, { status: "success", itemsCreated: added, itemsProcessed: allSummaryRows.length });
 }
 
-main().catch((err) => {
+main().catch(async (err) => {
   console.error("Fatal error:", err);
   process.exit(1);
 });

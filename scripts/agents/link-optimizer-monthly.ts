@@ -28,13 +28,13 @@
  */
 
 import path from "path";
-import fs from "fs/promises";
 import fsSync from "fs";
 import { createClient } from "@sanity/client";
 import { notifyTelegram } from "../lib/telegram";
+import { getQueueItems, updateQueueItem } from "../lib/queue";
+import { startRun, finishRun } from "../lib/agent-runs";
 
 const PROJECT_ROOT = path.resolve(path.dirname(__filename), "../..");
-const QUEUE_FILE = path.join(PROJECT_ROOT, "scripts/data/article-queue.json");
 const CONFIG_FILE = path.join(PROJECT_ROOT, "scripts/agents/prompts/link-optimizer-monthly.json");
 const SITE_URL = "https://vanzonexplorer.com";
 const SITE_HOST = "vanzonexplorer.com";
@@ -83,20 +83,7 @@ const sanity = createClient({
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-interface ArticleQueueItem {
-  id: string;
-  slug: string;
-  title: string;
-  targetKeyword: string;
-  secondaryKeywords: string[];
-  status: "pending" | "writing" | "published" | "needs-improvement";
-  priority: number;
-  sanityId: string | null;
-  publishedAt: string | null;
-  lastSeoCheck: string | null;
-  lastLinkCheck?: string | null;
-  seoPosition?: number | null;
-}
+import type { ArticleQueueItem } from "../lib/queue";
 
 interface PTMark {
   _type: string;
@@ -417,9 +404,10 @@ async function main() {
   const config = loadConfig();
   console.log(`⚙️  Config: maxLinks=${config.maxInternalLinksPerArticle}, cooldown=${config.minDaysBetweenChecks}j, timeout=${config.externalCheckTimeoutMs}ms\n`);
 
+  const runId = await startRun("link-optimizer-monthly");
+
   // Load queue
-  const raw = await fs.readFile(QUEUE_FILE, "utf-8");
-  const queue = JSON.parse(raw) as ArticleQueueItem[];
+  const queue = await getQueueItems({ status: "published" });
 
   // Build internal link index from ALL published articles
   const published = queue.filter((a) => a.status === "published" && a.sanityId);
@@ -523,14 +511,10 @@ async function main() {
       console.log(`  [DRY RUN] Modifications simulées — Sanity non modifié`);
     }
 
-    // Always update lastLinkCheck in queue
-    const queueIndex = queue.findIndex((q) => q.id === item.id);
-    if (queueIndex !== -1) queue[queueIndex] = { ...queue[queueIndex], lastLinkCheck: now };
-  }
-
-  // Save updated queue
-  if (!isDryRun) {
-    await fs.writeFile(QUEUE_FILE, JSON.stringify(queue, null, 2), "utf-8");
+    // Always update lastLinkCheck in Supabase
+    if (!isDryRun) {
+      await updateQueueItem(item.id, { lastLinkCheck: now });
+    }
   }
 
   // Summary
@@ -542,6 +526,12 @@ async function main() {
   console.log(`   Articles mis à jour dans Sanity : ${totalUpdated}`);
   if (isDryRun) console.log("\n   ⚠️  [DRY RUN] — aucune modification réelle");
   console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
+
+  await finishRun(runId, {
+    status: "success",
+    itemsProcessed: toProcess.length,
+    metadata: { externalFixed: totalExternalFixed, internalAdded: totalInternalAdded },
+  });
 }
 
 main()

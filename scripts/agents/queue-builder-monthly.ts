@@ -15,13 +15,13 @@
  */
 
 import path from "path";
-import fs from "fs/promises";
 import fsSync from "fs";
 import Anthropic from "@anthropic-ai/sdk";
 import { notifyTelegram } from "../lib/telegram";
+import { getQueueItems, insertQueueItem, type ArticleQueueItem } from "../lib/queue";
+import { startRun, finishRun } from "../lib/agent-runs";
 
 const PROJECT_ROOT = path.resolve(path.dirname(__filename), "../..");
-const QUEUE_FILE = path.join(PROJECT_ROOT, "scripts/data/article-queue.json");
 const KEYWORDS_FILE = path.join(PROJECT_ROOT, "scripts/data/keywords-research.json");
 const PROMPTS_DIR = path.join(PROJECT_ROOT, "scripts/agents/prompts");
 
@@ -31,7 +31,7 @@ function loadAgentPrompt(name: string): string | null {
 }
 
 // Max new articles to add per run (pour éviter une queue trop dense)
-const MAX_NEW_ARTICLES = 8;
+const MAX_NEW_ARTICLES = 12;
 // Min score pour qu'un mot-clé soit retenu
 const MIN_SCORE = 100;
 
@@ -55,30 +55,6 @@ interface ResearchReport {
   generatedAt: string;
   quarter: string;
   segments: SegmentReport[];
-}
-
-interface ArticleQueueItem {
-  id: string;
-  slug: string;
-  title: string;
-  excerpt: string;
-  category: string;
-  tag: string | null;
-  readTime: string;
-  targetKeyword: string;
-  secondaryKeywords: string[];
-  targetWordCount: number;
-  wordCountNote: string;
-  status: "pending" | "published";
-  priority: number;
-  sanityId: string | null;
-  publishedAt: string | null;
-  lastSeoCheck: string | null;
-  seoPosition: number | null;
-  searchVolume?: number;
-  competitionLevel?: string;
-  addedBy?: string;
-  addedAt?: string;
 }
 
 interface GeminiArticleMeta {
@@ -194,8 +170,7 @@ async function main() {
   }
 
   // Load article queue
-  const rawQueue = await fs.readFile(QUEUE_FILE, "utf-8");
-  const queue = JSON.parse(rawQueue) as ArticleQueueItem[];
+  const queue = await getQueueItems();
   console.log(`✓ Queue chargée — ${queue.length} articles (${queue.filter((a) => a.status === "published").length} publiés)\n`);
 
   // Collect all opportunities across segments
@@ -257,7 +232,6 @@ async function main() {
         searchVolume: keyword.searchVolume,
         competitionLevel: keyword.competitionLevel,
         addedBy: "queue-builder-monthly",
-        addedAt: new Date().toISOString(),
       };
 
       newArticles.push(article);
@@ -280,11 +254,16 @@ async function main() {
     return;
   }
 
-  // Merge into queue and re-sort by priority desc
-  const updatedQueue = [...queue, ...newArticles].sort((a, b) => b.priority - a.priority);
-  await fs.writeFile(QUEUE_FILE, JSON.stringify(updatedQueue, null, 2), "utf-8");
+  const runId = await startRun("queue-builder-monthly", { newArticlesCount: newArticles.length });
+  let itemsCreated = 0;
 
-  console.log(`\n✅ Queue mise à jour — ${updatedQueue.length} articles total`);
+  for (const item of newArticles) {
+    const { inserted } = await insertQueueItem(item);
+    if (inserted) itemsCreated++;
+  }
+
+  await finishRun(runId, { status: "success", itemsCreated, itemsProcessed: newArticles.length });
+  console.log(`\n✅ Queue mise à jour — ${itemsCreated} articles insérés`);
 }
 
 main()

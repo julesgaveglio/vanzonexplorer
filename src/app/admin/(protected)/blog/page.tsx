@@ -1,7 +1,6 @@
 import { Metadata } from "next";
-import { readFile } from "fs/promises";
-import path from "path";
 import type { ArticleQueueItem, GscMetrics, GaMetrics } from "./types";
+import { createSupabaseAdmin } from "@/lib/supabase/server";
 import KpiBar from "./_components/KpiBar";
 import PublishedArticlesTable from "./_components/PublishedArticlesTable";
 import ArticleQueueList from "./_components/ArticleQueueList";
@@ -13,11 +12,75 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+interface AgentRunRow {
+  id: string;
+  agentName: string;
+  startedAt: string;
+  finishedAt: string | null;
+  status: "running" | "success" | "error";
+  itemsProcessed: number;
+  itemsCreated: number;
+  errorMessage: string | null;
+}
+
 async function getArticleQueue(): Promise<ArticleQueueItem[]> {
   try {
-    const queuePath = path.resolve(process.cwd(), "scripts/data/article-queue.json");
-    const raw = await readFile(queuePath, "utf-8");
-    return JSON.parse(raw) as ArticleQueueItem[];
+    const sb = createSupabaseAdmin();
+    const { data, error } = await sb
+      .from("article_queue")
+      .select("*")
+      .order("priority", { ascending: true })
+      .order("created_at", { ascending: true });
+    if (error) throw error;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (data ?? []).map((row: any) => ({
+      id:               row.id,
+      slug:             row.slug,
+      title:            row.title,
+      excerpt:          row.excerpt ?? "",
+      category:         row.category,
+      tag:              row.tag ?? null,
+      readTime:         row.read_time ?? "5 min",
+      targetKeyword:    row.target_keyword ?? "",
+      secondaryKeywords: row.secondary_keywords ?? [],
+      targetWordCount:  row.target_word_count,
+      wordCountNote:    row.word_count_note,
+      status:           row.status,
+      priority:         row.priority,
+      sanityId:         row.sanity_id ?? null,
+      publishedAt:      row.published_at ?? null,
+      lastSeoCheck:     row.last_seo_check ?? null,
+      seoPosition:      row.seo_position ?? null,
+      searchVolume:     row.search_volume,
+      competitionLevel: row.competition_level,
+      seoScore:         row.seo_score,
+      createdAt:        row.created_at,
+    })) as ArticleQueueItem[];
+  } catch {
+    return [];
+  }
+}
+
+async function getRecentAgentRuns(): Promise<AgentRunRow[]> {
+  try {
+    const sb = createSupabaseAdmin();
+    const { data, error } = await sb
+      .from("agent_runs")
+      .select("*")
+      .order("started_at", { ascending: false })
+      .limit(50);
+    if (error) return [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (data ?? []).map((r: any) => ({
+      id:             r.id,
+      agentName:      r.agent_name,
+      startedAt:      r.started_at,
+      finishedAt:     r.finished_at ?? null,
+      status:         r.status,
+      itemsProcessed: r.items_processed ?? 0,
+      itemsCreated:   r.items_created ?? 0,
+      errorMessage:   r.error_message ?? null,
+    }));
   } catch {
     return [];
   }
@@ -164,10 +227,11 @@ async function getGaMetrics(): Promise<{ metrics: Record<string, GaMetrics>; con
 }
 
 export default async function AdminBlogPage() {
-  const [articles, { metrics: gscMetrics, connected: gscConnected }, { metrics: gaMetrics, connected: gaConnected, activeUsers }] = await Promise.all([
+  const [articles, { metrics: gscMetrics, connected: gscConnected }, { metrics: gaMetrics, connected: gaConnected, activeUsers }, agentRuns] = await Promise.all([
     getArticleQueue(),
     getGscMetrics(),
     getGaMetrics(),
+    getRecentAgentRuns(),
   ]);
 
   const publishedCount = articles.filter((a) => a.status === "published" || a.status === "needs-improvement").length;
@@ -207,7 +271,7 @@ export default async function AdminBlogPage() {
           <span className="w-8 h-px bg-slate-200" />
           <span className="text-xs font-semibold uppercase tracking-widest text-slate-400">Intelligence IA</span>
         </div>
-        <AgentPanel publishedArticles={articles.filter(a => a.status === "published" || a.status === "needs-improvement")} />
+        <AgentPanel publishedArticles={articles.filter(a => a.status === "published" || a.status === "needs-improvement")} agentRuns={agentRuns} />
       </div>
 
       {/* Articles publiés */}

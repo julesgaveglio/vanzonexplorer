@@ -12,10 +12,11 @@
  *   DATAFORSEO_PASSWORD
  */
 
-import * as fs from "fs";
-import * as path from "path";
 import { fileURLToPath } from "url";
+import * as path from "path";
 import { notifyTelegram } from "../lib/telegram";
+import { getQueueItems, updateQueueItem } from "../lib/queue";
+import { startRun, finishRun } from "../lib/agent-runs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -23,24 +24,6 @@ const __dirname = path.dirname(__filename);
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
-
-interface ArticleQueueItem {
-  id: string;
-  slug: string;
-  title: string;
-  excerpt: string;
-  category: string;
-  tag: string;
-  readTime: string;
-  targetKeyword: string;
-  secondaryKeywords: string[];
-  status: "pending" | "published" | "needs-improvement" | "generating";
-  priority: number;
-  sanityId: string | null;
-  publishedAt: string | null;
-  lastSeoCheck: string | null;
-  seoPosition: number | null;
-}
 
 interface RankedKeywordsResult {
   items?: Array<{
@@ -193,14 +176,10 @@ async function checkPosition(keyword: string): Promise<number | null> {
 // ---------------------------------------------------------------------------
 
 async function main(): Promise<void> {
-  const queuePath = path.resolve(
-    __dirname,
-    "../data/article-queue.json"
-  );
+  const runId = await startRun("seo-checker");
 
-  // Read queue
-  const raw = fs.readFileSync(queuePath, "utf-8");
-  const queue: ArticleQueueItem[] = JSON.parse(raw);
+  // Load published articles from Supabase
+  const queue = await getQueueItems({ status: "published" });
 
   // Filter: published articles with publishedAt older than 30 days
   const thirtyDaysAgo = new Date();
@@ -208,13 +187,13 @@ async function main(): Promise<void> {
 
   const articlesToCheck = queue.filter(
     (a) =>
-      a.status === "published" &&
       a.publishedAt !== null &&
       new Date(a.publishedAt) < thirtyDaysAgo
   );
 
   if (articlesToCheck.length === 0) {
     console.log("No articles to check (none published for more than 30 days).");
+    await finishRun(runId, { status: "success", itemsProcessed: 0 });
     process.exit(0);
   }
 
@@ -242,22 +221,16 @@ async function main(): Promise<void> {
     // Determine sentinel / label
     const now = new Date().toISOString();
 
-    // Find this article in the original queue array and update it in-place
-    const queueItem = queue.find((q) => q.id === article.id)!;
-    queueItem.lastSeoCheck = now;
-
     if (position === null) {
       // Not found in top 100
-      queueItem.seoPosition = 101; // sentinel
-      queueItem.status = "needs-improvement";
+      await updateQueueItem(article.id, { seoPosition: 101, status: "needs-improvement", lastSeoCheck: now });
       countNotRanking++;
       reportLines.push(
         `  ${article.title} — Not ranking (>100) for "${article.targetKeyword}"`
       );
       console.log(`    -> Not ranking (marked needs-improvement)`);
     } else if (position > 15) {
-      queueItem.seoPosition = position;
-      queueItem.status = "needs-improvement";
+      await updateQueueItem(article.id, { seoPosition: position, status: "needs-improvement", lastSeoCheck: now });
       countBad++;
       reportLines.push(
         `  ${article.title} — Position ${position} for "${article.targetKeyword}"`
@@ -265,8 +238,7 @@ async function main(): Promise<void> {
       console.log(`    -> Position ${position} (marked needs-improvement)`);
     } else {
       // Good ranking — keep current status, just update position
-      queueItem.seoPosition = position;
-      // Don't change status from "published" → "needs-improvement" for good rankings
+      await updateQueueItem(article.id, { seoPosition: position, lastSeoCheck: now });
       countGood++;
       reportLines.push(
         `  ${article.title} — Position ${position} for "${article.targetKeyword}" ✓`
@@ -277,10 +249,6 @@ async function main(): Promise<void> {
     // Rate-limit between DataForSEO calls
     await new Promise((resolve) => setTimeout(resolve, 1000));
   }
-
-  // Write updated queue back to file
-  fs.writeFileSync(queuePath, JSON.stringify(queue, null, 2) + "\n", "utf-8");
-  console.log(`\nQueue updated: ${queuePath}`);
 
   // Print report
   const dateStr = new Date().toLocaleDateString("fr-FR", {
@@ -299,6 +267,12 @@ Articles checked: ${articlesToCheck.length}
 Rankings:
 ${reportLines.join("\n")}
 `);
+
+  await finishRun(runId, {
+    status: "success",
+    itemsProcessed: articlesToCheck.length,
+    metadata: { good: countGood, bad: countBad, notRanking: countNotRanking },
+  });
 }
 
 main()

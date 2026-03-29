@@ -1,28 +1,15 @@
 "use server";
 
-import { readFile, writeFile } from "fs/promises";
-import path from "path";
 import { revalidatePath } from "next/cache";
 import { spawn } from "child_process";
-
-const QUEUE_FILE = path.resolve(process.cwd(), "scripts/data/article-queue.json");
-
-interface ArticleQueueItem {
-  id: string;
-  slug: string;
-  status: string;
-  [key: string]: unknown;
-}
+import path from "path";
+import { createSupabaseAdmin } from "@/lib/supabase/server";
 
 export async function deleteFromQueue(id: string): Promise<{ success: boolean; error?: string }> {
   try {
-    const raw = await readFile(QUEUE_FILE, "utf-8");
-    const queue: ArticleQueueItem[] = JSON.parse(raw);
-    const filtered = queue.filter((a) => a.id !== id);
-    if (filtered.length === queue.length) {
-      return { success: false, error: "Article non trouvé" };
-    }
-    await writeFile(QUEUE_FILE, JSON.stringify(filtered, null, 2), "utf-8");
+    const sb = createSupabaseAdmin();
+    const { error } = await sb.from("article_queue").delete().eq("id", id);
+    if (error) return { success: false, error: error.message };
     revalidatePath("/admin/blog");
     return { success: true };
   } catch (err) {
@@ -32,15 +19,12 @@ export async function deleteFromQueue(id: string): Promise<{ success: boolean; e
 
 export async function triggerPublish(slug: string): Promise<{ success: boolean; message?: string; error?: string }> {
   try {
-    // Set status to "writing" immediately
-    const raw = await readFile(QUEUE_FILE, "utf-8");
-    const queue: ArticleQueueItem[] = JSON.parse(raw);
-    const article = queue.find((a) => a.slug === slug);
-    if (!article) {
-      return { success: false, error: "Article non trouvé dans la queue" };
-    }
-    article.status = "writing";
-    await writeFile(QUEUE_FILE, JSON.stringify(queue, null, 2), "utf-8");
+    const sb = createSupabaseAdmin();
+    const { error } = await sb
+      .from("article_queue")
+      .update({ status: "writing" })
+      .eq("slug", slug);
+    if (error) return { success: false, error: error.message };
     revalidatePath("/admin/blog");
 
     // Spawn agent process (detached — fire and forget)
