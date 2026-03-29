@@ -4,19 +4,20 @@
  *
  * Agent mensuel de mise à jour de la queue d'articles.
  * Lit keywords-research.json → identifie les gaps → génère de nouveaux articles
- * avec Gemini → met à jour article-queue.json.
+ * avec Claude → met à jour article-queue.json.
  *
  * Usage:
  *   npx tsx scripts/agents/queue-builder-monthly.ts
  *   npx tsx scripts/agents/queue-builder-monthly.ts --dry-run   # aperçu sans écriture
  *
  * Required env vars:
- *   GEMINI_API_KEY
+ *   ANTHROPIC_API_KEY
  */
 
 import path from "path";
 import fs from "fs/promises";
 import fsSync from "fs";
+import Anthropic from "@anthropic-ai/sdk";
 import { notifyTelegram } from "../lib/telegram";
 
 const PROJECT_ROOT = path.resolve(path.dirname(__filename), "../..");
@@ -92,33 +93,18 @@ interface GeminiArticleMeta {
   tag: string;
 }
 
-// ── Gemini ────────────────────────────────────────────────────────────────────
+// ── Claude ────────────────────────────────────────────────────────────────────
 
-async function callGemini(prompt: string): Promise<string> {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) throw new Error("GEMINI_API_KEY manquant");
-
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: {
-          maxOutputTokens: 1024,
-          temperature: 0.35,
-          responseMimeType: "application/json",
-        },
-      }),
-    }
-  );
-
-  if (!res.ok) throw new Error(`Gemini HTTP ${res.status}: ${await res.text()}`);
-  const json = await res.json() as { candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }> };
-  const text = json.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
-  if (!text) throw new Error("Gemini réponse vide");
-  return text.replace(/^```json\s*/i, "").replace(/\s*```$/i, "").trim();
+async function callClaude(prompt: string): Promise<string> {
+  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+  const message = await client.messages.create({
+    model: "claude-haiku-4-5-20251001",
+    max_tokens: 1024,
+    messages: [{ role: "user", content: prompt }],
+  });
+  const content = message.content[0];
+  if (content.type !== "text") throw new Error("Claude réponse vide");
+  return content.text.replace(/^```json\s*/i, "").replace(/\s*```$/i, "").trim();
 }
 
 async function generateArticleBrief(
@@ -160,7 +146,7 @@ Règles :
 - targetWordCount entre 900 et 2200
 - wordCountNote doit mentionner l'angle éditorial unique et le CTA`;
 
-  const raw = await callGemini(prompt);
+  const raw = await callClaude(prompt);
   return JSON.parse(raw) as GeminiArticleMeta;
 }
 

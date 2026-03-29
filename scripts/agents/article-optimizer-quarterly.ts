@@ -4,7 +4,7 @@
  *
  * Agent trimestriel d'optimisation des articles publiés.
  * Analyse les performances GSC → identifie les articles à améliorer
- * → génère une version optimisée avec Gemini → met à jour Sanity.
+ * → génère une version optimisée avec Claude → met à jour Sanity.
  *
  * Critères d'optimisation :
  *   - Article publié depuis 90+ jours
@@ -18,7 +18,7 @@
  *   npx tsx scripts/agents/article-optimizer-quarterly.ts [slug]   # article précis
  *
  * Required env vars:
- *   GEMINI_API_KEY
+ *   ANTHROPIC_API_KEY
  *   SANITY_API_WRITE_TOKEN
  *   NEXT_PUBLIC_SANITY_PROJECT_ID
  *   GOOGLE_GSC_CLIENT_ID
@@ -30,7 +30,7 @@ import path from "path";
 import fs from "fs/promises";
 import fsSync from "fs";
 import { createClient } from "@sanity/client";
-import { notifyTelegram } from "../lib/telegram";
+import Anthropic from "@anthropic-ai/sdk";
 import { notifyTelegram } from "../lib/telegram";
 
 const PROJECT_ROOT = path.resolve(path.dirname(__filename), "../..");
@@ -167,30 +167,18 @@ function extractBodyText(body: SanityArticle["body"]): string {
     .join("\n");
 }
 
-// ── Gemini ────────────────────────────────────────────────────────────────────
+// ── Claude ────────────────────────────────────────────────────────────────────
 
-async function callGemini(prompt: string): Promise<string> {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) throw new Error("GEMINI_API_KEY manquant");
-
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: {
-          maxOutputTokens: 512,
-          temperature: 0.3,
-          responseMimeType: "application/json",
-        },
-      }),
-    }
-  );
-  if (!res.ok) throw new Error(`Gemini HTTP ${res.status}`);
-  const json = await res.json() as { candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }> };
-  return (json.candidates?.[0]?.content?.parts?.[0]?.text ?? "").replace(/^```json\s*/i, "").replace(/\s*```$/i, "").trim();
+async function callClaude(prompt: string): Promise<string> {
+  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+  const message = await client.messages.create({
+    model: "claude-haiku-4-5-20251001",
+    max_tokens: 512,
+    messages: [{ role: "user", content: prompt }],
+  });
+  const content = message.content[0];
+  if (content.type !== "text") throw new Error("Claude returned non-text response");
+  return content.text.replace(/^```json\s*/i, "").replace(/\s*```$/i, "").trim();
 }
 
 interface OptimizedMeta {
@@ -238,7 +226,7 @@ Génère un JSON avec des métadonnées optimisées :
   "improvements": "Explication courte des changements effectués et pourquoi"
 }`;
 
-  const raw = await callGemini(prompt);
+  const raw = await callClaude(prompt);
   return JSON.parse(raw) as OptimizedMeta;
 }
 

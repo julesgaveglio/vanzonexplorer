@@ -836,6 +836,7 @@ Réponds UNIQUEMENT avec ce JSON valide (aucune explication, aucune balise markd
   // ── Call 2: article body via Claude Sonnet 4.5 ────────────────────────────────
   console.log(`  [Claude Sonnet 4.5] Generating article body...`);
   const internalLinksBlock = loadAgentPrompt("internal-links");
+  const brandVoiceBlock = loadAgentPrompt("vanzon-brand-voice");
   const styleBlock = loadAgentPrompt("blog-writer") ?? `Tu es Jules Gaveglio, co-fondateur de Vanzon Explorer — expert vanlife au Pays Basque depuis 5 ans. Tu rédiges des articles de blog SEO qui classent sur Google et convertissent des lecteurs en clients.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -863,7 +864,7 @@ STYLE & TON
 • Écris comme un humain passionné qui connaît le terrain, pas comme une IA`;
 
   const bodyPrompt = `${styleBlock}
-
+${brandVoiceBlock ? `\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nMÉMOIRE DE MARQUE — ANECDOTES & FAITS RÉELS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n${brandVoiceBlock}\n` : ""}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ARTICLE À RÉDIGER
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -933,6 +934,15 @@ Réponds UNIQUEMENT avec le texte markdown. Aucune explication, aucune balise, a
   // Post-process: inject internal links automatically (guaranteed, Claude-independent)
   // Only injects article links for slugs confirmed to exist in Sanity
   const body = injectInternalLinks(rawBody, publishedSlugs);
+
+  // ── Word count validation ──────────────────────────────────────────────────
+  const actualWordCount = body.split(/\s+/).filter(Boolean).length;
+  const tolerance = Math.round(targetWords * 0.1);
+  if (Math.abs(actualWordCount - targetWords) > tolerance) {
+    console.warn(`  ⚠️  Word count: ${actualWordCount} mots (cible: ${targetWords} ±${tolerance}) — hors tolérance`);
+  } else {
+    console.log(`  ✓ Word count: ${actualWordCount} mots (cible: ${targetWords} ±${tolerance})`);
+  }
 
   // Convert markdown body to Portable Text blocks
   const content = markdownToPortableText(body);

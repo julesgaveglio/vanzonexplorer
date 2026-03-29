@@ -119,7 +119,7 @@ async function getGaMetrics(): Promise<{ metrics: Record<string, GaMetrics>; con
           dimensionFilter: {
             filter: {
               fieldName: "pagePath",
-              stringFilter: { matchType: "BEGINS_WITH", value: "/vanzon/articles/" },
+              stringFilter: { matchType: "BEGINS_WITH", value: "/articles/" },
             },
           },
           limit: 100,

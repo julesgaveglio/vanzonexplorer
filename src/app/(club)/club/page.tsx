@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { auth } from "@clerk/nextjs/server";
 import { getProducts, getBrands, getCategories } from "@/lib/club/data";
 import ClubLandingPage from "./_components/ClubLandingPage";
 import type { Product } from "@/lib/club/types";
@@ -25,8 +24,6 @@ function diversify(products: Product[], maxPerBrand = 2): Product[] {
 }
 
 export default async function ClubPage() {
-  const { userId } = await auth();
-
   const [allProducts, partnerBrands, categories] = await Promise.all([
     getProducts({ limit: 60 }),
     getBrands({ partnerOnly: true }),
@@ -47,7 +44,6 @@ export default async function ClubPage() {
       allProducts={allProducts}
       brands={partnerBrands}
       categories={categories}
-      isLoggedIn={!!userId}
     />
   );
 }

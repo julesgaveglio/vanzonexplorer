@@ -18,7 +18,6 @@ interface ClubLandingPageProps {
   allProducts: Product[];
   brands: Brand[];
   categories: Category[];
-  isLoggedIn?: boolean;
 }
 
 /** Max N produits par marque pour diversifier */
@@ -227,9 +226,9 @@ const FALLBACK_PRODUCTS: Product[] = [
   },
 ];
 
-export default function ClubLandingPage({ previewProducts, allProducts, brands, categories, isLoggedIn = false }: ClubLandingPageProps) {
-  const ctaHref  = isLoggedIn ? "/club/deals" : "/sign-up";
-  const ctaLabel = isLoggedIn ? "Accéder aux deals" : "Rejoindre gratuitement";
+export default function ClubLandingPage({ previewProducts, allProducts, brands, categories }: ClubLandingPageProps) {
+  const ctaHref  = "/club/deals";
+  const ctaLabel = "Accéder aux deals";
 
   const [activeCategory, setActiveCategory] = useState<string>("tous");
   const [showAll, setShowAll] = useState(false);
@@ -330,14 +329,6 @@ export default function ClubLandingPage({ previewProducts, allProducts, brands, 
                 {ctaLabel}
                 <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
               </Link>
-              {!isLoggedIn && (
-                <Link
-                  href="/sign-in"
-                  className="inline-flex items-center gap-2 rounded-full border border-cream/12 px-7 py-3.5 text-sm font-medium text-cream/50 transition-all duration-200 hover:border-cream/25 hover:text-cream/80"
-                >
-                  J&apos;ai déjà un compte
-                </Link>
-              )}
             </motion.div>
 
             {/* Ticker marques partenaires */}
@@ -457,9 +448,9 @@ export default function ClubLandingPage({ previewProducts, allProducts, brands, 
                   {/* Overlay hover — voir l'offre */}
                   {(product.affiliateUrl && product.affiliateUrl !== "/") && (
                     <Link
-                      href={isLoggedIn ? product.affiliateUrl : "/sign-up"}
-                      target={isLoggedIn ? "_blank" : undefined}
-                      rel={isLoggedIn ? "noopener noreferrer" : undefined}
+                      href={product.affiliateUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="absolute inset-0 z-20 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/50"
                       onClick={(e) => e.stopPropagation()}
                     >
@@ -504,9 +495,9 @@ export default function ClubLandingPage({ previewProducts, allProducts, brands, 
                     )}
                     {product.affiliateUrl && product.affiliateUrl !== "/" && (
                       <Link
-                        href={isLoggedIn ? product.affiliateUrl : "/sign-up"}
-                        target={isLoggedIn ? "_blank" : undefined}
-                        rel={isLoggedIn ? "noopener noreferrer" : undefined}
+                        href={product.affiliateUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="ml-auto inline-flex items-center gap-1 rounded-full bg-earth px-3 py-1.5 text-[11px] font-semibold text-cream hover:opacity-80 transition-opacity"
                       >
                         Voir l&apos;offre
@@ -546,11 +537,6 @@ export default function ClubLandingPage({ previewProducts, allProducts, brands, 
               Voir tous les deals
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
-            {!isLoggedIn && (
-              <p className="mt-3 text-xs text-slate-400">
-                Codes promo gratuits · <Link href="/sign-up" className="text-violet-500 hover:underline">S&apos;inscrire gratuitement</Link>
-              </p>
-            )}
           </motion.div>
         </div>
       </section>
@@ -697,7 +683,7 @@ export default function ClubLandingPage({ previewProducts, allProducts, brands, 
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </Link>
 
-              <p className="mt-4 text-center text-xs text-cream/20">Aucune carte bancaire · Inscription en 30 sec</p>
+              <p className="mt-4 text-center text-xs text-cream/20">Aucune carte bancaire · Accès instantané et gratuit</p>
             </div>
           </motion.div>
         </div>
@@ -734,7 +720,7 @@ export default function ClubLandingPage({ previewProducts, allProducts, brands, 
             {ctaLabel}
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
           </Link>
-          <p className="mt-5 text-xs text-cream/20">Aucune carte bancaire · Inscription en 30 secondes</p>
+          <p className="mt-5 text-xs text-cream/20">Aucune carte bancaire · 100% gratuit</p>
         </motion.div>
       </section>
 

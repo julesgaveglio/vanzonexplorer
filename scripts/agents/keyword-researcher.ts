@@ -12,10 +12,11 @@
  * Required env vars:
  *   DATAFORSEO_LOGIN
  *   DATAFORSEO_PASSWORD
- *   GEMINI_API_KEY
+ *   ANTHROPIC_API_KEY
  */
 
 import path from "path";
+import Anthropic from "@anthropic-ai/sdk";
 
 // ── Constants ──────────────────────────────────────────────────────────────────
 // scripts/agents/ → project root is two directories up
@@ -126,48 +127,24 @@ async function updateQueue(queue: ArticleQueueItem[]): Promise<void> {
   await fs.writeFile(QUEUE_FILE, JSON.stringify(queue, null, 2), "utf-8");
 }
 
-// ── Gemini: generate article metadata ──────────────────────────────────────────
-async function callGemini(
-  apiKey: string,
-  prompt: string,
-  opts: { json?: boolean; maxTokens?: number } = {}
-): Promise<string> {
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: {
-          maxOutputTokens: opts.maxTokens ?? 1024,
-          temperature: 0.4,
-          ...(opts.json ? { responseMimeType: "application/json" } : {}),
-        },
-      }),
-    }
-  );
-
-  if (!res.ok) {
-    const errText = await res.text();
-    throw new Error(`Gemini API error ${res.status}: ${errText}`);
-  }
-
-  const json = await res.json() as {
-    candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
-  };
-
-  const text = json.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
-  if (!text) throw new Error("Gemini returned empty response");
-  return text;
+// ── Claude: generate article metadata ──────────────────────────────────────────
+async function callClaude(prompt: string, opts: { maxTokens?: number } = {}): Promise<string> {
+  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+  const message = await client.messages.create({
+    model: "claude-haiku-4-5-20251001",
+    max_tokens: opts.maxTokens ?? 1024,
+    messages: [{ role: "user", content: prompt }],
+  });
+  const content = message.content[0];
+  if (content.type !== "text") throw new Error("Claude returned empty response");
+  return content.text;
 }
 
 async function generateArticleMeta(
   keyword: string,
   category: string,
-  apiKey: string
 ): Promise<GeminiArticleMeta> {
-  const prompt = `Tu es un expert SEO spécialisé en vanlife et location de vans en France.
+  const prompt = `Tu es un expert SEO spécialisé en vanlife et location de vans en France (Pays Basque).
 
 Génère les métadonnées d'un article de blog SEO en français pour le mot-clé cible : "${keyword}"
 Catégorie : ${category}
@@ -190,14 +167,12 @@ Règles :
 - Le mot-clé cible doit apparaître naturellement dans le titre
 - Les mots-clés secondaires doivent être liés à la catégorie ${category}
 - targetWordCount entre 800 et 2000 selon la complexité du sujet
+- Ancrage Pays Basque : Biarritz, Bayonne, Saint-Jean-de-Luz si pertinent
 `;
 
-  const raw = await callGemini(apiKey, prompt, { json: true, maxTokens: 1024 });
-
-  // Strip potential markdown code fences
+  const raw = await callClaude(prompt, { maxTokens: 1024 });
   const cleaned = raw.replace(/^```json\s*/i, "").replace(/\s*```$/i, "").trim();
-  const meta = JSON.parse(cleaned) as GeminiArticleMeta;
-  return meta;
+  return JSON.parse(cleaned) as GeminiArticleMeta;
 }
 
 // ── Process a single category ──────────────────────────────────────────────────
@@ -213,7 +188,6 @@ interface SummaryRow {
 async function processCategory(
   category: string,
   queue: ArticleQueueItem[],
-  geminiKey: string
 ): Promise<SummaryRow[]> {
   const seedKeywords = SEED_KEYWORDS[category];
   if (!seedKeywords) {
@@ -308,19 +282,19 @@ async function processCategory(
       continue;
     }
 
-    // ── Step 4: Generate metadata with Gemini ──────────────────────────────────
+    // ── Step 4: Generate metadata with Claude ──────────────────────────────────
     let meta: GeminiArticleMeta;
     try {
       console.log(`  Generating metadata for: "${item.keyword}"...`);
-      meta = await generateArticleMeta(item.keyword, category, geminiKey);
+      meta = await generateArticleMeta(item.keyword, category);
     } catch (err) {
-      console.warn(`  [WARN] Gemini metadata generation failed for "${item.keyword}": ${(err as Error).message}`);
+      console.warn(`  [WARN] Claude metadata generation failed for "${item.keyword}": ${(err as Error).message}`);
       summaryRows.push({
         keyword: item.keyword,
         searchVolume: item.searchVolume,
         competitionLevel: item.competitionLevel,
         seoScore: item.score,
-        title: "(gemini error)",
+        title: "(claude error)",
         status: "error",
       });
       continue;
@@ -392,9 +366,8 @@ async function main(): Promise<void> {
   const targetCategory = process.argv[2] ?? null;
 
   // Validate env vars
-  const geminiKey = process.env.GEMINI_API_KEY;
-  if (!geminiKey) {
-    console.error("ERROR: GEMINI_API_KEY env var is required");
+  if (!process.env.ANTHROPIC_API_KEY) {
+    console.error("ERROR: ANTHROPIC_API_KEY env var is required");
     process.exit(1);
   }
 
@@ -431,7 +404,7 @@ async function main(): Promise<void> {
 
   for (const category of categoriesToProcess) {
     try {
-      const rows = await processCategory(category, queue, geminiKey);
+      const rows = await processCategory(category, queue);
       for (const row of rows) {
         allSummaryRows.push({ ...row, category });
       }
