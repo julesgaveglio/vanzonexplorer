@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { fetchPexelsPhoto } from "@/lib/pexels";
+import { fetchSerpApiImages } from "@/lib/serpapi-images";
 import { getGooglePlaceStats } from "@/lib/google-places";
 import { LocationRentalJsonLd } from "@/components/seo/JsonLd";
 import VanSelectionSection from "@/components/location/VanSelectionSection";
@@ -78,13 +79,15 @@ const itineraryDays = [
 ];
 
 export default async function LocationWeekEndPage() {
-  const [heroPhoto, photoSurf, photoFood, photoMountain, photoCoast, placeStats] =
+  const [heroPhoto, activityImages, placeStats] =
     await Promise.all([
       fetchPexelsPhoto("basque country road trip van coast mountains", FALLBACK_IMG),
-      fetchPexelsPhoto("biarritz surf beach atlantique waves", FALLBACK_IMG),
-      fetchPexelsPhoto("bayonne basque food pintxos gastronomy", FALLBACK_IMG),
-      fetchPexelsPhoto("pyrenees mountains basque hiking trail", FALLBACK_IMG),
-      fetchPexelsPhoto("basque coast village sunset atlantic", FALLBACK_IMG),
+      fetchSerpApiImages([
+        "Biarritz surf Côte des Basques vague atlantique",
+        "Gastronomie basque pintxos jambon table dîner",
+        "La Rhune sommet panorama côte basque mer montagne",
+        "Village basque Espelette maisons rouges piment",
+      ], FALLBACK_IMG),
       getGooglePlaceStats(),
     ]);
 
@@ -100,7 +103,7 @@ export default async function LocationWeekEndPage() {
         "Nuit : parking face à l'océan",
       ],
       target: "Surfers et amateurs de plage",
-      photo: photoSurf,
+      imgUrl: activityImages[0]?.thumbnail ?? FALLBACK_IMG,
     },
     {
       icon: "🍽️",
@@ -113,7 +116,7 @@ export default async function LocationWeekEndPage() {
         "Espelette : producteurs de piment",
       ],
       target: "Amateurs de cuisine et culture",
-      photo: photoFood,
+      imgUrl: activityImages[1]?.thumbnail ?? FALLBACK_IMG,
     },
     {
       icon: "🏔️",
@@ -126,7 +129,7 @@ export default async function LocationWeekEndPage() {
         "Col d'Organbidexka : vue Pyrénées",
       ],
       target: "Randonneurs et amoureux de nature",
-      photo: photoMountain,
+      imgUrl: activityImages[2]?.thumbnail ?? FALLBACK_IMG,
     },
     {
       icon: "🌅",
@@ -139,7 +142,7 @@ export default async function LocationWeekEndPage() {
         "Jour 3 : Forêt ou montagne",
       ],
       target: "Pour tout voir en un séjour",
-      photo: photoCoast,
+      imgUrl: activityImages[3]?.thumbnail ?? FALLBACK_IMG,
     },
   ];
 
@@ -314,7 +317,7 @@ export default async function LocationWeekEndPage() {
             {weekendIdeas.map((idea) => (
               <div key={idea.title} className="relative rounded-2xl overflow-hidden h-80 group">
                 <Image
-                  src={idea.photo?.url ?? FALLBACK_IMG}
+                  src={idea.imgUrl}
                   alt={idea.title}
                   fill
                   sizes="(max-width: 768px) 100vw, 50vw"

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { fetchPexelsPhoto } from "@/lib/pexels";
+import { fetchSerpApiImages } from "@/lib/serpapi-images";
 import { getGooglePlaceStats } from "@/lib/google-places";
 import { LocationRentalJsonLd } from "@/components/seo/JsonLd";
 import VanSelectionSection from "@/components/location/VanSelectionSection";
@@ -25,12 +26,17 @@ const YONI_IMG =
   "https://cdn.sanity.io/images/lewexa74/production/660105a28e577c33f642a8fdff528d88925642e3-1080x750.png?auto=format&q=82";
 
 export default async function LocationBiarritzPage() {
-  const [heroPhoto, photoSurf, photoMarket, photoCoast, placeStats] =
+  const [heroPhoto, activityImages, placeStats] =
     await Promise.all([
-      fetchPexelsPhoto("biarritz atlantic coast beach surf france", FALLBACK_IMG),
-      fetchPexelsPhoto("biarritz surf waves atlantic beach", FALLBACK_IMG),
-      fetchPexelsPhoto("basque country market pintxos food", FALLBACK_IMG),
-      fetchPexelsPhoto("biarritz coastline lighthouse panorama", FALLBACK_IMG),
+      fetchPexelsPhoto("biarritz surf atlantic beach basque france", FALLBACK_IMG),
+      fetchSerpApiImages([
+        "Côte des Basques Biarritz surf vague plage",
+        "Plage de Milady Biarritz baignade longboard",
+        "Marché des Halles Biarritz pintxos fromage basque",
+        "Biarritz rue port tapas bar nuit soir",
+        "Rocher de la Vierge Biarritz passerelle coucher soleil",
+        "Phare Biarritz vue panoramique Pyrénées",
+      ], FALLBACK_IMG),
       getGooglePlaceStats(),
     ]);
 
@@ -39,37 +45,37 @@ export default async function LocationBiarritzPage() {
       icon: "🌊",
       title: "Côte des Basques",
       desc: "Le spot de surf le plus iconique de France. Lever tôt, waves parfaites, et le parking gratuit hors saison.",
-      photo: photoSurf,
+      imgUrl: activityImages[0]?.thumbnail ?? FALLBACK_IMG,
     },
     {
       icon: "🏄",
       title: "Plage Milady",
       desc: "Plus calme que la Côte des Basques, idéale pour débuter le surf ou se baigner en famille.",
-      photo: photoSurf,
+      imgUrl: activityImages[1]?.thumbnail ?? FALLBACK_IMG,
     },
     {
       icon: "🏛️",
       title: "Marché des Halles",
       desc: "Pintxos, jambon de Bayonne, fromages basques. Le meilleur petit-déjeuner avant de partir surfer.",
-      photo: photoMarket,
+      imgUrl: activityImages[2]?.thumbnail ?? FALLBACK_IMG,
     },
     {
       icon: "🍽️",
       title: "Rue du Port",
       desc: "Tapas, txakoli et ambiance basque garantie. Le soir, l'animation est dans les rues.",
-      photo: photoMarket,
+      imgUrl: activityImages[3]?.thumbnail ?? FALLBACK_IMG,
     },
     {
       icon: "🗿",
       title: "Rocher de la Vierge",
       desc: "Vue à 360° sur l'Atlantique depuis la passerelle. Incontournable au coucher de soleil.",
-      photo: photoCoast,
+      imgUrl: activityImages[4]?.thumbnail ?? FALLBACK_IMG,
     },
     {
       icon: "💡",
       title: "Phare de Biarritz",
       desc: "Par temps clair, vue sur les Pyrénées et l'Espagne. À 10 min à pied du centre.",
-      photo: photoCoast,
+      imgUrl: activityImages[5]?.thumbnail ?? FALLBACK_IMG,
     },
   ];
 
@@ -312,7 +318,7 @@ export default async function LocationBiarritzPage() {
                 className="relative h-64 overflow-hidden rounded-2xl group"
               >
                 <Image
-                  src={activity.photo?.url ?? FALLBACK_IMG}
+                  src={activity.imgUrl}
                   alt={activity.title}
                   fill
                   sizes="(max-width: 768px) 100vw, 33vw"

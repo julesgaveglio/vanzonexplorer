@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { fetchPexelsPhoto } from "@/lib/pexels";
+import { fetchSerpApiImages } from "@/lib/serpapi-images";
 import { getGooglePlaceStats } from "@/lib/google-places";
 import { LocationRentalJsonLd } from "@/components/seo/JsonLd";
 import VanSelectionSection from "@/components/location/VanSelectionSection";
@@ -82,12 +83,17 @@ const itineraryDays = [
 ];
 
 export default async function LocationForetIratiPage() {
-  const [heroPhoto, photoForest, photoSheep, photoCol, placeStats] =
+  const [heroPhoto, activityImages, placeStats] =
     await Promise.all([
       fetchPexelsPhoto("irati forest beech trees autumn pyrenees", FALLBACK_IMG),
-      fetchPexelsPhoto("beech forest misty mountains hiking pyrenees", FALLBACK_IMG),
-      fetchPexelsPhoto("mountain shepherd sheep basque country", FALLBACK_IMG),
-      fetchPexelsPhoto("pyrenees col mountain road basque", FALLBACK_IMG),
+      fetchSerpApiImages([
+        "Forêt Irati hêtraie automne feuilles colorées",
+        "Vautours fauves vol thermique Pyrénées basque",
+        "Randonnée sentier Irati forêt lac Irabia Pyrénées",
+        "Fromage Ossau-Iraty brebis bergerie basque meule",
+        "Col Organbidexka vue Pyrénées panorama basque",
+        "Lac Irabia Irati reflet forêt nuit étoilée bivouac",
+      ], FALLBACK_IMG),
       getGooglePlaceStats(),
     ]);
 
@@ -96,37 +102,37 @@ export default async function LocationForetIratiPage() {
       icon: "🌲",
       title: "La Hêtraie millénaire",
       desc: "L'une des dernières grandes forêts primitives d'Europe. 17 000 hectares de hêtres centenaires, un silence absolu, une lumière filtrée incomparable.",
-      photo: photoForest,
+      imgUrl: activityImages[0]?.thumbnail ?? FALLBACK_IMG,
     },
     {
       icon: "🦅",
       title: "Faune sauvage",
       desc: "Vautours fauves en vol thermique, cerfs en rut à l'automne, isards dans les rochers. Irati est un sanctuaire animalier accessible.",
-      photo: photoForest,
+      imgUrl: activityImages[1]?.thumbnail ?? FALLBACK_IMG,
     },
     {
       icon: "🥾",
       title: "Randonnées balisées",
       desc: "80 km de sentiers balisés. Du tour du lac d'Irabia (3h) à la traversée du massif (2 jours). Toute la forêt est accessible à pied.",
-      photo: photoSheep,
+      imgUrl: activityImages[2]?.thumbnail ?? FALLBACK_IMG,
     },
     {
       icon: "🧀",
       title: "Fromages de brebis",
       desc: "Les bergeries du piémont produisent l'Ossau-Iraty AOP. Visite et dégustation directement chez les producteurs — une expérience authentique.",
-      photo: photoSheep,
+      imgUrl: activityImages[3]?.thumbnail ?? FALLBACK_IMG,
     },
     {
       icon: "🏔️",
       title: "Cols et points de vue",
       desc: "Le col d'Organbidexka (1284m) offre un panorama à 360° sur les Pyrénées. Le col Bagargui est un des plus beaux du Pays Basque.",
-      photo: photoCol,
+      imgUrl: activityImages[4]?.thumbnail ?? FALLBACK_IMG,
     },
     {
       icon: "🌙",
       title: "Bivouac altitude",
       desc: "Dormir dans le van au cœur de la forêt, à 900m d'altitude. La nuit étoilée d'Irati est parmi les plus belles de France — pollution lumineuse nulle.",
-      photo: photoCol,
+      imgUrl: activityImages[5]?.thumbnail ?? FALLBACK_IMG,
     },
   ];
 
@@ -304,7 +310,7 @@ export default async function LocationForetIratiPage() {
                 className="relative h-64 overflow-hidden rounded-2xl group"
               >
                 <Image
-                  src={activity.photo?.url ?? FALLBACK_IMG}
+                  src={activity.imgUrl}
                   alt={activity.title}
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"

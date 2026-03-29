@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { fetchPexelsPhoto } from "@/lib/pexels";
+import { fetchSerpApiImages } from "@/lib/serpapi-images";
 import { getGooglePlaceStats } from "@/lib/google-places";
 import { LocationRentalJsonLd } from "@/components/seo/JsonLd";
 import VanSelectionSection from "@/components/location/VanSelectionSection";
@@ -25,12 +26,17 @@ const YONI_IMG =
   "https://cdn.sanity.io/images/lewexa74/production/660105a28e577c33f642a8fdff528d88925642e3-1080x750.png?auto=format&q=82";
 
 export default async function LocationSaintJeanDeLuzPage() {
-  const [heroPhoto, photoHarbor, photoBeach, photoMarket, placeStats] =
+  const [heroPhoto, activityImages, placeStats] =
     await Promise.all([
       fetchPexelsPhoto("saint jean de luz harbor beach basque village", FALLBACK_IMG),
-      fetchPexelsPhoto("basque fishing village colorful harbor boats", FALLBACK_IMG),
-      fetchPexelsPhoto("basque beach atlantic ocean sand", FALLBACK_IMG),
-      fetchPexelsPhoto("basque market village traditional", FALLBACK_IMG),
+      fetchSerpApiImages([
+        "Saint-Jean-de-Luz port pêche bateaux colorés quai",
+        "Maison Louis XIV Saint-Jean-de-Luz façade historique",
+        "Plage Saint-Jean-de-Luz famille baignade sable",
+        "Hondarribia vieille ville fortifiée pittoresque Espagne",
+        "Rue Gambetta Saint-Jean-de-Luz maisons colombages basques",
+        "Ciboure port maisons colorées basques pêcheurs",
+      ], FALLBACK_IMG),
       getGooglePlaceStats(),
     ]);
 
@@ -39,37 +45,37 @@ export default async function LocationSaintJeanDeLuzPage() {
       icon: "⚓",
       title: "Le port de pêche",
       desc: "L'un des ports de pêche les plus actifs de la côte basque. Thon rouge, anchois, merlu — le matin, les pêcheurs rentrent.",
-      photo: photoHarbor,
+      imgUrl: activityImages[0]?.thumbnail ?? FALLBACK_IMG,
     },
     {
       icon: "🏠",
       title: "Maison Louis XIV",
       desc: "Dans cette maison du XVIIe siècle, Louis XIV séjourna avant son mariage avec l'infante d'Espagne Marie-Thérèse. Histoire vivante.",
-      photo: photoHarbor,
+      imgUrl: activityImages[1]?.thumbnail ?? FALLBACK_IMG,
     },
     {
       icon: "🏖️",
       title: "La Plage",
       desc: "La seule grande plage protégée du Pays Basque, à l'abri des vagues. Idéale pour les familles et les enfants.",
-      photo: photoBeach,
+      imgUrl: activityImages[2]?.thumbnail ?? FALLBACK_IMG,
     },
     {
       icon: "🌊",
       title: "Hendaye et Hondarribia",
       desc: "À 15 min, la frontière espagnole et ses plages infinies. Hondarribia, ville fortifiée espagnole, mérite le détour.",
-      photo: photoBeach,
+      imgUrl: activityImages[3]?.thumbnail ?? FALLBACK_IMG,
     },
     {
       icon: "🛍️",
       title: "Rue Gambetta",
       desc: "La rue principale, piétonne, avec ses maisons à colombages basques. Maison Adam (gâteau basque depuis 1660) à ne pas manquer.",
-      photo: photoMarket,
+      imgUrl: activityImages[4]?.thumbnail ?? FALLBACK_IMG,
     },
     {
       icon: "🐟",
       title: "Ciboure et ses ruelles",
       desc: "L'autre rive du port, plus calme, avec ses maisons d'armateurs colorées. Maurice Ravel y est né.",
-      photo: photoMarket,
+      imgUrl: activityImages[5]?.thumbnail ?? FALLBACK_IMG,
     },
   ];
 
@@ -309,7 +315,7 @@ export default async function LocationSaintJeanDeLuzPage() {
                 className="relative rounded-2xl overflow-hidden h-64 group cursor-default"
               >
                 <Image
-                  src={activity.photo?.url ?? FALLBACK_IMG}
+                  src={activity.imgUrl}
                   alt={activity.title}
                   fill
                   sizes="(max-width:768px) 100vw, (max-width:1024px) 50vw, 33vw"
