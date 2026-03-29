@@ -35,7 +35,7 @@ export default async function LocationBayonnePage() {
         "Jambon de Bayonne AOP cave affinage Pierre Ibaïalde",
         "Bayonne chocolaterie artisanale chocolat Cazenave",
         "Fêtes de Bayonne blanc rouge ambiance foule rue",
-        "Musée Basque Bayonne exposition salle",
+        "basque museum exhibition culture history artifacts",
       ], FALLBACK_IMG),
       getGooglePlaceStats(),
     ]);

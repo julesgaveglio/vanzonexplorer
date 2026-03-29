@@ -32,7 +32,7 @@ export default async function LocationBiarritzPage() {
       fetchSerpApiImages([
         "Côte des Basques Biarritz surf vague plage",
         "Plage de Milady Biarritz baignade longboard",
-        "Marché des Halles Biarritz pintxos fromage basque",
+        "food market pintxos tapas basque spain",
         "Biarritz rue port tapas bar nuit soir",
         "Rocher de la Vierge Biarritz passerelle coucher soleil",
         "Phare Biarritz vue panoramique Pyrénées",
