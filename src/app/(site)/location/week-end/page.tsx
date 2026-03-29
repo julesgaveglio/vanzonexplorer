@@ -6,7 +6,6 @@ import { fetchSerpApiImages } from "@/lib/serpapi-images";
 import { getGooglePlaceStats } from "@/lib/google-places";
 import { LocationRentalJsonLd } from "@/components/seo/JsonLd";
 import VanSelectionSection from "@/components/location/VanSelectionSection";
-import PracticalInfoSection from "@/components/location/PracticalInfoSection";
 
 export const revalidate = 86400;
 
@@ -400,38 +399,8 @@ export default async function LocationWeekEndPage() {
         </div>
       </section>
 
-      {/* ── INFOS PRATIQUES ───────────────────────────────────────── */}
-      <PracticalInfoSection
-        title="Infos pratiques — Week-end en van"
-        image={YONI_IMG}
-        imageAlt="Van Yoni Vanzon Explorer prêt pour un week-end au Pays Basque"
-        rows={[
-          {
-            label: "Récupération",
-            value: "Vendredi 17h–20h à Cambo-les-Bains (ou livraison sur demande)",
-          },
-          {
-            label: "Retour",
-            value: "Dimanche avant 18h (possibilité prolonger sur demande)",
-          },
-          {
-            label: "Tarif week-end",
-            value: "2 nuits = 130€ (basse saison) à 190€ (haute saison)",
-          },
-          {
-            label: "Distance Cambo",
-            value: "Biarritz 25 min, SJL 35 min, Bayonne 15 min, Irati 1h",
-          },
-          {
-            label: "Inclus",
-            value: "Assurance, literie, cuisine complète, table de camping",
-          },
-          {
-            label: "Conseil",
-            value: "Réservez 2–4 semaines à l'avance en haute saison",
-          },
-        ]}
-      />
+      {/* ── CHOISISSEZ VOTRE VAN ──────────────────────────────────── */}
+      <VanSelectionSection destination="Pays Basque" />
 
       {/* ── GOOGLE MAPS ───────────────────────────────────────────── */}
       <section className="py-16 bg-white">
@@ -456,9 +425,6 @@ export default async function LocationWeekEndPage() {
           </div>
         </div>
       </section>
-
-      {/* ── VAN SELECTION ─────────────────────────────────────────── */}
-      <VanSelectionSection destination="Pays Basque" />
 
       {/* ── FAQ ───────────────────────────────────────────────────── */}
       <section className="py-20 bg-slate-50">

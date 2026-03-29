@@ -6,7 +6,6 @@ import { fetchSerpApiImages } from "@/lib/serpapi-images";
 import { getGooglePlaceStats } from "@/lib/google-places";
 import { LocationRentalJsonLd } from "@/components/seo/JsonLd";
 import VanSelectionSection from "@/components/location/VanSelectionSection";
-import PracticalInfoSection from "@/components/location/PracticalInfoSection";
 import ActivityCard from "@/components/location/ActivityCard";
 
 export const revalidate = 86400;
@@ -362,38 +361,8 @@ export default async function LocationForetIratiPage() {
         </div>
       </section>
 
-      {/* ── INFOS PRATIQUES ───────────────────────────────────────── */}
-      <PracticalInfoSection
-        title="Infos pratiques — Forêt d'Irati en van"
-        image={XALBAT_IMG}
-        imageAlt="Van Xalbat Vanzon Explorer en direction de la Forêt d'Irati"
-        rows={[
-          {
-            label: "Récupération",
-            value: "Cambo-les-Bains → Route via col d'Ispéguy (1h) ou Saint-Jean-Pied-de-Port (1h10)",
-          },
-          {
-            label: "Bivouac",
-            value: "Lac d'Irabia — toléré hors saison, arrivée tardive recommandée",
-          },
-          {
-            label: "Meilleure saison",
-            value: "Septembre–Novembre pour les couleurs d'automne et le brame du cerf",
-          },
-          {
-            label: "À emporter",
-            value: "Eau potable (source du lac), vêtements chauds même en été, cartes IGN",
-          },
-          {
-            label: "À combiner",
-            value: "Saint-Jean-Pied-de-Port, Mauléon-Licharre, cols pyrénéens",
-          },
-          {
-            label: "Altitude",
-            value: "900–1300 m — les nuits sont fraîches, même en juillet",
-          },
-        ]}
-      />
+      {/* ── CHOISISSEZ VOTRE VAN ──────────────────────────────────── */}
+      <VanSelectionSection destination="la Forêt d'Irati" />
 
       {/* ── GOOGLE MAPS ───────────────────────────────────────────── */}
       <section className="py-16 bg-white">
@@ -418,9 +387,6 @@ export default async function LocationForetIratiPage() {
           </div>
         </div>
       </section>
-
-      {/* ── VAN SELECTION ─────────────────────────────────────────── */}
-      <VanSelectionSection destination="la Forêt d'Irati" />
 
       {/* ── FAQ ───────────────────────────────────────────────────── */}
       <section className="py-20 bg-slate-50">

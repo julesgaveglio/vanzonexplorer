@@ -6,7 +6,6 @@ import { fetchSerpApiImages } from "@/lib/serpapi-images";
 import { getGooglePlaceStats } from "@/lib/google-places";
 import { LocationRentalJsonLd } from "@/components/seo/JsonLd";
 import VanSelectionSection from "@/components/location/VanSelectionSection";
-import PracticalInfoSection from "@/components/location/PracticalInfoSection";
 import ActivityCard from "@/components/location/ActivityCard";
 
 export const revalidate = 86400;
@@ -374,38 +373,8 @@ export default async function LocationBiarritzPage() {
         </div>
       </section>
 
-      {/* ── INFOS PRATIQUES ───────────────────────────────────────── */}
-      <PracticalInfoSection
-        title="Infos pratiques — Biarritz en van"
-        image={YONI_IMG}
-        imageAlt="Van Yoni Vanzon Explorer ouvert près de Biarritz"
-        rows={[
-          {
-            label: "Récupération",
-            value: "Cambo-les-Bains (25 min) ou livraison Biarritz sur demande",
-          },
-          {
-            label: "Durée recommandée",
-            value: "2 nuits minimum — idéal 4–5 jours pour profiter",
-          },
-          {
-            label: "Tarif",
-            value: "Dès 65€/nuit tout inclus (assurance, équipements, cuisine)",
-          },
-          {
-            label: "Spot nuit",
-            value: "Parking Côte des Basques — gratuit hors juillet/août",
-          },
-          {
-            label: "Meilleure saison",
-            value: "Mai–Juin et Septembre–Octobre — vagues et météo parfaites",
-          },
-          {
-            label: "Accès surf",
-            value: "Côte des Basques, Milady, Les Cavaliers (Anglet) — toutes à 10 min",
-          },
-        ]}
-      />
+      {/* ── CHOISISSEZ VOTRE VAN ──────────────────────────────────── */}
+      <VanSelectionSection destination="Biarritz" />
 
       {/* ── GOOGLE MAPS ───────────────────────────────────────────── */}
       <section className="py-16 bg-white">
@@ -430,9 +399,6 @@ export default async function LocationBiarritzPage() {
           </div>
         </div>
       </section>
-
-      {/* ── VAN SELECTION ─────────────────────────────────────────── */}
-      <VanSelectionSection destination="Biarritz" />
 
       {/* ── FAQ ───────────────────────────────────────────────────── */}
       <section className="py-20 bg-slate-50">

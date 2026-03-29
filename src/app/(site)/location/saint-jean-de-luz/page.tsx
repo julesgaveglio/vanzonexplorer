@@ -6,7 +6,6 @@ import { fetchSerpApiImages } from "@/lib/serpapi-images";
 import { getGooglePlaceStats } from "@/lib/google-places";
 import { LocationRentalJsonLd } from "@/components/seo/JsonLd";
 import VanSelectionSection from "@/components/location/VanSelectionSection";
-import PracticalInfoSection from "@/components/location/PracticalInfoSection";
 import ActivityCard from "@/components/location/ActivityCard";
 
 export const revalidate = 86400;
@@ -370,38 +369,8 @@ export default async function LocationSaintJeanDeLuzPage() {
         </div>
       </section>
 
-      {/* ── INFOS PRATIQUES ───────────────────────────────────────── */}
-      <PracticalInfoSection
-        title="Infos pratiques — Saint-Jean-de-Luz en van"
-        image={YONI_IMG}
-        imageAlt="Van Yoni Vanzon Explorer ouvert près de Saint-Jean-de-Luz"
-        rows={[
-          {
-            label: "Récupération",
-            value: "Cambo-les-Bains (35 min) ou livraison Saint-Jean sur demande",
-          },
-          {
-            label: "Aire camping-car",
-            value: "Aire municipale chemin d'Erromardie — idéale bord de mer",
-          },
-          {
-            label: "Durée recommandée",
-            value: "3–5 jours — côte + intérieur basque",
-          },
-          {
-            label: "Tarif",
-            value: "Dès 65€/nuit — assurance et cuisine inclus",
-          },
-          {
-            label: "Marché",
-            value: "Tous les matins en saison — meilleur marché basque de la côte",
-          },
-          {
-            label: "À proximité",
-            value: "Hendaye 15 min, Biarritz 20 min, Bayonne 30 min",
-          },
-        ]}
-      />
+      {/* ── CHOISISSEZ VOTRE VAN ──────────────────────────────────── */}
+      <VanSelectionSection destination="Saint-Jean-de-Luz" />
 
       {/* ── GOOGLE MAPS ───────────────────────────────────────────── */}
       <section className="py-16 bg-white">
@@ -426,9 +395,6 @@ export default async function LocationSaintJeanDeLuzPage() {
           </div>
         </div>
       </section>
-
-      {/* ── VAN SELECTION ─────────────────────────────────────────── */}
-      <VanSelectionSection destination="Saint-Jean-de-Luz" />
 
       {/* ── FAQ ───────────────────────────────────────────────────── */}
       <section className="py-20 bg-slate-50">

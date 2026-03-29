@@ -6,7 +6,6 @@ import { fetchSerpApiImages } from "@/lib/serpapi-images";
 import { getGooglePlaceStats } from "@/lib/google-places";
 import { LocationRentalJsonLd } from "@/components/seo/JsonLd";
 import VanSelectionSection from "@/components/location/VanSelectionSection";
-import PracticalInfoSection from "@/components/location/PracticalInfoSection";
 import ActivityCard from "@/components/location/ActivityCard";
 
 export const revalidate = 86400;
@@ -374,38 +373,8 @@ export default async function LocationBayonnePage() {
         </div>
       </section>
 
-      {/* ── INFOS PRATIQUES ───────────────────────────────────────── */}
-      <PracticalInfoSection
-        title="Infos pratiques — Bayonne en van"
-        image={XALBAT_IMG}
-        imageAlt="Van Xalbat Vanzon Explorer ouvert près de Bayonne"
-        rows={[
-          {
-            label: "Récupération",
-            value: "Cambo-les-Bains (15 min de Bayonne) ou livraison sur demande",
-          },
-          {
-            label: "Distance Biarritz",
-            value: "20 min — idéal pour combiner les deux villes",
-          },
-          {
-            label: "Tarif",
-            value: "Dès 65€/nuit — assurance et équipements inclus",
-          },
-          {
-            label: "Parking van",
-            value: "Parking Remparts ou quais de la Nive (payant en centre-ville)",
-          },
-          {
-            label: "Marché couvert",
-            value: "Mardi–Samedi matin — le meilleur de la gastronomie basque",
-          },
-          {
-            label: "Hub idéal",
-            value: "Bayonne est au centre de tout — côte, montagne, Espagne à 45 min",
-          },
-        ]}
-      />
+      {/* ── CHOISISSEZ VOTRE VAN ──────────────────────────────────── */}
+      <VanSelectionSection destination="Bayonne" />
 
       {/* ── GOOGLE MAPS ───────────────────────────────────────────── */}
       <section className="py-16 bg-white">
@@ -430,9 +399,6 @@ export default async function LocationBayonnePage() {
           </div>
         </div>
       </section>
-
-      {/* ── VAN SELECTION ─────────────────────────────────────────── */}
-      <VanSelectionSection destination="Bayonne" />
 
       {/* ── FAQ ───────────────────────────────────────────────────── */}
       <section className="py-20 bg-slate-50">

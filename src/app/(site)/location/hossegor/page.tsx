@@ -6,7 +6,6 @@ import { fetchSerpApiImages } from "@/lib/serpapi-images";
 import { getGooglePlaceStats } from "@/lib/google-places";
 import { LocationRentalJsonLd } from "@/components/seo/JsonLd";
 import VanSelectionSection from "@/components/location/VanSelectionSection";
-import PracticalInfoSection from "@/components/location/PracticalInfoSection";
 import ActivityCard from "@/components/location/ActivityCard";
 
 export const revalidate = 86400;
@@ -372,38 +371,8 @@ export default async function LocationHossegorPage() {
         </div>
       </section>
 
-      {/* ── INFOS PRATIQUES ───────────────────────────────────────── */}
-      <PracticalInfoSection
-        title="Infos pratiques — Hossegor en van"
-        image={XALBAT_IMG}
-        imageAlt="Van Xalbat Vanzon Explorer en route vers Hossegor"
-        rows={[
-          {
-            label: "Récupération",
-            value: "Cambo-les-Bains (45 min) ou livraison Hossegor sur demande",
-          },
-          {
-            label: "Bivouac",
-            value: "Parking des Estagnots (toléré hors saison) — accès direct à la plage",
-          },
-          {
-            label: "Meilleure saison",
-            value: "Septembre–Octobre — vagues de qualité, moins de monde",
-          },
-          {
-            label: "Tarif",
-            value: "Dès 65€/nuit — rack vélo disponible en option",
-          },
-          {
-            label: "Équipement surf",
-            value: "Planches jusqu'à 7' acceptées à l'intérieur, sangles de toit fournies",
-          },
-          {
-            label: "Distances",
-            value: "Biarritz 45 min, Bayonne 40 min, Bordeaux 1h30",
-          },
-        ]}
-      />
+      {/* ── CHOISISSEZ VOTRE VAN ──────────────────────────────────── */}
+      <VanSelectionSection destination="Hossegor" />
 
       {/* ── GOOGLE MAPS ───────────────────────────────────────────── */}
       <section className="py-16 bg-white">
@@ -428,9 +397,6 @@ export default async function LocationHossegorPage() {
           </div>
         </div>
       </section>
-
-      {/* ── VAN SELECTION ─────────────────────────────────────────── */}
-      <VanSelectionSection destination="Hossegor" />
 
       {/* ── FAQ ───────────────────────────────────────────────────── */}
       <section className="py-20 bg-slate-50">
