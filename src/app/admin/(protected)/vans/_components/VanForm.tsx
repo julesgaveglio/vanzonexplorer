@@ -84,6 +84,10 @@ export default function VanForm({ van }: { van?: VanData }) {
   const [uploadingGallery, setUploadingGallery] = useState(false);
   const galleryFileRef = useRef<HTMLInputElement>(null);
 
+  // Suggestions IA
+  const [mainImageAiHint, setMainImageAiHint] = useState(false);
+  const [galleryAiKeys, setGalleryAiKeys] = useState<Set<string>>(new Set());
+
   // Media picker
   const [showMediaPicker, setShowMediaPicker] = useState<"main" | "gallery" | null>(null);
   const [mediaRefreshTrigger, setMediaRefreshTrigger] = useState(0);
@@ -98,39 +102,61 @@ export default function VanForm({ van }: { van?: VanData }) {
 
   const isNew = !van?._id;
 
-  async function uploadImage(file: File): Promise<{ ref: string; url: string } | null> {
+  async function uploadImage(
+    file: File,
+    opts: { vanName?: string } = {}
+  ): Promise<{ ref: string; url: string; aiAlt?: string; aiCaption?: string } | null> {
     const fd = new FormData();
     fd.append("file", file);
     fd.append("title", file.name.replace(/\.[^/.]+$/, ""));
     fd.append("category", "vans");
+    fd.append("imageRole", "gallery"); // toutes les photos vans sont en 3:2
+    if (opts.vanName) fd.append("vanName", opts.vanName);
     const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
     if (!res.ok) return null;
     const data = await res.json();
-    return data.assetId ? { ref: data.assetId, url: data.url } : null;
+    return data.assetId
+      ? { ref: data.assetId, url: data.url, aiAlt: data.aiAlt, aiCaption: data.aiCaption }
+      : null;
   }
 
   async function handleMainImage(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploadingMain(true);
-    const result = await uploadImage(file);
+    // van?.name pour les vans existants ; DOM fallback pour les nouveaux vans non encore sauvegardés
+    const vanNameVal = van?.name ?? (document.querySelector<HTMLInputElement>('input[name="name"]'))?.value;
+    const result = await uploadImage(file, { vanName: vanNameVal });
     setUploadingMain(false);
-    if (result) { setMainImageRef(result.ref); setMainImageUrl(result.url); setMediaRefreshTrigger(t => t + 1); }
+    if (result) {
+      setMainImageRef(result.ref);
+      setMainImageUrl(result.url);
+      if (result.aiAlt && !mainImageAlt) {
+        setMainImageAlt(result.aiAlt);
+        setMainImageAiHint(true);
+      }
+      setMediaRefreshTrigger(t => t + 1);
+    }
   }
 
   async function handleGalleryUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files || []);
     if (!files.length) return;
     setUploadingGallery(true);
+    const vanNameVal = van?.name ?? (document.querySelector<HTMLInputElement>('input[name="name"]'))?.value;
     for (const file of files) {
-      const result = await uploadImage(file);
+      const result = await uploadImage(file, { vanName: vanNameVal });
       if (result) {
+        const key = `g${Date.now()}${Math.random()}`;
         setGallery(prev => [...prev, {
-          _key: `g${Date.now()}${Math.random()}`,
+          _key: key,
           ref: result.ref,
           url: result.url,
-          alt: "",
+          alt: result.aiAlt ?? "",
         }]);
+        if (result.aiAlt) {
+          setGalleryAiKeys(prev => new Set(prev).add(key));
+        }
         setMediaRefreshTrigger(t => t + 1);
       }
     }
@@ -268,8 +294,19 @@ export default function VanForm({ van }: { van?: VanData }) {
                   Depuis l&apos;ordi
                 </button>
               </div>
-              <input value={mainImageAlt} onChange={e => setMainImageAlt(e.target.value)}
-                className={inputCls} placeholder="Texte alternatif (description de l'image)" />
+              <div className="relative">
+                <input
+                  value={mainImageAlt}
+                  onChange={e => { setMainImageAlt(e.target.value); setMainImageAiHint(false); }}
+                  className={inputCls}
+                  placeholder="Texte alternatif (description de l'image)"
+                />
+                {mainImageAiHint && (
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs bg-violet-100 text-violet-700 px-2 py-0.5 rounded-full font-medium pointer-events-none">
+                    ✨ IA
+                  </span>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -282,9 +319,21 @@ export default function VanForm({ van }: { van?: VanData }) {
               <div key={item._key} className="relative group">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={`${item.url}?w=200&h=150&fit=crop&auto=format`} alt={item.alt} className="w-full aspect-[4/3] object-cover rounded-xl border border-slate-200" />
-                <input value={item.alt} onChange={e => updateGalleryAlt(item._key, e.target.value)}
+                {/* Badge IA — disparaît quand l'utilisateur modifie la légende */}
+                {galleryAiKeys.has(item._key) && (
+                  <span className="absolute top-1 left-1 text-xs bg-violet-600/90 text-white px-1.5 py-0.5 rounded-full font-medium pointer-events-none">
+                    ✨ IA
+                  </span>
+                )}
+                <input
+                  value={item.alt}
+                  onChange={e => {
+                    updateGalleryAlt(item._key, e.target.value);
+                    setGalleryAiKeys(prev => { const s = new Set(prev); s.delete(item._key); return s; });
+                  }}
                   className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-xs px-2 py-1 rounded-b-xl placeholder-white/60 focus:outline-none"
-                  placeholder="Légende..." />
+                  placeholder="Légende..."
+                />
                 <button type="button" onClick={() => removeGalleryItem(item._key)}
                   className="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full text-xs hidden group-hover:flex items-center justify-center hover:bg-red-600">✕</button>
               </div>
