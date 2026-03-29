@@ -131,8 +131,8 @@ export default function VanForm({ van }: { van?: VanData }) {
     if (result) {
       setMainImageRef(result.ref);
       setMainImageUrl(result.url);
-      if (result.aiAlt && !mainImageAlt) {
-        setMainImageAlt(result.aiAlt);
+      if (result.aiAlt) {
+        setMainImageAlt(prev => prev || result.aiAlt!);
         setMainImageAiHint(true);
       }
       setMediaRefreshTrigger(t => t + 1);
