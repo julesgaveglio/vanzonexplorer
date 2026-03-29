@@ -30,7 +30,7 @@ export async function analyzeVanImage(
   }
 
   const base64 = webpBuffer.toString("base64");
-  const vanCtx = context.vanName ? `Le van s'appelle "${context.vanName}".` : "";
+  const vanCtx = context.vanName ? `Le van s'appelle "${context.vanName.replace(/"/g, '\\"')}".` : "";
   const cityCtx = context.city ? `Région : ${context.city}.` : "Région : Pays Basque.";
 
   const prompt = `Tu es expert SEO pour une activité de location de vans aménagés. ${vanCtx} ${cityCtx}
