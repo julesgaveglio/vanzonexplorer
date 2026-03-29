@@ -114,19 +114,19 @@ export default async function LocationForetIratiPage() {
       icon: "🥾",
       title: "Randonnées balisées",
       desc: "80 km de sentiers balisés. Du tour du lac d'Irabia (3h) à la traversée du massif (2 jours). Toute la forêt est accessible à pied.",
-      imgUrl: activityImages[2]?.url ?? FALLBACK_IMG,
+      imgUrl: "https://chalets-iraty.com/wp-content/uploads/2021/05/balade-rando-fiche-2.jpg",
     },
     {
       icon: "🧀",
       title: "Fromages de brebis",
       desc: "Les bergeries du piémont produisent l'Ossau-Iraty AOP. Visite et dégustation directement chez les producteurs — une expérience authentique.",
-      imgUrl: activityImages[3]?.url ?? FALLBACK_IMG,
+      imgUrl: "https://img.lapresse.ca/924x615/201802/15/1511212.jpg",
     },
     {
       icon: "🏔️",
       title: "Cols et points de vue",
       desc: "Le col d'Organbidexka (1284m) offre un panorama à 360° sur les Pyrénées. Le col Bagargui est un des plus beaux du Pays Basque.",
-      imgUrl: activityImages[4]?.url ?? FALLBACK_IMG,
+      imgUrl: "https://s.outzer.fr/p/pictures/8/5/6/8563/e5590a-1.jpg",
     },
     {
       icon: "🌙",
