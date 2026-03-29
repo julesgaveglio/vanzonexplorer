@@ -1,6 +1,6 @@
 /**
  * Fetch a specific image via SERPAPI Google Images search.
- * Uses the thumbnail URL (hosted on Google CDN — always reliable).
+ * Returns the best high-resolution original image (≥1200px wide when possible).
  * Falls back to provided URL if API fails or key is missing.
  * Cached 7 days via Next.js fetch cache.
  */
@@ -15,8 +15,8 @@ interface SerpApiImageResult {
 }
 
 export interface SerpApiImage {
-  url: string;       // best available URL (original or thumbnail)
-  thumbnail: string; // Google CDN thumbnail (always available)
+  url: string;       // high-res original URL
+  thumbnail: string; // Google CDN thumbnail (fallback)
   title: string;
   source: string;
 }
@@ -37,10 +37,11 @@ export async function fetchSerpApiImage(
       q: query,
       tbm: 'isch',
       api_key: apiKey,
-      num: '5',
+      num: '10',        // more candidates to pick from
       gl: 'fr',
       hl: 'fr',
       safe: 'active',
+      tbs: 'isz:l',     // large images only
     });
 
     const res = await fetch(`https://serpapi.com/search.json?${params}`, {
@@ -58,9 +59,11 @@ export async function fetchSerpApiImage(
       return fallback ? { url: fallback, thumbnail: fallback, title: query, source: '' } : null;
     }
 
-    // Prefer images with reasonable dimensions from the first few results
+    // Pick the best image: prefer ≥1200px wide, then ≥800px, then anything with an original
     const best =
-      images.find((img) => img.original_width && img.original_width >= 600) ??
+      images.find((img) => img.original && img.original_width && img.original_width >= 1200) ??
+      images.find((img) => img.original && img.original_width && img.original_width >= 800) ??
+      images.find((img) => img.original) ??
       images[0];
 
     const thumbnail = best.thumbnail ?? fallback ?? '';

@@ -45,37 +45,37 @@ export default async function LocationBiarritzPage() {
       icon: "🌊",
       title: "Côte des Basques",
       desc: "Le spot de surf le plus iconique de France. Lever tôt, waves parfaites, et le parking gratuit hors saison.",
-      imgUrl: activityImages[0]?.thumbnail ?? FALLBACK_IMG,
+      imgUrl: activityImages[0]?.url ?? FALLBACK_IMG,
     },
     {
       icon: "🏄",
       title: "Plage Milady",
       desc: "Plus calme que la Côte des Basques, idéale pour débuter le surf ou se baigner en famille.",
-      imgUrl: activityImages[1]?.thumbnail ?? FALLBACK_IMG,
+      imgUrl: activityImages[1]?.url ?? FALLBACK_IMG,
     },
     {
       icon: "🏛️",
       title: "Marché des Halles",
       desc: "Pintxos, jambon de Bayonne, fromages basques. Le meilleur petit-déjeuner avant de partir surfer.",
-      imgUrl: activityImages[2]?.thumbnail ?? FALLBACK_IMG,
+      imgUrl: activityImages[2]?.url ?? FALLBACK_IMG,
     },
     {
       icon: "🍽️",
       title: "Rue du Port",
       desc: "Tapas, txakoli et ambiance basque garantie. Le soir, l'animation est dans les rues.",
-      imgUrl: activityImages[3]?.thumbnail ?? FALLBACK_IMG,
+      imgUrl: activityImages[3]?.url ?? FALLBACK_IMG,
     },
     {
       icon: "🗿",
       title: "Rocher de la Vierge",
       desc: "Vue à 360° sur l'Atlantique depuis la passerelle. Incontournable au coucher de soleil.",
-      imgUrl: activityImages[4]?.thumbnail ?? FALLBACK_IMG,
+      imgUrl: activityImages[4]?.url ?? FALLBACK_IMG,
     },
     {
       icon: "💡",
       title: "Phare de Biarritz",
       desc: "Par temps clair, vue sur les Pyrénées et l'Espagne. À 10 min à pied du centre.",
-      imgUrl: activityImages[5]?.thumbnail ?? FALLBACK_IMG,
+      imgUrl: activityImages[5]?.url ?? FALLBACK_IMG,
     },
   ];
 

@@ -45,37 +45,37 @@ export default async function LocationHossegorPage() {
       icon: "🌊",
       title: "La Gravière",
       desc: "Le reef le plus puissant d'Europe. Les vagues tubulaires de La Gravière accueillent le Quiksilver Pro chaque automne. Réservé aux surfers confirmés.",
-      imgUrl: activityImages[0]?.thumbnail ?? FALLBACK_IMG,
+      imgUrl: activityImages[0]?.url ?? FALLBACK_IMG,
     },
     {
       icon: "🏄",
       title: "Les Estagnots",
       desc: "Moins exposé que La Gravière, Les Estagnots est le meilleur spot pour les intermédiaires. Fond de sable, vagues régulières.",
-      imgUrl: activityImages[1]?.thumbnail ?? FALLBACK_IMG,
+      imgUrl: activityImages[1]?.url ?? FALLBACK_IMG,
     },
     {
       icon: "🌲",
       title: "Forêt landaise",
       desc: "La plus grande forêt de pins d'Europe à deux pas de la plage. Balades, vélo, champignons en automne. Un contraste saisissant mer-forêt.",
-      imgUrl: activityImages[2]?.thumbnail ?? FALLBACK_IMG,
+      imgUrl: activityImages[2]?.url ?? FALLBACK_IMG,
     },
     {
       icon: "🏖️",
       title: "La Côte Sauvage",
       desc: "40 km de plages de sable fin entre Hossegor et Biscarrosse. Accessible en van, peu fréquentée hors saison.",
-      imgUrl: activityImages[3]?.thumbnail ?? FALLBACK_IMG,
+      imgUrl: activityImages[3]?.url ?? FALLBACK_IMG,
     },
     {
       icon: "🏘️",
       title: "Le Village et le Lac",
       desc: "Hossegor est la ville la plus chic des Landes. Architectures basques, boutiques surf, restaurants gastro. Le lac marin pour les sports calmes.",
-      imgUrl: activityImages[4]?.thumbnail ?? FALLBACK_IMG,
+      imgUrl: activityImages[4]?.url ?? FALLBACK_IMG,
     },
     {
       icon: "🎯",
       title: "Capbreton et ses jetées",
       desc: "À 3 km, Capbreton est un port de pêche et un paradis pour les pêcheurs de bar et de thon. Les jetées au coucher du soleil sont magiques.",
-      imgUrl: activityImages[5]?.thumbnail ?? FALLBACK_IMG,
+      imgUrl: activityImages[5]?.url ?? FALLBACK_IMG,
     },
   ];
 
