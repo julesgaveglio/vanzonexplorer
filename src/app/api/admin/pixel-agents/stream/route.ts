@@ -11,7 +11,7 @@ export async function GET(request: Request) {
   }
 
   // Dynamic named imports after guard (avoids bundling on Vercel)
-  const { statSync, openSync, readSync, closeSync, watch, existsSync } = await import('fs');
+  const { statSync, openSync, readSync, closeSync, watch } = await import('fs');
   const { buildInitMessages } = await import('@/lib/pixel-agents/assetLoader');
   const { findActiveJsonlFiles, parseJsonlLine } = await import('@/lib/pixel-agents/jsonlParser');
 

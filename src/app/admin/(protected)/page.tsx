@@ -2,6 +2,7 @@ import { adminReadClient } from "@/lib/sanity/adminClient";
 import { groq } from "next-sanity";
 import Link from "next/link";
 import { currentUser } from "@clerk/nextjs/server";
+import { PixelAgentsWidgetClient } from "@/app/admin/_components/PixelAgentsWidgetClient";
 
 const dashboardQuery = groq`{
   "totalVans": count(*[_type == "van"]),
@@ -73,6 +74,7 @@ export default async function AdminDashboard() {
   ]);
 
   const firstName = user?.firstName ?? "Jules";
+  const isDev = process.env.NODE_ENV === 'development';
 
   const stats = [
     {
@@ -307,6 +309,12 @@ export default async function AdminDashboard() {
           </div>
         </div>
       </div>
+
+      {isDev && (
+        <div className="px-4 pb-8 sm:px-6 lg:px-8">
+          <PixelAgentsWidgetClient />
+        </div>
+      )}
     </div>
   );
 }
