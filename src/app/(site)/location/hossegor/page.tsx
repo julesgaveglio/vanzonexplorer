@@ -70,7 +70,7 @@ export default async function LocationHossegorPage() {
       icon: "🏘️",
       title: "Le Village et le Lac",
       desc: "Hossegor est la ville la plus chic des Landes. Architectures basques, boutiques surf, restaurants gastro. Le lac marin pour les sports calmes.",
-      imgUrl: activityImages[4]?.url ?? FALLBACK_IMG,
+      imgUrl: "https://www.loupignada.com/wp-content/uploads/sites/56/2024/12/hossegor-ville-des-landes.jpg",
     },
     {
       icon: "🎯",
