@@ -204,7 +204,7 @@ export default async function HomePage() {
               <h2 className="text-4xl font-black text-slate-900 mb-6 leading-tight">
                 Le Pays Basque,<br />
                 terrain de jeu idéal<br />
-                pour le vanlife.
+                pour la vanlife.
               </h2>
               <p className="text-slate-500 text-lg leading-relaxed mb-8">
                 De l&apos;Atlantique aux Pyrénées en moins d&apos;une heure — le Pays Basque
@@ -273,6 +273,87 @@ export default async function HomePage() {
         </div>
       </section>
 
+
+      {/* ── OÙ PARTIR EN VAN ──────────────────────────────────────── */}
+      <section className="py-20 bg-slate-50">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <span className="badge-glass !px-4 !py-1.5 text-sm font-semibold mb-4 inline-block" style={{ color: "#4D5FEC" }}>
+              🗺️ Les destinations
+            </span>
+            <h2 className="text-4xl font-black text-slate-900 mb-3">
+              Où partir en van au Pays Basque ?
+            </h2>
+            <p className="text-slate-500 text-lg max-w-xl mx-auto">
+              De l&apos;Atlantique aux Pyrénées, chaque destination a ses spots secrets.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {[
+              {
+                emoji: "🌊",
+                city: "Biarritz",
+                tagline: "Capitale du surf, plages légendaires",
+                href: "/location/biarritz",
+                gradient: "from-blue-600 to-cyan-500",
+              },
+              {
+                emoji: "🏰",
+                city: "Bayonne",
+                tagline: "Chocolat, jambon AOP et vieille ville",
+                href: "/location/bayonne",
+                gradient: "from-rose-500 to-orange-400",
+              },
+              {
+                emoji: "⛵",
+                city: "Saint-Jean-de-Luz",
+                tagline: "Port de pêche, plage protégée, Espagne à 15 min",
+                href: "/location/saint-jean-de-luz",
+                gradient: "from-indigo-600 to-violet-500",
+              },
+              {
+                emoji: "🏄",
+                city: "Hossegor",
+                tagline: "Le temple du surf européen, forêt landaise",
+                href: "/location/hossegor",
+                gradient: "from-emerald-500 to-teal-400",
+              },
+              {
+                emoji: "🌲",
+                city: "Forêt d'Irati",
+                tagline: "Hêtraie millénaire, bivouac altitude, silence total",
+                href: "/location/foret-irati",
+                gradient: "from-green-700 to-emerald-500",
+              },
+              {
+                emoji: "🗓️",
+                city: "Week-end Pays Basque",
+                tagline: "4 idées d'itinéraires pour un week-end parfait",
+                href: "/location/week-end",
+                gradient: "from-amber-500 to-yellow-400",
+              },
+            ].map((dest) => (
+              <a
+                key={dest.city}
+                href={dest.href}
+                className="group relative overflow-hidden rounded-2xl h-44 flex flex-col justify-end p-6 transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl"
+                style={{ background: `linear-gradient(135deg, var(--tw-gradient-stops))` }}
+              >
+                <div className={`absolute inset-0 bg-gradient-to-br ${dest.gradient} opacity-90 group-hover:opacity-100 transition-opacity duration-300`} />
+                <div className="relative z-10">
+                  <span className="text-3xl mb-2 block">{dest.emoji}</span>
+                  <h3 className="font-black text-white text-lg leading-tight mb-1">{dest.city}</h3>
+                  <p className="text-white/80 text-sm leading-snug">{dest.tagline}</p>
+                </div>
+                <div className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-white/30 transition-colors">
+                  <span className="text-white text-sm font-bold">→</span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
 
       <section className="py-20" style={{ background: "linear-gradient(160deg, #F8FAFC 0%, #EFF6FF 100%)" }}>
         <div className="max-w-5xl mx-auto px-6">
