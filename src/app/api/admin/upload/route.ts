@@ -22,7 +22,17 @@ export async function POST(req: NextRequest) {
     const file = formData.get("file") as File | null;
     const title = (formData.get("title") as string) || "Sans titre";
     const alt = (formData.get("alt") as string) || "";
-    const category = (formData.get("category") as string) || "divers";
+    // Résoudre la catégorie Sanity à partir du vanName si disponible
+    // (les valeurs valides du schéma mediaAsset sont : van-yoni, van-xalbat, equipe, pays-basque, formation, divers)
+    const rawCategory = (formData.get("category") as string) || "";
+    const vanNameForCat = (formData.get("vanName") as string) || "";
+    const category = rawCategory && rawCategory !== "vans"
+      ? rawCategory
+      : vanNameForCat.toLowerCase().includes("yoni")
+        ? "van-yoni"
+        : vanNameForCat.toLowerCase().includes("xalbat")
+          ? "van-xalbat"
+          : "divers";
     const imageRole = ((formData.get("imageRole") as string) || "gallery") as ImageRole;
     const vanName = (formData.get("vanName") as string) || undefined;
 
