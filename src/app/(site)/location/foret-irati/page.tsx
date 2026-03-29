@@ -102,7 +102,7 @@ export default async function LocationForetIratiPage() {
       icon: "🌲",
       title: "La Hêtraie millénaire",
       desc: "L'une des dernières grandes forêts primitives d'Europe. 17 000 hectares de hêtres centenaires, un silence absolu, une lumière filtrée incomparable.",
-      imgUrl: activityImages[0]?.url ?? FALLBACK_IMG,
+      imgUrl: "https://boutique.vision-nature.fr/wp-content/uploads/2021/05/PEP0878.jpg",
     },
     {
       icon: "🦅",
