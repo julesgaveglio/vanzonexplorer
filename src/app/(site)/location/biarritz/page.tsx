@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { fetchPexelsPhoto } from "@/lib/pexels";
-import { fetchSerpApiImages } from "@/lib/serpapi-images";
 import { getGooglePlaceStats } from "@/lib/google-places";
 import { LocationRentalJsonLd } from "@/components/seo/JsonLd";
 import VanSelectionSection from "@/components/location/VanSelectionSection";
@@ -29,14 +28,14 @@ export default async function LocationBiarritzPage() {
   const [heroPhoto, activityImages, placeStats] =
     await Promise.all([
       fetchPexelsPhoto("biarritz surf atlantic beach basque france", FALLBACK_IMG),
-      fetchSerpApiImages([
+      Promise.all([
         "Côte des Basques Biarritz surf vague plage",
         "Plage de Milady Biarritz baignade longboard",
         "Marché des Halles Biarritz pintxos fromage basque",
         "Biarritz rue port tapas bar nuit soir",
         "Rocher de la Vierge Biarritz passerelle coucher soleil",
         "Phare Biarritz vue panoramique Pyrénées",
-      ], FALLBACK_IMG),
+      ].map((q) => fetchPexelsPhoto(q, FALLBACK_IMG))),
       getGooglePlaceStats(),
     ]);
 
@@ -45,37 +44,37 @@ export default async function LocationBiarritzPage() {
       icon: "🌊",
       title: "Côte des Basques",
       desc: "Le spot de surf le plus iconique de France. Lever tôt, waves parfaites, et le parking gratuit hors saison.",
-      imgUrl: activityImages[0]?.thumbnail ?? FALLBACK_IMG,
+      imgUrl: activityImages[0]?.url ?? FALLBACK_IMG,
     },
     {
       icon: "🏄",
       title: "Plage Milady",
       desc: "Plus calme que la Côte des Basques, idéale pour débuter le surf ou se baigner en famille.",
-      imgUrl: activityImages[1]?.thumbnail ?? FALLBACK_IMG,
+      imgUrl: activityImages[1]?.url ?? FALLBACK_IMG,
     },
     {
       icon: "🏛️",
       title: "Marché des Halles",
       desc: "Pintxos, jambon de Bayonne, fromages basques. Le meilleur petit-déjeuner avant de partir surfer.",
-      imgUrl: activityImages[2]?.thumbnail ?? FALLBACK_IMG,
+      imgUrl: activityImages[2]?.url ?? FALLBACK_IMG,
     },
     {
       icon: "🍽️",
       title: "Rue du Port",
       desc: "Tapas, txakoli et ambiance basque garantie. Le soir, l'animation est dans les rues.",
-      imgUrl: activityImages[3]?.thumbnail ?? FALLBACK_IMG,
+      imgUrl: activityImages[3]?.url ?? FALLBACK_IMG,
     },
     {
       icon: "🗿",
       title: "Rocher de la Vierge",
       desc: "Vue à 360° sur l'Atlantique depuis la passerelle. Incontournable au coucher de soleil.",
-      imgUrl: activityImages[4]?.thumbnail ?? FALLBACK_IMG,
+      imgUrl: activityImages[4]?.url ?? FALLBACK_IMG,
     },
     {
       icon: "💡",
       title: "Phare de Biarritz",
       desc: "Par temps clair, vue sur les Pyrénées et l'Espagne. À 10 min à pied du centre.",
-      imgUrl: activityImages[5]?.thumbnail ?? FALLBACK_IMG,
+      imgUrl: activityImages[5]?.url ?? FALLBACK_IMG,
     },
   ];
 

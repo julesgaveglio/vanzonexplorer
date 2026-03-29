@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { fetchPexelsPhoto } from "@/lib/pexels";
-import { fetchSerpApiImages } from "@/lib/serpapi-images";
 import { getGooglePlaceStats } from "@/lib/google-places";
 import { LocationRentalJsonLd } from "@/components/seo/JsonLd";
 import VanSelectionSection from "@/components/location/VanSelectionSection";
@@ -29,14 +28,14 @@ export default async function LocationBayonnePage() {
   const [heroPhoto, activityImages, placeStats] =
     await Promise.all([
       fetchPexelsPhoto("bayonne basque city river cathedral france", FALLBACK_IMG),
-      fetchSerpApiImages([
+      Promise.all([
         "Bayonne remparts médiévaux vieille ville quais Nive",
         "Cathédrale Sainte-Marie Bayonne gothique cloître",
         "Jambon de Bayonne AOP cave affinage Pierre Ibaïalde",
         "Bayonne chocolaterie artisanale chocolat Cazenave",
         "Fêtes de Bayonne blanc rouge ambiance foule rue",
         "Musée Basque Bayonne exposition salle",
-      ], FALLBACK_IMG),
+      ].map((q) => fetchPexelsPhoto(q, FALLBACK_IMG))),
       getGooglePlaceStats(),
     ]);
 
@@ -45,37 +44,37 @@ export default async function LocationBayonnePage() {
       icon: "🏰",
       title: "Vieille ville et remparts",
       desc: "Remparts médiévaux classés, ruelles animées, quais de la Nive. Bayonne est l'une des villes les mieux conservées du Sud-Ouest.",
-      imgUrl: activityImages[0]?.thumbnail ?? FALLBACK_IMG,
+      imgUrl: activityImages[0]?.url ?? FALLBACK_IMG,
     },
     {
       icon: "⛪",
       title: "Cathédrale Sainte-Marie",
       desc: "Joyau gothique du XIIIe siècle, inscrit au patrimoine mondial. Le cloître est un havre de paix.",
-      imgUrl: activityImages[1]?.thumbnail ?? FALLBACK_IMG,
+      imgUrl: activityImages[1]?.url ?? FALLBACK_IMG,
     },
     {
       icon: "🍖",
       title: "Jambon de Bayonne AOP",
       desc: "L'un des meilleurs jambons au monde. Visite de maison Pierre Ibaïalde ou dégustation au marché couvert.",
-      imgUrl: activityImages[2]?.thumbnail ?? FALLBACK_IMG,
+      imgUrl: activityImages[2]?.url ?? FALLBACK_IMG,
     },
     {
       icon: "🍫",
       title: "Chocolat artisanal",
       desc: "Bayonne est la capitale française du chocolat depuis le XVIIe siècle. Cazenave, Puyodebat, Daranatz — faites le tour des chocolatiers.",
-      imgUrl: activityImages[3]?.thumbnail ?? FALLBACK_IMG,
+      imgUrl: activityImages[3]?.url ?? FALLBACK_IMG,
     },
     {
       icon: "🎉",
       title: "Fêtes de Bayonne",
       desc: "Début août, les plus grandes fêtes du Sud-Ouest. 5 jours de musique, corridas et ambiance basque explosive.",
-      imgUrl: activityImages[4]?.thumbnail ?? FALLBACK_IMG,
+      imgUrl: activityImages[4]?.url ?? FALLBACK_IMG,
     },
     {
       icon: "🏛️",
       title: "Musée Basque",
       desc: "La meilleure introduction à la culture basque : langue, histoire, traditions. Incontournable.",
-      imgUrl: activityImages[5]?.thumbnail ?? FALLBACK_IMG,
+      imgUrl: activityImages[5]?.url ?? FALLBACK_IMG,
     },
   ];
 
