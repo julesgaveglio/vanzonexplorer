@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { fetchPexelsPhoto } from "@/lib/pexels";
+import { fetchSerpApiImages } from "@/lib/serpapi-images";
 import { getGooglePlaceStats } from "@/lib/google-places";
 import { LocationRentalJsonLd } from "@/components/seo/JsonLd";
 import VanSelectionSection from "@/components/location/VanSelectionSection";
@@ -28,14 +29,14 @@ export default async function LocationSaintJeanDeLuzPage() {
   const [heroPhoto, activityImages, placeStats] =
     await Promise.all([
       fetchPexelsPhoto("saint jean de luz harbor beach basque village", FALLBACK_IMG),
-      Promise.all([
+      fetchSerpApiImages([
         "Saint-Jean-de-Luz port pêche bateaux colorés quai",
         "Maison Louis XIV Saint-Jean-de-Luz façade historique",
         "Plage Saint-Jean-de-Luz famille baignade sable",
         "Hondarribia vieille ville fortifiée pittoresque Espagne",
         "Rue Gambetta Saint-Jean-de-Luz maisons colombages basques",
         "Ciboure port maisons colorées basques pêcheurs",
-      ].map((q) => fetchPexelsPhoto(q, FALLBACK_IMG))),
+      ], FALLBACK_IMG),
       getGooglePlaceStats(),
     ]);
 
@@ -44,37 +45,37 @@ export default async function LocationSaintJeanDeLuzPage() {
       icon: "⚓",
       title: "Le port de pêche",
       desc: "L'un des ports de pêche les plus actifs de la côte basque. Thon rouge, anchois, merlu — le matin, les pêcheurs rentrent.",
-      imgUrl: activityImages[0]?.url ?? FALLBACK_IMG,
+      imgUrl: activityImages[0]?.thumbnail ?? FALLBACK_IMG,
     },
     {
       icon: "🏠",
       title: "Maison Louis XIV",
       desc: "Dans cette maison du XVIIe siècle, Louis XIV séjourna avant son mariage avec l'infante d'Espagne Marie-Thérèse. Histoire vivante.",
-      imgUrl: activityImages[1]?.url ?? FALLBACK_IMG,
+      imgUrl: activityImages[1]?.thumbnail ?? FALLBACK_IMG,
     },
     {
       icon: "🏖️",
       title: "La Plage",
       desc: "La seule grande plage protégée du Pays Basque, à l'abri des vagues. Idéale pour les familles et les enfants.",
-      imgUrl: activityImages[2]?.url ?? FALLBACK_IMG,
+      imgUrl: activityImages[2]?.thumbnail ?? FALLBACK_IMG,
     },
     {
       icon: "🌊",
       title: "Hendaye et Hondarribia",
       desc: "À 15 min, la frontière espagnole et ses plages infinies. Hondarribia, ville fortifiée espagnole, mérite le détour.",
-      imgUrl: activityImages[3]?.url ?? FALLBACK_IMG,
+      imgUrl: activityImages[3]?.thumbnail ?? FALLBACK_IMG,
     },
     {
       icon: "🛍️",
       title: "Rue Gambetta",
       desc: "La rue principale, piétonne, avec ses maisons à colombages basques. Maison Adam (gâteau basque depuis 1660) à ne pas manquer.",
-      imgUrl: activityImages[4]?.url ?? FALLBACK_IMG,
+      imgUrl: activityImages[4]?.thumbnail ?? FALLBACK_IMG,
     },
     {
       icon: "🐟",
       title: "Ciboure et ses ruelles",
       desc: "L'autre rive du port, plus calme, avec ses maisons d'armateurs colorées. Maurice Ravel y est né.",
-      imgUrl: activityImages[5]?.url ?? FALLBACK_IMG,
+      imgUrl: activityImages[5]?.thumbnail ?? FALLBACK_IMG,
     },
   ];
 

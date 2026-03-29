@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { fetchPexelsPhoto } from "@/lib/pexels";
+import { fetchSerpApiImages } from "@/lib/serpapi-images";
 import { getGooglePlaceStats } from "@/lib/google-places";
 import { LocationRentalJsonLd } from "@/components/seo/JsonLd";
 import VanSelectionSection from "@/components/location/VanSelectionSection";
@@ -81,12 +82,12 @@ export default async function LocationWeekEndPage() {
   const [heroPhoto, activityImages, placeStats] =
     await Promise.all([
       fetchPexelsPhoto("basque country road trip van coast mountains", FALLBACK_IMG),
-      Promise.all([
+      fetchSerpApiImages([
         "Biarritz surf Côte des Basques vague atlantique",
         "Gastronomie basque pintxos jambon table dîner",
         "La Rhune sommet panorama côte basque mer montagne",
         "Village basque Espelette maisons rouges piment",
-      ].map((q) => fetchPexelsPhoto(q, FALLBACK_IMG))),
+      ], FALLBACK_IMG),
       getGooglePlaceStats(),
     ]);
 
@@ -102,7 +103,7 @@ export default async function LocationWeekEndPage() {
         "Nuit : parking face à l'océan",
       ],
       target: "Surfers et amateurs de plage",
-      imgUrl: activityImages[0]?.url ?? FALLBACK_IMG,
+      imgUrl: activityImages[0]?.thumbnail ?? FALLBACK_IMG,
     },
     {
       icon: "🍽️",
@@ -115,7 +116,7 @@ export default async function LocationWeekEndPage() {
         "Espelette : producteurs de piment",
       ],
       target: "Amateurs de cuisine et culture",
-      imgUrl: activityImages[1]?.url ?? FALLBACK_IMG,
+      imgUrl: activityImages[1]?.thumbnail ?? FALLBACK_IMG,
     },
     {
       icon: "🏔️",
@@ -128,7 +129,7 @@ export default async function LocationWeekEndPage() {
         "Col d'Organbidexka : vue Pyrénées",
       ],
       target: "Randonneurs et amoureux de nature",
-      imgUrl: activityImages[2]?.url ?? FALLBACK_IMG,
+      imgUrl: activityImages[2]?.thumbnail ?? FALLBACK_IMG,
     },
     {
       icon: "🌅",
@@ -141,7 +142,7 @@ export default async function LocationWeekEndPage() {
         "Jour 3 : Forêt ou montagne",
       ],
       target: "Pour tout voir en un séjour",
-      imgUrl: activityImages[3]?.url ?? FALLBACK_IMG,
+      imgUrl: activityImages[3]?.thumbnail ?? FALLBACK_IMG,
     },
   ];
 
