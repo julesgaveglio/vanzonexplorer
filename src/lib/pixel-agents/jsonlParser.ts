@@ -37,7 +37,7 @@ export function findActiveJsonlFiles(): Array<{ id: number; filePath: string; pr
 
         if (jsonlFiles.length > 0) {
           // Décoder le nom du dossier de projet (URL-encoded path)
-          const folderName = decodeURIComponent(dir.name.replace(/-/g, '/')).split('/').pop() ?? dir.name;
+          const folderName = decodeURIComponent(dir.name).split(/[\\/]/).pop() ?? dir.name;
           results.push({
             id: agentId++,
             filePath: path.join(projectPath, jsonlFiles[0].file),

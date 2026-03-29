@@ -83,8 +83,11 @@ export async function GET(request: Request) {
 
             const buffer = Buffer.alloc(stat.size - offset);
             const fd = openSync(filePath, 'r');
-            readSync(fd, buffer, 0, buffer.length, offset);
-            closeSync(fd);
+            try {
+              readSync(fd, buffer, 0, buffer.length, offset);
+            } finally {
+              closeSync(fd);
+            }
             fileOffsets.set(id, stat.size);
 
             const newContent = buffer.toString('utf-8');
