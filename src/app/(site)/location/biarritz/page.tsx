@@ -64,7 +64,7 @@ export default async function LocationBiarritzPage() {
       icon: "🍽️",
       title: "Rue du Port",
       desc: "Tapas, txakoli et ambiance basque garantie. Le soir, l'animation est dans les rues.",
-      imgUrl: activityImages[3]?.url ?? FALLBACK_IMG,
+      imgUrl: "https://media.sudouest.fr/11500396/1200x-1/20210706214013-mol8689.jpg?v=1656856643",
     },
     {
       icon: "🗿",
