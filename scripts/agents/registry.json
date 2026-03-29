@@ -136,6 +136,23 @@
     "pipeline": "Standalone"
   },
   {
+    "id": "pinterest-research",
+    "name": "Agent Pinterest Research",
+    "emoji": "📌",
+    "status": "active",
+    "description": "Récupère les boards Pinterest, analyse 7 keywords vanlife clés, et génère via Groq une stratégie complète : recommandations de boards + content queue de 10-15 pins. Compte actuellement en Trial (lecture seule) — le posting sera activé après upgrade Standard.",
+    "trigger": "manual",
+    "schedule": "Manuel (via /admin/pinterest ou CLI)",
+    "cronExpression": null,
+    "file": "scripts/agents/pinterest-research-agent.ts",
+    "workflow": null,
+    "apis": ["Pinterest API v5", "Groq", "Supabase"],
+    "output": "Données dans pinterest_boards, pinterest_keyword_opportunities, pinterest_board_recommendations, pinterest_content_queue",
+    "manualCommand": "npx tsx scripts/agents/pinterest-research-agent.ts",
+    "tags": ["Pinterest", "Social", "Recherche", "Manuel"],
+    "pipeline": "Standalone"
+  },
+  {
     "id": "link-optimizer-monthly",
     "name": "Agent Link Optimizer",
     "emoji": "🔗",
