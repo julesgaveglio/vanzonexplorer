@@ -36,3 +36,6 @@ yarn-error.log*
 next-env.d.ts
 Club prive/
 .worktrees/
+
+# pixel-agents webview build (generated artifact, rebuild with: cp -r ~/pixel-agents/dist/webview/. public/pixel-agents/)
+/public/pixel-agents/
