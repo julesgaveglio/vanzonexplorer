@@ -69,7 +69,7 @@ export default async function LocationBayonnePage() {
       icon: "🎉",
       title: "Fêtes de Bayonne",
       desc: "Début août, les plus grandes fêtes du Sud-Ouest. 5 jours de musique, corridas et ambiance basque explosive.",
-      imgUrl: activityImages[4]?.url ?? FALLBACK_IMG,
+      imgUrl: "https://media.sudouest.fr/24633036/1000x625/foule-page-4-m-1colemilie-drouinaud-so.jpg",
     },
     {
       icon: "🏛️",
