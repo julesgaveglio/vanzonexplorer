@@ -186,7 +186,7 @@ export async function upsertVan(formData: FormData) {
 
   revalidatePath("/admin/vans");
   revalidatePath("/");
-  revalidatePath("/location");
+  revalidatePath("/location", "layout"); // revalide /location ET toutes les pages vans individuelles
 
   return { ok: true };
 }
