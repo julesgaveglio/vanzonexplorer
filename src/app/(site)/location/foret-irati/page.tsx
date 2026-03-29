@@ -7,6 +7,7 @@ import { getGooglePlaceStats } from "@/lib/google-places";
 import { LocationRentalJsonLd } from "@/components/seo/JsonLd";
 import VanSelectionSection from "@/components/location/VanSelectionSection";
 import PracticalInfoSection from "@/components/location/PracticalInfoSection";
+import ActivityCard from "@/components/location/ActivityCard";
 
 export const revalidate = 86400;
 
@@ -305,24 +306,7 @@ export default async function LocationForetIratiPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {activities.map((activity) => (
-              <div
-                key={activity.title}
-                className="relative h-64 overflow-hidden rounded-2xl group"
-              >
-                <Image
-                  src={activity.imgUrl}
-                  alt={activity.title}
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  className="object-cover group-hover:scale-105 transition-transform duration-700"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-                <div className="absolute bottom-0 p-5">
-                  <div className="text-2xl mb-1">{activity.icon}</div>
-                  <h3 className="font-bold text-white text-lg mb-1">{activity.title}</h3>
-                  <p className="text-white/75 text-sm leading-relaxed">{activity.desc}</p>
-                </div>
-              </div>
+              <ActivityCard key={activity.title} {...activity} />
             ))}
           </div>
         </div>
