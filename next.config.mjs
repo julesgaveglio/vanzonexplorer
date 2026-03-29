@@ -152,8 +152,9 @@ const nextConfig = {
       { protocol: "https", hostname: "www.vanlifemag.fr" },
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "plus.unsplash.com" },
-      // SERPAPI Google Images — thumbnails sur Google CDN (tous encrypted-tbn*.gstatic.com)
+      // SERPAPI — thumbnails Google CDN + résultats directs serpapi.com
       { protocol: "https", hostname: "**.gstatic.com" },
+      { protocol: "https", hostname: "serpapi.com" },
       // Originals SERPAPI — sources variées (tourisme, presse, Wikipedia)
       { protocol: "https", hostname: "upload.wikimedia.org" },
       { protocol: "https", hostname: "**.wikipedia.org" },
