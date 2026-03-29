@@ -425,11 +425,13 @@ function PromptEditor({ agentId, char }: {
 
 export default function AgentsClient({ agents, queueStats }: AgentsClientProps) {
   const cronAgents = agents.filter((a) => a.trigger === "cron" || a.trigger === "webhook");
+  const manualAgents = agents.filter((a) => a.trigger === "manual");
+  const allDisplayedAgents = [...cronAgents, ...manualAgents];
   const [selected, setSelected] = useState<string | null>(null);
   const [tab, setTab] = useState<PanelTab>("tech");
   const activeCount = cronAgents.filter((a) => a.status === "active").length;
 
-  const selAgent = selected ? cronAgents.find((a) => a.id === selected) : null;
+  const selAgent = selected ? allDisplayedAgents.find((a) => a.id === selected) : null;
   const selChar  = selected ? CHARACTERS[selected] : null;
   const selTech  = selected ? TECH[selected] : null;
 
@@ -513,7 +515,7 @@ export default function AgentsClient({ agents, queueStats }: AgentsClientProps) 
           {/* ── KPIs ── */}
           <div className="grid grid-cols-3 gap-3 sm:gap-4 mb-8">
             {[
-              { label: "ACTIFS",   val: activeCount,          sub: `/ ${cronAgents.length}`, color: "#30D158" },
+              { label: "ACTIFS",   val: activeCount,          sub: `/ ${allDisplayedAgents.length}`, color: "#30D158" },
               { label: "PUBLIÉS",  val: queueStats.published, sub: "articles",               color: "#FFD60A" },
               { label: "EN QUEUE", val: queueStats.pending,   sub: "à rédiger",              color: "#BF5AF2" },
             ].map((k) => (
@@ -560,7 +562,7 @@ export default function AgentsClient({ agents, queueStats }: AgentsClientProps) 
 
           {/* ── Cards grid — mobile: 1 col, sm: 2 col, md: 3 col ── */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {cronAgents.map((agent) => {
+            {allDisplayedAgents.map((agent) => {
               const c = CHARACTERS[agent.id] ?? {
                 name: agent.name, img: "", color: "#fff",
                 bgGrad: ["#1a1a2e","#0d0d1a"] as [string,string],
