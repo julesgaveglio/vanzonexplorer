@@ -2,7 +2,6 @@ import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
-  // ── Vérification du secret webhook ──
   const secret = request.headers.get("x-webhook-secret");
   if (secret !== process.env.SANITY_WEBHOOK_SECRET) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -12,12 +11,11 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const type = body?._type as string | undefined;
 
-    // ── Revalidation selon le type de document modifié ──
     switch (type) {
       case "van":
-        revalidatePath("/location");
+        revalidatePath("/location", "layout");  // revalide /location/* (toutes les pages vans)
         revalidatePath("/achat");
-        revalidatePath("/"); // vans vedettes en page d'accueil
+        revalidatePath("/");
         break;
       case "testimonial":
         revalidatePath("/");
@@ -26,8 +24,15 @@ export async function POST(request: NextRequest) {
         revalidatePath("/pays-basque");
         break;
       default:
-        // Revalidation générale en fallback
         revalidatePath("/");
+    }
+
+    // ── Vercel deploy hook optionnel (pour rebuild complet si besoin) ──
+    const deployHook = process.env.VERCEL_DEPLOY_HOOK_URL;
+    if (deployHook && type === "van") {
+      fetch(deployHook, { method: "POST" }).catch(err =>
+        console.warn("[revalidate] deploy hook failed:", err)
+      );
     }
 
     return NextResponse.json({
