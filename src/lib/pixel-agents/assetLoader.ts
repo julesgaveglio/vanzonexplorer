@@ -130,6 +130,31 @@ export function loadFurnitureAssets(): FurnitureAssets {
   return { catalog, sprites };
 }
 
+/** Charge le layout par défaut (default-layout-{N}.json) */
+export function loadDefaultLayout(): Record<string, unknown> | null {
+  const assetsDir = ASSETS_ROOT;
+  try {
+    // Cherche le fichier versionné le plus récent
+    let bestRevision = 0;
+    let bestPath: string | null = null;
+    for (const file of fs.readdirSync(assetsDir)) {
+      const m = /^default-layout-(\d+)\.json$/.exec(file);
+      if (m) {
+        const rev = parseInt(m[1], 10);
+        if (rev > bestRevision) { bestRevision = rev; bestPath = path.join(assetsDir, file); }
+      }
+    }
+    if (!bestPath) {
+      const fallback = path.join(assetsDir, 'default-layout.json');
+      if (fs.existsSync(fallback)) bestPath = fallback;
+    }
+    if (!bestPath) return null;
+    return JSON.parse(fs.readFileSync(bestPath, 'utf-8')) as Record<string, unknown>;
+  } catch {
+    return null;
+  }
+}
+
 /** Retourne tous les messages d'init à envoyer au webview */
 export function buildInitMessages(): object[] {
   const messages: object[] = [];
@@ -153,6 +178,15 @@ export function buildInitMessages(): object[] {
   if (catalog.length > 0) {
     messages.push({ type: 'furnitureAssetsLoaded', catalog, sprites });
   }
+
+  // Layout du bureau (placement des meubles)
+  const layout = loadDefaultLayout();
+  if (layout) {
+    messages.push({ type: 'layoutLoaded', layout });
+  }
+
+  // Paramètres requis par le webview pour initialiser correctement
+  messages.push({ type: 'settingsLoaded', soundEnabled: false, extensionVersion: '1.2.0', lastSeenVersion: '1.2.0' });
 
   return messages;
 }

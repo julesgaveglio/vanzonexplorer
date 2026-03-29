@@ -3,6 +3,11 @@ import { NextResponse } from "next/server";
 
 const isAdminRoute = createRouteMatcher(["/admin(.*)"]);
 const isAdminLogin = createRouteMatcher(["/admin/login"]);
+// Dev-only routes — have their own NODE_ENV guard, no Clerk needed
+const isDevOnlyRoute = createRouteMatcher([
+  "/pixel-agents(.*)",
+  "/api/admin/pixel-agents(.*)",
+]);
 
 const isProtectedRoute = createRouteMatcher([
   "/dashboard(.*)",
@@ -16,6 +21,9 @@ const isProtectedRoute = createRouteMatcher([
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
+  // Dev-only routes (pixel-agents) — pass through, they have their own NODE_ENV guard
+  if (isDevOnlyRoute(req)) return NextResponse.next();
+
   // Admin login page is public
   if (isAdminLogin(req)) return NextResponse.next();
 
