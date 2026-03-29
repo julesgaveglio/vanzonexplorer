@@ -132,7 +132,7 @@ export default async function LocationForetIratiPage() {
       icon: "🌙",
       title: "Bivouac altitude",
       desc: "Dormir dans le van au cœur de la forêt, à 900m d'altitude. La nuit étoilée d'Irati est parmi les plus belles de France — pollution lumineuse nulle.",
-      imgUrl: activityImages[5]?.url ?? FALLBACK_IMG,
+      imgUrl: "https://www.montagnes-magazine.com/media/Pedago/pedago-2020/bivouac-ouverture-web.jpg",
     },
   ];
 
