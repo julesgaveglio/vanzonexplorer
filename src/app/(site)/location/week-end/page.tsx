@@ -116,7 +116,7 @@ export default async function LocationWeekEndPage() {
         "Espelette : producteurs de piment",
       ],
       target: "Amateurs de cuisine et culture",
-      imgUrl: activityImages[1]?.url ?? FALLBACK_IMG,
+      imgUrl: "https://static.en-pays-basque.fr/wp-content/uploads/2020/10/web-hd-axoa-1-pierrecarton-1600x690.jpg",
     },
     {
       icon: "🏔️",
