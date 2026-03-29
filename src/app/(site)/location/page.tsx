@@ -36,6 +36,7 @@ const faqItems = [
   {
     q: "L'assurance est-elle incluse dans le prix ?",
     a: "Oui, l'assurance tous risques est incluse dans le prix de location. Vous partez l'esprit tranquille, sans franchise surprenante.",
+    link: { text: "En savoir plus sur l'assurance Yescapa →", href: "https://www.yescapa.fr/aide/assurance-et-assistance-24-7-locataire/comment-fonctionne-lassurance/" },
   },
   {
     q: "Les animaux de compagnie sont-ils acceptés ?",
@@ -420,6 +421,16 @@ export default async function LocationPage() {
                 </summary>
                 <div className="px-6 pb-5 text-slate-600 text-sm leading-relaxed border-t border-slate-50 pt-4">
                   {item.a}
+                  {"link" in item && item.link && (
+                    <a
+                      href={item.link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block mt-2 text-accent-blue hover:underline"
+                    >
+                      {item.link.text}
+                    </a>
+                  )}
                 </div>
               </details>
             ))}

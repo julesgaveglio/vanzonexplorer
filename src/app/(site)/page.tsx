@@ -178,7 +178,16 @@ export default async function HomePage() {
             <div>
               <h3 className="font-bold text-slate-900 text-base mb-1">Assurance tous risques</h3>
               <p className="text-slate-500 text-sm leading-relaxed">
-                Vous êtes couverts dès la réservation avec l&apos;assurance de la plateforme Yescapa — assurance tous risques incluse pour rouler l&apos;esprit tranquille, sans frais cachés.
+                Vous êtes couverts dès la réservation avec l&apos;
+                <a
+                  href="https://www.yescapa.fr/aide/assurance-et-assistance-24-7-locataire/comment-fonctionne-lassurance/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-accent-blue underline decoration-dotted underline-offset-2 hover:opacity-80 transition-opacity"
+                >
+                  assurance de la plateforme Yescapa
+                </a>
+                {" "}— assurance tous risques incluse pour rouler l&apos;esprit tranquille, sans frais cachés.
               </p>
             </div>
           </div>

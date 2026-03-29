@@ -50,7 +50,16 @@ export default function BookingButton({
       {/* Assurance */}
       {insuranceIncluded && (
         <p className="text-center text-xs text-emerald-600 font-medium">
-          ✓ Assurance tous risques incluse dans votre réservation
+          ✓{" "}
+          <a
+            href="https://www.yescapa.fr/aide/assurance-et-assistance-24-7-locataire/comment-fonctionne-lassurance/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline decoration-dotted underline-offset-2 hover:opacity-70 transition-opacity"
+          >
+            Assurance tous risques incluse
+          </a>{" "}
+          dans votre réservation
         </p>
       )}
     </div>

@@ -13,7 +13,12 @@ export default function YescapaReassurance() {
       <p className="text-slate-500 text-sm leading-relaxed">
         Yescapa est la plateforme de location entre particuliers leader en France.
         En passant par eux, vous bénéficiez automatiquement d&apos;une{" "}
-        <strong className="text-slate-700">assurance tous risques</strong> pour
+        <a
+          href="https://www.yescapa.fr/aide/assurance-et-assistance-24-7-locataire/comment-fonctionne-lassurance/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-bold text-slate-700 underline decoration-dotted underline-offset-2 hover:text-accent-blue transition-colors"
+        >assurance tous risques</a> pour
         toute la durée de votre séjour — un vrai filet de sécurité pour vous
         comme pour nous. Le paiement et le contrat sont également sécurisés
         par leur plateforme.

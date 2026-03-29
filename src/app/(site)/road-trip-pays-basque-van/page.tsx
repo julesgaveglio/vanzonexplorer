@@ -111,6 +111,7 @@ const faqItems = [
     question: "Faut-il un permis spécial pour conduire un van aménagé ?",
     answer:
       "Non — nos Renault Trafic III aménagés sont homologués comme véhicules de tourisme. Le permis B standard suffit. Le PTAC est inférieur à 3,5 tonnes. Aucune formation supplémentaire n'est nécessaire. L'assurance tous risques est incluse via Yescapa.",
+    link: { text: "Comment fonctionne l'assurance Yescapa →", href: "https://www.yescapa.fr/aide/assurance-et-assistance-24-7-locataire/comment-fonctionne-lassurance/" },
   },
   {
     question: "Les vans Vanzon sont-ils équipés pour cuisiner et dormir confortablement ?",
@@ -576,7 +577,19 @@ export default function RoadTripPaysBasquePage() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                   </svg>
                 </summary>
-                <p className="px-6 pb-6 text-slate-500 leading-relaxed">{item.answer}</p>
+                <div className="px-6 pb-6 text-slate-500 leading-relaxed">
+                  {item.answer}
+                  {"link" in item && item.link && (
+                    <a
+                      href={item.link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block mt-2 text-accent-blue hover:underline"
+                    >
+                      {item.link.text}
+                    </a>
+                  )}
+                </div>
               </details>
             ))}
           </div>
