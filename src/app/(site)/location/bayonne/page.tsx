@@ -57,7 +57,7 @@ export default async function LocationBayonnePage() {
       icon: "🍖",
       title: "Jambon de Bayonne AOP",
       desc: "L'un des meilleurs jambons au monde. Visite de maison Pierre Ibaïalde ou dégustation au marché couvert.",
-      imgUrl: activityImages[2]?.url ?? FALLBACK_IMG,
+      imgUrl: "https://www.guide-du-paysbasque.com/_bibli/articlesPage/167/images/ouverture.jpg?v=ficheArticle&width=416&height=275&pixelRatio=2.6250",
     },
     {
       icon: "🍫",
