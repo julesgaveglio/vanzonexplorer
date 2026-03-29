@@ -82,11 +82,11 @@ export default async function LocationSaintJeanDeLuzPage() {
 
   const itinerary = [
     {
-      day: "Vendredi soir",
+      day: "Vendredi",
       emoji: "🌅",
       color: "bg-[#4BC3E3]",
       items: [
-        "Récupération van à Cambo (17h)",
+        "Récupération du van à Cambo (9h)",
         "Route côtière vers Saint-Jean (35 min)",
         "Arrivée port, premier verre en terrasse",
         "Nuit au parking municipal bord de mer",
@@ -306,6 +306,9 @@ export default async function LocationSaintJeanDeLuzPage() {
             <p className="text-slate-500 text-lg max-w-xl mx-auto">
               Saint-Jean-de-Luz concentre tout le charme du Pays Basque dans un cadre
               exceptionnel. En van, vous dormez à deux pas du port, du marché et de la plage.
+              Partir de Cambo-les-Bains — à 30 min — est une option plus économique et plus
+              sereine : moins de monde au départ, prix plus attractifs, et déjà en pleine
+              campagne basque.
             </p>
           </div>
 

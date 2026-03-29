@@ -82,11 +82,11 @@ export default async function LocationBiarritzPage() {
 
   const itinerary = [
     {
-      day: "Vendredi soir",
+      day: "Vendredi",
       emoji: "🌅",
       color: "bg-[#4BC3E3]",
       items: [
-        "Récupération van à Cambo (17h)",
+        "Récupération du van à Cambo (9h)",
         "Route vers Biarritz (25 min)",
         "Installation au parking Côte des Basques",
         "Coucher de soleil face à l'Atlantique",
@@ -309,6 +309,8 @@ export default async function LocationBiarritzPage() {
             <p className="text-slate-500 text-lg max-w-xl mx-auto">
               Biarritz est la capitale du surf français et l&apos;un des spots les plus
               photogéniques du Pays Basque. En van, vous dormez à 500 m des meilleures plages.
+              Louer depuis Cambo-les-Bains — à seulement 25 min — est souvent plus avantageux :
+              moins de circulation, prix plus accessibles, et départ en pleine nature.
             </p>
           </div>
 

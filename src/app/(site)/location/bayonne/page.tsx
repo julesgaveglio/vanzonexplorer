@@ -82,11 +82,11 @@ export default async function LocationBayonnePage() {
 
   const itinerary = [
     {
-      day: "Vendredi soir",
+      day: "Vendredi",
       emoji: "🌆",
       color: "bg-[#4BC3E3]",
       items: [
-        "Récupération van à Cambo (17h)",
+        "Récupération du van à Cambo (9h)",
         "15 min jusqu'à Bayonne",
         "Parking quai de la Nive",
         "Dîner tapas quartier Saint-Esprit",
@@ -309,6 +309,8 @@ export default async function LocationBayonnePage() {
             <p className="text-slate-500 text-lg max-w-xl mx-auto">
               Bayonne est le carrefour parfait : au croisement de la côte basque, des Pyrénées
               et des Landes. En van, toutes les destinations s&apos;atteignent en moins d&apos;une heure.
+              Récupérer le van à Cambo-les-Bains — à 20 min seulement — vous évite le trafic
+              urbain et vous fait profiter de tarifs plus doux qu&apos;en centre-ville.
             </p>
           </div>
 

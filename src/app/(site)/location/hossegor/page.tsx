@@ -82,11 +82,11 @@ export default async function LocationHossegorPage() {
 
   const itinerary = [
     {
-      day: "Vendredi soir",
+      day: "Vendredi",
       emoji: "🌅",
       color: "bg-[#4BC3E3]",
       items: [
-        "Récupération van à Cambo (17h)",
+        "Récupération du van à Cambo (9h)",
         "Autoroute A63, sortie Capbreton (45 min)",
         "Installation parking plage Estagnots",
         "Coucher de soleil depuis la dune",
@@ -308,7 +308,9 @@ export default async function LocationHossegorPage() {
             <p className="text-slate-500 text-lg max-w-xl mx-auto">
               Hossegor, c&apos;est l&apos;Atlantique brut, la forêt landaise et une culture surf unique
               en Europe. En van, réveillez-vous face aux vagues et choisissez votre spot selon
-              la marée.
+              la marée. Partir de Cambo-les-Bains — à 35 min par l&apos;A63 — revient moins cher
+              qu&apos;une location au cœur des Landes, et vous laisse repartir dans un cadre calme
+              après votre session.
             </p>
           </div>
 

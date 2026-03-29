@@ -52,9 +52,9 @@ const faq = [
 const itineraryDays = [
   {
     icon: "🌲",
-    label: "Vendredi soir",
+    label: "Vendredi",
     activities: [
-      "Récupération van à Cambo (17h)",
+      "Récupération du van à Cambo (9h)",
       "Route via Saint-Jean-Pied-de-Port ou Mauléon (1h)",
       "Arrivée lac d'Irabia à la nuit",
       "Première nuit en altitude sous les étoiles",
@@ -300,7 +300,10 @@ export default async function LocationForetIratiPage() {
             </h2>
             <p className="text-slate-500 text-lg max-w-xl mx-auto">
               À seulement 1h de Cambo-les-Bains, Irati est l&apos;antithèse de la côte :
-              silence, altitude, forêt primaire et bivouacs à couper le souffle.
+              silence, altitude, forêt primaire et bivouacs à couper le souffle. Louer depuis
+              Cambo, c&apos;est aussi un avantage financier : tarifs plus abordables que dans les
+              stations touristiques, et vous êtes déjà aux portes des Pyrénées au moment de
+              prendre le volant.
             </p>
           </div>
 
