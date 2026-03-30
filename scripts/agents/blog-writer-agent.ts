@@ -906,7 +906,6 @@ Réponds UNIQUEMENT avec le texte markdown. Aucune explication, aucune balise, a
 
   // ── Word count validation ──────────────────────────────────────────────────
   const actualWordCount = body.split(/\s+/).filter(Boolean).length;
-  const tolerance = Math.round(targetWords * 0.1);
   if (Math.abs(actualWordCount - targetWords) > tolerance) {
     console.warn(`  ⚠️  Word count: ${actualWordCount} mots (cible: ${targetWords} ±${tolerance}) — hors tolérance`);
   } else {
