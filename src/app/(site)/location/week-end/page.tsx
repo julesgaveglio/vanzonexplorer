@@ -21,8 +21,6 @@ export const metadata: Metadata = {
 const FALLBACK_IMG =
   "https://cdn.sanity.io/images/lewexa74/production/d445397965472d300e3dc13d6b1c37503fe8ba25-1920x1080.png?auto=format&q=82";
 
-const YONI_IMG =
-  "https://cdn.sanity.io/images/lewexa74/production/660105a28e577c33f642a8fdff528d88925642e3-1080x750.png?auto=format&q=82";
 
 const faq = [
   {
