@@ -124,18 +124,25 @@ export default function VanGallery({ images, vanName }: VanGalleryProps) {
         {/* Bouton "voir toutes les photos" — coin bas droit du grid */}
       </div>
 
-      {/* Lien "voir toutes" sous le grid desktop */}
-      <div className="hidden lg:flex justify-end mt-2 mb-1">
-        <button
-          onClick={() => openLightbox(0)}
-          className="flex items-center gap-1.5 text-xs font-medium text-slate-400 hover:text-slate-700 transition-colors"
-        >
-          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
-          Voir les {images.length} photos
-        </button>
-      </div>
+      {/* Thumbnails sous le grid desktop */}
+      {images.length > 3 && (
+        <div className="hidden lg:flex gap-2 mt-3 overflow-x-auto pb-1">
+          {images.map((img, i) => (
+            <button
+              key={i}
+              onClick={() => openLightbox(i)}
+              className={`relative flex-shrink-0 w-20 h-14 rounded-xl overflow-hidden border-2 transition-all duration-200 ${
+                i < 3
+                  ? "border-[#4D5FEC] opacity-40 hover:opacity-70"
+                  : "border-transparent opacity-60 hover:opacity-100 hover:scale-[1.03]"
+              }`}
+              aria-label={`Photo ${i + 1}`}
+            >
+              <Image src={img.url} alt={img.alt || `${vanName} ${i + 1}`} fill className="object-cover" sizes="80px" />
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* ── Mobile : image principale + scroll horizontal ─────────── */}
       <div className="lg:hidden flex flex-col gap-3">
@@ -197,15 +204,25 @@ export default function VanGallery({ images, vanName }: VanGalleryProps) {
           </div>
         )}
 
-        <button
-          onClick={() => openLightbox(0)}
-          className="flex items-center gap-1.5 text-xs font-medium text-slate-400 hover:text-slate-700 transition-colors self-start"
-        >
-          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
-          Voir les {images.length} photos
-        </button>
+        {/* Thumbnails mobile */}
+        {images.length > 3 && (
+          <div className="flex gap-2 overflow-x-auto pb-1">
+            {images.map((img, i) => (
+              <button
+                key={i}
+                onClick={() => openLightbox(i)}
+                className={`relative flex-shrink-0 w-16 h-12 rounded-lg overflow-hidden border-2 transition-all duration-200 ${
+                  i < 3
+                    ? "border-[#4D5FEC] opacity-40 hover:opacity-70"
+                    : "border-transparent opacity-60 hover:opacity-100"
+                }`}
+                aria-label={`Photo ${i + 1}`}
+              >
+                <Image src={img.url} alt={img.alt || `${vanName} ${i + 1}`} fill className="object-cover" sizes="64px" />
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* ── Lightbox ─────────────────────────────────────────────── */}
