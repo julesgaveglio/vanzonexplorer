@@ -16,10 +16,12 @@
 
 import path from "path";
 import fsSync from "fs";
+import { promises as fs } from "fs";
 import Anthropic from "@anthropic-ai/sdk";
 import { notifyTelegram } from "../lib/telegram";
 import { getQueueItems, insertQueueItem, type ArticleQueueItem } from "../lib/queue";
 import { startRun, finishRun } from "../lib/agent-runs";
+import { createCostTracker } from "../lib/ai-costs";
 
 const PROJECT_ROOT = path.resolve(path.dirname(__filename), "../..");
 const KEYWORDS_FILE = path.join(PROJECT_ROOT, "scripts/data/keywords-research.json");
@@ -71,22 +73,30 @@ interface GeminiArticleMeta {
 
 // ── Claude ────────────────────────────────────────────────────────────────────
 
-async function callClaude(prompt: string): Promise<string> {
+async function callClaude(prompt: string): Promise<{ text: string; usage: { input_tokens: number; output_tokens: number } }> {
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-  const message = await client.messages.create({
+  const response = await client.messages.create({
     model: "claude-haiku-4-5-20251001",
     max_tokens: 1024,
     messages: [{ role: "user", content: prompt }],
   });
-  const content = message.content[0];
+  const content = response.content[0];
   if (content.type !== "text") throw new Error("Claude réponse vide");
-  return content.text.replace(/^```json\s*/i, "").replace(/\s*```$/i, "").trim();
+  const text = content.text.replace(/^```json\s*/i, "").replace(/\s*```$/i, "").trim();
+  return {
+    text,
+    usage: {
+      input_tokens: response.usage.input_tokens,
+      output_tokens: response.usage.output_tokens
+    }
+  };
 }
 
 async function generateArticleBrief(
   keyword: string,
   segment: string,
-  segmentLabel: string
+  segmentLabel: string,
+  costs: ReturnType<typeof createCostTracker>
 ): Promise<GeminiArticleMeta> {
   const SEGMENT_CONTEXT: Record<string, string> = {
     location: "Location de van aménagé au Pays Basque — cible les touristes et voyageurs qui veulent louer un van. CTA vers /location.",
@@ -122,7 +132,8 @@ Règles :
 - targetWordCount entre 900 et 2200
 - wordCountNote doit mentionner l'angle éditorial unique et le CTA`;
 
-  const raw = await callClaude(prompt);
+  const { text: raw, usage } = await callClaude(prompt);
+  costs.addAnthropic("haiku", usage.input_tokens, usage.output_tokens);
   return JSON.parse(raw) as GeminiArticleMeta;
 }
 
@@ -199,13 +210,14 @@ async function main() {
     return;
   }
 
+  const costs = createCostTracker();
   const newArticles: ArticleQueueItem[] = [];
 
   for (const { keyword, segment, segmentLabel } of toProcess) {
     console.log(`\n▶ "${keyword.keyword}" (score:${keyword.score}, vol:${keyword.searchVolume}, ${keyword.competitionLevel})`);
 
     try {
-      const meta = await generateArticleBrief(keyword.keyword, segment, segmentLabel);
+      const meta = await generateArticleBrief(keyword.keyword, segment, segmentLabel, costs);
 
       // Check slug uniqueness
       const slugExists = queue.some((a) => a.slug === meta.slug) || newArticles.some((a) => a.slug === meta.slug);
@@ -262,7 +274,12 @@ async function main() {
     if (inserted) itemsCreated++;
   }
 
-  await finishRun(runId, { status: "success", itemsCreated, itemsProcessed: newArticles.length });
+  await finishRun(runId, {
+    status: "success",
+    itemsCreated,
+    itemsProcessed: newArticles.length,
+    ...costs.toRunResult(),
+  });
   console.log(`\n✅ Queue mise à jour — ${itemsCreated} articles insérés`);
 }
 
