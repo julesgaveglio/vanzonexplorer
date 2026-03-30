@@ -72,7 +72,7 @@ export default function CostKpiBar({ kpis }: KpiBarProps) {
       <KpiCard
         label="Cette semaine"
         value={formatCost(kpis.thisWeek)}
-        sub="7 derniers jours"
+        sub="semaine en cours"
         accent="#F59E0B"
         icon={
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">

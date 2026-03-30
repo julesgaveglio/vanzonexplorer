@@ -210,6 +210,7 @@ async function main() {
     return;
   }
 
+  const runId = await startRun("queue-builder-monthly", { newArticlesCount: toProcess.length });
   const costs = createCostTracker();
   const newArticles: ArticleQueueItem[] = [];
 
@@ -266,7 +267,6 @@ async function main() {
     return;
   }
 
-  const runId = await startRun("queue-builder-monthly", { newArticlesCount: newArticles.length });
   let itemsCreated = 0;
 
   for (const item of newArticles) {
