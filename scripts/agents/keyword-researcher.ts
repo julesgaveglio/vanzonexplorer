@@ -19,6 +19,7 @@ import path from "path";
 import Anthropic from "@anthropic-ai/sdk";
 import { getQueueItems, insertQueueItem, type ArticleQueueItem } from "../lib/queue";
 import { startRun, finishRun } from "../lib/agent-runs";
+import { createCostTracker, type CostTracker } from "../lib/ai-costs";
 
 // ── Constants ──────────────────────────────────────────────────────────────────
 // scripts/agents/ → project root is two directories up
@@ -69,7 +70,7 @@ function getDfsAuthHeader(): string {
   return "Basic " + Buffer.from(`${login}:${password}`).toString("base64");
 }
 
-async function dfsPost<T = unknown>(endpoint: string, body: unknown): Promise<T> {
+async function dfsPost<T = unknown>(endpoint: string, body: unknown): Promise<{ result: T | null; dfsCost: number }> {
   const res = await fetch(`${DFS_BASE}${endpoint}`, {
     method: "POST",
     headers: {
@@ -88,11 +89,11 @@ async function dfsPost<T = unknown>(endpoint: string, body: unknown): Promise<T>
     throw new Error(`DataForSEO API error ${json.status_code}: ${json.status_message}`);
   }
 
-  return json.tasks?.[0]?.result?.[0] as T;
+  return { result: json.tasks?.[0]?.result?.[0] ?? null, dfsCost: json.cost ?? 0 };
 }
 
 // ── Claude: generate article metadata ──────────────────────────────────────────
-async function callClaude(prompt: string, opts: { maxTokens?: number } = {}): Promise<string> {
+async function callClaude(prompt: string, opts: { maxTokens?: number } = {}): Promise<{ text: string; usage: { input_tokens: number; output_tokens: number } }> {
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
   const message = await client.messages.create({
     model: "claude-haiku-4-5-20251001",
@@ -101,12 +102,13 @@ async function callClaude(prompt: string, opts: { maxTokens?: number } = {}): Pr
   });
   const content = message.content[0];
   if (content.type !== "text") throw new Error("Claude returned empty response");
-  return content.text;
+  return { text: content.text, usage: message.usage };
 }
 
 async function generateArticleMeta(
   keyword: string,
   category: string,
+  costs: CostTracker,
 ): Promise<GeminiArticleMeta> {
   const prompt = `Tu es un expert SEO spécialisé en vanlife et location de vans en France (Pays Basque).
 
@@ -134,7 +136,8 @@ Règles :
 - Ancrage Pays Basque : Biarritz, Bayonne, Saint-Jean-de-Luz si pertinent
 `;
 
-  const raw = await callClaude(prompt, { maxTokens: 1024 });
+  const { text: raw, usage } = await callClaude(prompt, { maxTokens: 1024 });
+  costs.addAnthropic("haiku", usage.input_tokens, usage.output_tokens);
   const cleaned = raw.replace(/^```json\s*/i, "").replace(/\s*```$/i, "").trim();
   return JSON.parse(cleaned) as GeminiArticleMeta;
 }
@@ -151,6 +154,7 @@ interface SummaryRow {
 
 async function processCategory(
   category: string,
+  costs: CostTracker,
 ): Promise<SummaryRow[]> {
   const seedKeywords = SEED_KEYWORDS[category];
   if (!seedKeywords) {
@@ -164,7 +168,7 @@ async function processCategory(
   // ── Step 1: Fetch keyword ideas from DataForSEO ──────────────────────────────
   let items: NonNullable<DfsKeywordIdeasResult["items"]> = [];
   try {
-    const result = await dfsPost<DfsKeywordIdeasResult>(
+    const { result, dfsCost } = await dfsPost<DfsKeywordIdeasResult>(
       "/dataforseo_labs/google/keyword_ideas/live",
       [
         {
@@ -176,6 +180,7 @@ async function processCategory(
         },
       ]
     );
+    costs.addDataForSeo(dfsCost);
     items = result?.items ?? [];
     console.log(`  DataForSEO returned ${items.length} keyword idea(s)`);
   } catch (err) {
@@ -250,7 +255,7 @@ async function processCategory(
     let meta: GeminiArticleMeta;
     try {
       console.log(`  Generating metadata for: "${item.keyword}"...`);
-      meta = await generateArticleMeta(item.keyword, category);
+      meta = await generateArticleMeta(item.keyword, category, costs);
     } catch (err) {
       console.warn(`  [WARN] Claude metadata generation failed for "${item.keyword}": ${(err as Error).message}`);
       summaryRows.push({
@@ -359,13 +364,14 @@ async function main(): Promise<void> {
   console.log("");
 
   const runId = await startRun("keyword-researcher", { categories: categoriesToProcess });
+  const costs = createCostTracker();
 
   // Process each category
   const allSummaryRows: (SummaryRow & { category: string })[] = [];
 
   for (const category of categoriesToProcess) {
     try {
-      const rows = await processCategory(category);
+      const rows = await processCategory(category, costs);
       for (const row of rows) {
         allSummaryRows.push({ ...row, category });
       }
@@ -397,7 +403,7 @@ async function main(): Promise<void> {
     console.log(`\nTotal: ${added} added, ${skipped} skipped, ${errors} errors`);
   }
 
-  await finishRun(runId, { status: "success", itemsCreated: added, itemsProcessed: allSummaryRows.length });
+  await finishRun(runId, { status: "success", itemsCreated: added, itemsProcessed: allSummaryRows.length, ...costs.toRunResult() });
 }
 
 main().catch(async (err) => {
