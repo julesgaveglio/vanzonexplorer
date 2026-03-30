@@ -6,6 +6,7 @@
  */
 
 import { createClient } from "@supabase/supabase-js";
+import type { ApiCostsJson } from "./ai-costs";
 
 function getClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -20,6 +21,10 @@ export interface RunResult {
   itemsCreated?: number;
   error?: string;
   metadata?: Record<string, unknown>;
+  costEur?: number;
+  tokensInput?: number;
+  tokensOutput?: number;
+  apiCosts?: ApiCostsJson;
 }
 
 /** Démarre un run. Retourne l'id du run à passer à finishRun(). */
@@ -54,6 +59,10 @@ export async function finishRun(runId: string, result: RunResult): Promise<void>
       items_created:   result.itemsCreated ?? 0,
       error_message:   result.error ?? null,
       ...(result.metadata ? { metadata: result.metadata } : {}),
+      ...(result.costEur      !== undefined ? { cost_eur:        result.costEur }      : {}),
+      ...(result.tokensInput  !== undefined ? { tokens_input:    result.tokensInput }  : {}),
+      ...(result.tokensOutput !== undefined ? { tokens_output:   result.tokensOutput } : {}),
+      ...(result.apiCosts     !== undefined ? { api_costs_json:  result.apiCosts }     : {}),
     }).eq("id", runId);
   } catch {
     // Non-fatal
