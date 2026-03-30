@@ -1,0 +1,5 @@
+ALTER TABLE agent_runs
+  ADD COLUMN IF NOT EXISTS cost_eur       NUMERIC(10,6) DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS tokens_input   INTEGER       DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS tokens_output  INTEGER       DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS api_costs_json JSONB         DEFAULT '{}';
