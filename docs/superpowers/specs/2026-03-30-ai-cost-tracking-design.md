@@ -89,23 +89,39 @@ interface RunResult {
 }
 ```
 
-`finishRun()` maps these to the new DB columns.
+`finishRun()` maps these to the new DB columns:
+
+```ts
+// Inside finishRun(), added to the existing update object:
+...(result.costEur      !== undefined ? { cost_eur:        result.costEur }      : {}),
+...(result.tokensInput  !== undefined ? { tokens_input:    result.tokensInput }  : {}),
+...(result.tokensOutput !== undefined ? { tokens_output:   result.tokensOutput } : {}),
+...(result.apiCosts     !== undefined ? { api_costs_json:  result.apiCosts }     : {}),
+```
 
 ---
 
 ## Section 3 — Agent Instrumentation
 
-### Agents to instrument
+### Scope — v1 agents (all use `startRun`/`finishRun`)
 
-| Agent | APIs tracked |
-|---|---|
-| `blog-writer-agent.ts` | Anthropic Sonnet (×2), DataForSEO, Tavily, SerpAPI |
-| `queue-builder-monthly.ts` | Anthropic Haiku |
-| `keyword-researcher.ts` | DataForSEO |
-| `keyword-research-quarterly.ts` | DataForSEO |
-| `cmo-weekly-agent.ts` | Anthropic Sonnet, DataForSEO |
-| `cmo-monthly-agent.ts` | Anthropic Sonnet, DataForSEO |
-| `article-optimizer-quarterly.ts` | Anthropic Sonnet, DataForSEO |
+| Agent | APIs tracked | Notes |
+|---|---|---|
+| `blog-writer-agent.ts` | Anthropic Sonnet (×2), DataForSEO, Tavily, SerpAPI | Main cost driver |
+| `queue-builder-monthly.ts` | Anthropic Haiku | Uses local `callClaude` with Haiku |
+| `keyword-researcher.ts` | DataForSEO + Anthropic Haiku | Both confirmed in source |
+| `article-optimizer-quarterly.ts` | Anthropic Haiku | Anthropic only — no DataForSEO calls |
+
+**Out of scope for v1 (no `startRun`/`finishRun`):**
+- `cmo-weekly-agent.ts`, `cmo-monthly-agent.ts` — use Groq (not Anthropic), no run lifecycle hooks
+- `keyword-research-quarterly.ts` — DataForSEO only, no `agent_runs` integration
+
+**Free agents (no paid APIs, not instrumented):**
+- `link-optimizer-monthly.ts` — uses only Sanity API (no cost), has `startRun`/`finishRun` but cost_eur stays 0
+
+**Gemini exclusion:** `blog-writer-agent.ts` defines `callGemini()` but both generation call sites (metadata + body) use `callClaude()`. Gemini is not called at runtime and requires no tracking.
+
+**SerpAPI env var:** `SERPAPI_KEY` (confirmed in `blog-writer-agent.ts` source).
 
 ### Pattern per agent
 
@@ -131,15 +147,30 @@ await finishRun(runId, { status: "success", itemsProcessed: 1, ...costs.toRunRes
 
 ### `callClaude` return type change (`blog-writer-agent.ts`)
 
+The existing implementation calls `client.messages.create()` from the Anthropic SDK. The SDK response includes a `usage` field with `input_tokens` and `output_tokens`. The function is updated to expose it:
+
 ```ts
 // Before
-async function callClaude(prompt, opts): Promise<string>
+async function callClaude(prompt: string, opts: { maxTokens?: number } = {}): Promise<string> {
+  const response = await client.messages.create({ ... });
+  const text = response.content.filter(...).map(...).join("");
+  return text;
+}
 
 // After
-async function callClaude(prompt, opts): Promise<{ text: string; usage: { input_tokens: number; output_tokens: number } }>
+async function callClaude(
+  prompt: string,
+  opts: { maxTokens?: number } = {}
+): Promise<{ text: string; usage: { input_tokens: number; output_tokens: number } }> {
+  const response = await client.messages.create({ ... });
+  const text = response.content.filter(...).map(...).join("");
+  return { text, usage: response.usage };
+}
 ```
 
-All 2 call sites (metadata + body) are updated to destructure `{ text }`.
+The same pattern applies to `callClaude` in `queue-builder-monthly.ts` and `article-optimizer-quarterly.ts` (each file has its own local copy).
+
+All call sites are updated to destructure `{ text }` instead of using the return value directly.
 
 ---
 
@@ -192,7 +223,7 @@ Returns two payloads:
     durationSec: number;
     costEur: number;
     apiCosts: ApiCostsJson;
-  }>;
+  }>;  // LIMIT 100, ordered by started_at DESC
 }
 ```
 
@@ -216,10 +247,8 @@ Add entry in `AdminSidebar.tsx` under "Agents":
 | Modify | `scripts/agents/blog-writer-agent.ts` |
 | Modify | `scripts/agents/queue-builder-monthly.ts` |
 | Modify | `scripts/agents/keyword-researcher.ts` |
-| Modify | `scripts/agents/keyword-research-quarterly.ts` |
-| Modify | `scripts/agents/cmo-weekly-agent.ts` |
-| Modify | `scripts/agents/cmo-monthly-agent.ts` |
 | Modify | `scripts/agents/article-optimizer-quarterly.ts` |
+| Create | `supabase/migrations/20260330_agent_runs_cost.sql` |
 | Create | `src/app/admin/(protected)/costs/page.tsx` |
 | Create | `src/app/admin/(protected)/costs/_components/CostKpiBar.tsx` |
 | Create | `src/app/admin/(protected)/costs/_components/CostChart.tsx` |
@@ -228,4 +257,5 @@ Add entry in `AdminSidebar.tsx` under "Agents":
 | Modify | `src/app/admin/_components/AdminSidebar.tsx` |
 
 No new Supabase table — only 4 columns added to `agent_runs`.
-Migration run once manually via Supabase SQL editor or migration script.
+
+**Migration:** Create `supabase/migrations/20260330_agent_runs_cost.sql` with the ALTER TABLE statement. Run once via Supabase SQL editor before deploying.
