@@ -26,12 +26,13 @@
  *   GOOGLE_REFRESH_TOKEN
  */
 
-import path from "path";
-import fsSync from "fs";
+import * as path from "path";
+import * as fs from "fs";
 import { createClient } from "@sanity/client";
 import Anthropic from "@anthropic-ai/sdk";
 import { notifyTelegram } from "../lib/telegram";
 import { getQueueItems, updateQueueItem } from "../lib/queue";
+import type { ArticleQueueItem } from "../lib/queue";
 import { startRun, finishRun } from "../lib/agent-runs";
 import { createCostTracker } from "../lib/ai-costs";
 
@@ -41,7 +42,7 @@ const PROMPTS_DIR = path.join(PROJECT_ROOT, "scripts/agents/prompts");
 
 function loadAgentPrompt(name: string): string | null {
   const mdPath = path.join(PROMPTS_DIR, `${name}.md`);
-  return fsSync.existsSync(mdPath) ? fsSync.readFileSync(mdPath, "utf-8").trim() : null;
+  return fs.existsSync(mdPath) ? fs.readFileSync(mdPath, "utf-8").trim() : null;
 }
 
 // ── Types ─────────────────────────────────────────────────────────────────────
