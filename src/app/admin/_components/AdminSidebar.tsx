@@ -180,6 +180,16 @@ const navGroups = [
         ),
       },
       {
+        label: "Coûts IA",
+        href: "/admin/costs",
+        icon: (
+          <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
+            <circle cx="12" cy="12" r="9" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M14.5 9a2.5 2.5 0 00-5 0c0 1.5 1 2 2.5 2.5S14.5 13 14.5 14.5a2.5 2.5 0 01-5 0" />
+          </svg>
+        ),
+      },
+      {
         label: "Facebook Outreach",
         href: "/admin/agents/facebook-outreach",
         icon: (

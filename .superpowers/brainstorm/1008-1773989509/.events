@@ -1,0 +1,6 @@
+{"type":"click","text":"A\n      \n        Centres d'intérêt\n        Cases à cocher : Nature & randonnée, Plages & surf, Culture & patrimoine, Gastronomie, Aventure, Bien-être & détente, Fêtes & vie nocturne","choice":"interests","id":null,"timestamp":1773993018160}
+{"type":"click","text":"B\n      \n        Profil voyageur\n        Solo, En couple, Famille avec enfants, Entre amis — change les recommandations (activités kids-friendly, camping romantique, etc.)","choice":"travelers","id":null,"timestamp":1773993018678}
+{"type":"click","text":"C\n      \n        Budget\n        Économique / Confort / Premium — oriente vers camping gratuit, aires payantes ou hôtels","choice":"budget","id":null,"timestamp":1773993020724}
+{"type":"click","text":"D\n      \n        Période / Saison\n        Mois de départ — adapte les recommandations (festivals été, marchés Noël, météo montagne…)","choice":"season","id":null,"timestamp":1773993022941}
+{"type":"click","text":"E\n      \n        Style de voyage\n        Rythme lent (2-3 stops max) vs Explorer (maximum de spots) vs Aventure (off-road, nature sauvage)","choice":"style","id":null,"timestamp":1773993027566}
+{"type":"click","text":"F\n      \n        Expérience van\n        Première fois en van / Habitué — adapte les conseils pratiques dans l'itinéraire","choice":"experience","id":null,"timestamp":1773993031348}

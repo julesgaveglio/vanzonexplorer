@@ -1,14 +1,14 @@
 {
   "main": {
-    "id": "6e1e56130684a6c6",
+    "id": "2d951b203826122b",
     "type": "split",
     "children": [
       {
-        "id": "f58b2e860eaa957d",
+        "id": "617d4b59085b27e9",
         "type": "tabs",
         "children": [
           {
-            "id": "6a7b7ed356fff62c",
+            "id": "b8275303781ae3d2",
             "type": "leaf",
             "state": {
               "type": "graph",
@@ -23,15 +23,15 @@
     "direction": "vertical"
   },
   "left": {
-    "id": "b5165dde73d2e775",
+    "id": "e036ea4cb7ea2a54",
     "type": "split",
     "children": [
       {
-        "id": "60578fc71b9ebd84",
+        "id": "0256625f476fa373",
         "type": "tabs",
         "children": [
           {
-            "id": "3ff48725c1b98c95",
+            "id": "5af769bd8e8be0dd",
             "type": "leaf",
             "state": {
               "type": "file-explorer",
@@ -44,7 +44,7 @@
             }
           },
           {
-            "id": "bfcbf1732b242abd",
+            "id": "89e0d96d7bb6c598",
             "type": "leaf",
             "state": {
               "type": "search",
@@ -61,7 +61,7 @@
             }
           },
           {
-            "id": "2e2d19c6a836e78b",
+            "id": "62725fab71b0e425",
             "type": "leaf",
             "state": {
               "type": "bookmarks",
@@ -77,20 +77,19 @@
     "width": 300
   },
   "right": {
-    "id": "7cf8bacfe1beb71c",
+    "id": "2e6a801f4ada5792",
     "type": "split",
     "children": [
       {
-        "id": "fc09886aa91d85d0",
+        "id": "8a8c9617ed3016d8",
         "type": "tabs",
         "children": [
           {
-            "id": "268e749a6b8d9835",
+            "id": "9a8099a415c96197",
             "type": "leaf",
             "state": {
               "type": "backlink",
               "state": {
-                "file": "blog/✍️ Angles & Sujets Blog.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -100,25 +99,24 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Rétrolien pour ✍️ Angles & Sujets Blog"
+              "title": "Rétroliens"
             }
           },
           {
-            "id": "e66a28847a6930cd",
+            "id": "b7637628ac934b33",
             "type": "leaf",
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "blog/✍️ Angles & Sujets Blog.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Liens sortants de ✍️ Angles & Sujets Blog"
+              "title": "Liens sortants"
             }
           },
           {
-            "id": "e4982842e97ff680",
+            "id": "eb611a202a49acf9",
             "type": "leaf",
             "state": {
               "type": "tag",
@@ -133,7 +131,7 @@
             }
           },
           {
-            "id": "b24c573dca13cf8b",
+            "id": "1ccfa41910605730",
             "type": "leaf",
             "state": {
               "type": "all-properties",
@@ -147,18 +145,17 @@
             }
           },
           {
-            "id": "18eeb2b28e096f12",
+            "id": "669a2c432acb6cfd",
             "type": "leaf",
             "state": {
               "type": "outline",
               "state": {
-                "file": "blog/✍️ Angles & Sujets Blog.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Plan de ✍️ Angles & Sujets Blog"
+              "title": "Plan"
             }
           }
         ]
@@ -179,35 +176,53 @@
       "bases:Créer une nouvelle base": false
     }
   },
-  "active": "6a7b7ed356fff62c",
+  "active": "b8275303781ae3d2",
   "lastOpenFiles": [
-    "blog/✍️ Angles & Sujets Blog.md",
-    "blog/✍️ Opinions tranchées.md",
-    "blog/✍️ Idées reçues sur le vanlife.md",
-    "territoire/🗺️ Pays Basque — Notre terrain.md",
-    "🏠 INDEX.md",
-    "blog",
-    "vision/💡 Ce qui nous énerve dans l'industrie.md",
-    "territoire",
-    "vision/💡 Business Model & Revenus.md",
-    "vision/💡 Valeurs de Vanzon.md",
-    "vision",
-    "anecdotes/🎭 Les nuits d'aménagement.md",
-    "anecdotes/🎭 L'incident du rétroviseur.md",
-    "anecdotes/🎭 Première location.md",
-    "vans/🚐 Yoni.md",
-    "anecdotes/🎭 Première nuit dans le van.md",
-    "anecdotes",
-    "vans/🚐 Xalbat.md",
-    "vans",
-    "histoire/📖 Tour du monde de Jules.md",
-    "equipe/👤 Jules.md",
-    "📖 Naissance de Vanzon.md",
-    "✍️ Angles & Sujets Blog.md",
-    "histoire/📖 Naissance de Vanzon.md",
-    "histoire",
-    "equipe/👤 Elio.md",
-    "✍️ Idées reçues sur le vanlife.md",
-    "equipe"
+    "README_IMPORT_REVIEWS.md",
+    "Vanzon DataBase 'Obs'/blog/✍️ Opinions tranchées.md",
+    "Vanzon DataBase 'Obs'/blog/✍️ Angles & Sujets Blog.md",
+    "Vanzon DataBase 'Obs'/blog/✍️ Idées reçues sur le vanlife.md",
+    "Vanzon DataBase 'Obs'/blog",
+    "Vanzon DataBase 'Obs'/territoire/🗺️ Pays Basque — Notre terrain.md",
+    "Vanzon DataBase 'Obs'/territoire",
+    "Vanzon DataBase 'Obs'/vision/💡 Ce qui nous énerve dans l'industrie.md",
+    "Vanzon DataBase 'Obs'/vision/💡 Business Model & Revenus.md",
+    "Vanzon DataBase 'Obs'/vision/💡 Valeurs de Vanzon.md",
+    "Vanzon DataBase 'Obs'/vision",
+    "Vanzon DataBase 'Obs'/anecdotes/🎭 Les nuits d'aménagement.md",
+    "Vanzon DataBase 'Obs'/anecdotes/🎭 L'incident du rétroviseur.md",
+    "Vanzon DataBase 'Obs'/anecdotes/🎭 Première location.md",
+    "Vanzon DataBase 'Obs'/anecdotes/🎭 Première nuit dans le van.md",
+    "Vanzon DataBase 'Obs'/anecdotes",
+    "Vanzon DataBase 'Obs'/vans/🚐 Xalbat.md",
+    "Vanzon DataBase 'Obs'/vans/🚐 Yoni.md",
+    "Vanzon DataBase 'Obs'/vans",
+    "Vanzon DataBase 'Obs'/histoire/📖 Tour du monde de Jules.md",
+    "Vanzon DataBase 'Obs'/✍️ Angles & Sujets Blog.md",
+    "Vanzon DataBase 'Obs'/histoire/📖 Naissance de Vanzon.md",
+    "Vanzon DataBase 'Obs'/histoire",
+    "Vanzon DataBase 'Obs'/equipe/👤 Elio.md",
+    "Vanzon DataBase 'Obs'/✍️ Idées reçues sur le vanlife.md",
+    "Vanzon DataBase 'Obs'/📖 Naissance de Vanzon.md",
+    "Vanzon DataBase 'Obs'/equipe/👤 Jules.md",
+    "Vanzon DataBase 'Obs'/equipe",
+    "Vanzon DataBase 'Obs'/🏠 INDEX.md",
+    "CLAUDE.md",
+    "README.md",
+    "Vanzon DataBase 'Obs'/Vanzon Database for blogs.rtf",
+    "Vanzon DataBase 'Obs'",
+    "dossier sans titre",
+    "public/pixel-agents/assets/furniture/WOODEN_CHAIR/WOODEN_CHAIR_SIDE.png",
+    "public/pixel-agents/assets/furniture/WOODEN_CHAIR/WOODEN_CHAIR_FRONT.png",
+    "public/pixel-agents/assets/furniture/WOODEN_CHAIR/WOODEN_CHAIR_BACK.png",
+    "public/pixel-agents/assets/furniture/WOODEN_BENCH/WOODEN_BENCH.png",
+    "public/pixel-agents/assets/furniture/WHITEBOARD/WHITEBOARD.png",
+    "public/pixel-agents/assets/furniture/TABLE_FRONT/TABLE_FRONT.png",
+    "public/pixel-agents/assets/furniture/SOFA/SOFA_SIDE.png",
+    "public/pixel-agents/assets/furniture/SOFA/SOFA_FRONT.png",
+    "public/pixel-agents/assets/furniture/SOFA/SOFA_BACK.png",
+    "public/pixel-agents/assets/furniture/SMALL_TABLE/SMALL_TABLE_SIDE.png",
+    "node_modules/@types/pngjs/README.md",
+    "node_modules/pngjs/README.md"
   ]
 }

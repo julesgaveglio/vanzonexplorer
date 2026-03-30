@@ -1,0 +1,72 @@
+<h2>Widget + modal — à quoi ça ressemble ?</h2>
+<p class="subtitle">Le widget sur le dashboard, et la vue agrandie</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:12px;background:#f8fafc">
+      <!-- Dashboard avec widget en bas -->
+      <div style="border:1px solid #e2e8f0;border-radius:6px;background:#f1f5f9;padding:8px;font-size:9px">
+        <div style="font-weight:bold;color:#1e293b;margin-bottom:6px">Dashboard Admin</div>
+        <!-- Stats grid -->
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4px;margin-bottom:6px">
+          <div style="background:white;border-radius:3px;padding:4px;text-align:center;font-size:8px">📊 Vans</div>
+          <div style="background:white;border-radius:3px;padding:4px;text-align:center;font-size:8px">⭐ Avis</div>
+          <div style="background:white;border-radius:3px;padding:4px;text-align:center;font-size:8px">📍 Spots</div>
+          <div style="background:white;border-radius:3px;padding:4px;text-align:center;font-size:8px">📝 Blog</div>
+        </div>
+        <!-- Pixel widget -->
+        <div style="background:#0f172a;border-radius:4px;padding:6px;display:flex;align-items:center;gap:8px;cursor:pointer;border:1px solid #3b82f6">
+          <div style="font-size:16px">🏢</div>
+          <div>
+            <div style="color:#60a5fa;font-size:8px;font-weight:bold">Pixel Office</div>
+            <div style="color:#94a3b8;font-size:7px">2 agents actifs · cliquer pour voir</div>
+          </div>
+          <div style="margin-left:auto;display:flex;gap:3px">
+            <div style="width:6px;height:6px;border-radius:50%;background:#22c55e"></div>
+            <div style="width:6px;height:6px;border-radius:50%;background:#22c55e"></div>
+          </div>
+        </div>
+      </div>
+      <div style="text-align:center;font-size:8px;color:#64748b;margin-top:4px">→ clic ouvre une modal plein écran</div>
+    </div>
+    <div class="card-body">
+      <h3>A — Widget compact + modal plein écran</h3>
+      <p>Widget minimaliste (barre sombre) avec compteur d'agents. Clic → modal 90vw avec le canvas pixel art complet.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:12px;background:#f8fafc">
+      <div style="border:1px solid #e2e8f0;border-radius:6px;background:#f1f5f9;padding:8px;font-size:9px">
+        <div style="font-weight:bold;color:#1e293b;margin-bottom:6px">Dashboard Admin</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4px;margin-bottom:6px">
+          <div style="background:white;border-radius:3px;padding:4px;text-align:center;font-size:8px">📊 Vans</div>
+          <div style="background:white;border-radius:3px;padding:4px;text-align:center;font-size:8px">⭐ Avis</div>
+          <div style="background:white;border-radius:3px;padding:4px;text-align:center;font-size:8px">📍 Spots</div>
+          <div style="background:white;border-radius:3px;padding:4px;text-align:center;font-size:8px">📝 Blog</div>
+        </div>
+        <!-- Mini canvas preview -->
+        <div style="background:#0f172a;border-radius:4px;height:70px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:1px solid #334155;position:relative;overflow:hidden">
+          <!-- Simulated pixel art chars -->
+          <div style="display:flex;gap:8px;align-items:flex-end">
+            <div style="text-align:center">
+              <div style="font-size:14px">🧑‍💻</div>
+              <div style="width:4px;height:4px;background:#22c55e;border-radius:50%;margin:0 auto"></div>
+            </div>
+            <div style="text-align:center">
+              <div style="font-size:14px">🤖</div>
+              <div style="width:4px;height:4px;background:#f59e0b;border-radius:50%;margin:0 auto"></div>
+            </div>
+          </div>
+          <div style="position:absolute;bottom:4px;right:6px;font-size:7px;color:#475569">⛶ agrandir</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Mini canvas preview + agrandir</h3>
+      <p>Un aperçu du canvas pixel en taille réduite (~150px de haut), visible directement. Bouton pour ouvrir en grand.</p>
+    </div>
+  </div>
+
+</div>

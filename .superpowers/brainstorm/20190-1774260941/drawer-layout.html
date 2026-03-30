@@ -1,0 +1,148 @@
+<h2>Layout du drawer (desktop)</h2>
+<p class="subtitle">Le panel glisse depuis la droite. Comment sont organisés les liens à l'intérieur ?</p>
+
+<div class="cards">
+
+  <!-- Option A : Liste compacte comme mobile actuel -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#1e293b;padding:0;font-family:system-ui;position:relative;min-height:220px;border-radius:0">
+      <!-- Page assombrie -->
+      <div style="position:absolute;inset:0;background:#1e293b;opacity:.5"></div>
+      <!-- Drawer -->
+      <div style="position:absolute;top:0;right:0;bottom:0;width:200px;background:white;padding:16px 12px;box-shadow:-8px 0 32px rgba(0,0,0,.2)">
+        <div style="display:flex;justify-content:flex-end;margin-bottom:12px">
+          <div style="font-size:18px;color:#94a3b8;cursor:pointer">✕</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:2px">
+          <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:#eff6ff;border-radius:8px">
+            <span style="font-size:14px">🚐</span>
+            <div>
+              <div style="font-size:11px;font-weight:600;color:#3b82f6">Location</div>
+              <div style="font-size:9px;color:#94a3b8">Louer un van</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px">
+            <span style="font-size:14px">🔑</span>
+            <div>
+              <div style="font-size:11px;font-weight:600;color:#475569">Achat</div>
+              <div style="font-size:9px;color:#94a3b8">Acheter un van</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px">
+            <span style="font-size:14px">🎓</span>
+            <div>
+              <div style="font-size:11px;font-weight:600;color:#475569">Formation</div>
+              <div style="font-size:9px;color:#94a3b8">Van Business</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px">
+            <span style="font-size:14px">🔮</span>
+            <div>
+              <div style="font-size:11px;font-weight:600;color:#475569">Club Privé</div>
+              <div style="font-size:9px;color:#94a3b8">Réductions</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px">
+            <span style="font-size:14px">🏄</span>
+            <div>
+              <div style="font-size:11px;font-weight:600;color:#475569">Pays Basque</div>
+              <div style="font-size:9px;color:#94a3b8">Spots & vantrips</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px">
+            <span style="font-size:14px">📖</span>
+            <div>
+              <div style="font-size:11px;font-weight:600;color:#475569">Articles</div>
+              <div style="font-size:9px;color:#94a3b8">Guides vanlife</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Liste compacte (comme le mobile)</h3>
+      <p>Même logique que le mobile actuel : emoji + label + description. Cohérent, connu, rapide à lire.</p>
+    </div>
+  </div>
+
+  <!-- Option B : Large avec sections -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#1e293b;padding:0;font-family:system-ui;position:relative;min-height:220px;border-radius:0">
+      <div style="position:absolute;inset:0;background:#1e293b;opacity:.5"></div>
+      <!-- Drawer large -->
+      <div style="position:absolute;top:0;right:0;bottom:0;width:260px;background:white;padding:20px 16px;box-shadow:-8px 0 40px rgba(0,0,0,.2)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+          <span style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.8px">Menu</span>
+          <div style="font-size:18px;color:#94a3b8;cursor:pointer">✕</div>
+        </div>
+        <!-- Section Services -->
+        <div style="margin-bottom:16px">
+          <div style="font-size:9px;font-weight:700;color:#cbd5e1;text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;padding:0 4px">Services</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">
+            <div style="padding:10px 8px;background:#eff6ff;border-radius:8px;text-align:center">
+              <div style="font-size:18px">🚐</div>
+              <div style="font-size:10px;font-weight:600;color:#3b82f6;margin-top:2px">Location</div>
+            </div>
+            <div style="padding:10px 8px;background:#f8fafc;border-radius:8px;text-align:center">
+              <div style="font-size:18px">🔑</div>
+              <div style="font-size:10px;font-weight:600;color:#475569;margin-top:2px">Achat</div>
+            </div>
+            <div style="padding:10px 8px;background:#f8fafc;border-radius:8px;text-align:center">
+              <div style="font-size:18px">🎓</div>
+              <div style="font-size:10px;font-weight:600;color:#475569;margin-top:2px">Formation</div>
+            </div>
+            <div style="padding:10px 8px;background:#f8fafc;border-radius:8px;text-align:center">
+              <div style="font-size:18px">🔮</div>
+              <div style="font-size:10px;font-weight:600;color:#475569;margin-top:2px">Club Privé</div>
+            </div>
+          </div>
+        </div>
+        <!-- Section Explorer -->
+        <div>
+          <div style="font-size:9px;font-weight:700;color:#cbd5e1;text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;padding:0 4px">Explorer</div>
+          <div style="display:flex;flex-direction:column;gap:2px">
+            <div style="display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:8px">
+              <span style="font-size:12px">🏄</span><span style="font-size:10px;font-weight:500;color:#475569">Pays Basque</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:8px">
+              <span style="font-size:12px">🗺️</span><span style="font-size:10px;font-weight:500;color:#475569">Mon Road Trip</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:8px">
+              <span style="font-size:12px">📖</span><span style="font-size:10px;font-weight:500;color:#475569">Articles</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Large avec catégories</h3>
+      <p>Drawer plus large (~300px), liens en grille 2×2 pour les services, liste simple pour "Explorer". Hierarchy claire, look premium.</p>
+    </div>
+  </div>
+
+  <!-- Option C : Minimaliste sans emoji -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#1e293b;padding:0;font-family:system-ui;position:relative;min-height:220px;border-radius:0">
+      <div style="position:absolute;inset:0;background:#1e293b;opacity:.5"></div>
+      <!-- Drawer minimal -->
+      <div style="position:absolute;top:0;right:0;bottom:0;width:180px;background:#0f172a;padding:20px 16px;box-shadow:-8px 0 40px rgba(0,0,0,.3)">
+        <div style="display:flex;justify-content:flex-end;margin-bottom:24px">
+          <div style="color:#64748b;font-size:18px;cursor:pointer">✕</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <div style="font-size:15px;font-weight:700;color:white;padding:6px 0;border-bottom:1px solid #1e293b">Location</div>
+          <div style="font-size:15px;font-weight:600;color:#64748b;padding:6px 0;border-bottom:1px solid #1e293b">Achat</div>
+          <div style="font-size:15px;font-weight:600;color:#64748b;padding:6px 0;border-bottom:1px solid #1e293b">Formation</div>
+          <div style="font-size:15px;font-weight:600;color:#64748b;padding:6px 0;border-bottom:1px solid #1e293b">Club Privé</div>
+          <div style="font-size:15px;font-weight:600;color:#64748b;padding:6px 0;border-bottom:1px solid #1e293b">Pays Basque</div>
+          <div style="font-size:15px;font-weight:600;color:#64748b;padding:6px 0">Articles</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Minimaliste fond sombre</h3>
+      <p>Drawer sobre, fond #0f172a, liens sans emoji, séparés par une ligne fine. Style très éditorial / agence haut de gamme.</p>
+    </div>
+  </div>
+
+</div>

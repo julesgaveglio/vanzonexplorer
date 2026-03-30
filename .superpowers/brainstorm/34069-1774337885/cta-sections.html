@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CTA Road Trip — 3 styles</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif; background: #f1f5f9; color: #0f172a; }
+
+  .page-header {
+    background: #0f172a;
+    color: white;
+    padding: 24px 32px;
+    text-align: center;
+  }
+  .page-header h1 { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+  .page-header p { font-size: 14px; color: #94a3b8; }
+
+  .container { max-width: 960px; margin: 0 auto; padding: 48px 24px; }
+
+  .label-section {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #64748b;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .label-section::before, .label-section::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #e2e8f0;
+  }
+
+  .section-wrapper {
+    margin-bottom: 52px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .section-wrapper:hover { transform: translateY(-2px); }
+  .section-wrapper.selected { outline: 3px solid #4D5FEC; outline-offset: 4px; border-radius: 20px; }
+  .selected-badge {
+    display: none;
+    background: #4D5FEC;
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 14px;
+    border-radius: 20px;
+    text-align: center;
+    margin-top: 8px;
+    letter-spacing: 0.05em;
+  }
+  .section-wrapper.selected .selected-badge { display: block; }
+
+  /* ─── STYLE A — Banner gradient plein largeur ─── */
+  .cta-a {
+    background: linear-gradient(135deg, #1e3a5f 0%, #1e40af 50%, #0c4a6e 100%);
+    border-radius: 20px;
+    padding: 52px 40px;
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-a::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 280px; height: 280px;
+    background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .cta-a::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; left: -40px;
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(185,148,95,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .cta-a .dot-grid {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+  .cta-a-left {
+    flex: 1;
+    position: relative;
+    z-index: 1;
+  }
+  .cta-a-emoji {
+    font-size: 52px;
+    margin-bottom: 16px;
+    display: block;
+  }
+  .cta-a-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 999px;
+    padding: 5px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #bfdbfe;
+    margin-bottom: 14px;
+  }
+  .cta-a-tag .dot { width: 6px; height: 6px; background: #60a5fa; border-radius: 50%; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.6;transform:scale(0.85)} }
+  .cta-a h2 {
+    font-size: 30px;
+    font-weight: 800;
+    color: white;
+    line-height: 1.2;
+    margin-bottom: 12px;
+  }
+  .cta-a h2 span {
+    background: linear-gradient(135deg, #93c5fd 0%, #fbbf24 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .cta-a p {
+    color: rgba(255,255,255,0.65);
+    font-size: 15px;
+    line-height: 1.6;
+    max-width: 400px;
+  }
+  .cta-a-right {
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .btn-a {
+    background: linear-gradient(135deg, #3b82f6 0%, #0ea5e9 100%);
+    color: white;
+    font-weight: 700;
+    font-size: 15px;
+    padding: 14px 28px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+    box-shadow: 0 4px 20px rgba(59,130,246,0.4);
+    transition: all 0.18s;
+  }
+  .btn-a:hover { transform: translateY(-1px); box-shadow: 0 8px 28px rgba(59,130,246,0.5); }
+  .pills-a {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: center;
+  }
+  .pill-a {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 999px;
+    padding: 4px 12px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.7);
+    white-space: nowrap;
+  }
+
+  /* ─── STYLE B — Card claire glassmorphism ─── */
+  .cta-b {
+    background: white;
+    border-radius: 20px;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+  }
+  .cta-b-top {
+    background: linear-gradient(135deg, #eff6ff 0%, #fefce8 50%, #f0fdf4 100%);
+    padding: 8px 32px;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .cta-b-top-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #2563eb;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .cta-b-inner {
+    padding: 36px 40px;
+    display: flex;
+    align-items: center;
+    gap: 36px;
+  }
+  .cta-b-icon {
+    width: 72px;
+    height: 72px;
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    flex-shrink: 0;
+    border: 1px solid #bfdbfe;
+  }
+  .cta-b-text { flex: 1; }
+  .cta-b-text h2 {
+    font-size: 22px;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 6px;
+    line-height: 1.3;
+  }
+  .cta-b-text p {
+    font-size: 14px;
+    color: #64748b;
+    line-height: 1.6;
+    max-width: 380px;
+  }
+  .cta-b-right {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+  }
+  .btn-b {
+    background: linear-gradient(135deg, #2563eb 0%, #0ea5e9 100%);
+    color: white;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 12px 24px;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+    box-shadow: 0 4px 14px rgba(37,99,235,0.3);
+    transition: all 0.18s;
+  }
+  .features-b {
+    display: flex;
+    gap: 12px;
+  }
+  .feature-b {
+    font-size: 12px;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .feature-b::before { content: '✓'; color: #10b981; font-weight: 700; }
+
+  /* ─── STYLE C — Split bold avec illustration ─── */
+  .cta-c {
+    border-radius: 20px;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    min-height: 200px;
+  }
+  .cta-c-left {
+    background: #0f172a;
+    padding: 44px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-c-left::before {
+    content: '🗺️';
+    position: absolute;
+    bottom: -10px; right: -10px;
+    font-size: 120px;
+    opacity: 0.06;
+    transform: rotate(-15deg);
+  }
+  .cta-c-overline {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #B9945F;
+    margin-bottom: 14px;
+  }
+  .cta-c-left h2 {
+    font-size: 26px;
+    font-weight: 900;
+    color: white;
+    line-height: 1.25;
+    margin-bottom: 14px;
+  }
+  .cta-c-left h2 em {
+    font-style: normal;
+    color: #93c5fd;
+  }
+  .cta-c-left p {
+    font-size: 14px;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.65;
+  }
+  .cta-c-right {
+    background: linear-gradient(135deg, #3b82f6 0%, #0ea5e9 60%, #06b6d4 100%);
+    padding: 44px 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-c-right::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 200px; height: 200px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 50%;
+  }
+  .cta-c-right::after {
+    content: '';
+    position: absolute;
+    bottom: -30px; left: -30px;
+    width: 150px; height: 150px;
+    background: rgba(0,0,0,0.08);
+    border-radius: 50%;
+  }
+  .cta-c-stats {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .cta-c-stat {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 10px;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .cta-c-stat-icon { font-size: 20px; }
+  .cta-c-stat-text { font-size: 13px; color: white; font-weight: 600; }
+  .cta-c-stat-sub { font-size: 11px; color: rgba(255,255,255,0.65); margin-top: 1px; }
+  .btn-c {
+    position: relative;
+    z-index: 1;
+    background: white;
+    color: #1e40af;
+    font-weight: 800;
+    font-size: 14px;
+    padding: 13px 24px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    transition: all 0.18s;
+    width: 100%;
+    text-align: center;
+    margin-top: 8px;
+  }
+
+  .selection-hint {
+    text-align: center;
+    font-size: 13px;
+    color: #94a3b8;
+    margin-top: 8px;
+    margin-bottom: 40px;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>3 styles de section CTA — "Crée mon road trip personnalisé"</h1>
+  <p>Clique sur la section qui te plaît le plus pour la sélectionner</p>
+</div>
+
+<div class="container">
+
+  <p class="selection-hint">↓ Clique sur une section pour la sélectionner</p>
+
+  <!-- STYLE A -->
+  <div class="label-section">Style A — Banner immersif dark</div>
+  <div class="section-wrapper" id="opt-a" onclick="select('a')">
+    <section class="cta-a">
+      <div class="dot-grid"></div>
+      <div class="cta-a-left">
+        <span class="cta-a-emoji">🗺️</span>
+        <div class="cta-a-tag">
+          <span class="dot"></span>
+          Propulsé par l'IA
+        </div>
+        <h2>Ton road trip van<br><span>ultra-personnalisé</span><br>t'attend.</h2>
+        <p>Spots secrets, campings, activités — un itinéraire complet livré par email en 60 secondes. Gratuit.</p>
+      </div>
+      <div class="cta-a-right">
+        <button class="btn-a">✨ Créer mon road trip →</button>
+        <div class="pills-a">
+          <span class="pill-a">⚡ Reçu en 60 secondes</span>
+          <span class="pill-a">🎁 100% gratuit</span>
+          <span class="pill-a">📍 Toute la France</span>
+        </div>
+      </div>
+    </section>
+    <div class="selected-badge">✓ SÉLECTIONNÉ</div>
+  </div>
+
+  <!-- STYLE B -->
+  <div class="label-section">Style B — Card légère & moderne</div>
+  <div class="section-wrapper" id="opt-b" onclick="select('b')">
+    <section class="cta-b">
+      <div class="cta-b-top">
+        <span>🤖</span>
+        <span class="cta-b-top-label">Outil gratuit · Généré par IA</span>
+      </div>
+      <div class="cta-b-inner">
+        <div class="cta-b-icon">🗺️</div>
+        <div class="cta-b-text">
+          <h2>Crée ton road trip van personnalisé</h2>
+          <p>Dis-nous ta région, ta durée, tes envies — on génère ton itinéraire jour par jour avec les meilleurs spots et campings.</p>
+        </div>
+        <div class="cta-b-right">
+          <button class="btn-b">Créer mon itinéraire gratuit →</button>
+          <div class="features-b">
+            <span class="feature-b">IA</span>
+            <span class="feature-b">60 sec</span>
+            <span class="feature-b">Gratuit</span>
+          </div>
+        </div>
+      </div>
+    </section>
+    <div class="selected-badge">✓ SÉLECTIONNÉ</div>
+  </div>
+
+  <!-- STYLE C -->
+  <div class="label-section">Style C — Split deux colonnes bold</div>
+  <div class="section-wrapper" id="opt-c" onclick="select('c')">
+    <section class="cta-c">
+      <div class="cta-c-left">
+        <div class="cta-c-overline">Road trip personnalisé</div>
+        <h2>Tu sais où tu veux aller.<br><em>On te dit comment.</em></h2>
+        <p>Notre IA génère un itinéraire complet selon ta destination, ta durée et tes envies. Spots, campings, conseils van.</p>
+      </div>
+      <div class="cta-c-right">
+        <div class="cta-c-stats">
+          <div class="cta-c-stat">
+            <span class="cta-c-stat-icon">⚡</span>
+            <div>
+              <div class="cta-c-stat-text">Résultat en 60 secondes</div>
+              <div class="cta-c-stat-sub">Livré par email</div>
+            </div>
+          </div>
+          <div class="cta-c-stat">
+            <span class="cta-c-stat-icon">📍</span>
+            <div>
+              <div class="cta-c-stat-text">Toute la France</div>
+              <div class="cta-c-stat-sub">Bretagne, Alpes, Corse, Pyrénées…</div>
+            </div>
+          </div>
+          <div class="cta-c-stat">
+            <span class="cta-c-stat-icon">🎁</span>
+            <div>
+              <div class="cta-c-stat-text">100% gratuit</div>
+              <div class="cta-c-stat-sub">Sans inscription</div>
+            </div>
+          </div>
+        </div>
+        <button class="btn-c">🗺️ Créer mon road trip personnalisé →</button>
+      </div>
+    </section>
+    <div class="selected-badge">✓ SÉLECTIONNÉ</div>
+  </div>
+
+</div>
+
+<script>
+function select(choice) {
+  document.querySelectorAll('.section-wrapper').forEach(el => el.classList.remove('selected'));
+  document.getElementById('opt-' + choice).classList.add('selected');
+  // Record event
+  if (window.recordChoice) window.recordChoice(choice, 'Style ' + choice.toUpperCase());
+}
+</script>
+
+</body>
+</html>

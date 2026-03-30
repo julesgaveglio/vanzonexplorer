@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Style B — v2</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif; background: #f1f5f9; color: #0f172a; }
+
+  .page-header {
+    background: #0f172a;
+    color: white;
+    padding: 20px 32px;
+    text-align: center;
+  }
+  .page-header h1 { font-size: 16px; font-weight: 600; color: #cbd5e1; }
+
+  .container { max-width: 960px; margin: 0 auto; padding: 48px 24px; }
+
+  .context-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #94a3b8;
+    margin-bottom: 12px;
+  }
+
+  /* Simulated article content above */
+  .fake-article {
+    background: white;
+    border-radius: 16px;
+    padding: 32px 40px;
+    margin-bottom: 0;
+    border: 1px solid #e2e8f0;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom: none;
+  }
+  .fake-article p { font-size: 17px; color: #475569; line-height: 1.75; margin-bottom: 16px; }
+  .fake-article p:last-child { margin-bottom: 0; }
+  .fake-article .fade {
+    background: linear-gradient(to bottom, transparent, white);
+    height: 48px;
+    margin-top: -48px;
+    position: relative;
+  }
+
+  /* THE CTA */
+  .cta-b {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-top: none;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+  }
+  .cta-b-top {
+    background: linear-gradient(135deg, #eff6ff 0%, #fefce8 50%, #f0fdf4 100%);
+    padding: 8px 32px;
+    border-top: 1px solid #e2e8f0;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .cta-b-top-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #2563eb;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .cta-b-inner {
+    padding: 36px 40px;
+    display: flex;
+    align-items: center;
+    gap: 36px;
+  }
+  .cta-b-icon {
+    width: 72px;
+    height: 72px;
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    flex-shrink: 0;
+    border: 1px solid #bfdbfe;
+  }
+  .cta-b-text { flex: 1; }
+  .cta-b-text h2 {
+    font-size: 22px;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 8px;
+    line-height: 1.3;
+  }
+  .cta-b-text p {
+    font-size: 15px;
+    color: #64748b;
+    line-height: 1.6;
+    max-width: 400px;
+  }
+  .cta-b-right {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+  }
+  .btn-b {
+    background: linear-gradient(135deg, #2563eb 0%, #0ea5e9 100%);
+    color: white;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 13px 26px;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+    box-shadow: 0 4px 14px rgba(37,99,235,0.3);
+    transition: all 0.18s;
+  }
+  .features-b {
+    display: flex;
+    gap: 12px;
+  }
+  .feature-b {
+    font-size: 12px;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .feature-b::before { content: '✓'; color: #10b981; font-weight: 700; margin-right: 2px; }
+
+  /* Footer after CTA */
+  .fake-footer {
+    background: white;
+    border-radius: 0 0 16px 16px;
+    border: 1px solid #e2e8f0;
+    border-top: none;
+    padding: 20px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .fake-footer-text { font-size: 13px; color: #94a3b8; }
+
+  .note {
+    text-align: center;
+    font-size: 13px;
+    color: #64748b;
+    margin-top: 32px;
+    padding: 16px 24px;
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+  }
+  .note strong { color: #0f172a; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Style B mis à jour — en contexte page article</h1>
+</div>
+
+<div class="container">
+
+  <div class="context-label">↓ Contexte : fin d'un article de blog</div>
+
+  <div class="fake-article">
+    <p>Les Pyrénées offrent des paysages à couper le souffle pour tout road tripper en van. Du côté basque aux sommets de l'Ariège, chaque vallée cache ses propres trésors : cols vertigineux, lacs d'altitude, villages oubliés et fromagers passionnés.</p>
+    <p>Pour profiter pleinement de cette région, il faut savoir où dormir — et les parkings officiels pour vans sont nombreux mais souvent méconnus...</p>
+    <div class="fade"></div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-b">
+    <div class="cta-b-top">
+      <span>🤖</span>
+      <span class="cta-b-top-label">Outil gratuit · Généré par IA</span>
+    </div>
+    <div class="cta-b-inner">
+      <div class="cta-b-icon">🗺️</div>
+      <div class="cta-b-text">
+        <h2>Crée ton road trip van personnalisé</h2>
+        <p>Dis-nous ta région, ta durée, ce qui te fait vibrer. On génère ton itinéraire complet : étapes, spots nature, parkings et activités.</p>
+      </div>
+      <div class="cta-b-right">
+        <button class="btn-b">Créer mon itinéraire gratuit →</button>
+        <div class="features-b">
+          <span class="feature-b">IA</span>
+          <span class="feature-b">60 sec</span>
+          <span class="feature-b">Gratuit</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fake-footer">
+    <span class="fake-footer-text">← Article suivant</span>
+    <span class="fake-footer-text">Partager →</span>
+  </div>
+
+  <div class="note">
+    <strong>Ce composant sera :</strong> un Server Component réutilisable <code>&lt;RoadTripCTA /&gt;</code> — ajouté automatiquement en bas de chaque article et sur les pages pertinentes du site. Tu valides ce design ?
+  </div>
+
+</div>
+
+</body>
+</html>
