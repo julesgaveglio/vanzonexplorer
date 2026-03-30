@@ -13,8 +13,6 @@ jobs:
     name: Publish next article
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    permissions:
-      contents: write
 
     steps:
       - name: Checkout repo
@@ -39,19 +37,14 @@ jobs:
           DATAFORSEO_LOGIN: ${{ secrets.DATAFORSEO_LOGIN }}
           DATAFORSEO_PASSWORD: ${{ secrets.DATAFORSEO_PASSWORD }}
           TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
+          SERPAPI_KEY: ${{ secrets.SERPAPI_KEY }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           GOOGLE_GSC_CLIENT_ID: ${{ secrets.GOOGLE_GSC_CLIENT_ID }}
           GOOGLE_GSC_CLIENT_SECRET: ${{ secrets.GOOGLE_GSC_CLIENT_SECRET }}
           GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           NEXT_PUBLIC_SANITY_PROJECT_ID: lewexa74
           NEXT_PUBLIC_SANITY_DATASET: production
         run: npx tsx scripts/agents/blog-writer-agent.ts
-
-      - name: Commit updated article queue
-        run: |
-          git config user.name "Vanzon Bot"
-          git config user.email "bot@vanzonexplorer.com"
-          git add scripts/data/article-queue.json
-          git diff --staged --quiet || git commit -m "chore: article auto-publié [skip ci]"
-          git push
