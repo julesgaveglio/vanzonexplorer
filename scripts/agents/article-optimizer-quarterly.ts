@@ -33,6 +33,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { notifyTelegram } from "../lib/telegram";
 import { getQueueItems, updateQueueItem } from "../lib/queue";
 import { startRun, finishRun } from "../lib/agent-runs";
+import { createCostTracker } from "../lib/ai-costs";
 
 const PROJECT_ROOT = path.resolve(path.dirname(__filename), "../..");
 const SITE_URL = "https://vanzonexplorer.com";
@@ -156,7 +157,12 @@ function extractBodyText(body: SanityArticle["body"]): string {
 
 // ── Claude ────────────────────────────────────────────────────────────────────
 
-async function callClaude(prompt: string): Promise<string> {
+interface ClaudeResponse {
+  text: string;
+  usage: { input_tokens: number; output_tokens: number };
+}
+
+async function callClaude(prompt: string): Promise<ClaudeResponse> {
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
   const message = await client.messages.create({
     model: "claude-haiku-4-5-20251001",
@@ -165,7 +171,8 @@ async function callClaude(prompt: string): Promise<string> {
   });
   const content = message.content[0];
   if (content.type !== "text") throw new Error("Claude returned non-text response");
-  return content.text.replace(/^```json\s*/i, "").replace(/\s*```$/i, "").trim();
+  const text = content.text.replace(/^```json\s*/i, "").replace(/\s*```$/i, "").trim();
+  return { text, usage: message.usage };
 }
 
 interface OptimizedMeta {
@@ -179,7 +186,7 @@ async function generateOptimizedMeta(
   article: SanityArticle,
   targetKeyword: string,
   gsc: GscRow
-): Promise<OptimizedMeta> {
+): Promise<{ meta: OptimizedMeta; usage: { input_tokens: number; output_tokens: number } }> {
   const bodyPreview = extractBodyText(article.body).slice(0, 1500);
 
   const baseInstructions = loadAgentPrompt("article-optimizer-quarterly") ??
@@ -213,8 +220,9 @@ Génère un JSON avec des métadonnées optimisées :
   "improvements": "Explication courte des changements effectués et pourquoi"
 }`;
 
-  const raw = await callClaude(prompt);
-  return JSON.parse(raw) as OptimizedMeta;
+  const { text, usage } = await callClaude(prompt);
+  const meta = JSON.parse(text) as OptimizedMeta;
+  return { meta, usage };
 }
 
 async function updateSanityMeta(sanityId: string, meta: OptimizedMeta): Promise<void> {
@@ -236,6 +244,7 @@ async function main() {
   console.log(`Date : ${new Date().toLocaleDateString("fr-FR")}\n`);
 
   const runId = await startRun("article-optimizer-quarterly");
+  const costs = createCostTracker();
 
   // Load queue
   const queue = await getQueueItems({ status: "published" });
@@ -310,7 +319,8 @@ async function main() {
         continue;
       }
 
-      const meta = await generateOptimizedMeta(sanityArticle, article.targetKeyword, gsc);
+      const { meta, usage } = await generateOptimizedMeta(sanityArticle, article.targetKeyword, gsc);
+      costs.addAnthropic("haiku", usage.input_tokens, usage.output_tokens);
       console.log(`  Nouveau titre : "${meta.seoTitle}"`);
       console.log(`  Amélioration : ${meta.improvements}`);
 
@@ -325,7 +335,7 @@ async function main() {
     }
   }
 
-  await finishRun(runId, { status: "success", itemsProcessed: targets.length, itemsCreated: optimized });
+  await finishRun(runId, { status: "success", itemsProcessed: targets.length, itemsCreated: optimized, ...costs.toRunResult() });
   console.log(`\n${dryRun ? "🔍 DRY RUN — " : ""}✅ ${optimized} articles optimisés`);
 }
 
