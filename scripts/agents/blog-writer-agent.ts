@@ -30,6 +30,7 @@ import { searchPexelsPhoto, downloadPexelsPhoto, buildPexelsCredit } from "../..
 import { notifyTelegram } from "../lib/telegram";
 import { claimPendingArticle, updateQueueItem, getQueueItems, type ArticleQueueItem } from "../lib/queue";
 import { startRun, finishRun } from "../lib/agent-runs";
+import { createCostTracker } from "../lib/ai-costs";
 
 // ── Constants ──────────────────────────────────────────────────────────────────
 // scripts/agents/ → project root is two directories up
@@ -115,7 +116,7 @@ function getDfsAuthHeader(): string {
   return "Basic " + Buffer.from(`${login}:${password}`).toString("base64");
 }
 
-async function dfsPost<T = unknown>(endpoint: string, body: unknown): Promise<T> {
+async function dfsPost<T = unknown>(endpoint: string, body: unknown): Promise<{ result: T | null; dfsCost: number }> {
   const res = await fetch(`${DFS_BASE}${endpoint}`, {
     method: "POST",
     headers: {
@@ -134,7 +135,7 @@ async function dfsPost<T = unknown>(endpoint: string, body: unknown): Promise<T>
     throw new Error(`DataForSEO API error ${json.status_code}: ${json.status_message}`);
   }
 
-  return json.tasks?.[0]?.result?.[0] as T;
+  return { result: json.tasks?.[0]?.result?.[0] ?? null, dfsCost: json.cost ?? 0 };
 }
 
 // ── Random key generator for Portable Text ─────────────────────────────────────
@@ -463,10 +464,10 @@ function markdownToPortableText(markdown: string): PortableTextBlock[] {
 }
 
 // ── Step 1: Get keyword data from DataForSEO ───────────────────────────────────
-async function getKeywordData(keyword: string): Promise<KeywordData> {
+async function getKeywordData(keyword: string): Promise<{ data: KeywordData; dfsCost: number }> {
   console.log(`  Fetching keyword data for: "${keyword}"...`);
   try {
-    const result = await dfsPost<KeywordData>(
+    const { result, dfsCost } = await dfsPost<KeywordData>(
       "/dataforseo_labs/google/keyword_overview/live",
       [
         {
@@ -480,11 +481,11 @@ async function getKeywordData(keyword: string): Promise<KeywordData> {
     console.log(
       `  Keyword data: volume=${data.search_volume ?? "N/A"}, competition=${data.competition_level ?? "N/A"}, cpc=${data.cpc ?? "N/A"}`
     );
-    return data;
+    return { data, dfsCost };
   } catch (err) {
     // Non-fatal: we'll proceed without keyword data rather than abort
     console.warn(`  Warning: Could not fetch keyword data — ${(err as Error).message}`);
-    return {};
+    return { data: {}, dfsCost: 0 };
   }
 }
 
@@ -494,10 +495,10 @@ interface SerpAnalysis {
 }
 
 // ── Step 2: SERP analysis — PAA questions + top organic results ─────────────────
-async function analyzeSERP(keyword: string): Promise<SerpAnalysis> {
+async function analyzeSERP(keyword: string): Promise<{ analysis: SerpAnalysis; dfsCost: number }> {
   console.log(`  Analyzing SERP for: "${keyword}"...`);
   try {
-    const result = await dfsPost<unknown>(
+    const { result, dfsCost } = await dfsPost<unknown>(
       "/serp/google/organic/live/advanced",
       [
         {
@@ -541,15 +542,15 @@ async function analyzeSERP(keyword: string): Promise<SerpAnalysis> {
     }
 
     console.log(`  Found ${paaQuestions.length} PAA + ${topResults.length} top organic results`);
-    return { paaQuestions, topResults };
+    return { analysis: { paaQuestions, topResults }, dfsCost };
   } catch (err) {
     console.warn(`  Warning: SERP analysis failed — ${(err as Error).message}`);
-    return { paaQuestions: [], topResults: [] };
+    return { analysis: { paaQuestions: [], topResults: [] }, dfsCost: 0 };
   }
 }
 
 // ── Claude Sonnet 4.5 via Anthropic SDK ───────────────────────────────────────
-async function callClaude(prompt: string, opts: { maxTokens?: number } = {}): Promise<string> {
+async function callClaude(prompt: string, opts: { maxTokens?: number } = {}): Promise<{ text: string; usage: { input_tokens: number; output_tokens: number } }> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) throw new Error("ANTHROPIC_API_KEY is required");
 
@@ -566,7 +567,7 @@ async function callClaude(prompt: string, opts: { maxTokens?: number } = {}): Pr
     .join("");
 
   if (!text) throw new Error("Claude returned empty response");
-  return text;
+  return { text, usage: response.usage };
 }
 
 // ── Gemini Flash — fast metadata generation only ────────────────────────────────
@@ -675,7 +676,7 @@ async function generateArticle(
   externalSources: TavilySource[],
   publishedSlugs: Set<string> = new Set(),
   publishedArticles: PublishedArticle[] = []
-): Promise<GeneratedContent> {
+): Promise<{ content: GeneratedContent; claudeUsage: Array<{ input_tokens: number; output_tokens: number }> }> {
 
   const { paaQuestions, topResults } = serpAnalysis;
 
@@ -791,7 +792,8 @@ Mots-clés secondaires: ${article.secondaryKeywords.join(", ")}
 Réponds UNIQUEMENT avec ce JSON valide (aucune explication, aucune balise markdown):
 {"title":"H1 accrocheur avec keyword principal (60-80 chars)","seoTitle":"title tag SEO max 60 chars","seoDescription":"meta description 140-155 chars avec CTA","excerpt":"accroche article 180-220 chars"}`;
 
-  const metaText = await callClaude(metaPrompt, { maxTokens: 512 });
+  const { text: metaText, usage: metaUsage } = await callClaude(metaPrompt, { maxTokens: 512 });
+  const claudeUsage: Array<{ input_tokens: number; output_tokens: number }> = [metaUsage];
   let meta: Pick<GeminiRawContent, "title" | "seoTitle" | "seoDescription" | "excerpt">;
   try {
     const cleaned = metaText.replace(/^```(?:json)?\s*/i, "").replace(/\s*```\s*$/, "").trim();
@@ -892,7 +894,8 @@ Réponds UNIQUEMENT avec le texte markdown. Aucune explication, aucune balise, a
   // Formula: content tokens (≈1.5 tokens/word) + safety margin (2000).
   // Minimum of 6000 to ensure full content fits.
   const maxTokensForBody = Math.max(6000, Math.min(16000, Math.ceil(targetWords * 1.5) + 2000));
-  const rawBody = await callClaude(bodyPrompt, { maxTokens: maxTokensForBody });
+  const { text: rawBody, usage: bodyUsage } = await callClaude(bodyPrompt, { maxTokens: maxTokensForBody });
+  claudeUsage.push(bodyUsage);
 
   // Extract FAQ items for Schema.org JSON-LD (before link injection modifies text)
   const faqItems = extractFaqFromMarkdown(rawBody);
@@ -925,7 +928,7 @@ Réponds UNIQUEMENT avec le texte markdown. Aucune explication, aucune balise, a
   };
 
   console.log(`  Article generated: "${parsed.title}" (${parsed.content.length} blocks)`);
-  return parsed;
+  return { content: parsed, claudeUsage };
 }
 
 // ── Step 3.5: SERP image search + upload ──────────────────────────────────────
@@ -1219,6 +1222,7 @@ async function main(): Promise<void> {
   const isNextMode = !slugArg || slugArg === "next";
 
   const runId = await startRun("blog-writer", { slugArg: slugArg ?? "next" });
+  const costs = createCostTracker();
 
   // Step 1: Claim article atomically from Supabase
   console.log("\nClaiming article from queue...");
@@ -1244,16 +1248,19 @@ async function main(): Promise<void> {
   try {
     // Step 4: DataForSEO — keyword overview
     console.log("\n[1/7] Fetching keyword data from DataForSEO...");
-    const keywordData = await getKeywordData(article.targetKeyword);
+    const { data: keywordData, dfsCost: kwDfsCost } = await getKeywordData(article.targetKeyword);
+    costs.addDataForSeo(kwDfsCost);
 
     // Step 5: DataForSEO SERP — PAA questions + top organic results
     console.log("\n[2/7] Analyzing SERP (PAA + top results)...");
-    const serpAnalysis = await analyzeSERP(article.targetKeyword);
+    const { analysis: serpAnalysis, dfsCost: serpDfsCost } = await analyzeSERP(article.targetKeyword);
+    costs.addDataForSeo(serpDfsCost);
 
     // Step 5.5: Tavily — fetch verified external sources
     console.log("\n[3/7] Fetching external sources via Tavily...");
     const externalSources = await fetchExternalSources(article.targetKeyword);
     console.log(`  Found ${externalSources.length} verified external source(s)`);
+    if (externalSources.length > 0) costs.addTavily(1);
 
     // Step 5.6: Fetch published Sanity slugs for link verification
     console.log("\n[4/7] Fetching published article slugs from Sanity...");
@@ -1268,7 +1275,10 @@ async function main(): Promise<void> {
 
     // Step 6: Generate article — Claude Sonnet 4.5 for metadata + body
     console.log("\n[5/7] Generating article (Claude Sonnet 4.5)...");
-    const generatedContent = await generateArticle(article, keywordData, serpAnalysis, externalSources, publishedSlugs, publishedArticles);
+    const { content: generatedContent, claudeUsage } = await generateArticle(article, keywordData, serpAnalysis, externalSources, publishedSlugs, publishedArticles);
+    for (const usage of claudeUsage) {
+      costs.addAnthropic("sonnet", usage.input_tokens, usage.output_tokens);
+    }
 
     // Step 6.1: Verify external links — strip broken ones before publishing
     console.log("\n[5.5/7] Verifying external links...");
@@ -1281,6 +1291,7 @@ async function main(): Promise<void> {
       generatedContent.title
     );
     if (serpImages.length > 0) {
+      costs.addSerpApi(1);
       generatedContent.content = injectImagesIntoContent(
         generatedContent.content,
         serpImages
@@ -1291,6 +1302,7 @@ async function main(): Promise<void> {
     // Step 7: Cover image (SerpAPI → Pexels fallback)
     console.log("\n[7/7] Fetching and uploading cover image...");
     const { imageAsset, credit } = await uploadCoverImage(article);
+    if (process.env.SERPAPI_KEY) costs.addSerpApi(1);
 
     // Step 8: Create Sanity document
     console.log("\nPublishing to Sanity...");
@@ -1305,7 +1317,13 @@ async function main(): Promise<void> {
     });
 
     publishedSuccessfully = true;
-    await finishRun(runId, { status: "success", itemsProcessed: 1, metadata: { slug: article.slug, sanityId } });
+    await finishRun(runId, {
+      status: "success",
+      itemsProcessed: 1,
+      itemsCreated: 1,
+      metadata: { slug: article.slug, sanityId },
+      ...costs.toRunResult(),
+    });
 
     // Success log
     console.log("\n" + "=".repeat(60));
