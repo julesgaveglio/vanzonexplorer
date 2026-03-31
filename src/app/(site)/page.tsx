@@ -50,7 +50,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <section className="relative -mt-16 min-h-screen flex items-start lg:items-end overflow-hidden">
+      <section className="relative -mt-16 min-h-[520px] lg:min-h-screen flex items-start lg:items-end overflow-hidden">
         <div className="absolute inset-0">
           <Image
             src="https://cdn.sanity.io/images/lewexa74/production/d445397965472d300e3dc13d6b1c37503fe8ba25-1920x1080.png?auto=format&fit=max&q=82"
