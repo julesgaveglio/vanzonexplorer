@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { adminReadClient, adminWriteClient } from "@/lib/sanity/adminClient";
 import { groq } from "next-sanity";
+import { revalidatePath } from "next/cache";
 
 function urlToAssetRef(url: string): string | null {
   try {
@@ -79,6 +80,7 @@ export async function PATCH(
     if (imageRef) patch.image = imageRef;
 
     await adminWriteClient.patch(id).set(patch).commit();
+    revalidatePath("/formation");
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error("[Formation Cards PATCH]", err);
@@ -93,6 +95,7 @@ export async function DELETE(
   const { id } = await params;
   try {
     await adminWriteClient.delete(id);
+    revalidatePath("/formation");
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error("[Formation Cards DELETE]", err);

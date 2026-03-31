@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { adminReadClient, adminWriteClient } from "@/lib/sanity/adminClient";
 import { groq } from "next-sanity";
+import { revalidatePath } from "next/cache";
 
 const allCardsQuery = groq`
   *[_type == "formationCard"] | order(sortOrder asc, _createdAt asc) {
@@ -111,6 +112,7 @@ export async function POST(req: NextRequest) {
       ...(imageRef ? { image: imageRef } : {}),
     });
 
+    revalidatePath("/formation");
     return NextResponse.json({ success: true, id: doc._id });
   } catch (err) {
     console.error("[Formation Cards POST]", err);

@@ -238,7 +238,13 @@ export default function CardsManagerClient({ initialCards }: Props) {
   const [form, setForm] = useState(emptyForm());
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [error, setError] = useState("");
+  const [toast, setToast] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  function showToast() {
+    setToast(true);
+    setTimeout(() => setToast(false), 3000);
+  }
 
   const refresh = useCallback(async () => {
     const res = await fetch("/api/admin/formation/cards");
@@ -304,6 +310,7 @@ export default function CardsManagerClient({ initialCards }: Props) {
       if (!data.success) { setError(data.error || "Erreur"); return; }
       await refresh();
       closeModal();
+      showToast();
     } catch {
       setError("Erreur réseau");
     } finally {
@@ -323,6 +330,7 @@ export default function CardsManagerClient({ initialCards }: Props) {
       if (!data.success) { setError(data.error || "Erreur"); return; }
       await refresh();
       closeModal();
+      showToast();
     } catch {
       setError("Erreur réseau");
     } finally {
@@ -336,6 +344,7 @@ export default function CardsManagerClient({ initialCards }: Props) {
     try {
       await fetch(`/api/admin/formation/cards/${deleteId}`, { method: "DELETE" });
       await refresh();
+      showToast();
     } finally {
       setLoading(false);
       setDeleteId(null);
@@ -358,6 +367,16 @@ export default function CardsManagerClient({ initialCards }: Props) {
 
   return (
     <>
+      {/* Toast mis en ligne */}
+      {toast && (
+        <div className="fixed bottom-6 right-6 z-[100] flex items-center gap-2.5 rounded-2xl bg-slate-900 px-5 py-3.5 shadow-2xl text-white text-sm font-semibold animate-in slide-in-from-bottom-4 fade-in duration-300">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+          Mis en ligne ✓
+        </div>
+      )}
+
       {/* Bouton ajouter */}
       <div className="mb-6">
         <button

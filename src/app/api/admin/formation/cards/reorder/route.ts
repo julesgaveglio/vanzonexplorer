@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { adminWriteClient } from "@/lib/sanity/adminClient";
+import { revalidatePath } from "next/cache";
 
 export async function POST(req: NextRequest) {
   try {
@@ -13,7 +14,7 @@ export async function POST(req: NextRequest) {
       transaction.patch(id, (p) => p.set({ sortOrder }));
     }
     await transaction.commit();
-
+    revalidatePath("/formation");
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error("[Formation Cards REORDER]", err);
