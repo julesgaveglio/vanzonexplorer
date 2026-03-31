@@ -1,7 +1,7 @@
-import Link from "next/link";
 import type { VanCard as VanCardType } from "@/lib/sanity/types";
 import PriceDisplay from "./PriceDisplay";
 import VanImageCarousel from "./VanImageCarousel";
+import LiquidButton from "@/components/ui/LiquidButton";
 
 // Équipements toujours affichés sur les deux cartes
 const equipmentBadges = [
@@ -73,12 +73,9 @@ export default function VanCard({ van, mode }: VanCardProps) {
         </div>
 
         {/* CTA */}
-        <Link
-          href={href}
-          className="btn-ghost w-full text-center text-sm mt-4 block"
-        >
+        <LiquidButton href={href} variant="blue" size="sm" fullWidth className="mt-4">
           Voir ce van
-        </Link>
+        </LiquidButton>
       </div>
     </article>
   );

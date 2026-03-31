@@ -8,6 +8,7 @@ import VanCard from "@/components/van/VanCard";
 import { getGooglePlaceStats } from "@/lib/google-places";
 import OtherServices from "@/components/ui/OtherServices";
 import RoadTripCTA from "@/components/ui/RoadTripCTA";
+import LiquidButton from "@/components/ui/LiquidButton";
 
 export const revalidate = 3600;
 
@@ -89,12 +90,9 @@ export default async function HomePage() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <a
-                href="/location"
-                className="btn-shine inline-flex items-center justify-center gap-2 bg-white text-slate-900 font-bold px-8 py-4 rounded-xl hover:bg-blue-50 transition-colors text-lg shadow-2xl"
-              >
+              <LiquidButton href="/location" variant="blue" size="lg">
                 Louer un van
-              </a>
+              </LiquidButton>
               <a
                 href="/achat"
                 className="inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-md border border-white/30 text-white font-bold px-8 py-4 rounded-xl hover:bg-white/20 transition-colors text-lg"
@@ -459,12 +457,9 @@ export default async function HomePage() {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-3">
-                <a
-                  href="/formation"
-                  className="btn-gold inline-flex items-center justify-center gap-2 font-bold px-8 py-4 rounded-2xl text-base text-white"
-                >
+                <LiquidButton href="/formation" variant="gold" size="lg">
                   Découvrir la formation →
-                </a>
+                </LiquidButton>
                 <a
                   href="/formation#programme"
                   className="inline-flex items-center justify-center gap-2 bg-slate-100 text-slate-700 font-semibold px-6 py-4 rounded-2xl text-sm hover:bg-slate-200 transition-colors"
@@ -516,12 +511,9 @@ export default async function HomePage() {
           </p>
 
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <a
-              href="/location"
-              className="btn-shine inline-flex items-center justify-center gap-2 bg-white text-slate-900 font-bold px-10 py-5 rounded-2xl hover:bg-blue-50 transition-colors text-lg shadow-2xl"
-            >
+            <LiquidButton href="/location" variant="blue" size="lg">
               Louer un van
-            </a>
+            </LiquidButton>
             <a
               href="/achat"
               className="inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-md border border-white/30 text-white font-bold px-10 py-5 rounded-2xl hover:bg-white/20 transition-colors text-lg"

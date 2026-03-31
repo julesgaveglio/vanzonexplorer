@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import type { SanityArticle } from "../types";
+import LiquidButton from "@/components/ui/LiquidButton";
 
 type Category = "Tous" | "Road Trips" | "Aménagement Van" | "Business Van" | "Achat Van";
 
@@ -633,12 +634,12 @@ export default function ArticlesPageClient({ sanityArticles = [] }: { sanityArti
             Location de van aménagé depuis Cambo-les-Bains — assurance tous risques incluse, dès 65€/nuit.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Link href="/location" className="btn-primary btn-shine inline-flex items-center justify-center gap-2">
+            <LiquidButton href="/location" variant="blue" size="lg">
               Louer un van aménagé →
-            </Link>
-            <Link href="/formation" className="btn-ghost inline-flex items-center justify-center gap-2">
+            </LiquidButton>
+            <LiquidButton href="/formation" variant="gold" size="lg">
               Découvrir la formation
-            </Link>
+            </LiquidButton>
           </div>
         </div>
       </section>

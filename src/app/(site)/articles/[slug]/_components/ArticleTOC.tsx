@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import LiquidButton from "@/components/ui/LiquidButton";
 
 export type TOCHeading = {
   id: string;
@@ -67,12 +68,9 @@ export default function ArticleTOC({ headings }: { headings: TOCHeading[] }) {
         <p className="text-xs text-slate-400 mb-4 leading-relaxed">
           Van aménagé disponible dès demain au Pays Basque.
         </p>
-        <a
-          href="/location"
-          className="btn-primary btn-shine block text-center !text-sm !py-2.5 !px-4 !rounded-xl"
-        >
+        <LiquidButton href="/location" variant="blue" size="sm" fullWidth>
           Voir les vans disponibles
-        </a>
+        </LiquidButton>
         <a
           href="/achat"
           className="mt-2.5 block text-center text-xs text-slate-400 hover:text-[#4D5FEC] transition-colors"
