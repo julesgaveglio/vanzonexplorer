@@ -2,16 +2,14 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { fetchPexelsPhoto } from "@/lib/pexels";
-import { fetchSerpApiImages } from "@/lib/serpapi-images";
 import { getGooglePlaceStats } from "@/lib/google-places";
 import { LocationRentalJsonLd } from "@/components/seo/JsonLd";
 import VanSelectionSection from "@/components/location/VanSelectionSection";
-import ActivityCard from "@/components/location/ActivityCard";
 
 export const revalidate = 86400;
 
 export const metadata: Metadata = {
-  title: "Location Van Aménagé Bayonne — dès 65€/nuit | Vanzon Explorer",
+  title: "Location Van Aménagé Bayonne — Base de départ | Vanzon Explorer",
   description:
     "Louez un van aménagé à Bayonne dès 65€/nuit. Ville de départ idéale pour explorer le Pays Basque en van — Biarritz à 20 min, Saint-Jean-de-Luz à 25 min, les Pyrénées à 1h.",
   alternates: {
@@ -19,124 +17,22 @@ export const metadata: Metadata = {
   },
 };
 
-const FALLBACK_IMG =
-  "https://cdn.sanity.io/images/lewexa74/production/d445397965472d300e3dc13d6b1c37503fe8ba25-1920x1080.png?auto=format&q=82";
+const FALLBACK_IMG = "https://cdn.sanity.io/images/lewexa74/production/e9664378c5fdc652c33ae7342dfc52cc4960c8bf-1080x750.png?auto=format&q=82";
 
+const highlights = [
+  { icon: "🏛️", label: "Vieille ville de Bayonne", desc: "Cathédrale Sainte-Marie, remparts Vauban, rues médiévales à explorer" },
+  { icon: "🥩", label: "Jambon de Bayonne", desc: "IGP reconnu mondialement — dégustez-le aux Halles de Bayonne" },
+  { icon: "🍫", label: "Chocolat de Bayonne", desc: "Première ville chocolatière de France depuis le XVIe siècle" },
+  { icon: "🏉", label: "Culture basque", desc: "Pelote basque, fêtes de Bayonne, chants traditionnels" },
+  { icon: "🛤️", label: "Hub idéal", desc: "À 20 min de Biarritz, 25 min de Saint-Jean-de-Luz, 30 min d'Hossegor" },
+  { icon: "🚐", label: "Point de départ Vanzon", desc: "Remise et retour des vans à Cambo-les-Bains — logistique simplifiée" },
+];
 
 export default async function LocationBayonnePage() {
-  const [heroPhoto, activityImages, placeStats] =
-    await Promise.all([
-      fetchPexelsPhoto("bayonne basque city river cathedral france", FALLBACK_IMG),
-      fetchSerpApiImages([
-        "Bayonne remparts médiévaux vieille ville quais Nive",
-        "Cathédrale Sainte-Marie Bayonne gothique cloître",
-        "Jambon de Bayonne AOP cave affinage Pierre Ibaïalde",
-        "Bayonne chocolaterie artisanale chocolat Cazenave",
-        "Fêtes de Bayonne blanc rouge ambiance foule rue",
-        "basque museum exhibition culture history artifacts",
-      ], FALLBACK_IMG),
-      getGooglePlaceStats(),
-    ]);
-
-  const activities = [
-    {
-      icon: "🏰",
-      title: "Vieille ville et remparts",
-      desc: "Remparts médiévaux classés, ruelles animées, quais de la Nive. Bayonne est l'une des villes les mieux conservées du Sud-Ouest.",
-      imgUrl: activityImages[0]?.url ?? FALLBACK_IMG,
-    },
-    {
-      icon: "⛪",
-      title: "Cathédrale Sainte-Marie",
-      desc: "Joyau gothique du XIIIe siècle, inscrit au patrimoine mondial. Le cloître est un havre de paix.",
-      imgUrl: activityImages[1]?.url ?? FALLBACK_IMG,
-    },
-    {
-      icon: "🍖",
-      title: "Jambon de Bayonne AOP",
-      desc: "L'un des meilleurs jambons au monde. Visite de maison Pierre Ibaïalde ou dégustation au marché couvert.",
-      imgUrl: "https://www.guide-du-paysbasque.com/_bibli/articlesPage/167/images/ouverture.jpg?v=ficheArticle&width=416&height=275&pixelRatio=2.6250",
-    },
-    {
-      icon: "🍫",
-      title: "Chocolat artisanal",
-      desc: "Bayonne est la capitale française du chocolat depuis le XVIIe siècle. Cazenave, Puyodebat, Daranatz — faites le tour des chocolatiers.",
-      imgUrl: activityImages[3]?.url ?? FALLBACK_IMG,
-    },
-    {
-      icon: "🎉",
-      title: "Fêtes de Bayonne",
-      desc: "Début août, les plus grandes fêtes du Sud-Ouest. 5 jours de musique, corridas et ambiance basque explosive.",
-      imgUrl: "https://media.sudouest.fr/24633036/1000x625/foule-page-4-m-1colemilie-drouinaud-so.jpg",
-    },
-    {
-      icon: "🏛️",
-      title: "Musée Basque",
-      desc: "La meilleure introduction à la culture basque : langue, histoire, traditions. Incontournable.",
-      imgUrl: activityImages[5]?.url ?? FALLBACK_IMG,
-    },
-  ];
-
-  const itinerary = [
-    {
-      day: "Vendredi",
-      emoji: "🌆",
-      color: "bg-[#4BC3E3]",
-      items: [
-        "Récupération du van à Cambo (9h)",
-        "15 min jusqu'à Bayonne",
-        "Parking quai de la Nive",
-        "Dîner tapas quartier Saint-Esprit",
-        "Promenade nocturne remparts",
-      ],
-    },
-    {
-      day: "Samedi",
-      emoji: "🏛️",
-      color: "bg-[#4D5FEC]",
-      items: [
-        "Petit déj marché couvert",
-        "Visite cathédrale + musée basque",
-        "Chocolateries rue du Pont-Neuf",
-        "Aperitivo terrasse quai Galuperie",
-        "Option : Biarritz l'après-midi (20 min)",
-      ],
-    },
-    {
-      day: "Dimanche",
-      emoji: "🚐",
-      color: "bg-[#4BC3E3]",
-      items: [
-        "Jambon Ibaïalde",
-        "Dernière balade vieille ville",
-        "Route vers Pays Basque intérieur (Espelette, Ainhoa)",
-        "Retour Cambo",
-      ],
-    },
-  ];
-
-  const faq = [
-    {
-      q: "Où se garer en van à Bayonne ?",
-      a: "Le parking Remparts (rue des Gouverneurs) est le plus central — comptez 10–15€/nuit. Hors saison, plusieurs zones sur les quais sont tolérées. Nous vous donnons nos spots préférés.",
-    },
-    {
-      q: "Peut-on visiter Biarritz depuis Bayonne en van ?",
-      a: "Absolument, Biarritz n'est qu'à 20 min. Beaucoup de nos clients font une base à Bayonne et rayonnent vers Biarritz, Saint-Jean-de-Luz et même l'intérieur du Pays Basque.",
-    },
-    {
-      q: "Les Fêtes de Bayonne — comment s'organiser en van ?",
-      a: "Début août, le stationnement en centre-ville est quasi impossible pendant les fêtes. On vous recommande de se garer dans les parkings périphériques (P+R) et d'entrer à pied. Réservez votre van plusieurs mois à l'avance pour cette période.",
-    },
-    {
-      q: "Quelle est la durée minimale de location ?",
-      a: "La durée minimale est de 2 nuits (week-end). Nous recommandons 4–7 jours pour profiter de tout le Pays Basque depuis Bayonne.",
-    },
-    {
-      q: "Y a-t-il une cuisine complète dans le van ?",
-      a: "Oui, nos vans ont une cuisine équipée avec réchaud 2 feux, évier, réfrigérateur 12V, vaisselle et ustensiles. Idéal pour cuisiner les achats du marché de Bayonne.",
-    },
-  ];
+  const [photo, placeStats] = await Promise.all([
+    fetchPexelsPhoto("bayonne basque city cathedral france", FALLBACK_IMG),
+    getGooglePlaceStats(),
+  ]);
 
   return (
     <>
@@ -145,15 +41,15 @@ export default async function LocationBayonnePage() {
         url="https://vanzonexplorer.com/location/bayonne"
       />
 
-      {/* ── HERO ──────────────────────────────────────────────────── */}
+      {/* Hero */}
       <section className="relative -mt-16 min-h-screen flex items-end overflow-hidden">
         <div className="absolute inset-0">
           <Image
-            src={heroPhoto?.url ?? FALLBACK_IMG}
+            src={photo?.url ?? FALLBACK_IMG}
             alt="Van Vanzon Explorer à Bayonne, base de départ Pays Basque"
             fill
             sizes="100vw"
-            className="object-cover object-center"
+            className="object-cover object-center sm:object-center object-right"
             priority
           />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-900/50 to-slate-900/20" />
@@ -163,17 +59,9 @@ export default async function LocationBayonnePage() {
         <div className="relative z-10 max-w-7xl mx-auto px-6 pb-20 pt-32 w-full">
           <nav aria-label="Fil d'Ariane" className="mb-6">
             <ol className="flex items-center gap-2 text-white/50 text-xs font-medium">
-              <li>
-                <Link href="/" className="hover:text-white/80 transition-colors">
-                  Accueil
-                </Link>
-              </li>
+              <li><Link href="/" className="hover:text-white/80 transition-colors">Accueil</Link></li>
               <li>›</li>
-              <li>
-                <Link href="/location" className="hover:text-white/80 transition-colors">
-                  Location
-                </Link>
-              </li>
+              <li><Link href="/location" className="hover:text-white/80 transition-colors">Location</Link></li>
               <li>›</li>
               <li className="text-white/80">Bayonne</li>
             </ol>
@@ -187,22 +75,19 @@ export default async function LocationBayonnePage() {
               className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-2 mb-6 transition-transform hover:scale-105 cursor-pointer"
             >
               <span className="text-amber-400">★★★★★</span>
-              <span className="text-white/90 text-sm font-medium">
-                {placeStats.reviewCount} avis Google
-              </span>
+              <span className="text-white/90 text-sm font-medium">{placeStats.reviewCount} avis Google</span>
             </a>
 
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[1.05] mb-6">
-              Location van aménagé
-              <br />
+              Location van aménagé<br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4D5FEC] to-[#4BC3E3]">
                 à Bayonne
               </span>
             </h1>
 
             <p className="text-xl text-white/75 leading-relaxed mb-8 max-w-xl">
-              Remparts médiévaux, chocolat artisanal, jambon AOP... Bayonne la basque s&apos;explore
-              à pied depuis votre van. Départ Cambo-les-Bains — 15 min.
+              Récupérez votre van aménagé à Cambo-les-Bains (15 min) et partez explorer le Pays
+              Basque dans toutes les directions — océan, montagne, Espagne.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
@@ -227,16 +112,9 @@ export default async function LocationBayonnePage() {
             {[
               { value: "65€", label: "/ nuit", sub: "à partir de" },
               { value: "2", label: "vans", sub: "exclusifs" },
-              {
-                value: `${placeStats.ratingDisplay}★`,
-                label: "Google",
-                sub: `${placeStats.reviewCount} avis`,
-              },
+              { value: `${placeStats.ratingDisplay}★`, label: "Google", sub: `${placeStats.reviewCount} avis` },
             ].map((stat) => (
-              <div
-                key={stat.label}
-                className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-5 py-4 text-center min-w-[100px]"
-              >
+              <div key={stat.label} className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-5 py-4 text-center min-w-[100px]">
                 <div className="text-xs text-white/60 font-medium mb-0.5">{stat.sub}</div>
                 <div className="text-2xl font-black text-white">{stat.value}</div>
                 <div className="text-xs text-white/70 font-medium">{stat.label}</div>
@@ -245,29 +123,20 @@ export default async function LocationBayonnePage() {
           </div>
         </div>
 
-        {heroPhoto?.photographer && (
+        {photo?.photographer && (
           <p className="absolute bottom-2 right-4 text-white/30 text-[10px] z-10">
-            Photo: {heroPhoto.photographer} / Pexels
+            Photo: {photo.photographer} / Pexels
           </p>
         )}
 
-        <a
-          href="#activites"
-          className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 text-white/50 hover:text-white/80 transition-colors animate-bounce"
-        >
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
+        <a href="#infos" className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 text-white/50 hover:text-white/80 transition-colors animate-bounce">
+          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
             <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
           </svg>
         </a>
       </section>
 
-      {/* ── TRUST BAR ─────────────────────────────────────────────── */}
+      {/* Confiance */}
       <section className="bg-slate-950 py-5 border-t border-white/5">
         <div className="max-w-5xl mx-auto px-6">
           <div className="flex flex-wrap justify-center md:justify-between items-center gap-y-4 gap-x-8 text-white/60 text-sm font-medium">
@@ -275,10 +144,7 @@ export default async function LocationBayonnePage() {
               { icon: "📍", text: "Départ Cambo-les-Bains — 15 min de Bayonne" },
               { icon: "🛡️", text: "Assurance tous risques incluse" },
               { icon: "💰", text: "Dès 65€/nuit" },
-              {
-                icon: "⭐",
-                text: `${placeStats.ratingDisplay}/5 sur ${placeStats.reviewCount} avis Google`,
-              },
+              { icon: "⭐", text: `${placeStats.ratingDisplay}/5 sur ${placeStats.reviewCount} avis Google` },
               { icon: "💡", text: "Conseils locaux offerts par Jules" },
             ].map((item) => (
               <div key={item.text} className="flex items-center gap-2">
@@ -290,15 +156,12 @@ export default async function LocationBayonnePage() {
         </div>
       </section>
 
-      {/* ── ACTIVITÉS AVEC PHOTOS ─────────────────────────────────── */}
-      <section id="activites" className="py-20 bg-white scroll-mt-20">
+      {/* Points forts */}
+      <section id="infos" className="py-20 bg-white scroll-mt-20">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-14">
-            <span
-              className="badge-glass !px-4 !py-1.5 text-sm font-semibold mb-4 inline-block"
-              style={{ color: "#4D5FEC" }}
-            >
-              À faire à Bayonne
+            <span className="badge-glass !px-4 !py-1.5 text-sm font-semibold mb-4 inline-block" style={{ color: "#4D5FEC" }}>
+              Bayonne — hub stratégique
             </span>
             <h2 className="text-4xl font-black text-slate-900 mb-3">
               Pourquoi partir de Bayonne ?
@@ -306,75 +169,55 @@ export default async function LocationBayonnePage() {
             <p className="text-slate-500 text-lg max-w-xl mx-auto">
               Bayonne est le carrefour parfait : au croisement de la côte basque, des Pyrénées
               et des Landes. En van, toutes les destinations s&apos;atteignent en moins d&apos;une heure.
-              Récupérer le van à Cambo-les-Bains — à 20 min seulement — vous évite le trafic
-              urbain et vous fait profiter de tarifs plus doux qu&apos;en centre-ville.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {activities.map((activity) => (
-              <ActivityCard key={activity.title} {...activity} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── ITINÉRAIRE WEEK-END ───────────────────────────────────── */}
-      <section className="py-20 bg-slate-50">
-        <div className="max-w-4xl mx-auto px-6">
-          <div className="text-center mb-14">
-            <span
-              className="badge-glass !px-4 !py-1.5 text-sm font-semibold mb-4 inline-block"
-              style={{ color: "#4D5FEC" }}
-            >
-              Week-end type
-            </span>
-            <h2 className="text-4xl font-black text-slate-900 mb-3">
-              Itinéraire week-end à Bayonne en van
-            </h2>
-            <p className="text-slate-500 text-lg max-w-xl mx-auto">
-              Deux nuits, trois jours — Bayonne comme base pour explorer la ville et rayonner
-              vers la côte et l&apos;intérieur du Pays Basque.
-            </p>
-          </div>
-
-          <div className="space-y-8">
-            {itinerary.map((day, idx) => (
-              <div key={day.day} className="flex gap-6">
-                {/* Timeline */}
-                <div className="flex flex-col items-center flex-shrink-0">
-                  <div
-                    className={`w-12 h-12 rounded-full ${day.color} flex items-center justify-center text-xl shadow-md`}
-                  >
-                    {day.emoji}
-                  </div>
-                  {idx < itinerary.length - 1 && (
-                    <div className="w-0.5 flex-1 bg-slate-200 mt-3" />
-                  )}
-                </div>
-
-                {/* Content */}
-                <div className="pb-8 flex-1">
-                  <h3 className="font-black text-slate-900 text-xl mb-4">{day.day}</h3>
-                  <ul className="space-y-2">
-                    {day.items.map((item) => (
-                      <li key={item} className="flex items-start gap-3 text-slate-600">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#4D5FEC] flex-shrink-0 mt-2" />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+            {highlights.map((item) => (
+              <div key={item.label} className="glass-card p-6 hover:shadow-glass-hover transition-all duration-300 group">
+                <div className="text-4xl mb-4">{item.icon}</div>
+                <h3 className="font-bold text-slate-900 text-lg mb-2 group-hover:text-[#4D5FEC] transition-colors">
+                  {item.label}
+                </h3>
+                <p className="text-slate-500 text-sm leading-relaxed">{item.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── CHOISISSEZ VOTRE VAN ──────────────────────────────────── */}
-      <VanSelectionSection destination="Bayonne" />
+      {/* Carte des distances */}
+      <section className="py-20" style={{ background: "linear-gradient(160deg, #EFF6FF 0%, #F0FDFF 100%)" }}>
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-black text-slate-900 mb-3">
+              Tout est à portée de roues
+            </h2>
+            <p className="text-slate-500 text-lg">Distances depuis Cambo-les-Bains en van</p>
+          </div>
 
-      {/* ── GOOGLE MAPS ───────────────────────────────────────────── */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              { dest: "Bayonne", time: "15 min", km: "13 km" },
+              { dest: "Biarritz", time: "25 min", km: "22 km" },
+              { dest: "Saint-Jean-de-Luz", time: "20 min", km: "18 km" },
+              { dest: "Hossegor", time: "45 min", km: "40 km" },
+              { dest: "Espelette", time: "10 min", km: "8 km" },
+              { dest: "La Rhune", time: "30 min", km: "30 km" },
+              { dest: "Forêt d'Irati", time: "45 min", km: "55 km" },
+              { dest: "San Sebastián (ES)", time: "40 min", km: "45 km" },
+            ].map((item) => (
+              <div key={item.dest} className="glass-card p-4 text-center">
+                <div className="font-bold text-slate-800 text-sm mb-1">{item.dest}</div>
+                <div className="text-2xl font-black" style={{ color: "#4D5FEC" }}>{item.time}</div>
+                <div className="text-xs text-slate-400 mt-0.5">{item.km}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Google Maps — Point de départ */}
       <section className="py-16 bg-white">
         <div className="max-w-5xl mx-auto px-6">
           <h2 className="text-2xl font-black text-slate-900 mb-2 text-center">
@@ -398,57 +241,18 @@ export default async function LocationBayonnePage() {
         </div>
       </section>
 
-      {/* ── FAQ ───────────────────────────────────────────────────── */}
-      <section className="py-20 bg-slate-50">
-        <div className="max-w-3xl mx-auto px-6">
-          <div className="text-center mb-12">
-            <span
-              className="badge-glass !px-4 !py-1.5 text-sm font-semibold mb-4 inline-block"
-              style={{ color: "#4D5FEC" }}
-            >
-              FAQ
-            </span>
-            <h2 className="text-3xl font-black text-slate-900">
-              Questions fréquentes — Location van Bayonne
-            </h2>
-          </div>
+      <VanSelectionSection destination="Bayonne" />
 
-          <div className="space-y-3">
-            {faq.map((item) => (
-              <details
-                key={item.q}
-                className="glass-card group rounded-2xl overflow-hidden"
-              >
-                <summary className="flex items-center justify-between gap-4 p-5 cursor-pointer list-none font-bold text-slate-900 hover:text-[#4D5FEC] transition-colors">
-                  <span>{item.q}</span>
-                  <span className="text-[#4BC3E3] flex-shrink-0 group-open:rotate-45 transition-transform duration-200 text-xl leading-none">
-                    +
-                  </span>
-                </summary>
-                <div className="px-5 pb-5 text-slate-600 leading-relaxed text-sm">
-                  {item.a}
-                </div>
-              </details>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── FINAL CTA ─────────────────────────────────────────────── */}
+      {/* CTA */}
       <section className="relative py-24 overflow-hidden">
-        <div
-          className="absolute inset-0"
-          style={{ background: "linear-gradient(135deg, #0F153A 0%, #1e2d6b 100%)" }}
-        />
+        <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, #0F153A 0%, #1e2d6b 100%)" }} />
         <div className="relative z-10 max-w-3xl mx-auto px-6 text-center">
           <h2 className="text-4xl md:text-5xl font-black text-white mb-5 leading-tight">
-            Partez à Bayonne
-            <br />
-            en van dès ce week-end.
+            Cambo-les-Bains → partout.<br />Le van vous attend.
           </h2>
           <p className="text-white/70 text-xl mb-10">
-            Dès <strong className="text-white">65€/nuit</strong> — clés remises à
-            Cambo-les-Bains, assurance incluse.
+            Dès <strong className="text-white">65€/nuit</strong> — clés remises à Cambo-les-Bains,
+            assurance incluse.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <a
@@ -469,10 +273,7 @@ export default async function LocationBayonnePage() {
             </a>
           </div>
           <p className="text-white/40 text-sm mt-6">
-            <Link
-              href="/road-trip-pays-basque-van"
-              className="hover:text-white/60 transition-colors underline underline-offset-2"
-            >
+            <Link href="/road-trip-pays-basque-van" className="hover:text-white/60 transition-colors underline underline-offset-2">
               Voir l&apos;itinéraire road trip Pays Basque 7 jours
             </Link>
           </p>

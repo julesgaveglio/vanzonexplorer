@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { sanityFetch } from "@/lib/sanity/client";
 import { getAllLocationVansQuery } from "@/lib/sanity/queries";
+import LiquidButton from "@/components/ui/LiquidButton";
 import type { VanCard as VanCardType } from "@/lib/sanity/types";
 import VanCard from "@/components/van/VanCard";
 import { getGooglePlaceStats } from "@/lib/google-places";
@@ -209,18 +210,12 @@ export default async function LocationPage() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <a
-                href="#nos-vans"
-                className="btn-shine inline-flex items-center justify-center gap-2 bg-white text-slate-900 font-bold px-8 py-4 rounded-xl hover:bg-blue-50 transition-colors text-lg shadow-2xl"
-              >
+              <LiquidButton href="#nos-vans" variant="blue" size="lg">
                 Voir nos vans disponibles
-              </a>
-              <Link
-                href="/contact"
-                className="inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-md border border-white/30 text-white font-bold px-8 py-4 rounded-xl hover:bg-white/20 transition-colors text-lg"
-              >
+              </LiquidButton>
+              <LiquidButton href="/contact" variant="slate" size="lg">
                 Nous contacter →
-              </Link>
+              </LiquidButton>
             </div>
           </div>
 

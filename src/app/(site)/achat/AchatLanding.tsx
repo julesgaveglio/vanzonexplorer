@@ -5,6 +5,7 @@ import Link from "next/link";
 import { VANS_LANDING as VANS } from "@/lib/data/vans";
 import OtherServices from "@/components/ui/OtherServices";
 import RoadTripCTA from "@/components/ui/RoadTripCTA";
+import LiquidButton from "@/components/ui/LiquidButton";
 
 export default function AchatLanding() {
   return (
@@ -135,12 +136,9 @@ export default function AchatLanding() {
               </p>
             </div>
             <div className="flex flex-col gap-3 flex-shrink-0 w-full md:w-auto">
-              <a
-                href="/formation"
-                className="btn-shine inline-flex items-center justify-center gap-2 bg-white text-slate-900 font-bold px-8 py-4 rounded-2xl hover:bg-slate-100 transition-colors text-sm"
-              >
-                Découvrir la formation
-              </a>
+              <LiquidButton href="/formation" variant="gold" size="md">
+                Découvrir la formation →
+              </LiquidButton>
             </div>
           </div>
         </div>
