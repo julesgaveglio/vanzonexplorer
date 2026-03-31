@@ -215,43 +215,54 @@ export default function VanGallery({ images, vanName }: VanGalleryProps) {
         </div>
 
         {/* Thumbnails — toutes les images, scroll horizontal */}
+        {/* outer div gère overflow-x, inner div a du padding pour que le zoom ne soit pas coupé */}
         <div
-          ref={thumbsRef}
-          className="flex gap-2 overflow-x-auto pb-1 scroll-smooth"
+          className="overflow-x-auto"
           style={{ scrollbarWidth: "none" }}
         >
-          {images.map((img, i) => {
-            const isActive = i === mobileActive;
-            return (
-              <button
-                key={i}
-                onClick={() => setMobileActive(i)}
-                aria-label={`Photo ${i + 1}`}
-                className="relative flex-shrink-0 rounded-xl overflow-hidden transition-all duration-250"
-                style={{
-                  width: isActive ? "72px" : "60px",
-                  height: isActive ? "54px" : "45px",
-                  transform: isActive ? "scale(1.08)" : "scale(1)",
-                }}
-              >
-                <Image
-                  src={img.url}
-                  alt={img.alt || `${vanName} ${i + 1}`}
-                  fill
-                  className="object-cover"
-                  sizes="72px"
-                />
-                {/* Overlay atténué sur les non-sélectionnées */}
-                {!isActive && (
-                  <div className="absolute inset-0 bg-white/40" />
-                )}
-                {/* Bordure active */}
-                {isActive && (
-                  <div className="absolute inset-0 ring-2 ring-[#4D5FEC] ring-inset rounded-xl pointer-events-none" />
-                )}
-              </button>
-            );
-          })}
+          <div
+            ref={thumbsRef}
+            className="flex gap-2 px-1 pt-2 pb-2"
+          >
+            {images.map((img, i) => {
+              const isActive = i === mobileActive;
+              return (
+                <div key={i} className="relative flex-shrink-0 flex flex-col items-center gap-1">
+                  <button
+                    onClick={() => setMobileActive(i)}
+                    aria-label={`Photo ${i + 1}`}
+                    className="relative rounded-xl overflow-hidden transition-all duration-200"
+                    style={{
+                      width: isActive ? "68px" : "58px",
+                      height: isActive ? "51px" : "43px",
+                      transform: isActive ? "scale(1.06)" : "scale(1)",
+                      transformOrigin: "bottom center",
+                    }}
+                  >
+                    <Image
+                      src={img.url}
+                      alt={img.alt || `${vanName} ${i + 1}`}
+                      fill
+                      className="object-cover"
+                      sizes="68px"
+                    />
+                    {/* Overlay atténué sur les non-sélectionnées */}
+                    {!isActive && (
+                      <div className="absolute inset-0 bg-white/40" />
+                    )}
+                  </button>
+                  {/* Indicateur actif : petit trait en dessous */}
+                  <div
+                    className="h-[3px] rounded-full transition-all duration-200"
+                    style={{
+                      width: isActive ? "28px" : "0px",
+                      background: isActive ? "#4D5FEC" : "transparent",
+                    }}
+                  />
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
 
