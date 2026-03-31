@@ -268,3 +268,22 @@ body {
 [class*="cl-internal"] [class*="devMode"] {
   display: none !important;
 }
+
+/* ━━━ Liquid Glass CTA — animations ━━━ */
+@keyframes liquid-shine {
+  0%   { transform: translateX(-130%) skewX(-20deg); opacity: 0; }
+  10%  { opacity: 1; }
+  60%  { opacity: 1; }
+  100% { transform: translateX(230%) skewX(-20deg); opacity: 0; }
+}
+@keyframes liquid-glow-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.65; }
+}
+.liquid-cta-shine {
+  animation: liquid-shine 3.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  animation-delay: 1.2s;
+}
+.liquid-cta-glow-pulse {
+  animation: liquid-glow-pulse 2.6s ease-in-out infinite;
+}

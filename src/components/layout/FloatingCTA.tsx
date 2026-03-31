@@ -210,26 +210,38 @@ function LiquidCTAButton({
   href?: string;
 }) {
   const [pressed, setPressed] = useState(false);
+  const [hovered, setHovered] = useState(false);
+
+  const scale = pressed ? 0.94 : hovered ? 1.07 : 1;
+  const currentGlow = pressed ? "none" : glow;
+
+  const pointerHandlers = {
+    onPointerDown:   () => setPressed(true),
+    onPointerUp:     () => setPressed(false),
+    onPointerLeave:  () => { setPressed(false); setHovered(false); },
+    onPointerEnter:  () => setHovered(true),
+    onTouchStart:    () => { setHovered(true); setPressed(true); },
+    onTouchEnd:      () => { setPressed(false); setHovered(false); },
+    onTouchCancel:   () => { setPressed(false); setHovered(false); },
+  };
 
   const inner = (
     <span
       className={`relative inline-flex items-center justify-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-full whitespace-nowrap text-white flex-shrink-0 select-none overflow-hidden ${className}`}
       style={{
-        transform: pressed ? "scale(0.96)" : "scale(1)",
-        transition: "transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1)",
+        transform: `scale(${scale})`,
+        transition: "transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1)",
       }}
-      onPointerDown={() => setPressed(true)}
-      onPointerUp={() => setPressed(false)}
-      onPointerLeave={() => setPressed(false)}
+      {...pointerHandlers}
     >
-      {/* Gradient tint layer — semi-transparent Vanzon color */}
+      {/* Gradient tint — semi-transparent Vanzon color */}
       <span
         aria-hidden
         className="absolute inset-0 rounded-full"
         style={{ background: gradient, opacity: 0.82 }}
       />
 
-      {/* Backdrop distortion layer */}
+      {/* Backdrop distortion */}
       <span
         aria-hidden
         className="absolute inset-0 rounded-full"
@@ -245,37 +257,69 @@ function LiquidCTAButton({
         className="absolute inset-0 rounded-full"
         style={{
           boxShadow: [
-            "inset 0 1px 1px rgba(255,255,255,0.45)",
-            "inset 0 -1px 1px rgba(0,0,0,0.18)",
+            "inset 0 1.5px 1px rgba(255,255,255,0.55)",
+            "inset 0 -1px 1px rgba(0,0,0,0.20)",
             "inset 2px 0 2px rgba(255,255,255,0.10)",
             "inset -2px 0 2px rgba(0,0,0,0.10)",
-            "inset 0 0 8px rgba(255,255,255,0.12)",
+            "inset 0 0 10px rgba(255,255,255,0.14)",
           ].join(", "),
         }}
       />
 
-      {/* Top sheen */}
+      {/* Top sheen — static frosted highlight */}
       <span
         aria-hidden
-        className="absolute left-[15%] top-0 h-[45%] rounded-full pointer-events-none"
+        className="absolute left-[12%] top-0 h-[42%] rounded-full pointer-events-none"
         style={{
-          width: "70%",
-          background: "linear-gradient(180deg, rgba(255,255,255,0.32) 0%, rgba(255,255,255,0) 100%)",
+          width: "76%",
+          background: "linear-gradient(180deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0) 100%)",
           filter: "blur(1px)",
         }}
       />
 
+      {/* Sweep shine — diagonal white streak looping */}
+      <span
+        aria-hidden
+        className="liquid-cta-shine absolute top-0 h-full pointer-events-none rounded-full"
+        style={{
+          width: "40%",
+          left: 0,
+          background: "linear-gradient(105deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.38) 45%, rgba(255,255,255,0.55) 55%, rgba(255,255,255,0) 100%)",
+          filter: "blur(2px)",
+          mixBlendMode: "overlay",
+        }}
+      />
+
+      {/* Hover brightness overlay */}
+      <span
+        aria-hidden
+        className="absolute inset-0 rounded-full pointer-events-none"
+        style={{
+          background: "rgba(255,255,255,0.08)",
+          opacity: hovered && !pressed ? 1 : 0,
+          transition: "opacity 0.18s ease",
+        }}
+      />
+
       {/* Text */}
-      <span className="relative z-10 tracking-wide">{children}</span>
+      <span className="relative z-10 tracking-wide drop-shadow-sm">{children}</span>
     </span>
   );
+
+  const wrapperStyle = {
+    borderRadius: 9999,
+    transition: "box-shadow 0.25s ease",
+  };
+
+  // Pulsing glow wrapper
+  const glowWrapperClass = !pressed && !hovered ? "liquid-cta-glow-pulse" : "";
 
   if (href) {
     return (
       <Link
         href={href}
-        className="flex-shrink-0"
-        style={{ boxShadow: pressed ? "none" : glow, borderRadius: 9999, transition: "box-shadow 0.2s ease" }}
+        className={`flex-shrink-0 ${glowWrapperClass}`}
+        style={{ ...wrapperStyle, boxShadow: currentGlow }}
       >
         {inner}
         <GlassFilterCTA />
@@ -286,8 +330,8 @@ function LiquidCTAButton({
   return (
     <button
       onClick={onClick}
-      className="flex-shrink-0"
-      style={{ boxShadow: pressed ? "none" : glow, borderRadius: 9999, transition: "box-shadow 0.2s ease", background: "none", border: "none", padding: 0, cursor: "pointer" }}
+      className={`flex-shrink-0 ${glowWrapperClass}`}
+      style={{ ...wrapperStyle, boxShadow: currentGlow, background: "none", border: "none", padding: 0, cursor: "pointer" }}
     >
       {inner}
       <GlassFilterCTA />
