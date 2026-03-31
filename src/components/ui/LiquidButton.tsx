@@ -101,7 +101,8 @@ export default function LiquidButton({
   const sizeClass = SIZE_CLASSES[size];
   const scale = pressed ? 0.94 : hovered ? 1.07 : 1;
   const currentGlow = pressed ? "none" : palette.glow;
-  const glowPulseClass = !pressed && !hovered ? "liquid-cta-glow-pulse" : "";
+  // Pas de glow pulse sur fullWidth (fond clair de carte → ghost visible)
+  const glowPulseClass = !pressed && !hovered && !fullWidth ? "liquid-cta-glow-pulse" : "";
   const widthClass = fullWidth ? "w-full" : "";
 
   const pointerHandlers = disabled
