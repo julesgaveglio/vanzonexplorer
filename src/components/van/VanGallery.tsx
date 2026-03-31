@@ -13,6 +13,7 @@ export default function VanGallery({ images, vanName }: VanGalleryProps) {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [mobileActive, setMobileActive] = useState(0);
+  const [desktopActive, setDesktopActive] = useState(0);
   const thumbsRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef<number | null>(null);
 
@@ -79,13 +80,13 @@ export default function VanGallery({ images, vanName }: VanGalleryProps) {
       <div className="hidden lg:grid grid-cols-[63fr_37fr] gap-3 rounded-3xl overflow-hidden h-[500px]">
         {/* Image principale */}
         <button
-          onClick={() => openLightbox(0)}
+          onClick={() => openLightbox(desktopActive)}
           className="relative overflow-hidden group"
           aria-label="Voir toutes les photos"
         >
           <Image
-            src={images[0].url}
-            alt={images[0].alt || vanName}
+            src={images[desktopActive].url}
+            alt={images[desktopActive].alt || vanName}
             fill
             className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
             sizes="63vw"
@@ -155,10 +156,10 @@ export default function VanGallery({ images, vanName }: VanGalleryProps) {
           {images.map((img, i) => (
             <button
               key={i}
-              onClick={() => openLightbox(i)}
+              onClick={() => setDesktopActive(i)}
               className={`relative flex-shrink-0 w-20 h-14 rounded-xl overflow-hidden border-2 transition-all duration-200 ${
-                i < 3
-                  ? "border-[#4D5FEC] opacity-40 hover:opacity-70"
+                i === desktopActive
+                  ? "border-[#4D5FEC] opacity-100 scale-[1.03]"
                   : "border-transparent opacity-60 hover:opacity-100 hover:scale-[1.03]"
               }`}
               aria-label={`Photo ${i + 1}`}
