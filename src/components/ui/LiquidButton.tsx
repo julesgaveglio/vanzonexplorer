@@ -6,8 +6,8 @@ import Link from "next/link";
 // ── Palettes Vanzon ───────────────────────────────────────────────────────────
 const VARIANTS = {
   blue: {
-    gradient: "linear-gradient(135deg, #4338CA 0%, #4D5FEC 100%)",
-    glow: "0 4px 18px rgba(77, 95, 236, 0.55), 0 1px 4px rgba(99, 102, 241, 0.30)",
+    gradient: "linear-gradient(135deg, #4D5FEC 0%, #7B8FFF 100%)",
+    glow: "0 4px 20px rgba(77, 95, 236, 0.50), 0 1px 6px rgba(123, 143, 255, 0.35)",
     textColor: "text-white",
   },
   gold: {
@@ -38,8 +38,8 @@ const VARIANTS = {
   },
   // backwards-compat alias
   primary: {
-    gradient: "linear-gradient(135deg, #4338CA 0%, #4D5FEC 100%)",
-    glow: "0 4px 18px rgba(77, 95, 236, 0.55), 0 1px 4px rgba(99, 102, 241, 0.30)",
+    gradient: "linear-gradient(135deg, #4D5FEC 0%, #7B8FFF 100%)",
+    glow: "0 4px 20px rgba(77, 95, 236, 0.50), 0 1px 6px rgba(123, 143, 255, 0.35)",
     textColor: "text-white",
   },
 } as const;
