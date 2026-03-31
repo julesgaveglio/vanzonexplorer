@@ -57,54 +57,51 @@ export default function RoadTripPersonnalisePage() {
         <section className="min-h-screen flex flex-col justify-center px-8 sm:px-16 lg:px-28 pt-28 pb-20">
 
           {/* Eyebrow */}
-          <p
-            className="text-xs font-semibold tracking-[0.35em] uppercase text-white/60 mb-8"
-          >
+          <p className="text-xs font-semibold tracking-[0.35em] uppercase mb-8" style={{ color: 'rgba(50,50,50,0.55)' }}>
             Vanzon Explorer × IA
           </p>
 
           {/* Titre */}
           <h1
-            className="text-[clamp(4rem,12vw,10rem)] leading-[0.92] font-black text-white mb-0 uppercase"
-            style={{ fontFamily: "'Bebas Neue', sans-serif", letterSpacing: '0.02em' }}
+            className="text-[clamp(4rem,12vw,10rem)] leading-[0.92] font-black mb-0 uppercase"
+            style={{ fontFamily: "'Bebas Neue', sans-serif", letterSpacing: '0.02em', color: '#323232' }}
           >
-            Crée ton<br />
-            <span className="text-white/90">road trip.</span>
+            Roadtrip<br />
+            <span style={{ color: 'rgba(50,50,50,0.8)' }}>personnalisé</span><br />
+            <span style={{ color: 'rgba(50,50,50,0.65)', fontSize: '0.55em', letterSpacing: '0.04em' }}>en 1 minute</span>
           </h1>
 
           {/* Ligne de séparation */}
-          <div className="w-16 h-[2px] bg-white/40 mt-10 mb-8" />
+          <div className="w-16 h-[2px] mt-10 mb-8" style={{ background: 'rgba(50,50,50,0.25)' }} />
 
           {/* Description */}
-          <p className="text-white/75 text-base sm:text-lg font-light leading-relaxed max-w-sm">
-            Dis-nous où tu veux aller.<br />
-            L&apos;IA construit ton itinéraire van en&nbsp;
-            <span className="text-white font-normal">60 secondes</span> —
-            spots, campings, conseils pratiques.{' '}
-            <span className="text-white font-normal">Gratuit.</span>
+          <p className="text-base sm:text-lg font-light leading-relaxed max-w-sm" style={{ color: 'rgba(50,50,50,0.70)' }}>
+            Remplis le formulaire avec tes centres d&apos;intérêt et tes envies et reçois ton road trip van ultra-personnalisé, jour par jour, dans ta boîte mail. En une minute. Gratuitement.
           </p>
 
           {/* CTA */}
           <div className="mt-10 flex flex-col sm:flex-row items-start gap-4">
             <a
               href="#wizard"
-              className="group inline-flex items-center gap-3 text-white text-sm font-semibold tracking-wide transition-all duration-300"
+              className="group inline-flex items-center gap-3 text-sm font-semibold tracking-wide transition-all duration-300"
+              style={{ color: '#323232' }}
             >
               <span
-                className="flex items-center justify-center w-12 h-12 rounded-full border-2 border-white/50 group-hover:border-white group-hover:bg-white/10 transition-all duration-300"
+                className="flex items-center justify-center w-12 h-12 rounded-full transition-all duration-300"
+                style={{ border: '2px solid rgba(50,50,50,0.35)' }}
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 5v14M5 12l7 7 7-7" />
                 </svg>
               </span>
-              <span className="border-b border-white/30 group-hover:border-white pb-0.5 transition-colors duration-300">
-                Générer mon itinéraire
+              <span className="pb-0.5 transition-colors duration-300" style={{ borderBottom: '1px solid rgba(50,50,50,0.30)' }}>
+                Créer mon Road Trip Gratuit
               </span>
             </a>
           </div>
 
           {/* Stats discrètes */}
-          <div className="mt-16 flex gap-8 text-white/40 text-xs font-medium tracking-widest uppercase">
+          <div className="mt-16 flex gap-8 text-xs font-medium tracking-widest uppercase" style={{ color: 'rgba(50,50,50,0.35)' }}>
             <span>IA générative</span>
             <span>·</span>
             <span>Toute la France</span>
