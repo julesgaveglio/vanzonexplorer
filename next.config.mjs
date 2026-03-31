@@ -155,7 +155,6 @@ const nextConfig = {
       // SERPAPI — images originales HD depuis sources variées
       { protocol: "https", hostname: "**.gstatic.com" },
       { protocol: "https", hostname: "serpapi.com" },
-      { protocol: "https", hostname: "**" },
       // Originals SERPAPI — sources variées (tourisme, presse, Wikipedia)
       { protocol: "https", hostname: "upload.wikimedia.org" },
       { protocol: "https", hostname: "**.wikipedia.org" },

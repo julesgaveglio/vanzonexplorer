@@ -1,7 +1,7 @@
 # Vanzon Explorer — llms.txt
 # https://vanzonexplorer.com
 # Version: 1.0
-# Updated: 2026-03-14
+# Updated: 2026-03-30
 
 ## About
 
@@ -32,7 +32,34 @@ Vanzon Explorer est une entreprise de vanlife fondée en 2024 par Jules et Elio,
 
 ### Club Privé
 - Codes de réduction exclusifs chez des marques partenaires validées
-- Accès réservé aux membres abonnés
+- Accès 100% gratuit — inscription sans abonnement depuis mars 2026
+
+## Vans disponibles
+
+### Yoni
+- Modèle : Renault Trafic aménagé
+- Capacité : 2 personnes
+- Équipements : lit double fixe, cuisine coulissante (plaque gaz, évier), douche solaire extérieure, panneau photovoltaïque, frigo, chauffage
+- Page : https://vanzonexplorer.com/location/yoni
+
+### Xalbat
+- Modèle : Renault Trafic aménagé
+- Capacité : 2 personnes
+- Équipements : lit double fixe, cuisine coulissante (plaque gaz, évier), douche solaire extérieure, panneau photovoltaïque, frigo, chauffage
+- Page : https://vanzonexplorer.com/location/xalbat
+
+## Destinations principales
+
+- Biarritz (25 min) — surf, Côte des Basques, Grande Plage
+- Bayonne (15 min) — culture basque, fêtes de Bayonne, gastronomie
+- Hossegor (45 min) — temple du surf européen, forêt landaise
+- Saint-Jean-de-Luz (35 min) — village de pêcheurs, Ciboure, Socoa
+- Forêt d'Irati (1h) — bivouac en montagne, randonnées, faune sauvage
+- Pays Basque espagnol (1h30) — San Sebastián, Bilbao, Mundaka
+
+## Mots-clés principaux
+
+location van aménagé Pays Basque, louer van Biarritz, location fourgon aménagé Bayonne, vanlife Pays Basque, road trip Pays Basque van, location van Hossegor surf, van aménagé tout équipé Pays Basque, location camping-car Pays Basque, vanzone explorer, Yescapa Pays Basque
 
 ## Pages Clés
 

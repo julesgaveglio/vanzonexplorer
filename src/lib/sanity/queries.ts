@@ -167,7 +167,8 @@ export const getAllSpotsQuery = groq`
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 export const getAllVanSlugsQuery = groq`
   *[_type == "van" && defined(slug.current)] {
-    "slug": slug.current
+    "slug": slug.current,
+    "updatedAt": coalesce(_updatedAt, _createdAt)
   }
 `;
 
@@ -298,8 +299,9 @@ export const getArticleBySlugQuery = groq`
 `;
 
 export const getAllArticleSlugsQuery = groq`
-  *[_type == "article" && defined(slug.current)] {
-    "slug": slug.current
+  *[_type == "article" && defined(slug.current) && count(content) > 0] {
+    "slug": slug.current,
+    "updatedAt": coalesce(_updatedAt, publishedAt, _createdAt)
   }
 `;
 

@@ -6,8 +6,8 @@ import { VANS } from "@/lib/data/vans";
 const BASE_URL = "https://vanzonexplorer.com";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const vanSlugs = await sanityFetch<{ slug: string }[]>(getAllVanSlugsQuery) ?? [];
-  const articleSlugs = await sanityFetch<{ slug: string }[]>(getAllArticleSlugsQuery) ?? [];
+  const vanSlugs = await sanityFetch<{ slug: string; updatedAt?: string }[]>(getAllVanSlugsQuery) ?? [];
+  const articleSlugs = await sanityFetch<{ slug: string; updatedAt?: string }[]>(getAllArticleSlugsQuery) ?? [];
 
   const staticPages: MetadataRoute.Sitemap = [
     { url: BASE_URL, lastModified: new Date("2026-01-01"), changeFrequency: "weekly", priority: 1 },
@@ -30,16 +30,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/a-propos`, lastModified: new Date("2025-06-01"), changeFrequency: "yearly", priority: 0.5 },
   ];
 
-  const vanPages: MetadataRoute.Sitemap = vanSlugs.map(({ slug }) => ({
+  const vanPages: MetadataRoute.Sitemap = vanSlugs.map(({ slug, updatedAt }) => ({
     url: `${BASE_URL}/location/${slug}`,
-    lastModified: new Date(),
+    lastModified: updatedAt ? new Date(updatedAt) : new Date(),
     changeFrequency: "weekly",
     priority: 0.8,
   }));
 
-  const articlePages: MetadataRoute.Sitemap = articleSlugs.map(({ slug }) => ({
+  const articlePages: MetadataRoute.Sitemap = articleSlugs.map(({ slug, updatedAt }) => ({
     url: `${BASE_URL}/articles/${slug}`,
-    lastModified: new Date(),
+    lastModified: updatedAt ? new Date(updatedAt) : new Date(),
     changeFrequency: "monthly",
     priority: 0.7,
   }));

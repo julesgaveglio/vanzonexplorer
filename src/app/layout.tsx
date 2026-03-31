@@ -60,9 +60,6 @@ export async function generateMetadata(): Promise<Metadata> {
     description:
       "Location, achat de vans aménagés, et formation vanlife au Pays Basque. Explorez la côte basque en toute liberté.",
     metadataBase: new URL(BASE_URL),
-    alternates: {
-      canonical: BASE_URL,
-    },
     openGraph: {
       type: "website",
       locale: "fr_FR",
@@ -87,6 +84,10 @@ export default async function RootLayout({
   return (
     <ClerkProvider localization={frFR} signInUrl="/sign-in" signUpUrl="/sign-up">
       <html lang="fr">
+        <head>
+          <link rel="preconnect" href="https://cdn.sanity.io" />
+          <link rel="dns-prefetch" href="https://cdn.sanity.io" />
+        </head>
         <body
           className={`${inter.variable} ${bebasNeue.variable} font-sans antialiased bg-bg-primary text-text-primary min-h-screen`}
         >

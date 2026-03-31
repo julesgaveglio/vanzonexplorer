@@ -138,14 +138,6 @@ export function WebSiteJsonLd() {
     "@type": "WebSite",
     name: "Vanzon Explorer",
     url: BASE_URL,
-    potentialAction: {
-      "@type": "SearchAction",
-      target: {
-        "@type": "EntryPoint",
-        urlTemplate: `${BASE_URL}/articles?q={search_term_string}`,
-      },
-      "query-input": "required name=search_term_string",
-    },
   };
   return (
     <script
@@ -216,7 +208,7 @@ export function ArticleJsonLd({
       },
       {
         "@type": "Person",
-        "name": "Elio",
+        "name": "Elio Dubernet",
         "url": `${BASE_URL}/a-propos`,
         "jobTitle": "Co-fondateur Vanzon Explorer",
       },

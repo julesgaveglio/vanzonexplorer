@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { createPortal } from "react-dom";
 
 const CALENDLY_URL = "https://calendly.com/vanzonexplorer/accompagnement";
@@ -45,9 +45,10 @@ interface CalendlyModalProps {
   children: React.ReactNode;
   className?: string;
   style?: React.CSSProperties;
+  asChild?: boolean;
 }
 
-export default function CalendlyModal({ children, className = "", style }: CalendlyModalProps) {
+export default function CalendlyModal({ children, className = "", style, asChild = false }: CalendlyModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -86,11 +87,13 @@ export default function CalendlyModal({ children, className = "", style }: Calen
     return () => { document.body.style.overflow = ""; };
   }, [isOpen]);
 
+  const trigger = asChild && React.isValidElement(children)
+    ? React.cloneElement(children as React.ReactElement<{ onClick?: () => void }>, { onClick: openModal })
+    : <button type="button" onClick={openModal} className={className} style={style}>{children}</button>;
+
   return (
     <>
-      <button type="button" onClick={openModal} className={className} style={style}>
-        {children}
-      </button>
+      {trigger}
 
       {isOpen && createPortal(
         <div

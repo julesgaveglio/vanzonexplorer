@@ -193,6 +193,128 @@ function getCTAConfig(pathname: string): CTAConfig {
   };
 }
 
+// ── Liquid Glass CTA Button ────────────────────────────────────────────────
+function LiquidCTAButton({
+  gradient,
+  glow,
+  children,
+  className = "",
+  onClick,
+  href,
+}: {
+  gradient: string;
+  glow: string;
+  children: React.ReactNode;
+  className?: string;
+  onClick?: () => void;
+  href?: string;
+}) {
+  const [pressed, setPressed] = useState(false);
+
+  const inner = (
+    <span
+      className={`relative inline-flex items-center justify-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-full whitespace-nowrap text-white flex-shrink-0 select-none overflow-hidden ${className}`}
+      style={{
+        transform: pressed ? "scale(0.96)" : "scale(1)",
+        transition: "transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1)",
+      }}
+      onPointerDown={() => setPressed(true)}
+      onPointerUp={() => setPressed(false)}
+      onPointerLeave={() => setPressed(false)}
+    >
+      {/* Gradient tint layer — semi-transparent Vanzon color */}
+      <span
+        aria-hidden
+        className="absolute inset-0 rounded-full"
+        style={{ background: gradient, opacity: 0.82 }}
+      />
+
+      {/* Backdrop distortion layer */}
+      <span
+        aria-hidden
+        className="absolute inset-0 rounded-full"
+        style={{
+          backdropFilter: 'blur(8px) saturate(160%) url("#liquid-cta-glass")',
+          WebkitBackdropFilter: 'blur(8px) saturate(160%)',
+        }}
+      />
+
+      {/* Glass depth shadows */}
+      <span
+        aria-hidden
+        className="absolute inset-0 rounded-full"
+        style={{
+          boxShadow: [
+            "inset 0 1px 1px rgba(255,255,255,0.45)",
+            "inset 0 -1px 1px rgba(0,0,0,0.18)",
+            "inset 2px 0 2px rgba(255,255,255,0.10)",
+            "inset -2px 0 2px rgba(0,0,0,0.10)",
+            "inset 0 0 8px rgba(255,255,255,0.12)",
+          ].join(", "),
+        }}
+      />
+
+      {/* Top sheen */}
+      <span
+        aria-hidden
+        className="absolute left-[15%] top-0 h-[45%] rounded-full pointer-events-none"
+        style={{
+          width: "70%",
+          background: "linear-gradient(180deg, rgba(255,255,255,0.32) 0%, rgba(255,255,255,0) 100%)",
+          filter: "blur(1px)",
+        }}
+      />
+
+      {/* Text */}
+      <span className="relative z-10 tracking-wide">{children}</span>
+    </span>
+  );
+
+  if (href) {
+    return (
+      <Link
+        href={href}
+        className="flex-shrink-0"
+        style={{ boxShadow: pressed ? "none" : glow, borderRadius: 9999, transition: "box-shadow 0.2s ease" }}
+      >
+        {inner}
+        <GlassFilterCTA />
+      </Link>
+    );
+  }
+
+  return (
+    <button
+      onClick={onClick}
+      className="flex-shrink-0"
+      style={{ boxShadow: pressed ? "none" : glow, borderRadius: 9999, transition: "box-shadow 0.2s ease", background: "none", border: "none", padding: 0, cursor: "pointer" }}
+    >
+      {inner}
+      <GlassFilterCTA />
+    </button>
+  );
+}
+
+function GlassFilterCTA() {
+  return (
+    <svg className="absolute w-0 h-0 overflow-hidden" aria-hidden>
+      <defs>
+        <filter
+          id="liquid-cta-glass"
+          x="0%" y="0%" width="100%" height="100%"
+          colorInterpolationFilters="sRGB"
+        >
+          <feTurbulence type="fractalNoise" baseFrequency="0.06 0.06" numOctaves="1" seed="3" result="noise" />
+          <feGaussianBlur in="noise" stdDeviation="1.5" result="blurNoise" />
+          <feDisplacementMap in="SourceGraphic" in2="blurNoise" scale="50" xChannelSelector="R" yChannelSelector="B" result="displaced" />
+          <feGaussianBlur in="displaced" stdDeviation="2.5" result="final" />
+          <feComposite in="final" in2="final" operator="over" />
+        </filter>
+      </defs>
+    </svg>
+  );
+}
+
 export default function FloatingCTA() {
   const [visible, setVisible] = useState(true);
   const pathname = usePathname();
@@ -249,30 +371,25 @@ export default function FloatingCTA() {
             </button>
 
             {config.calendly ? (
-              <CalendlyModal
-                className="btn-shine relative text-sm font-semibold px-4 py-2 rounded-full flex-shrink-0 whitespace-nowrap text-white active:scale-95 transition-transform"
-                style={{ background: config.gradient, boxShadow: config.glow }}
-              >
-                {config.btnLabel}
+              <CalendlyModal asChild>
+                <LiquidCTAButton gradient={config.gradient} glow={config.glow}>
+                  {config.btnLabel}
+                </LiquidCTAButton>
               </CalendlyModal>
             ) : config.scrollTarget ? (
-              <button
+              <LiquidCTAButton
+                gradient={config.gradient}
+                glow={config.glow}
                 onClick={() => {
                   document.getElementById(config.scrollTarget!)?.scrollIntoView({ behavior: "smooth" });
                 }}
-                className="btn-shine relative text-sm font-semibold px-4 py-2 rounded-full flex-shrink-0 whitespace-nowrap text-white active:scale-95 transition-transform"
-                style={{ background: config.gradient, boxShadow: config.glow }}
               >
                 {config.btnLabel}
-              </button>
+              </LiquidCTAButton>
             ) : (
-              <Link
-                href={config.href}
-                className="btn-shine relative text-sm font-semibold px-4 py-2 rounded-full flex-shrink-0 whitespace-nowrap text-white active:scale-95 transition-transform"
-                style={{ background: config.gradient, boxShadow: config.glow }}
-              >
+              <LiquidCTAButton gradient={config.gradient} glow={config.glow} href={config.href}>
                 {config.btnLabel}
-              </Link>
+              </LiquidCTAButton>
             )}
           </div>
     </div>
