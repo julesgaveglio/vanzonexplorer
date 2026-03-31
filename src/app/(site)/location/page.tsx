@@ -209,11 +209,11 @@ export default async function LocationPage() {
               Surf, montagne, road trip — explorez le Pays Basque en toute liberté dès <strong className="text-white">65€/nuit</strong>.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-row gap-3">
               <LiquidButton href="#nos-vans" variant="blue" size="lg">
                 Voir nos vans disponibles
               </LiquidButton>
-              <LiquidButton href="/contact" variant="slate" size="lg">
+              <LiquidButton href="/contact" variant="slate" size="lg" shineDelay={1.9}>
                 Nous contacter →
               </LiquidButton>
             </div>

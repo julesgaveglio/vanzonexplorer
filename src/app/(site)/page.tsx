@@ -89,11 +89,11 @@ export default async function HomePage() {
               les Pyrénées et les villages basques en totale liberté.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-row gap-3">
               <LiquidButton href="/location" variant="blue" size="lg">
                 Louer un van
               </LiquidButton>
-              <LiquidButton href="/achat" variant="slate" size="lg">
+              <LiquidButton href="/achat" variant="slate" size="lg" shineDelay={1.9}>
                 Acheter un van →
               </LiquidButton>
             </div>
@@ -507,11 +507,11 @@ export default async function HomePage() {
             À partir de <strong className="text-white">65€/nuit</strong> — assurance incluse, van tout équipé.
           </p>
 
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
+          <div className="flex flex-row justify-center gap-3">
             <LiquidButton href="/location" variant="blue" size="lg">
               Louer un van
             </LiquidButton>
-            <LiquidButton href="/achat" variant="slate" size="lg">
+            <LiquidButton href="/achat" variant="slate" size="lg" shineDelay={1.9}>
               Acheter un van →
             </LiquidButton>
           </div>

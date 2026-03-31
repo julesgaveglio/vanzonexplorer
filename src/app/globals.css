@@ -282,7 +282,7 @@ body {
 }
 .liquid-cta-shine {
   animation: liquid-shine 3.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-  animation-delay: 1.2s;
+  /* delay géré via animationDelay inline (défaut 1.2s, secondaire 3.1s) */
 }
 .liquid-cta-glow-pulse {
   animation: liquid-glow-pulse 2.6s ease-in-out infinite;

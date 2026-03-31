@@ -56,6 +56,8 @@ interface LiquidButtonProps {
   disabled?: boolean;
   ariaLabel?: string;
   fullWidth?: boolean;
+  /** Décalage du reflet en secondes (0 = bouton primaire, 1.9 = bouton secondaire côte à côte) */
+  shineDelay?: number;
 }
 
 function GlassFilter() {
@@ -90,6 +92,7 @@ export default function LiquidButton({
   disabled,
   ariaLabel,
   fullWidth = false,
+  shineDelay = 0,
 }: LiquidButtonProps) {
   const [pressed, setPressed] = useState(false);
   const [hovered, setHovered] = useState(false);
@@ -173,6 +176,7 @@ export default function LiquidButton({
           background: "linear-gradient(105deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.38) 45%, rgba(255,255,255,0.55) 55%, rgba(255,255,255,0) 100%)",
           filter: "blur(2px)",
           mixBlendMode: "overlay",
+          animationDelay: `${1.2 + shineDelay}s`,
         }}
       />
       {/* Hover brightness */}
@@ -195,12 +199,15 @@ export default function LiquidButton({
     transition: "box-shadow 0.25s ease",
   };
 
+  // fullWidth → flex (block) pour que le glow suive la forme pilule
+  const wrapperDisplay = fullWidth ? "flex" : "inline-flex";
+
   if (href) {
     return (
       <Link
         href={href}
         aria-label={ariaLabel}
-        className={`inline-flex flex-shrink-0 ${glowPulseClass} ${widthClass}`}
+        className={`${wrapperDisplay} flex-shrink-0 ${glowPulseClass} ${widthClass}`}
         style={{ ...wrapperStyle, boxShadow: currentGlow }}
         {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
       >
@@ -216,7 +223,7 @@ export default function LiquidButton({
       onClick={onClick}
       disabled={disabled}
       aria-label={ariaLabel}
-      className={`inline-flex flex-shrink-0 ${glowPulseClass} ${widthClass}`}
+      className={`${wrapperDisplay} flex-shrink-0 ${glowPulseClass} ${widthClass}`}
       style={{ ...wrapperStyle, boxShadow: currentGlow, background: "none", border: "none", padding: 0, cursor: disabled ? "not-allowed" : "pointer" }}
     >
       {inner}
