@@ -47,6 +47,7 @@ function ImagePicker({
   const [library, setLibrary] = useState<MediaAsset[]>([]);
   const [libLoading, setLibLoading] = useState(false);
   const [libSearch, setLibSearch] = useState("");
+  const [analyzing, setAnalyzing] = useState(false);
 
   // Charger la médiathèque quand on passe sur l'onglet bibliothèque
   useEffect(() => {
@@ -65,15 +66,42 @@ function ImagePicker({
       m.category?.toLowerCase().includes(libSearch.toLowerCase())
   );
 
-  // Aperçu actuel (quelle que soit la source)
-  const currentPreview =
-    form.imageSource === "library" ? form.libraryUrl : form.imagePreview;
 
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    // Aperçu immédiat pendant l'analyse
     const preview = URL.createObjectURL(file);
     setForm((f) => ({ ...f, imageFile: file, imagePreview: preview }));
+    setAnalyzing(true);
+
+    try {
+      const fd = new FormData();
+      fd.append("image", file);
+      const res = await fetch("/api/admin/formation/cards/analyze-image", {
+        method: "POST",
+        body: fd,
+      });
+      const data = await res.json();
+      if (data.success) {
+        // L'image est maintenant dans la médiathèque — on bascule en mode library
+        setForm((f) => ({
+          ...f,
+          imageSource: "library",
+          libraryUrl: data.url,
+          libraryAlt: data.alt,
+          libraryAssetId: data.assetId,
+          imageFile: null,
+          imagePreview: "",
+        }));
+      }
+    } catch {
+      // Garde le fichier local comme fallback silencieux
+    } finally {
+      setAnalyzing(false);
+      URL.revokeObjectURL(preview);
+    }
   }
 
   function selectFromLibrary(asset: MediaAsset) {
@@ -198,31 +226,50 @@ function ImagePicker({
       {/* ── Onglet Upload ── */}
       {form.imageSource === "upload" && (
         <div>
-          <div
-            className="relative flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 cursor-pointer hover:border-amber-300 hover:bg-amber-50/30 transition-colors overflow-hidden"
-            style={{ height: currentPreview && form.imageSource === "upload" ? "auto" : "120px" }}
-            onClick={() => fileRef.current?.click()}
-          >
-            {form.imagePreview ? (
-              <div className="relative w-full" style={{ aspectRatio: "16/9" }}>
-                <Image src={form.imagePreview} alt="Aperçu" fill className="object-cover" unoptimized />
-                <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-                  <span className="text-white text-sm font-semibold">Changer l&apos;image</span>
+          {/* État : analyse en cours */}
+          {analyzing ? (
+            <div
+              className="relative flex flex-col items-center justify-center gap-3 rounded-2xl border-2 border-amber-200 bg-amber-50/40 overflow-hidden"
+              style={{ height: form.imagePreview ? "auto" : "120px" }}
+            >
+              {form.imagePreview && (
+                <div className="relative w-full" style={{ aspectRatio: "16/9" }}>
+                  <Image src={form.imagePreview} alt="Analyse en cours" fill className="object-cover opacity-40" unoptimized />
                 </div>
+              )}
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+                <div className="w-5 h-5 border-2 border-slate-200 border-t-amber-500 rounded-full animate-spin" />
+                <span className="text-xs font-semibold text-slate-600">Analyse SEO en cours…</span>
+                <span className="text-xs text-slate-400">Renommage + médiathèque</span>
               </div>
-            ) : (
-              <>
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
-                  <polyline points="17 8 12 3 7 8" />
-                  <line x1="12" y1="3" x2="12" y2="15" />
-                </svg>
-                <span className="text-sm text-slate-400">Cliquer pour uploader</span>
-                <span className="text-xs text-slate-300">JPG, PNG, WebP</span>
-              </>
-            )}
-          </div>
-          <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
+            </div>
+          ) : (
+            <div
+              className="relative flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 cursor-pointer hover:border-amber-300 hover:bg-amber-50/30 transition-colors overflow-hidden"
+              style={{ height: form.imagePreview ? "auto" : "120px" }}
+              onClick={() => fileRef.current?.click()}
+            >
+              {form.imagePreview ? (
+                <div className="relative w-full" style={{ aspectRatio: "16/9" }}>
+                  <Image src={form.imagePreview} alt="Aperçu" fill className="object-cover" unoptimized />
+                  <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                    <span className="text-white text-sm font-semibold">Changer l&apos;image</span>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                    <polyline points="17 8 12 3 7 8" />
+                    <line x1="12" y1="3" x2="12" y2="15" />
+                  </svg>
+                  <span className="text-sm text-slate-400">Cliquer pour uploader</span>
+                  <span className="text-xs text-slate-300">JPG, PNG, WebP</span>
+                </>
+              )}
+            </div>
+          )}
+          <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} disabled={analyzing} />
         </div>
       )}
     </div>
