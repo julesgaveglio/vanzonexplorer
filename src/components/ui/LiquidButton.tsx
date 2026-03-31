@@ -120,6 +120,7 @@ export default function LiquidButton({
         transform: `scale(${scale})`,
         transition: "transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1)",
         opacity: disabled ? 0.55 : 1,
+        clipPath: "inset(0 round 9999px)",
       }}
       {...pointerHandlers}
     >
