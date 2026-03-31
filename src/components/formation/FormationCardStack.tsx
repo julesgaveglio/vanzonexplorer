@@ -115,7 +115,7 @@ export default function FormationCardStack({ cards }: { cards: FormationCardData
                   {/* Bouton Programme complet */}
                   <button
                     onClick={scrollToProgramme}
-                    className="flex h-9 shrink-0 cursor-pointer select-none items-center gap-0.5 rounded-full pl-4 pr-3 text-sm font-semibold text-white whitespace-nowrap"
+                    className="hidden sm:flex h-9 shrink-0 cursor-pointer select-none items-center gap-0.5 rounded-full pl-4 pr-3 text-sm font-semibold text-white whitespace-nowrap"
                     style={{
                       background: "#0F172A",
                     }}
