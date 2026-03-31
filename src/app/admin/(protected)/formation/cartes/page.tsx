@@ -2,6 +2,9 @@ import { adminReadClient } from "@/lib/sanity/adminClient";
 import { groq } from "next-sanity";
 import CardsManagerClient from "./_components/CardsManagerClient";
 
+// Toujours rendu côté serveur à chaque requête — pas de cache
+export const dynamic = "force-dynamic";
+
 const allCardsQuery = groq`
   *[_type == "formationCard"] | order(sortOrder asc, _createdAt asc) {
     _id,

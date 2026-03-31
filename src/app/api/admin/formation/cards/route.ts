@@ -3,6 +3,8 @@ import { adminReadClient, adminWriteClient } from "@/lib/sanity/adminClient";
 import { groq } from "next-sanity";
 import { revalidatePath } from "next/cache";
 
+export const dynamic = "force-dynamic";
+
 const allCardsQuery = groq`
   *[_type == "formationCard"] | order(sortOrder asc, _createdAt asc) {
     _id,
