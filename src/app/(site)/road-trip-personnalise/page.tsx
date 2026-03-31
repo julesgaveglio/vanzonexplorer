@@ -54,71 +54,62 @@ export default function RoadTripPersonnalisePage() {
       <div className="relative min-h-screen">
 
         {/* ── HERO ───────────────────────────────────────────────────────────── */}
-        <section className="min-h-screen flex flex-col items-center justify-center px-6 pt-24 pb-16 text-center">
+        <section className="min-h-screen flex flex-col justify-center px-8 sm:px-16 lg:px-28 pt-28 pb-20">
 
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8 text-sm font-medium bg-white/50 backdrop-blur-md border border-white/60 text-[#1a5c5c] shadow-sm">
-            <span className="w-2 h-2 rounded-full bg-[#72b9bb] animate-pulse inline-block" />
-            Propulsé par l&apos;intelligence artificielle
-          </div>
-
-          {/* H1 */}
-          <h1
-            className="font-bold text-6xl sm:text-7xl md:text-8xl leading-none mb-6 max-w-4xl"
-            style={{ fontFamily: "'Bebas Neue', sans-serif", letterSpacing: '0.01em', color: '#0f3535' }}
+          {/* Eyebrow */}
+          <p
+            className="text-xs font-semibold tracking-[0.35em] uppercase text-white/60 mb-8"
           >
-            Ton road trip van
-            <br />
-            <span
-              style={{
-                background: 'linear-gradient(135deg, #2a8080 0%, #72b9bb 50%, #f4a882 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-              }}
-            >
-              ultra-personnalisé
-            </span>
-            <br />
-            partout en France
-          </h1>
-
-          {/* Accroche */}
-          <p className="text-lg sm:text-xl max-w-xl mx-auto leading-relaxed mb-10" style={{ color: '#2d6b6b' }}>
-            Remplis le formulaire — l&apos;IA génère ton itinéraire jour par jour avec les meilleurs spots, campings et conseils.{' '}
-            <strong className="font-semibold" style={{ color: '#0f3535' }}>Reçu par email en 60 secondes.</strong>
+            Vanzon Explorer × IA
           </p>
 
-          {/* Pills */}
-          <div className="flex flex-wrap justify-center gap-3 mb-10">
-            {['✨ Généré par IA', '📍 Toute la France', '⚡ 60 secondes', '🎁 100% gratuit'].map((label) => (
+          {/* Titre */}
+          <h1
+            className="text-[clamp(4rem,12vw,10rem)] leading-[0.92] font-black text-white mb-0 uppercase"
+            style={{ fontFamily: "'Bebas Neue', sans-serif", letterSpacing: '0.02em' }}
+          >
+            Crée ton<br />
+            <span className="text-white/90">road trip.</span>
+          </h1>
+
+          {/* Ligne de séparation */}
+          <div className="w-16 h-[2px] bg-white/40 mt-10 mb-8" />
+
+          {/* Description */}
+          <p className="text-white/75 text-base sm:text-lg font-light leading-relaxed max-w-sm">
+            Dis-nous où tu veux aller.<br />
+            L&apos;IA construit ton itinéraire van en&nbsp;
+            <span className="text-white font-normal">60 secondes</span> —
+            spots, campings, conseils pratiques.{' '}
+            <span className="text-white font-normal">Gratuit.</span>
+          </p>
+
+          {/* CTA */}
+          <div className="mt-10 flex flex-col sm:flex-row items-start gap-4">
+            <a
+              href="#wizard"
+              className="group inline-flex items-center gap-3 text-white text-sm font-semibold tracking-wide transition-all duration-300"
+            >
               <span
-                key={label}
-                className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-white/55 backdrop-blur-sm text-[#1a5c5c] border border-white/70 shadow-sm"
+                className="flex items-center justify-center w-12 h-12 rounded-full border-2 border-white/50 group-hover:border-white group-hover:bg-white/10 transition-all duration-300"
               >
-                {label}
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 5v14M5 12l7 7 7-7" />
+                </svg>
               </span>
-            ))}
+              <span className="border-b border-white/30 group-hover:border-white pb-0.5 transition-colors duration-300">
+                Générer mon itinéraire
+              </span>
+            </a>
           </div>
 
-          {/* CTA scroll */}
-          <a
-            href="#wizard"
-            className="inline-flex items-center gap-2 px-8 py-4 rounded-full text-sm font-semibold text-white transition-all hover:scale-[1.03] active:scale-[0.97]"
-            style={{
-              background: '#2a8080',
-              boxShadow: '0 8px 32px rgba(42,128,128,0.30)',
-            }}
-          >
-            Créer mon Road Trip Gratuit
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 5v14M5 12l7 7 7-7" />
-            </svg>
-          </a>
-
-          {/* Scroll hint */}
-          <div className="mt-12 flex flex-col items-center gap-2 opacity-40">
-            <div className="w-px h-10 bg-[#72b9bb]" style={{ animation: 'pulse 2s infinite' }} />
+          {/* Stats discrètes */}
+          <div className="mt-16 flex gap-8 text-white/40 text-xs font-medium tracking-widest uppercase">
+            <span>IA générative</span>
+            <span>·</span>
+            <span>Toute la France</span>
+            <span>·</span>
+            <span>100% gratuit</span>
           </div>
         </section>
 
