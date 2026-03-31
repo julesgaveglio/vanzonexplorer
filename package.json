@@ -28,6 +28,7 @@
     "@googlemaps/google-maps-services-js": "^3.4.2",
     "@hookform/resolvers": "^5.2.2",
     "@next/third-parties": "^16.1.6",
+    "@paper-design/shaders-react": "^0.0.72",
     "@portabletext/react": "^6.0.3",
     "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-separator": "^1.1.8",

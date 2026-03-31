@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import RoadTripWizard from './RoadTripWizard'
+import RoadTripHero from './RoadTripHero'
 
 export const metadata: Metadata = {
   title: 'Crée ton road trip en van personnalisé | Vanzon Explorer',
@@ -20,13 +21,6 @@ const webAppJsonLd = {
   url: 'https://vanzonexplorer.com/road-trip-personnalise',
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
 }
-
-const features = [
-  { icon: '✨', label: 'Généré par IA' },
-  { icon: '📍', label: 'Toute la France' },
-  { icon: '⚡', label: 'En 60 secondes' },
-  { icon: '🎁', label: '100% gratuit' },
-]
 
 const steps = [
   {
@@ -49,7 +43,6 @@ const steps = [
   },
 ]
 
-
 export default function RoadTripPersonnalisePage() {
   return (
     <div className="bg-white">
@@ -58,91 +51,8 @@ export default function RoadTripPersonnalisePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(webAppJsonLd) }}
       />
 
-      {/* ── 1. Hero ──────────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-white pt-28 pb-20 md:pt-36 md:pb-28">
-        {/* Subtle background decorations */}
-        <div
-          className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[600px] opacity-[0.07] pointer-events-none"
-          style={{
-            background: 'radial-gradient(ellipse at 50% 0%, #3B82F6 0%, transparent 65%)',
-          }}
-        />
-        <div
-          className="absolute top-20 right-0 w-72 h-72 opacity-[0.06] rounded-full blur-3xl pointer-events-none"
-          style={{ background: '#B9945F' }}
-        />
-        <div
-          className="absolute bottom-0 left-0 w-96 h-96 opacity-[0.05] rounded-full blur-3xl pointer-events-none"
-          style={{ background: '#3B82F6' }}
-        />
-
-        {/* Dot grid */}
-        <div
-          className="absolute inset-0 pointer-events-none opacity-[0.025]"
-          style={{
-            backgroundImage: 'radial-gradient(circle, #94a3b8 1px, transparent 1px)',
-            backgroundSize: '32px 32px',
-          }}
-        />
-
-        <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
-          {/* Badge */}
-          <div
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8 text-sm font-medium"
-            style={{
-              background: 'linear-gradient(135deg, #eff6ff 0%, #fefce8 100%)',
-              border: '1px solid #bfdbfe',
-              color: '#2563eb',
-            }}
-          >
-            <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse inline-block" />
-            Propulsé par l&apos;intelligence artificielle
-          </div>
-
-          {/* H1 */}
-          <h1 className="text-5xl md:text-7xl font-bold leading-[1.05] tracking-tight text-slate-900 mb-6">
-            Ton road trip van
-            <br />
-            <span
-              style={{
-                background: 'linear-gradient(135deg, #2563eb 0%, #B9945F 60%, #d97706 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-              }}
-            >
-              ultra-personnalisé
-            </span>
-            <br />
-            partout en France
-          </h1>
-
-          {/* Subheadline */}
-          <p className="text-xl text-slate-500 max-w-2xl mx-auto leading-relaxed mb-10">
-            Dis-nous où tu veux aller — l&apos;IA génère ton itinéraire jour par jour.
-            Spots secrets, campings, conseils van.{' '}
-            <span className="text-slate-900 font-semibold">Reçu par email en 60 secondes.</span>
-          </p>
-
-          {/* Feature pills */}
-          <div className="flex flex-wrap justify-center gap-3 mb-12">
-            {features.map((f) => (
-              <span
-                key={f.label}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-slate-50 text-slate-600 border border-slate-200"
-              >
-                {f.icon} {f.label}
-              </span>
-            ))}
-          </div>
-
-        </div>
-
-        {/* Floating decorative text */}
-        <div className="hidden lg:block absolute bottom-12 left-12 text-6xl opacity-10 select-none">🏔️</div>
-        <div className="hidden lg:block absolute top-24 right-16 text-5xl opacity-10 select-none">🌊</div>
-        <div className="hidden lg:block absolute bottom-20 right-28 text-5xl opacity-10 select-none">🌲</div>
-      </section>
+      {/* ── 1. Hero avec MeshGradient animé ─────────────────────────────────── */}
+      <RoadTripHero />
 
       {/* ── 3. Wizard ────────────────────────────────────────────────────────── */}
       <section id="wizard" className="py-20 bg-white">
