@@ -51,7 +51,7 @@ const SIZE_CLASSES = {
   md: "text-sm px-5 py-2.5",
   lg: "text-base px-8 py-4",
   // S'adapte à toutes les largeurs mobiles (iPhone SE 320px → desktop)
-  responsive: "text-xs px-4 py-2.5 sm:text-sm sm:px-6 sm:py-3 lg:text-base lg:px-8 lg:py-4",
+  responsive: "text-sm px-5 py-3 sm:text-sm sm:px-7 sm:py-3.5 lg:text-base lg:px-8 lg:py-4",
 };
 
 interface LiquidButtonProps {
