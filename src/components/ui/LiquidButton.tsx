@@ -110,8 +110,8 @@ export default function LiquidButton({
   const palette = VARIANTS[variant];
   const sizeClass = SIZE_CLASSES[size];
   const scale = pressed ? 0.94 : hovered ? 1.07 : 1;
-  const currentGlow = pressed ? "none" : palette.glow;
-  // Pas de glow pulse sur fullWidth (fond clair de carte → ghost visible)
+  // fullWidth (cartes fond blanc) : pas de glow externe → pas de contour fantôme
+  const currentGlow = pressed ? "none" : (fullWidth ? "none" : palette.glow);
   const glowPulseClass = !pressed && !hovered && !fullWidth ? "liquid-cta-glow-pulse" : "";
   const widthClass = fullWidth ? "w-full" : "";
 
@@ -206,11 +206,11 @@ export default function LiquidButton({
   );
 
   const wrapperStyle = {
-    borderRadius: 9999,
+    // fullWidth : pas de borderRadius sur le wrapper (évite contour blanc sur fond clair)
+    borderRadius: fullWidth ? 0 : 9999,
     transition: "box-shadow 0.25s ease",
   };
 
-  // fullWidth → flex (block) pour que le glow suive la forme pilule
   const wrapperDisplay = fullWidth ? "flex" : "inline-flex";
 
   if (href) {
