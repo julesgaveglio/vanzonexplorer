@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import Image from "next/image";
 import type { SanityImage } from "@/lib/sanity/types";
 
@@ -12,6 +12,9 @@ interface VanGalleryProps {
 export default function VanGallery({ images, vanName }: VanGalleryProps) {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
+  const [mobileActive, setMobileActive] = useState(0);
+  const thumbsRef = useRef<HTMLDivElement>(null);
+  const touchStartX = useRef<number | null>(null);
 
   const openLightbox = useCallback((index: number) => {
     setLightboxIndex(index);
@@ -42,6 +45,28 @@ export default function VanGallery({ images, vanName }: VanGalleryProps) {
       document.body.style.overflow = "";
     };
   }, [lightboxOpen, closeLightbox, goNext, goPrev]);
+
+  // Swipe handlers mobile
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  }, []);
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const delta = e.changedTouches[0].clientX - touchStartX.current;
+    touchStartX.current = null;
+    if (Math.abs(delta) < 40) return;
+    setMobileActive((prev) => {
+      if (delta < 0) return Math.min(prev + 1, images.length - 1);
+      return Math.max(prev - 1, 0);
+    });
+  }, [images.length]);
+
+  // Auto-scroll thumbnail strip to keep active thumb visible
+  useEffect(() => {
+    const el = thumbsRef.current?.children[mobileActive] as HTMLElement | undefined;
+    el?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+  }, [mobileActive]);
 
   if (!images || images.length === 0) return null;
 
@@ -144,85 +169,90 @@ export default function VanGallery({ images, vanName }: VanGalleryProps) {
         </div>
       )}
 
-      {/* ── Mobile : image principale + scroll horizontal ─────────── */}
+      {/* ── Mobile : image principale swipable + thumbnails ─────── */}
       <div className="lg:hidden flex flex-col gap-3">
-        {/* Grande image principale */}
-        <button
-          onClick={() => openLightbox(0)}
-          className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden bg-slate-100 cursor-pointer group"
-          aria-label="Voir toutes les photos"
+        {/* Image principale — swipable, pas de lightbox au tap */}
+        <div
+          className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden bg-slate-100 select-none"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
         >
           <Image
-            src={images[0].url}
-            alt={images[0].alt || vanName}
+            src={images[mobileActive].url}
+            alt={images[mobileActive].alt || vanName}
             fill
-            className="object-cover"
+            className="object-cover transition-opacity duration-300"
             sizes="100vw"
-            priority
+            priority={mobileActive === 0}
           />
-          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
-          <div className="absolute bottom-3 left-3 bg-black/50 backdrop-blur-sm text-white text-xs font-semibold px-2.5 py-1 rounded-full">
-            1 / {images.length}
+          {/* Compteur */}
+          <div className="absolute bottom-3 left-3 bg-black/50 backdrop-blur-sm text-white text-xs font-semibold px-2.5 py-1 rounded-full pointer-events-none">
+            {mobileActive + 1} / {images.length}
           </div>
-        </button>
-
-        {/* Deux petites images côte à côte */}
-        {images.length > 1 && (
-          <div className="grid grid-cols-2 gap-3">
+          {/* Flèches discrètes */}
+          {mobileActive > 0 && (
             <button
-              onClick={() => openLightbox(1 % images.length)}
-              className="relative aspect-[4/3] rounded-xl overflow-hidden group"
+              onClick={() => setMobileActive((p) => p - 1)}
+              className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white"
+              aria-label="Photo précédente"
             >
-              <Image
-                src={img1.url}
-                alt={img1.alt || `${vanName} 2`}
-                fill
-                className="object-cover"
-                sizes="50vw"
-              />
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/15 transition-colors" />
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+              </svg>
             </button>
-
+          )}
+          {mobileActive < images.length - 1 && (
             <button
-              onClick={() => openLightbox(2 % images.length)}
-              className="relative aspect-[4/3] rounded-xl overflow-hidden group"
+              onClick={() => setMobileActive((p) => p + 1)}
+              className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white"
+              aria-label="Photo suivante"
             >
-              <Image
-                src={img2.url}
-                alt={img2.alt || `${vanName} 3`}
-                fill
-                className="object-cover"
-                sizes="50vw"
-              />
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/15 transition-colors" />
-              {images.length > 3 && (
-                <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                  <span className="text-white text-sm font-bold">+{images.length - 3}</span>
-                </div>
-              )}
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
             </button>
-          </div>
-        )}
+          )}
+        </div>
 
-        {/* Thumbnails mobile */}
-        {images.length > 3 && (
-          <div className="flex gap-2 overflow-x-auto pb-1">
-            {images.map((img, i) => (
+        {/* Thumbnails — toutes les images, scroll horizontal */}
+        <div
+          ref={thumbsRef}
+          className="flex gap-2 overflow-x-auto pb-1 scroll-smooth"
+          style={{ scrollbarWidth: "none" }}
+        >
+          {images.map((img, i) => {
+            const isActive = i === mobileActive;
+            return (
               <button
                 key={i}
-                onClick={() => openLightbox(i)}
-                className={`relative flex-shrink-0 w-16 h-12 rounded-lg overflow-hidden border-2 transition-all duration-200 ${
-                  i < 3
-                    ? "border-[#4D5FEC] opacity-40 hover:opacity-70"
-                    : "border-transparent opacity-60 hover:opacity-100"
-                }`}
+                onClick={() => setMobileActive(i)}
                 aria-label={`Photo ${i + 1}`}
+                className="relative flex-shrink-0 rounded-xl overflow-hidden transition-all duration-250"
+                style={{
+                  width: isActive ? "72px" : "60px",
+                  height: isActive ? "54px" : "45px",
+                  transform: isActive ? "scale(1.08)" : "scale(1)",
+                }}
               >
-                <Image src={img.url} alt={img.alt || `${vanName} ${i + 1}`} fill className="object-cover" sizes="64px" />
+                <Image
+                  src={img.url}
+                  alt={img.alt || `${vanName} ${i + 1}`}
+                  fill
+                  className="object-cover"
+                  sizes="72px"
+                />
+                {/* Overlay atténué sur les non-sélectionnées */}
+                {!isActive && (
+                  <div className="absolute inset-0 bg-white/40" />
+                )}
+                {/* Bordure active */}
+                {isActive && (
+                  <div className="absolute inset-0 ring-2 ring-[#4D5FEC] ring-inset rounded-xl pointer-events-none" />
+                )}
               </button>
-            ))}
-          </div>
-        )}
+            );
+          })}
+        </div>
       </div>
 
       {/* ── Lightbox ─────────────────────────────────────────────── */}
