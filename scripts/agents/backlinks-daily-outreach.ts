@@ -25,9 +25,7 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-// ── Resend ─────────────────────────────────────────────────────────────────────
-
-const resend = new Resend(process.env.RESEND_API_KEY!);
+// ── Resend — initialisé dans main() pour éviter un crash au démarrage si la clé est absente
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -72,6 +70,13 @@ async function selectBestProspect() {
 
 async function main() {
   log("=== Agent Backlinks Daily Outreach ===");
+
+  if (!process.env.RESEND_API_KEY) {
+    log("❌ RESEND_API_KEY manquant — configure ce secret dans GitHub Actions (Settings → Secrets).");
+    await notifyTelegram("❌ <b>Backlinks Daily</b> — RESEND_API_KEY manquant dans les secrets GitHub.");
+    process.exit(1);
+  }
+  const resend = new Resend(process.env.RESEND_API_KEY);
 
   // 1. Sélectionner le meilleur prospect
   const prospect = await selectBestProspect();
