@@ -4,9 +4,6 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import Image from "next/image";
 import type { AdminCard } from "../page";
 
-interface Props {
-  initialCards: AdminCard[];
-}
 
 interface MediaAsset {
   _id: string;
@@ -277,8 +274,9 @@ function ImagePicker({
 }
 
 // ── Composant principal ────────────────────────────────────────────────────────
-export default function CardsManagerClient({ initialCards }: Props) {
-  const [cards, setCards] = useState<AdminCard[]>(initialCards);
+export default function CardsManagerClient() {
+  const [cards, setCards] = useState<AdminCard[]>([]);
+  const [pageLoading, setPageLoading] = useState(true);
   const [loading, setLoading] = useState(false);
   const [modal, setModal] = useState<"create" | "edit" | null>(null);
   const [editTarget, setEditTarget] = useState<AdminCard | null>(null);
@@ -294,10 +292,14 @@ export default function CardsManagerClient({ initialCards }: Props) {
   }
 
   const refresh = useCallback(async () => {
-    const res = await fetch("/api/admin/formation/cards");
+    const res = await fetch("/api/admin/formation/cards", { cache: "no-store" });
     const data = await res.json();
     if (data.cards) setCards(data.cards);
   }, []);
+
+  useEffect(() => {
+    refresh().finally(() => setPageLoading(false));
+  }, [refresh]);
 
   function openCreate() {
     setForm(emptyForm());
@@ -439,7 +441,12 @@ export default function CardsManagerClient({ initialCards }: Props) {
       </div>
 
       {/* Liste */}
-      {cards.length === 0 ? (
+      {pageLoading ? (
+        <div className="flex items-center justify-center py-20 gap-3 text-slate-400">
+          <div className="w-5 h-5 border-2 border-slate-200 border-t-amber-500 rounded-full animate-spin" />
+          <span className="text-sm font-medium">Chargement des cartes…</span>
+        </div>
+      ) : cards.length === 0 ? (
         <div className="text-center py-20 text-slate-400">
           <div className="text-5xl mb-4">🎓</div>
           <p className="font-medium">Aucune carte pour l&apos;instant</p>
