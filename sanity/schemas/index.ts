@@ -5,5 +5,6 @@ import mediaAsset from "./mediaAsset";
 import heroImages from "./heroImages";
 import siteSettings from "./siteSettings";
 import article from "./article";
+import formationCard from "./formationCard";
 
-export const schemaTypes = [siteSettings, mediaAsset, van, testimonial, spotPaysBasque, heroImages, article];
+export const schemaTypes = [siteSettings, mediaAsset, van, testimonial, spotPaysBasque, heroImages, article, formationCard];

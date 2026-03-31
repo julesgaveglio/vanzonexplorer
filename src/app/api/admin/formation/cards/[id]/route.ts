@@ -1,0 +1,56 @@
+import { NextRequest, NextResponse } from "next/server";
+import { adminWriteClient } from "@/lib/sanity/adminClient";
+
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+  try {
+    const formData = await req.formData();
+    const title = formData.get("title") as string | null;
+    const description = formData.get("description") as string | null;
+    const sortOrder = formData.get("sortOrder");
+    const imageFile = formData.get("image") as File | null;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const patch: Record<string, any> = {};
+    if (title !== null) patch.title = title.trim();
+    if (description !== null) patch.description = description.trim() || undefined;
+    if (sortOrder !== null) patch.sortOrder = parseInt(sortOrder as string, 10);
+
+    // Upload nouvelle image si fournie
+    if (imageFile && imageFile.size > 0) {
+      const buffer = Buffer.from(await imageFile.arrayBuffer());
+      const asset = await adminWriteClient.assets.upload("image", buffer, {
+        filename: imageFile.name,
+        contentType: imageFile.type,
+      });
+      patch.image = {
+        _type: "image",
+        asset: { _type: "reference", _ref: asset._id },
+        alt: patch.title || title || "",
+      };
+    }
+
+    await adminWriteClient.patch(id).set(patch).commit();
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error("[Formation Cards PATCH]", err);
+    return NextResponse.json({ error: "Erreur lors de la mise à jour" }, { status: 500 });
+  }
+}
+
+export async function DELETE(
+  _req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+  try {
+    await adminWriteClient.delete(id);
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error("[Formation Cards DELETE]", err);
+    return NextResponse.json({ error: "Erreur lors de la suppression" }, { status: 500 });
+  }
+}

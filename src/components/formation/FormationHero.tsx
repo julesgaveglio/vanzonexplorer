@@ -1,6 +1,6 @@
 import LiquidButton from "@/components/ui/LiquidButton";
 import CalendlyButton from "@/components/ui/CalendlyButton";
-import FormationScrollReveal from "./FormationScrollReveal";
+import FormationCardStack, { type FormationCardData } from "./FormationCardStack";
 
 const pills = [
   { icon: "🙋‍♂️", label: "Accompagnement" },
@@ -10,7 +10,7 @@ const pills = [
   { icon: "📄", label: "Administratif & VASP" },
 ];
 
-export default function FormationHero() {
+export default function FormationHero({ cards = [] }: { cards?: FormationCardData[] }) {
   return (
     <section
       className="relative overflow-hidden"
@@ -55,7 +55,7 @@ export default function FormationHero() {
         </div>
       </div>
 
-      <FormationScrollReveal />
+      {cards.length > 0 && <FormationCardStack cards={cards} />}
     </section>
   );
 }

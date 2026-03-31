@@ -318,6 +318,19 @@ export const getRelatedArticlesQuery = groq`
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // 10. Hero carousel images (NOUVEAU)
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+export const getFormationCardsQuery = groq`
+  *[_type == "formationCard"] | order(sortOrder asc, _createdAt asc) {
+    _id,
+    title,
+    description,
+    "image": {
+      "url": image.asset->url,
+      "alt": image.alt
+    },
+    sortOrder
+  }
+`;
+
 export const getHeroCarouselQuery = groq`
   *[_type == "heroImages" && isActive == true][0] {
     _id,

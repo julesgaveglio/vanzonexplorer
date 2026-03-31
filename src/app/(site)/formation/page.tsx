@@ -3,6 +3,9 @@ import Image from "next/image";
 import GlassCard from "@/components/ui/GlassCard";
 import OtherServices from "@/components/ui/OtherServices";
 import FormationHero from "@/components/formation/FormationHero";
+import { sanityFetch } from "@/lib/sanity/client";
+import { getFormationCardsQuery } from "@/lib/sanity/queries";
+import type { FormationCardData } from "@/components/formation/FormationCardStack";
 import ProgrammeAccordion from "@/components/formation/ProgrammeAccordion";
 import FormationFAQ from "@/components/formation/FormationFAQ";
 import FormationCTA from "@/components/formation/FormationCTA";
@@ -157,14 +160,16 @@ const courseJsonLd = {
   ],
 };
 
-export default function FormationPage() {
+export default async function FormationPage() {
+  const cards = await sanityFetch<FormationCardData[]>(getFormationCardsQuery) ?? [];
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(courseJsonLd) }}
       />
-      <FormationHero />
+      <FormationHero cards={cards} />
 
       <section className="py-20" style={{ background: '#FAF6F0' }}>
         <div className="max-w-5xl mx-auto px-6">
