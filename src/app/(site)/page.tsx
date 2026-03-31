@@ -50,7 +50,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <section className="relative -mt-16 min-h-screen flex items-end overflow-hidden">
+      <section className="relative -mt-16 min-h-screen flex items-start lg:items-end overflow-hidden">
         <div className="absolute inset-0">
           <Image
             src="https://cdn.sanity.io/images/lewexa74/production/d445397965472d300e3dc13d6b1c37503fe8ba25-1920x1080.png?auto=format&fit=max&q=82"
@@ -64,7 +64,7 @@ export default async function HomePage() {
           <div className="absolute inset-0 bg-gradient-to-r from-blue-950/30 via-transparent to-transparent" />
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-6 pb-20 pt-32 w-full">
+        <div className="relative z-10 max-w-7xl mx-auto px-6 pt-24 pb-10 lg:pb-20 lg:pt-32 w-full">
           <div className="max-w-2xl">
             <a
               href={`https://www.google.com/maps/place/?q=place_id:ChIJ7-3ASe0oTyQR6vNHg7YRicA`}
