@@ -6,8 +6,8 @@ import Link from "next/link";
 // ── Palettes Vanzon ───────────────────────────────────────────────────────────
 const VARIANTS = {
   blue: {
-    gradient: "linear-gradient(135deg, #3B82F6 0%, #0EA5E9 100%)",
-    glow: "0 4px 18px rgba(59, 130, 246, 0.50), 0 1px 4px rgba(14, 165, 233, 0.30)",
+    gradient: "linear-gradient(135deg, #4338CA 0%, #4D5FEC 100%)",
+    glow: "0 4px 18px rgba(77, 95, 236, 0.55), 0 1px 4px rgba(99, 102, 241, 0.30)",
   },
   gold: {
     gradient: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
@@ -27,12 +27,12 @@ const VARIANTS = {
   },
   // backwards-compat aliases
   primary: {
-    gradient: "linear-gradient(135deg, #3B82F6 0%, #0EA5E9 100%)",
-    glow: "0 4px 18px rgba(59, 130, 246, 0.50), 0 1px 4px rgba(14, 165, 233, 0.30)",
+    gradient: "linear-gradient(135deg, #4338CA 0%, #4D5FEC 100%)",
+    glow: "0 4px 18px rgba(77, 95, 236, 0.55), 0 1px 4px rgba(99, 102, 241, 0.30)",
   },
   ghost: {
-    gradient: "linear-gradient(135deg, #3B82F6 0%, #0EA5E9 100%)",
-    glow: "0 4px 18px rgba(59, 130, 246, 0.50), 0 1px 4px rgba(14, 165, 233, 0.30)",
+    gradient: "linear-gradient(135deg, #4338CA 0%, #4D5FEC 100%)",
+    glow: "0 4px 18px rgba(77, 95, 236, 0.55), 0 1px 4px rgba(99, 102, 241, 0.30)",
   },
 } as const;
 
@@ -186,7 +186,7 @@ export default function LiquidButton({
         }}
       />
       {/* Text */}
-      <span className="relative z-10 tracking-wide drop-shadow-sm">{children}</span>
+      <span className="relative z-10 inline-flex items-center gap-2 tracking-wide drop-shadow-sm">{children}</span>
     </span>
   );
 

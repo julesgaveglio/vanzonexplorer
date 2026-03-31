@@ -93,12 +93,9 @@ export default async function HomePage() {
               <LiquidButton href="/location" variant="blue" size="lg">
                 Louer un van
               </LiquidButton>
-              <a
-                href="/achat"
-                className="inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-md border border-white/30 text-white font-bold px-8 py-4 rounded-xl hover:bg-white/20 transition-colors text-lg"
-              >
+              <LiquidButton href="/achat" variant="slate" size="lg">
                 Acheter un van →
-              </a>
+              </LiquidButton>
             </div>
           </div>
 
@@ -514,12 +511,9 @@ export default async function HomePage() {
             <LiquidButton href="/location" variant="blue" size="lg">
               Louer un van
             </LiquidButton>
-            <a
-              href="/achat"
-              className="inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-md border border-white/30 text-white font-bold px-10 py-5 rounded-2xl hover:bg-white/20 transition-colors text-lg"
-            >
-              Acheter un van
-            </a>
+            <LiquidButton href="/achat" variant="slate" size="lg">
+              Acheter un van →
+            </LiquidButton>
           </div>
 
           <p className="text-white/40 text-sm mt-6">
