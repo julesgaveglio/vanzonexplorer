@@ -16,6 +16,70 @@ const allCardsQuery = groq`
   }
 `;
 
+/**
+ * Résout un asset Sanity depuis une URL CDN.
+ * URL format: https://cdn.sanity.io/images/{project}/{dataset}/{hash}-{WxH}.{ext}[?params]
+ * Asset _id format: image-{hash}-{WxH}-{ext}
+ */
+function urlToAssetRef(url: string): string | null {
+  try {
+    const clean = url.split("?")[0];
+    const filename = clean.split("/").pop(); // "hash-WxH.ext"
+    if (!filename) return null;
+    const dotIdx = filename.lastIndexOf(".");
+    if (dotIdx === -1) return null;
+    const base = filename.slice(0, dotIdx); // "hash-WxH"
+    const ext = filename.slice(dotIdx + 1); // "ext"
+    return `image-${base}-${ext}`;
+  } catch {
+    return null;
+  }
+}
+
+type ImageRef = {
+  _type: "image";
+  asset: { _type: "reference"; _ref: string };
+  alt: string;
+};
+
+async function resolveImageRef(
+  formData: FormData,
+  fallbackAlt: string
+): Promise<ImageRef | undefined> {
+  const imageFile = formData.get("image") as File | null;
+  const libraryUrl = (formData.get("libraryImageUrl") as string) || "";
+  const libraryAlt = (formData.get("libraryImageAlt") as string) || fallbackAlt;
+
+  // 1. Upload depuis l'ordinateur
+  if (imageFile && imageFile.size > 0) {
+    const buffer = Buffer.from(await imageFile.arrayBuffer());
+    const asset = await adminWriteClient.assets.upload("image", buffer, {
+      filename: imageFile.name,
+      contentType: imageFile.type,
+    });
+    return { _type: "image", asset: { _type: "reference", _ref: asset._id }, alt: fallbackAlt };
+  }
+
+  // 2. Depuis la bibliothèque Vanzon (URL CDN → asset ref)
+  if (libraryUrl) {
+    const assetId = urlToAssetRef(libraryUrl);
+    if (assetId) {
+      return { _type: "image", asset: { _type: "reference", _ref: assetId }, alt: libraryAlt };
+    }
+    // Fallback: requête Sanity pour trouver l'asset depuis l'URL base
+    const cleanUrl = libraryUrl.split("?")[0];
+    const found = await adminReadClient.fetch<{ _id: string } | null>(
+      groq`*[_type == "sanity.imageAsset" && url == $url][0] { _id }`,
+      { url: cleanUrl }
+    );
+    if (found?._id) {
+      return { _type: "image", asset: { _type: "reference", _ref: found._id }, alt: libraryAlt };
+    }
+  }
+
+  return undefined;
+}
+
 export async function GET() {
   try {
     const cards = await adminReadClient.fetch(allCardsQuery);
@@ -32,28 +96,13 @@ export async function POST(req: NextRequest) {
     const title = formData.get("title") as string;
     const description = (formData.get("description") as string) || "";
     const sortOrder = parseInt((formData.get("sortOrder") as string) || "0", 10);
-    const imageFile = formData.get("image") as File | null;
 
     if (!title?.trim()) {
       return NextResponse.json({ error: "Le titre est obligatoire" }, { status: 400 });
     }
 
-    // Upload image si fournie
-    let imageRef: { _type: "image"; asset: { _type: "reference"; _ref: string }; alt: string } | undefined;
-    if (imageFile && imageFile.size > 0) {
-      const buffer = Buffer.from(await imageFile.arrayBuffer());
-      const asset = await adminWriteClient.assets.upload("image", buffer, {
-        filename: imageFile.name,
-        contentType: imageFile.type,
-      });
-      imageRef = {
-        _type: "image",
-        asset: { _type: "reference", _ref: asset._id },
-        alt: title,
-      };
-    }
+    const imageRef = await resolveImageRef(formData, title);
 
-    // Créer le document formationCard
     const doc = await adminWriteClient.create({
       _type: "formationCard",
       title: title.trim(),
