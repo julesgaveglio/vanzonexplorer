@@ -85,6 +85,7 @@ async function main() {
       subject: "Backlinks Daily — aucun prospect disponible",
       text: "L'agent backlinks quotidien n'a trouvé aucun prospect \"découvert\" à contacter. Lance un nouveau discovery depuis /admin/backlinks.",
     });
+    await notifyTelegram("⚠️ <b>Backlinks Daily</b> — Aucun prospect disponible. Lance un nouveau discovery sur /admin/backlinks.");
     return;
   }
 
@@ -105,6 +106,7 @@ async function main() {
       subject: `Backlinks Daily — erreur pour ${prospect.domain}`,
       text: `Impossible de générer l'email pour ${prospect.domain}.\n\nErreur : ${genData.error}`,
     });
+    await notifyTelegram(`❌ <b>Backlinks Daily</b> — Erreur génération email pour <b>${prospect.domain}</b>\n${genData.error}`);
     return;
   }
 
@@ -130,6 +132,7 @@ async function main() {
         emailBody,
       ].join("\n"),
     });
+    await notifyTelegram(`📝 <b>Backlinks Daily</b> — Draft créé pour <b>${prospect.domain}</b> (score ${prospect.score}/10) mais aucun email trouvé.\n➡ À compléter manuellement sur /admin/backlinks`);
     return;
   }
 
@@ -149,6 +152,7 @@ async function main() {
       subject: `Backlinks Daily — erreur envoi vers ${prospect.domain}`,
       text: `Email généré mais non envoyé pour ${prospect.domain}.\n\nErreur : ${sendData.error}`,
     });
+    await notifyTelegram(`❌ <b>Backlinks Daily</b> — Email généré mais non envoyé pour <b>${prospect.domain}</b>\n${sendData.error}`);
     return;
   }
 
@@ -181,7 +185,7 @@ async function main() {
   });
 
   log("=== Terminé ===");
-  await notifyTelegram(`✅ *Backlinks Daily* — Email envoyé à ${emailDiscovery.email} (${prospect.domain}) · Score ${prospect.score}/10`);
+  await notifyTelegram(`✅ <b>Backlinks Daily</b> — Email envoyé à ${emailDiscovery.email}\n📌 Domaine : <b>${prospect.domain}</b> · Score ${prospect.score}/10\n📎 Objet : ${subject}`);
 }
 
 main().catch((err) => {
