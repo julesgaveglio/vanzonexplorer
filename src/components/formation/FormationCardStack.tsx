@@ -23,9 +23,6 @@ const POSITION_STYLES = [
   { scale: 0.9, y: -44 },
 ];
 
-const EXIT_ANIMATION = { y: 340, scale: 1, zIndex: 10 };
-const ENTER_ANIMATION = { y: -16, scale: 0.9 };
-
 function scrollToProgramme() {
   document.getElementById("programme")?.scrollIntoView({ behavior: "smooth" });
 }
@@ -62,10 +59,20 @@ export default function FormationCardStack({ cards }: { cards: FormationCardData
             return (
               <motion.div
                 key={item.uid}
-                initial={index === displayStack.length - 1 && displayStack.length > 1 ? ENTER_ANIMATION : undefined}
-                animate={{ y: pos.y, scale: pos.scale }}
-                exit={index === 0 ? EXIT_ANIMATION : undefined}
-                transition={{ type: "spring", duration: 1, bounce: 0 }}
+                initial={
+                  index === displayStack.length - 1 && displayStack.length > 1
+                    ? { y: -64, scale: 0.85, opacity: 0 }
+                    : undefined
+                }
+                animate={{ y: pos.y, scale: pos.scale, opacity: 1 }}
+                exit={{
+                  y: 480,
+                  scale: 0.98,
+                  opacity: 0,
+                  zIndex: 20,
+                  transition: { type: "spring", duration: 0.55, bounce: 0 },
+                }}
+                transition={{ type: "spring", duration: 0.45, bounce: 0.08 }}
                 style={{
                   zIndex,
                   left: "50%",
@@ -110,7 +117,7 @@ export default function FormationCardStack({ cards }: { cards: FormationCardData
                     onClick={scrollToProgramme}
                     className="flex h-9 shrink-0 cursor-pointer select-none items-center gap-0.5 rounded-full pl-4 pr-3 text-sm font-semibold text-white whitespace-nowrap"
                     style={{
-                      background: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
+                      background: "#0F172A",
                     }}
                   >
                     Programme complet

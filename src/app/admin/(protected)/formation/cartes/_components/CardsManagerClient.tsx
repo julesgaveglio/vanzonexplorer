@@ -54,7 +54,7 @@ function ImagePicker({
     setLibLoading(true);
     fetch("/api/admin/media")
       .then((r) => r.json())
-      .then((d) => setLibrary(d.media ?? []))
+      .then((d) => setLibrary(Array.isArray(d) ? d : []))
       .finally(() => setLibLoading(false));
   }, [form.imageSource, library.length]);
 

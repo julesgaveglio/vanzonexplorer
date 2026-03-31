@@ -8,31 +8,39 @@ const VARIANTS = {
   blue: {
     gradient: "linear-gradient(135deg, #4338CA 0%, #4D5FEC 100%)",
     glow: "0 4px 18px rgba(77, 95, 236, 0.55), 0 1px 4px rgba(99, 102, 241, 0.30)",
+    textColor: "text-white",
   },
   gold: {
     gradient: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
     glow: "0 4px 18px rgba(185, 148, 95, 0.55), 0 1px 4px rgba(228, 211, 152, 0.30)",
+    textColor: "text-white",
   },
   purple: {
     gradient: "linear-gradient(135deg, #883AE2 0%, #8A80E9 100%)",
     glow: "0 4px 18px rgba(136, 58, 226, 0.50), 0 1px 4px rgba(138, 128, 233, 0.30)",
+    textColor: "text-white",
   },
   slate: {
     gradient: "linear-gradient(135deg, #334155 0%, #475569 100%)",
     glow: "0 4px 18px rgba(51, 65, 85, 0.50), 0 1px 4px rgba(71, 85, 105, 0.30)",
+    textColor: "text-white",
   },
   rose: {
     gradient: "linear-gradient(135deg, #E8436C 0%, #FF6B8A 100%)",
     glow: "0 4px 18px rgba(232, 67, 108, 0.50), 0 1px 4px rgba(255, 107, 138, 0.30)",
+    textColor: "text-white",
   },
-  // backwards-compat aliases
+  // Transparent — fond verre neutre, texte noir (ex: bouton secondaire sur fond clair)
+  ghost: {
+    gradient: "rgba(255,255,255,0.18)",
+    glow: "0 2px 12px rgba(0,0,0,0.08)",
+    textColor: "text-slate-900",
+  },
+  // backwards-compat alias
   primary: {
     gradient: "linear-gradient(135deg, #4338CA 0%, #4D5FEC 100%)",
     glow: "0 4px 18px rgba(77, 95, 236, 0.55), 0 1px 4px rgba(99, 102, 241, 0.30)",
-  },
-  ghost: {
-    gradient: "linear-gradient(135deg, #4338CA 0%, #4D5FEC 100%)",
-    glow: "0 4px 18px rgba(77, 95, 236, 0.55), 0 1px 4px rgba(99, 102, 241, 0.30)",
+    textColor: "text-white",
   },
 } as const;
 
@@ -119,7 +127,7 @@ export default function LiquidButton({
 
   const inner = (
     <span
-      className={`relative inline-flex items-center justify-center gap-2 font-semibold rounded-full whitespace-nowrap text-white select-none overflow-hidden ${sizeClass} ${widthClass} ${className}`}
+      className={`relative inline-flex items-center justify-center gap-2 font-semibold rounded-full whitespace-nowrap ${palette.textColor} select-none overflow-hidden ${sizeClass} ${widthClass} ${className}`}
       style={{
         transform: `scale(${scale})`,
         transition: "transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1)",
