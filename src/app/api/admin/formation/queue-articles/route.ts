@@ -1,5 +1,65 @@
 import Groq from "groq-sdk";
+import { NextRequest } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
+
+export async function GET() {
+  const supabase = createSupabaseAdmin();
+  const { data, error } = await supabase
+    .from("article_queue")
+    .select("id, title, slug, excerpt, category, target_keyword, secondary_keywords, target_word_count, status, priority, added_by, published_at")
+    .order("priority", { ascending: true })
+    .order("created_at", { ascending: true });
+
+  if (error) return Response.json({ error: error.message }, { status: 500 });
+  return Response.json({ articles: data ?? [] });
+}
+
+export async function PATCH(req: NextRequest) {
+  const supabase = createSupabaseAdmin();
+  const body = await req.json();
+  const { articles } = body as {
+    articles: Array<{
+      id: string;
+      title?: string;
+      excerpt?: string;
+      category?: string;
+      target_keyword?: string;
+      secondary_keywords?: string[];
+      target_word_count?: number;
+      status?: string;
+      priority?: number;
+    }>;
+  };
+
+  if (!Array.isArray(articles) || articles.length === 0) {
+    return Response.json({ error: "No articles provided" }, { status: 400 });
+  }
+
+  const errors: string[] = [];
+  await Promise.all(
+    articles.map(async ({ id, ...fields }) => {
+      const { error } = await supabase
+        .from("article_queue")
+        .update(fields)
+        .eq("id", id);
+      if (error) errors.push(`${id}: ${error.message}`);
+    })
+  );
+
+  if (errors.length > 0) return Response.json({ errors }, { status: 207 });
+  return Response.json({ updated: articles.length });
+}
+
+export async function DELETE(req: NextRequest) {
+  const supabase = createSupabaseAdmin();
+  const { id } = await req.json() as { id: string };
+
+  if (!id) return Response.json({ error: "Missing id" }, { status: 400 });
+
+  const { error } = await supabase.from("article_queue").delete().eq("id", id);
+  if (error) return Response.json({ error: error.message }, { status: 500 });
+  return Response.json({ deleted: true });
+}
 
 function sseEvent(data: Record<string, unknown>): string {
   return `data: ${JSON.stringify(data)}\n\n`;
