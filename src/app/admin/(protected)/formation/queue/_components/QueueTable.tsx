@@ -15,6 +15,7 @@ export interface QueueArticle {
   priority: number;
   added_by: string;
   published_at: string | null;
+  seo_score?: number | null;
 }
 
 interface QueueTableProps {
@@ -149,6 +150,37 @@ export default function QueueTable({ articles, onChange, onDelete }: QueueTableP
               <span className={`hidden sm:inline-flex text-xs font-medium px-2 py-0.5 rounded-md border flex-shrink-0 ${cfg.className}`}>
                 {cfg.label}
               </span>
+
+              {/* SEO Score */}
+              {(() => {
+                const score = article.seo_score;
+                if (score == null) {
+                  return (
+                    <span className="hidden sm:inline-flex text-xs font-medium px-2 py-0.5 rounded-md border flex-shrink-0 bg-slate-50 text-slate-400 border-slate-200">
+                      —
+                    </span>
+                  );
+                }
+                if (score >= 9) {
+                  return (
+                    <span className="hidden sm:inline-flex text-xs font-medium px-2 py-0.5 rounded-md border flex-shrink-0 bg-emerald-50 text-emerald-700 border-emerald-200">
+                      ⭐ {score}
+                    </span>
+                  );
+                }
+                if (score >= 7) {
+                  return (
+                    <span className="hidden sm:inline-flex text-xs font-medium px-2 py-0.5 rounded-md border flex-shrink-0 bg-amber-50 text-amber-700 border-amber-200">
+                      {score}
+                    </span>
+                  );
+                }
+                return (
+                  <span className="hidden sm:inline-flex text-xs font-medium px-2 py-0.5 rounded-md border flex-shrink-0 bg-red-50 text-red-600 border-red-200">
+                    ⚠ {score}
+                  </span>
+                );
+              })()}
 
               {/* Actions */}
               <div className="flex items-center gap-1 flex-shrink-0 ml-1">

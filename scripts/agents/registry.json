@@ -168,5 +168,22 @@
     "manualCommand": "npx tsx scripts/agents/link-optimizer-monthly.ts --dry-run",
     "tags": ["SEO", "Maillage", "Automatique"],
     "pipeline": "5 → post-publication (après blog-writer)"
+  },
+  {
+    "id": "title-optimizer",
+    "name": "Agent Title Optimizer",
+    "emoji": "🎯",
+    "status": "active",
+    "description": "Analyse et score chaque titre d'article en file d'attente selon 8 critères SEO (intégration keyword, longueur, power words, bénéfice, positionnement Vanzon, volume/KD). Si score < 8, réécrit automatiquement. Stocke le score dans seo_score. Notifie par Telegram.",
+    "trigger": "manual",
+    "schedule": "À la demande ou après chaque génération de file",
+    "cronExpression": null,
+    "file": "scripts/agents/title-optimizer-agent.ts",
+    "workflow": null,
+    "apis": ["Supabase", "Groq", "Telegram"],
+    "output": "Titres optimisés + scores dans article_queue",
+    "manualCommand": "npx tsx scripts/agents/title-optimizer-agent.ts",
+    "tags": ["SEO", "Blog", "Optimisation", "VBA"],
+    "pipeline": "Lit article_queue → score Groq → réécrit si <8 → update Supabase"
   }
 ]

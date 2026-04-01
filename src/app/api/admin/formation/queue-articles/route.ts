@@ -6,7 +6,7 @@ export async function GET() {
   const supabase = createSupabaseAdmin();
   const { data, error } = await supabase
     .from("article_queue")
-    .select("id, title, slug, excerpt, category, target_keyword, secondary_keywords, target_word_count, status, priority, added_by, published_at")
+    .select("id, title, slug, excerpt, category, target_keyword, secondary_keywords, target_word_count, status, priority, added_by, published_at, seo_score")
     .order("priority", { ascending: true })
     .order("created_at", { ascending: true });
 
@@ -94,6 +94,7 @@ interface ArticleProposal {
   category: string;
   targetWordCount: number;
   priority: number;
+  titleScore: number;
 }
 
 function clusterToCategory(cluster: string): string {
@@ -148,7 +149,7 @@ export async function POST() {
           send({ type: "log", level: "info", message: `Génération batch ${batchNum}/${totalBatches} (${batch.length} mots-clés)...` });
 
           const kwList = batch.map((k, idx) =>
-            `${idx + 1}. Mot-clé: "${k.keyword}" | Cluster: ${k.topic_cluster} | Volume: ${k.search_volume} | Difficulté: ${Math.round(k.keyword_difficulty ?? 50)}`
+            `${idx + 1}. Mot-clé: "${k.keyword}" | Cluster: ${k.topic_cluster} | Volume: ${k.search_volume} | KD: ${Math.round(k.keyword_difficulty ?? 50)} | Opportunité: ${k.opportunity_score ?? 0}`
           ).join("\n");
 
           try {
@@ -156,10 +157,27 @@ export async function POST() {
               model: "llama-3.3-70b-versatile",
               messages: [{
                 role: "user",
-                content: `Tu es un expert SEO et formateur en business van aménagé. Pour chaque mot-clé ci-dessous, génère une proposition d'article de blog optimisé SEO pour Vanzon Explorer (formation van aménagé, business, achat-revente, location van).
+                content: `Tu es un expert SEO et formateur en business van aménagé. Pour chaque mot-clé ci-dessous, génère une proposition d'article de blog optimisé SEO pour Vanzon Explorer (formation van aménagé, business, achat-revente, location van — audience francophone).
+
+STRATÉGIE SELON KD :
+- KD < 30 → longue traîne spécifique, titre ultra-précis avec contexte
+- KD 30-60 → titre informatif complet, promesse claire de valeur
+- KD > 60 → angle ultra-précis/original, différenciation forte, niche Vanzon
+
+CRITÈRES DE SCORING TITRE (totalise 10pts) :
+1. Mot-clé cible intégré naturellement (0-2pts)
+2. Longueur 50-70 caractères (0-2pts)
+3. Power words : guide complet, méthode, chiffres réels, étape par étape, erreurs à éviter, rentable, 2025, comparatif, comment, pourquoi (0-1pt)
+4. Bénéfice ou promesse explicite (0-1pt)
+5. Cohérence positionnement Vanzon : business van, formation, location, Pays Basque (0-1pt)
+6. Pas de title case anglais, français naturel (0-1pt)
+7. Adapté à la compétitivité selon KD (0-1pt)
+8. Pas de nom de concurrent direct (0-1pt)
+
+EXIGENCE : titleScore doit être >= 8. Si ton titre initial est < 8, réécris-le jusqu'à atteindre 8+.
 
 Pour chaque mot-clé, retourne un objet JSON avec :
-- title: titre accrocheur de l'article (60-70 caractères max)
+- title: titre de l'article (50-70 caractères, score >= 8 obligatoire)
 - slug: slug URL (tirets, minuscules, pas d'accents, max 60 chars)
 - excerpt: résumé de 150 caractères max
 - targetKeyword: le mot-clé exact donné
@@ -167,6 +185,7 @@ Pour chaque mot-clé, retourne un objet JSON avec :
 - category: une parmi "Business Van" | "Aménagement Van" | "Achat Van" | "Location Van"
 - targetWordCount: nombre de mots cible entre 1200 et 2500
 - priority: priorité de 1 (haute) à 100 (basse) selon le volume/difficulté
+- titleScore: entier 1-10 représentant le score SEO du titre selon les 8 critères
 
 Réponds UNIQUEMENT avec un tableau JSON valide. Pas de texte autour.
 
@@ -233,6 +252,7 @@ ${kwList}`,
               target_word_count: proposal.targetWordCount ?? 1500,
               status: "pending",
               priority: proposal.priority ?? 50,
+              seo_score: proposal.titleScore ?? null,
               sanity_id: null,
               published_at: null,
               added_by: "vba-keyword-strategy",

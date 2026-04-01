@@ -23,9 +23,11 @@ export default function QueueGeneratorClient() {
   const [originalArticles, setOriginalArticles] = useState<QueueArticle[]>([]);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
+  const [scoring, setScoring] = useState(false);
   const [saving, setSaving] = useState(false);
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [result, setResult] = useState<{ inserted: number; skipped: number } | null>(null);
+  const [scoreResult, setScoreResult] = useState<{ scored: number; rewritten: number } | null>(null);
   const [filterStatus, setFilterStatus] = useState<FilterStatus>("all");
   const [search, setSearch] = useState("");
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -99,6 +101,43 @@ export default function QueueGeneratorClient() {
     }
   }
 
+  async function handleScore() {
+    setScoring(true);
+    setLogs([]);
+    setScoreResult(null);
+    try {
+      const response = await fetch("/api/admin/formation/queue-articles/optimize", { method: "POST" });
+      if (!response.body) return;
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop() ?? "";
+        for (const line of lines) {
+          if (line.startsWith("data: ")) {
+            try {
+              const event = JSON.parse(line.slice(6));
+              if (event.type === "log") {
+                setLogs(prev => [...prev, { level: event.level, message: event.message }]);
+              } else if (event.type === "done") {
+                setScoreResult({ scored: event.scored ?? 0, rewritten: event.rewritten ?? 0 });
+                await fetchAll();
+              }
+            } catch { /* skip */ }
+          }
+        }
+      }
+    } catch (err) {
+      setLogs(prev => [...prev, { level: "error", message: String(err) }]);
+    } finally {
+      setScoring(false);
+    }
+  }
+
   async function handleSave() {
     setSaving(true);
     setSaveSuccess(false);
@@ -159,34 +198,58 @@ export default function QueueGeneratorClient() {
           <h1 className="text-3xl font-black text-slate-900">File d&apos;articles</h1>
           <p className="text-slate-500 mt-1">Réorganise, édite et gère les articles en attente de rédaction</p>
         </div>
-        <button
-          onClick={handleGenerate}
-          disabled={generating}
-          className="flex-shrink-0 flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50"
-        >
-          {generating ? (
-            <>
-              <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-              </svg>
-              Génération...
-            </>
-          ) : (
-            <>
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-              </svg>
-              Générer 50 articles
-            </>
-          )}
-        </button>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <button
+            onClick={handleScore}
+            disabled={scoring || generating}
+            className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-violet-600 rounded-xl hover:bg-violet-700 transition-colors disabled:opacity-50"
+          >
+            {scoring ? (
+              <>
+                <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                Scoring...
+              </>
+            ) : (
+              <>
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+                </svg>
+                Scorer les titres
+              </>
+            )}
+          </button>
+          <button
+            onClick={handleGenerate}
+            disabled={generating || scoring}
+            className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50"
+          >
+            {generating ? (
+              <>
+                <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                Génération...
+              </>
+            ) : (
+              <>
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                </svg>
+                Générer 50 articles
+              </>
+            )}
+          </button>
+        </div>
       </div>
 
       {/* KPIs */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
         {loading ? (
-          Array.from({ length: 4 }).map((_, i) => (
+          Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className="bg-white rounded-2xl border border-slate-200 p-5 animate-pulse">
               <div className="w-8 h-8 bg-slate-100 rounded mb-2" />
               <div className="w-16 h-6 bg-slate-100 rounded mb-1" />
@@ -199,6 +262,12 @@ export default function QueueGeneratorClient() {
             { label: "En attente", value: stats.pending, icon: "⏳", color: "text-amber-600" },
             { label: "Publiés", value: stats.published, icon: "✅", color: "text-emerald-600" },
             { label: "Total file", value: stats.total, icon: "📚", color: "text-slate-900" },
+            {
+              label: "Titres scorés (≥8)",
+              value: articles.filter(a => (a.seo_score ?? 0) >= 8).length,
+              icon: "🎯",
+              color: "text-violet-600",
+            },
           ].map((kpi) => (
             <div key={kpi.label} className="bg-white rounded-2xl border border-slate-200 p-5">
               <div className="text-2xl mb-1">{kpi.icon}</div>
@@ -231,6 +300,20 @@ export default function QueueGeneratorClient() {
             <p className="text-sm text-emerald-700">
               <strong>{result.inserted}</strong> articles ajoutés
               {result.skipped > 0 && `, ${result.skipped} doublons ignorés`}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Score result */}
+      {scoreResult && (
+        <div className="mb-6 bg-violet-50 border border-violet-200 rounded-xl p-4 flex items-center gap-3">
+          <span className="text-2xl">🎯</span>
+          <div>
+            <p className="font-semibold text-violet-800">Scoring terminé !</p>
+            <p className="text-sm text-violet-700">
+              <strong>{scoreResult.scored}</strong> titres scorés
+              {scoreResult.rewritten > 0 && <>, <strong>{scoreResult.rewritten}</strong> réécrits automatiquement</>}
             </p>
           </div>
         </div>
