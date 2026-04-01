@@ -6,7 +6,7 @@ import { createSupabaseAdmin } from "@/lib/supabase/server";
 import { listRecentEmails, getEmailById } from "./gmail-reader";
 import { fetchGmailSignature } from "@/lib/gmail";
 import { getEmailExamples, formatExamplesForPrompt } from "../email-memory";
-import { parseGroqJson } from "../parse-groq-json";
+
 import Groq from "groq-sdk";
 
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN!;
@@ -176,6 +176,7 @@ async function replyToEmailTool(
   const groq = new Groq({ apiKey: process.env.GROQ_API_KEY! });
   const completion = await groq.chat.completions.create({
     model: "llama-3.3-70b-versatile",
+    response_format: { type: "json_object" },
     messages: [
       {
         role: "system",
@@ -191,18 +192,16 @@ async function replyToEmailTool(
           `\n- 2-3 paragraphes maximum` +
           `\n- PAS de formule de politesse finale — la signature est ajoutée automatiquement` +
           `\n- Corps en HTML avec uniquement des balises <p>` +
-          examplesStr +
-          `\n\nRéponds UNIQUEMENT avec du JSON valide :` +
-          `\n{"subject": "Re: ${original.subject}", "body": "<p>...</p>"}`,
+          examplesStr,
       },
-      { role: "user", content: "Génère la réponse." },
+      { role: "user", content: `Génère la réponse. Réponds avec un JSON {"subject": "Re: ${original.subject}", "body": "<p>...</p>"}` },
     ],
     temperature: 0.7,
     max_tokens:  600,
   });
 
   const raw   = completion.choices[0]?.message?.content ?? "{}";
-  const draft = parseGroqJson<{ subject: string; body: string }>(raw);
+  const draft = JSON.parse(raw) as { subject: string; body: string };
 
   // Récupérer signature
   const signature = await fetchGmailSignature("jules@vanzonexplorer.com");

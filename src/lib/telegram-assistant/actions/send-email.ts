@@ -2,7 +2,7 @@
 import Groq from "groq-sdk";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
 import { fetchGmailSignature } from "@/lib/gmail";
-import { parseGroqJson } from "../parse-groq-json";
+
 
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN!;
 
@@ -41,6 +41,7 @@ async function generateEmailDraft(
 
   const completion = await groq.chat.completions.create({
     model: "llama-3.3-70b-versatile",
+    response_format: { type: "json_object" },
     messages: [
       {
         role: "system",
@@ -55,18 +56,16 @@ async function generateEmailDraft(
           `\n- 3-4 courts paragraphes maximum` +
           `\n- PAS de formule de politesse finale — la signature est ajoutée automatiquement` +
           `\n- Corps en HTML avec uniquement des balises <p>` +
-          examplesStr +
-          `\n\nRéponds UNIQUEMENT avec du JSON valide :` +
-          `\n{"subject": "...", "body": "<p>...</p><p>...</p>"}`,
+          examplesStr,
       },
-      { role: "user", content: "Génère l'email." },
+      { role: "user", content: `Génère l'email. Réponds avec un JSON {"subject": "...", "body": "<p>...</p>"}` },
     ],
     temperature: 0.7,
     max_tokens:  600,
   });
 
   const raw  = completion.choices[0]?.message?.content ?? "{}";
-  const data = parseGroqJson<EmailDraft>(raw);
+  const data = JSON.parse(raw) as EmailDraft;
   return data;
 }
 
