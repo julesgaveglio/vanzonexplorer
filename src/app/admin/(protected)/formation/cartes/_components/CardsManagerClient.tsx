@@ -278,12 +278,14 @@ export default function CardsManagerClient() {
   const [cards, setCards] = useState<AdminCard[]>([]);
   const [pageLoading, setPageLoading] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [modal, setModal] = useState<"create" | "edit" | null>(null);
   const [editTarget, setEditTarget] = useState<AdminCard | null>(null);
   const [form, setForm] = useState(emptyForm());
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [toast, setToast] = useState(false);
+  const [hasUnsaved, setHasUnsaved] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   function showToast() {
@@ -400,18 +402,28 @@ export default function CardsManagerClient() {
     }
   }
 
-  async function move(index: number, direction: "up" | "down") {
+  function move(index: number, direction: "up" | "down") {
     const next = [...cards];
     const target = direction === "up" ? index - 1 : index + 1;
     if (target < 0 || target >= next.length) return;
     [next[index], next[target]] = [next[target], next[index]];
-    const reordered = next.map((c, i) => ({ ...c, sortOrder: i }));
-    setCards(reordered);
-    await fetch("/api/admin/formation/cards/reorder", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ cards: reordered.map((c) => ({ id: c._id, sortOrder: c.sortOrder })) }),
-    });
+    setCards(next.map((c, i) => ({ ...c, sortOrder: i })));
+    setHasUnsaved(true);
+  }
+
+  async function handleSaveOrder() {
+    setSaving(true);
+    try {
+      await fetch("/api/admin/formation/cards/reorder", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cards: cards.map((c) => ({ id: c._id, sortOrder: c.sortOrder })) }),
+      });
+      setHasUnsaved(false);
+      showToast();
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
@@ -426,8 +438,8 @@ export default function CardsManagerClient() {
         </div>
       )}
 
-      {/* Bouton ajouter */}
-      <div className="mb-6">
+      {/* Barre d'outils */}
+      <div className="mb-6 flex items-center gap-3">
         <button
           onClick={openCreate}
           className="inline-flex items-center gap-2 font-semibold text-white text-sm px-5 py-2.5 rounded-xl transition-all"
@@ -438,6 +450,36 @@ export default function CardsManagerClient() {
           </svg>
           Ajouter une carte
         </button>
+
+        {hasUnsaved && (
+          <button
+            onClick={handleSaveOrder}
+            disabled={saving}
+            className="inline-flex items-center gap-2 font-semibold text-sm px-5 py-2.5 rounded-xl border-2 transition-all disabled:opacity-60"
+            style={{
+              borderColor: "#B9945F",
+              color: "#92692E",
+              background: "rgba(185,148,95,0.08)",
+            }}
+          >
+            {saving ? (
+              <>
+                <div className="w-3.5 h-3.5 border-2 border-amber-300 border-t-amber-600 rounded-full animate-spin" />
+                Publication…
+              </>
+            ) : (
+              <>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" />
+                  <polyline points="17 21 17 13 7 13 7 21" />
+                  <polyline points="7 3 7 8 15 8" />
+                </svg>
+                Enregistrer & Publier
+                <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+              </>
+            )}
+          </button>
+        )}
       </div>
 
       {/* Liste */}
