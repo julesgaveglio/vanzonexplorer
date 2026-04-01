@@ -1,16 +1,15 @@
 // src/lib/telegram-assistant/router.ts
 // Gère les messages et callbacks de l'assistant Telegram.
-// Appelé depuis le webhook uniquement si ce n'est pas un callback Facebook.
+// handleAssistantMessage → runAgent() (nouveau)
+// handleAssistantCallback → confirm/edit/select, supporte road_trip_feedback + gmail_reply
 
 import { createSupabaseAdmin } from "@/lib/supabase/server";
-import { parseIntent } from "./intent";
-import { ACTIONS, getActionDescriptions } from "./actions/index";
-import { buildAndSendPreview } from "./actions/send-email";
-import { sendGmailEmail } from "@/lib/gmail";
+import { runAgent } from "./agent";
+import { sendGmailEmail, replyGmailEmail } from "@/lib/gmail";
+import { saveEmailToMemory } from "./email-memory";
 
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN!;
 
-// ── Helpers Telegram ──────────────────────────────────────────────────────────
 async function tgSend(chatId: number, text: string, extra?: object) {
   await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
     method:  "POST",
@@ -27,7 +26,6 @@ async function tgAnswer(callbackQueryId: string, text = "") {
   });
 }
 
-// ── Nettoyage des actions expirées ────────────────────────────────────────────
 async function cleanExpired(supabase: ReturnType<typeof createSupabaseAdmin>) {
   await supabase
     .from("telegram_pending_actions")
@@ -43,7 +41,7 @@ export async function handleAssistantMessage(
   const supabase = createSupabaseAdmin();
   await cleanExpired(supabase);
 
-  // 1. Vérifier awaiting_edit AVANT de passer à Groq
+  // 1. Vérifier awaiting_edit AVANT Groq (le texte est le nouveau corps de l'email)
   const { data: editAction } = await supabase
     .from("telegram_pending_actions")
     .select("*")
@@ -53,11 +51,10 @@ export async function handleAssistantMessage(
     .maybeSingle();
 
   if (editAction) {
-    // Traiter le message comme le nouveau corps de l'email
     const payload = editAction.payload as Record<string, string>;
     payload.body = text
       .split("\n")
-      .map((line) => `<p>${line}</p>`)
+      .map(line => `<p>${line}</p>`)
       .join("");
 
     await supabase
@@ -67,9 +64,8 @@ export async function handleAssistantMessage(
         payload,
         expires_at: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
       })
-      .eq("id", editAction.id);
+      .eq("id", editAction.id as string);
 
-    // Renvoyer l'aperçu mis à jour
     const bodyPreview = text.slice(0, 400).trim();
     const preview =
       `📧 <b>Email mis à jour — Aperçu</b>\n` +
@@ -90,7 +86,7 @@ export async function handleAssistantMessage(
     return;
   }
 
-  // 2. Vérifier awaiting_selection (cas rare : texte à la place d'un bouton)
+  // 2. Vérifier awaiting_selection
   const { data: selAction } = await supabase
     .from("telegram_pending_actions")
     .select("*")
@@ -104,23 +100,8 @@ export async function handleAssistantMessage(
     return;
   }
 
-  // 3. Intent parser Groq
-  const intent = await parseIntent(text, getActionDescriptions());
-
-  if (intent.action === "unknown") {
-    const msg = intent.params.fallback_message ?? "Je n'ai pas compris 🤷 Réessaie autrement.";
-    await tgSend(chatId, msg);
-    return;
-  }
-
-  const actionDef = ACTIONS[intent.action];
-
-  if (!actionDef) {
-    await tgSend(chatId, `⚠️ Action "<b>${intent.action}</b>" non implémentée.`);
-    return;
-  }
-
-  await actionDef.handler(intent.params, chatId);
+  // 3. Agent Groq tool-calling
+  await runAgent(text, chatId);
 }
 
 // ── handleAssistantCallback ───────────────────────────────────────────────────
@@ -130,16 +111,13 @@ export async function handleAssistantCallback(
   chatId:          number
 ): Promise<void> {
   const supabase = createSupabaseAdmin();
-  const parts = data.split(":");
-  // Format : asst:<type>:<pendingId>[:<index>]
+  const parts     = data.split(":");
   const type      = parts[1];
   const pendingId = parts[2];
   const index     = parts[3] !== undefined ? parseInt(parts[3], 10) : undefined;
 
-  // Répondre immédiatement au callback (dismiss spinner)
   await tgAnswer(callbackQueryId);
 
-  // Récupérer la pending action
   const { data: action } = await supabase
     .from("telegram_pending_actions")
     .select("*")
@@ -152,32 +130,49 @@ export async function handleAssistantCallback(
     return;
   }
 
-  const payload = action.payload as Record<string, unknown>;
+  const payload    = action.payload as Record<string, unknown>;
+  const actionType = (payload.action_type as string) ?? "road_trip_feedback";
 
-  // ── asst:confirm:<pendingId> ─────────────────────────────────────────────
+  // ── asst:confirm ─────────────────────────────────────────────────────────
   if (type === "confirm") {
     try {
-      await sendGmailEmail({
-        to:        payload.to as string,
-        subject:   payload.subject as string,
-        htmlBody:  payload.body as string,
-        signature: payload.signature as string,
+      if (actionType === "gmail_reply") {
+        await replyGmailEmail({
+          to:          payload.to        as string,
+          subject:     payload.subject   as string,
+          htmlBody:    payload.body      as string,
+          signature:   payload.signature as string,
+          in_reply_to: payload.in_reply_to as string,
+          references:  payload.references  as string,
+          thread_id:   payload.thread_id   as string,
+        });
+      } else {
+        await sendGmailEmail({
+          to:        payload.to        as string,
+          subject:   payload.subject   as string,
+          htmlBody:  payload.body      as string,
+          signature: payload.signature as string,
+        });
+      }
+
+      // Sauvegarder en mémoire few-shot
+      await saveEmailToMemory({
+        action_type: actionType,
+        context:     (payload.context as Record<string, string>) ?? {},
+        subject:     payload.subject as string,
+        body:        payload.body    as string,
       });
 
-      await supabase
-        .from("telegram_pending_actions")
-        .delete()
-        .eq("id", pendingId);
-
+      await supabase.from("telegram_pending_actions").delete().eq("id", pendingId);
       await tgSend(chatId, `✅ Email envoyé à <b>${payload.to}</b>`);
     } catch (err) {
-      console.error("[assistant] confirm send error:", err);
+      console.error("[router] confirm error:", err);
       await tgSend(chatId, "❌ Erreur lors de l'envoi. Réessaie 🔄");
     }
     return;
   }
 
-  // ── asst:edit:<pendingId> ────────────────────────────────────────────────
+  // ── asst:edit ────────────────────────────────────────────────────────────
   if (type === "edit") {
     await supabase
       .from("telegram_pending_actions")
@@ -187,9 +182,8 @@ export async function handleAssistantCallback(
       })
       .eq("id", pendingId);
 
-    // Extraire le texte brut du corps HTML pour l'édition
     const bodyText = (payload.body as string)
-      .replace(/<p>/g, "")
+      .replace(/<p>/g,   "")
       .replace(/<\/p>/g, "\n")
       .replace(/<[^>]+>/g, "")
       .trim();
@@ -202,7 +196,7 @@ export async function handleAssistantCallback(
     return;
   }
 
-  // ── asst:select:<pendingId>:<index> ─────────────────────────────────────
+  // ── asst:select ──────────────────────────────────────────────────────────
   if (type === "select" && index !== undefined) {
     const candidates = payload.candidates as Array<{
       id: string; prenom: string; email: string; region: string; duree: number;
@@ -212,13 +206,10 @@ export async function handleAssistantCallback(
       await tgSend(chatId, "❓ Sélection invalide.");
       return;
     }
+    await supabase.from("telegram_pending_actions").delete().eq("id", pendingId);
 
-    // Supprimer la pending selection et lancer la génération
-    await supabase
-      .from("telegram_pending_actions")
-      .delete()
-      .eq("id", pendingId);
-
+    // Import dynamique pour éviter la circularité
+    const { buildAndSendPreview } = await import("./actions/send-email");
     await buildAndSendPreview(chatId, selected);
     return;
   }
