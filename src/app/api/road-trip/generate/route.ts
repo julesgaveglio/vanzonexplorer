@@ -9,6 +9,11 @@ import {
   INTERETS_OPTIONS,
   MOIS_OPTIONS,
 } from '@/lib/road-trip/constants'
+import {
+  notifySuccess,
+  notifyError as telegramNotifyError,
+  notifyFallback,
+} from '@/lib/road-trip/telegram'
 
 export const maxDuration = 60
 
@@ -307,13 +312,31 @@ async function searchTavily(input: RoadTripInput): Promise<string> {
   }
 }
 
-// ── Groq itinerary generation ─────────────────────────────────────────────────
+// ── Rate limit detection ───────────────────────────────────────────────────────
+function isRateLimitError(err: unknown): boolean {
+  const msg = (err as Error).message ?? ''
+  const status = (err as { status?: number }).status
+  return (
+    msg.includes('rate_limit_exceeded') ||
+    msg.includes('Rate limit') ||
+    msg.includes('429') ||
+    status === 429
+  )
+}
+
+// ── Groq itinerary generation (multi-model, multi-key cascade) ────────────────
+interface GenerationMeta {
+  data: ItineraireData
+  modelUsed: string
+  fallbackUsed: boolean
+  triedModels: string[]
+}
+
 async function generateItineraire(
   input: RoadTripInput,
   tavilyContext: string
-): Promise<ItineraireData> {
+): Promise<GenerationMeta> {
   if (!process.env.GROQ_API_KEY) throw new Error('[road-trip] GROQ_API_KEY is not set')
-  const groq = new Groq({ apiKey: process.env.GROQ_API_KEY })
 
   const hasGastronomie = input.interets.includes('gastronomie')
 
@@ -414,8 +437,9 @@ ${restaurantInstruction}`
     throw new Error('No valid JSON found in Groq response')
   }
 
-  async function callGroq(temperature: number, model: string): Promise<ItineraireData> {
-    const completion = await groq.chat.completions.create({
+  async function callGroq(apiKey: string, temperature: number, model: string): Promise<ItineraireData> {
+    const client = new Groq({ apiKey })
+    const completion = await client.chat.completions.create({
       model,
       messages: [
         { role: 'system', content: systemPrompt },
@@ -429,13 +453,57 @@ ${restaurantInstruction}`
     return extractJson(raw)
   }
 
-  // Try best model first, fall back to faster model with higher token quota
-  try {
-    return await callGroq(0.7, 'llama-3.3-70b-versatile')
-  } catch (err) {
-    console.error('[road-trip] llama-3.3-70b failed:', (err as Error).message)
-    return await callGroq(0.5, 'llama-3.1-8b-instant')
+  // ── Multi-key, multi-model cascade ──────────────────────────────────────────
+  // Build ordered list of (key, model) attempts
+  const availableKeys = [
+    process.env.GROQ_API_KEY,
+    process.env.GROQ_API_KEY_2,
+    process.env.GROQ_API_KEY_3,
+  ].filter(Boolean) as string[]
+
+  // Models per key ordered by preference (quality → speed → ultra-fast)
+  const modelsPerKey = [
+    { model: 'llama-3.3-70b-versatile', temperature: 0.7 },
+    { model: 'llama-3.1-8b-instant', temperature: 0.5 },
+    { model: 'gemma2-9b-it', temperature: 0.5 },
+  ]
+
+  const attempts = availableKeys.flatMap((key, keyIndex) =>
+    modelsPerKey.map(({ model, temperature }) => ({ key, model, temperature, keyIndex }))
+  )
+
+  const triedModels: string[] = []
+  let lastError: Error = new Error('No Groq API keys configured')
+
+  const tgCtx = { prenom: input.prenom, email: input.email, region: input.region, duree: input.duree }
+
+  for (let i = 0; i < attempts.length; i++) {
+    const { key, model, temperature, keyIndex } = attempts[i]
+    const attemptLabel = `${model}@KEY${keyIndex + 1}`
+    triedModels.push(attemptLabel)
+
+    try {
+      const data = await callGroq(key, temperature, model)
+      return {
+        data,
+        modelUsed: attemptLabel,
+        fallbackUsed: i > 0,
+        triedModels,
+      }
+    } catch (err) {
+      lastError = err as Error
+      console.error(`[road-trip] ${attemptLabel} failed:`, lastError.message)
+
+      // If there's a next attempt, send Telegram fallback notification
+      if (i < attempts.length - 1) {
+        const nextAttempt = attempts[i + 1]
+        const nextLabel = `${nextAttempt.model}@KEY${nextAttempt.keyIndex + 1}`
+        void notifyFallback(tgCtx, attemptLabel, nextLabel, lastError.message.slice(0, 80))
+      }
+    }
   }
+
+  throw lastError
 }
 
 // ── Enrich itineraire ─────────────────────────────────────────────────────────
@@ -606,6 +674,7 @@ export async function POST(req: NextRequest) {
 
   // Run async work in background (not awaited — stream starts immediately)
   void (async () => {
+    let genResult: GenerationMeta | undefined
     try {
       // Step 1: Tavily search
       await emit('progress', { message: `🗺️  On prépare ton aventure en ${input.region}...` })
@@ -613,7 +682,8 @@ export async function POST(req: NextRequest) {
 
       // Step 2: Groq generation
       await emit('progress', { message: '🔍  On explore les meilleurs spots de la région...' })
-      const itineraire = await generateItineraire(input, tavilyContext)
+      genResult = await generateItineraire(input, tavilyContext)
+      const itineraire = genResult.data
       const spotCount = itineraire.jours.reduce((a, j) => a + j.spots.length, 0)
 
       await emit('progress', { message: `📍  On a trouvé ${spotCount} endroits qui vont te plaire...` })
@@ -678,20 +748,37 @@ export async function POST(req: NextRequest) {
         })
         .eq('id', record.id)
 
+      // Telegram success notification (non-blocking)
+      const photosCount = enrichedItineraire.jours.reduce(
+        (acc, j) => acc + j.spots.filter((s) => (s as SpotEnriched).photo).length,
+        0
+      )
+      void notifySuccess(
+        { prenom: input.prenom, email: input.email, region: input.region, duree: input.duree },
+        {
+          modelUsed: genResult?.modelUsed ?? 'unknown',
+          fallbackUsed: genResult?.fallbackUsed ?? false,
+          photosCount,
+          totalSpots: spotCount,
+          campingsFound: allCampings.length,
+        }
+      )
+
       await emit('progress', { message: '✅  C\'est prêt ! Vérifie ta boîte mail 🎉' })
       await emit('done', {})
     } catch (err) {
-      const errMsg = (err as Error).message ?? ''
+      const error = err as Error
+      const errMsg = error.message ?? ''
       console.error('[road-trip/generate]', errMsg)
 
-      // Detect Groq rate limit — give a user-friendly message
-      const isRateLimit =
-        errMsg.includes('rate_limit_exceeded') ||
-        errMsg.includes('Rate limit') ||
-        errMsg.includes('429') ||
-        (err as { status?: number }).status === 429
+      // Telegram error notification (non-blocking)
+      void telegramNotifyError(
+        { prenom: input.prenom, email: input.email, region: input.region, duree: input.duree },
+        error,
+        genResult?.triedModels ?? []
+      )
 
-      const userMessage = isRateLimit
+      const userMessage = isRateLimitError(err)
         ? "Notre IA est momentanément surchargée 😅 Réessaie dans 2-3 minutes !"
         : 'Erreur interne, réessaie dans quelques instants.'
 
