@@ -4,7 +4,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
 import { handleAssistantMessage, handleAssistantCallback } from "@/lib/telegram-assistant/router";
-import Groq from "groq-sdk";
+import Groq, { toFile } from "groq-sdk";
+
+// Timeout Vercel étendu à 60s pour la transcription audio
+export const maxDuration = 60;
 
 const BOT_TOKEN      = process.env.TELEGRAM_BOT_TOKEN!;
 const WEBHOOK_SECRET = process.env.TELEGRAM_WEBHOOK_SECRET!;
@@ -27,7 +30,7 @@ async function transcribeVoice(fileId: string): Promise<string> {
   if (!audioRes.ok) throw new Error("[voice] download failed");
 
   const audioBuffer = await audioRes.arrayBuffer();
-  const audioFile = new File([audioBuffer], "voice.ogg", { type: "audio/ogg" });
+  const audioFile = await toFile(Buffer.from(audioBuffer), "voice.ogg", { type: "audio/ogg" });
 
   // 3. Transcrire avec Groq Whisper
   const groq = new Groq({ apiKey: process.env.GROQ_API_KEY! });
