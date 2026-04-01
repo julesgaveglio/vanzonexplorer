@@ -31,6 +31,11 @@ async function generateEmailDraft(
   region: string,
   duree:  number
 ): Promise<EmailDraft> {
+  // Récupérer les exemples few-shot
+  const { getEmailExamples, formatExamplesForPrompt } = await import("../email-memory");
+  const examples    = await getEmailExamples("road_trip_feedback", 3);
+  const examplesStr = formatExamplesForPrompt(examples);
+
   const groq = new Groq({ apiKey: process.env.GROQ_API_KEY! });
 
   const completion = await groq.chat.completions.create({
@@ -38,20 +43,20 @@ async function generateEmailDraft(
     messages: [
       {
         role: "system",
-        content: `Tu es Jules Gaveglio, fondateur de Vanzon Explorer (location de vans aménagés au Pays Basque).
-Génère un email professionnel et chaleureux en français pour demander un retour sincère à ${prenom}
-qui a utilisé notre outil de génération de road trip personnalisé pour ${duree} jours en ${region}.
-
-Règles :
-- Ton chaleureux et authentique, pas corporatif
-- Mentionner leur road trip spécifique (région + durée)
-- Demander un retour sincère et honnête sur l'outil
-- 3-4 courts paragraphes maximum
-- PAS de formule de politesse finale (ex: "Cordialement", "Bien à vous") — la signature est ajoutée automatiquement
-- Corps en HTML avec uniquement des balises <p>
-
-Réponds UNIQUEMENT avec du JSON valide :
-{"subject": "...", "body": "<p>...</p><p>...</p>"}`,
+        content:
+          `Tu es Jules Gaveglio, fondateur de Vanzon Explorer (location de vans aménagés au Pays Basque).` +
+          `\nGénère un email professionnel et chaleureux en français pour demander un retour sincère à ${prenom}` +
+          `\nqui a utilisé notre outil de génération de road trip personnalisé pour ${duree} jours en ${region}.` +
+          `\n\nRègles :` +
+          `\n- Ton chaleureux et authentique, pas corporatif` +
+          `\n- Mentionner leur road trip spécifique (région + durée)` +
+          `\n- Demander un retour sincère et honnête sur l'outil` +
+          `\n- 3-4 courts paragraphes maximum` +
+          `\n- PAS de formule de politesse finale — la signature est ajoutée automatiquement` +
+          `\n- Corps en HTML avec uniquement des balises <p>` +
+          examplesStr +
+          `\n\nRéponds UNIQUEMENT avec du JSON valide :` +
+          `\n{"subject": "...", "body": "<p>...</p><p>...</p>"}`,
       },
       { role: "user", content: "Génère l'email." },
     ],
@@ -59,9 +64,9 @@ Réponds UNIQUEMENT avec du JSON valide :
     max_tokens:  600,
   });
 
-  const raw = completion.choices[0]?.message?.content ?? "{}";
+  const raw     = completion.choices[0]?.message?.content ?? "{}";
   const cleaned = raw.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "").trim();
-  const data = JSON.parse(cleaned) as EmailDraft;
+  const data    = JSON.parse(cleaned) as EmailDraft;
   return data;
 }
 
@@ -78,19 +83,18 @@ export async function sendEmailHandler(
 
   const supabase = createSupabaseAdmin();
 
-  // 1. Chercher dans road_trip_requests (status='sent' uniquement)
+  // 1. Chercher dans road_trip_requests (tous les statuts)
   const { data: results } = await supabase
     .from("road_trip_requests")
     .select("id, prenom, email, region, duree, created_at")
-    .ilike("prenom", prenom)
-    .eq("status", "sent")
+    .ilike("prenom", `%${prenom}%`)
     .order("created_at", { ascending: false });
 
   const rows = results ?? [];
 
   // 2a. Aucun résultat
   if (rows.length === 0) {
-    await tgSend(chatId, `🤷 <b>${prenom}</b> introuvable dans les road trips envoyés.`);
+    await tgSend(chatId, `🤷 <b>${prenom}</b> introuvable dans les road trips.`);
     return;
   }
 
@@ -152,13 +156,19 @@ export async function buildAndSendPreview(
       action:  "send_email",
       state:   "awaiting_confirmation",
       payload: {
-        to:        row.email,
-        subject:   draft.subject,
-        body:      draft.body,
+        action_type: "road_trip_feedback",
+        to:          row.email,
+        subject:     draft.subject,
+        body:        draft.body,
         signature,
-        prenom:    row.prenom,
-        region:    row.region,
-        duree:     row.duree,
+        prenom:      row.prenom,
+        region:      row.region,
+        duree:       row.duree,
+        context: {
+          prenom: row.prenom,
+          region: row.region,
+          duree:  String(row.duree),
+        },
       },
     });
 
