@@ -134,13 +134,17 @@ export default async function HomePage() {
               les Pyrénées et les villages basques en totale liberté.
             </p>
 
-            <div className="flex flex-col items-start sm:flex-row sm:items-center gap-3">
-              <LiquidButton href="/location" variant="blue" size="responsive">
-                Louer un van
-              </LiquidButton>
-              <LiquidButton href="/achat" variant="slate" size="responsive" shineDelay={1.9}>
-                Acheter un van →
-              </LiquidButton>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+              <div className="flex w-full sm:w-auto">
+                <LiquidButton href="/location" variant="blue" size="responsive" fullWidth>
+                  Louer un van
+                </LiquidButton>
+              </div>
+              <div className="flex w-full sm:w-auto">
+                <LiquidButton href="/achat" variant="slate" size="responsive" shineDelay={1.9} fullWidth>
+                  Acheter un van →
+                </LiquidButton>
+              </div>
             </div>
           </div>
 
