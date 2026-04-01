@@ -21,6 +21,7 @@ if (!CLIENT_ID || !CLIENT_SECRET) {
 const SCOPES = [
   "https://www.googleapis.com/auth/gmail.send",
   "https://www.googleapis.com/auth/gmail.settings.basic",
+  "https://www.googleapis.com/auth/gmail.readonly",
 ].join(" ");
 
 const authUrl =
