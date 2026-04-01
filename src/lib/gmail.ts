@@ -1,5 +1,5 @@
 // src/lib/gmail.ts
-// Client Gmail API — getGmailAccessToken, fetchGmailSignature, sendGmailEmail
+// Client Gmail API — getGmailAccessToken, fetchGmailSignature, sendGmailEmail, replyGmailEmail
 // Utilise GMAIL_REFRESH_TOKEN + GOOGLE_GSC_CLIENT_ID + GOOGLE_GSC_CLIENT_SECRET
 
 const GMAIL_API = "https://gmail.googleapis.com/gmail/v1";
@@ -86,5 +86,60 @@ export async function sendGmailEmail(opts: SendEmailOptions): Promise<void> {
   if (!res.ok) {
     const err = await res.text();
     throw new Error(`[gmail] send failed: ${err}`);
+  }
+}
+
+// ── Réponse email (dans le thread Gmail original) ─────────────────────────────
+export interface ReplyEmailOptions {
+  to:          string;
+  subject:     string;
+  htmlBody:    string;
+  signature:   string;
+  in_reply_to: string;  // Message-ID du message original
+  references:  string;  // References du thread (chaîne de Message-IDs)
+  thread_id:   string;  // threadId Gmail pour insérer dans le bon thread
+}
+
+export async function replyGmailEmail(opts: ReplyEmailOptions): Promise<void> {
+  const { to, subject, htmlBody, signature, in_reply_to, references, thread_id } = opts;
+
+  const subjectEncoded = `=?utf-8?B?${Buffer.from(subject).toString("base64")}?=`;
+
+  const fullHtml = signature
+    ? `${htmlBody}<br><br>${signature}`
+    : htmlBody;
+
+  // Concatène le Message-ID original aux References existantes
+  const refsChain = references
+    ? `${references} ${in_reply_to}`
+    : in_reply_to;
+
+  const mime = [
+    `From: Jules - Vanzon Explorer <jules@vanzonexplorer.com>`,
+    `To: ${to}`,
+    `Subject: ${subjectEncoded}`,
+    `In-Reply-To: ${in_reply_to}`,
+    `References: ${refsChain}`,
+    `MIME-Version: 1.0`,
+    `Content-Type: text/html; charset=utf-8`,
+    ``,
+    fullHtml,
+  ].join("\r\n");
+
+  const raw = Buffer.from(mime).toString("base64url");
+
+  const token = await getGmailAccessToken();
+  const res = await fetch(`${GMAIL_API}/users/me/messages/send`, {
+    method:  "POST",
+    headers: {
+      Authorization:  `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ raw, threadId: thread_id }),
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`[gmail] reply failed: ${err}`);
   }
 }
