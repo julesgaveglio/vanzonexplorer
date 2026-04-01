@@ -4,7 +4,7 @@
 
 export function parseGroqJson<T>(raw: string): T {
   // 1. Supprimer les blocs code markdown
-  let text = raw
+  const text = raw
     .replace(/^```(?:json)?\s*/i, "")
     .replace(/\s*```$/, "")
     .trim();
