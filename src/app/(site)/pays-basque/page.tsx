@@ -481,6 +481,9 @@ export default function PaysBasquePage() {
             <LiquidButton variant="ghost" href="/road-trip-pays-basque-van">
               Voir l&apos;itinéraire 7 jours
             </LiquidButton>
+            <LiquidButton variant="ghost" href="/road-trip-personnalise">
+              Créer mon road trip IA →
+            </LiquidButton>
           </div>
         </div>
       </section>

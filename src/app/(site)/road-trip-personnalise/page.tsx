@@ -2,13 +2,21 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import RoadTripWizard from './RoadTripWizard'
 import RoadTripMeshBackground from './RoadTripHero'
+import { faqItems, itineraires, destinations, socialProof } from './seo-data'
 
 export const metadata: Metadata = {
-  title: 'Crée ton road trip en van personnalisé | Vanzon Explorer',
+  title: 'Générateur de Road Trip en Van Gratuit | Itinéraire Personnalisé',
   description:
-    'Génère gratuitement ton itinéraire road trip en van sur mesure. Spots, activités, camping selon tes envies et ta destination en France.',
+    'Créez votre itinéraire road trip en van personnalisé en 1 minute. IA + 200 spots en France. Étapes jour par jour, campings, activités — 100 % gratuit, reçu par email.',
   alternates: {
     canonical: 'https://vanzonexplorer.com/road-trip-personnalise',
+  },
+  openGraph: {
+    title: 'Générateur de Road Trip en Van Gratuit | Itinéraire Personnalisé',
+    description:
+      'Créez votre itinéraire road trip en van personnalisé en 1 minute. IA + 200 spots en France. Étapes jour par jour, campings, activités — 100 % gratuit, reçu par email.',
+    type: 'website',
+    url: 'https://vanzonexplorer.com/road-trip-personnalise',
   },
 }
 
@@ -22,23 +30,72 @@ const webAppJsonLd = {
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
 }
 
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Accueil',
+      item: 'https://vanzonexplorer.com',
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: 'Road Trip Personnalisé',
+      item: 'https://vanzonexplorer.com/road-trip-personnalise',
+    },
+  ],
+}
+
 const steps = [
   {
     icon: '🗺️',
     title: 'Tu remplis le formulaire',
     description: 'Région, durée, intérêts, profil de voyageur — 4 étapes simples.',
+    url: 'https://vanzonexplorer.com/road-trip-personnalise#wizard',
   },
   {
     icon: '🤖',
     title: "L'IA construit ton plan",
-    description: 'Notre algo scrute des centaines de spots pour créer l\'itinéraire parfait.',
+    description: "Notre algo scrute des centaines de spots pour créer l'itinéraire parfait.",
+    url: 'https://vanzonexplorer.com/road-trip-personnalise#wizard',
   },
   {
     icon: '📬',
     title: 'Reçu par email',
     description: 'Spots jour par jour, campings, conseils van — livré en moins de 60 secondes.',
+    url: 'https://vanzonexplorer.com/road-trip-personnalise#wizard',
   },
 ]
+
+const howToJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'HowTo',
+  name: 'Comment créer un road trip en van personnalisé',
+  totalTime: 'PT1M',
+  step: steps.map((s, i) => ({
+    '@type': 'HowToStep',
+    position: i + 1,
+    name: s.title,
+    text: s.description,
+    url: s.url,
+  })),
+}
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqItems.map((item) => ({
+    '@type': 'Question',
+    name: item.question,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: item.answer,
+    },
+  })),
+}
 
 export default function RoadTripPersonnalisePage() {
   return (
@@ -47,14 +104,39 @@ export default function RoadTripPersonnalisePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(webAppJsonLd) }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(howToJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
 
       {/* Fond animé fixe sur toute la page */}
       <RoadTripMeshBackground />
 
       <div className="relative min-h-screen">
 
+        {/* ── FIL D'ARIANE ───────────────────────────────────────────────────── */}
+        <nav aria-label="Fil d'Ariane" className="px-8 sm:px-16 lg:px-28 pt-28 pb-0">
+          <ol className="flex items-center gap-2 text-xs font-medium" style={{ color: 'rgba(50,50,50,0.50)' }}>
+            <li>
+              <Link href="/" className="hover:opacity-80 transition-opacity">Accueil</Link>
+            </li>
+            <li>
+              <span className="mx-1">›</span>
+            </li>
+            <li style={{ color: 'rgba(50,50,50,0.80)' }}>Road Trip Personnalisé</li>
+          </ol>
+        </nav>
+
         {/* ── HERO ───────────────────────────────────────────────────────────── */}
-        <section className="min-h-screen flex flex-col justify-center px-8 sm:px-16 lg:px-28 pt-28 pb-20">
+        <section className="min-h-screen flex flex-col justify-center px-8 sm:px-16 lg:px-28 pt-6 pb-20">
 
           {/* Eyebrow */}
           <p className="text-xs font-semibold tracking-[0.35em] uppercase mb-8" style={{ color: 'rgba(50,50,50,0.55)' }}>
@@ -107,6 +189,23 @@ export default function RoadTripPersonnalisePage() {
             <span>Toute la France</span>
             <span>·</span>
             <span>100% gratuit</span>
+          </div>
+        </section>
+
+        {/* ── INTRO RICHE EN MOTS-CLÉS ───────────────────────────────────────── */}
+        <section className="py-12 px-6">
+          <div className="max-w-3xl mx-auto">
+            <p className="text-base sm:text-lg leading-relaxed" style={{ color: '#2d6b6b' }}>
+              Notre <strong style={{ color: '#0f3535' }}>générateur de road trip en van</strong> gratuit vous aide à{' '}
+              <strong style={{ color: '#0f3535' }}>planifier votre road trip</strong> en quelques clics. Que vous rêviez
+              d&apos;un <strong style={{ color: '#0f3535' }}>itinéraire personnalisé</strong> sur la côte atlantique,
+              d&apos;un <strong style={{ color: '#0f3535' }}>road trip France</strong> à travers les Pyrénées ou d&apos;une
+              escapade en <strong style={{ color: '#0f3535' }}>voyage en van aménagé</strong> sur les routes secondaires,
+              notre IA analyse des centaines de spots pour créer votre plan idéal. Chaque itinéraire inclut les étapes
+              jour par jour, les recommandations de <strong style={{ color: '#0f3535' }}>camping</strong> et bivouac,
+              les <strong style={{ color: '#0f3535' }}>activités</strong> incontournables (surf, randonnée, gastronomie)
+              et les conseils pratiques van. 100% gratuit, reçu par email en moins de 60 secondes. Partout en France.
+            </p>
           </div>
         </section>
 
@@ -176,6 +275,209 @@ export default function RoadTripPersonnalisePage() {
                   <h3 className="text-base font-bold mb-2" style={{ color: '#0f3535' }}>{step.title}</h3>
                   <p className="text-sm leading-relaxed" style={{ color: '#2d6b6b' }}>{step.description}</p>
                 </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── EXEMPLES D'ITINÉRAIRES ─────────────────────────────────────────── */}
+        <section className="py-20 px-6">
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-12">
+              <p className="text-sm font-bold uppercase tracking-widest mb-3" style={{ color: '#5a9090' }}>Exemples d&apos;itinéraires</p>
+              <h2 className="text-3xl md:text-4xl font-bold" style={{ color: '#0f3535' }}>
+                Quelques idées pour t&apos;inspirer
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+              {itineraires.map((itin) => (
+                <div
+                  key={itin.titre}
+                  className="rounded-2xl p-7 flex flex-col"
+                  style={{
+                    background: 'rgba(255,255,255,0.52)',
+                    backdropFilter: 'blur(20px)',
+                    border: '1px solid rgba(255,255,255,0.75)',
+                    boxShadow: '0 8px 32px rgba(15,53,53,0.07)',
+                  }}
+                >
+                  <div className="text-3xl mb-3">{itin.emoji}</div>
+                  <div className="inline-flex items-center gap-2 mb-3">
+                    <h3 className="text-base font-bold" style={{ color: '#0f3535' }}>{itin.titre}</h3>
+                    <span
+                      className="text-xs font-semibold px-2 py-0.5 rounded-full flex-shrink-0"
+                      style={{ background: 'rgba(114,185,187,0.15)', color: '#2d6b6b' }}
+                    >
+                      {itin.duree}
+                    </span>
+                  </div>
+                  <p className="text-sm leading-relaxed mb-4 flex-1" style={{ color: '#2d6b6b' }}>{itin.description}</p>
+                  <ul className="flex flex-wrap gap-2 mb-5">
+                    {itin.highlights.map((h) => (
+                      <li
+                        key={h}
+                        className="text-xs px-2 py-1 rounded-lg"
+                        style={{ background: 'rgba(15,53,53,0.06)', color: '#0f3535' }}
+                      >
+                        {h}
+                      </li>
+                    ))}
+                  </ul>
+                  <a
+                    href="#wizard"
+                    className="text-sm font-semibold text-center py-2.5 rounded-xl transition-all hover:opacity-90"
+                    style={{ background: 'rgba(114,185,187,0.20)', color: '#0f3535' }}
+                  >
+                    Créer un itinéraire similaire →
+                  </a>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── DESTINATIONS POPULAIRES ───────────────────────────────────────── */}
+        <section className="py-20 px-6">
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-12">
+              <p className="text-sm font-bold uppercase tracking-widest mb-3" style={{ color: '#5a9090' }}>Destinations</p>
+              <h2 className="text-3xl md:text-4xl font-bold" style={{ color: '#0f3535' }}>
+                Destinations populaires
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+              {destinations.map((dest) => (
+                <Link
+                  key={dest.href}
+                  href={dest.href}
+                  className="rounded-2xl p-5 flex items-center gap-3 transition-all hover:opacity-90"
+                  style={{
+                    background: 'rgba(255,255,255,0.52)',
+                    backdropFilter: 'blur(20px)',
+                    border: '1px solid rgba(255,255,255,0.75)',
+                    boxShadow: '0 8px 32px rgba(15,53,53,0.07)',
+                  }}
+                >
+                  <span className="text-2xl flex-shrink-0">{dest.emoji}</span>
+                  <span className="text-sm font-semibold" style={{ color: '#0f3535' }}>{dest.nom}</span>
+                </Link>
+              ))}
+            </div>
+
+            <div className="text-center">
+              <Link
+                href="/pays-basque"
+                className="inline-flex items-center gap-2 text-sm font-semibold transition-opacity hover:opacity-70"
+                style={{ color: '#2d6b6b' }}
+              >
+                Découvrir toutes les destinations →
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* ── PREUVE SOCIALE ─────────────────────────────────────────────────── */}
+        <section className="py-20 px-6">
+          <div className="max-w-5xl mx-auto">
+
+            {/* Compteurs */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-12">
+              {[
+                { chiffre: '+500', label: 'Road trips générés' },
+                { chiffre: '100%', label: 'Gratuit' },
+                { chiffre: '< 60s', label: 'Pour recevoir son plan' },
+              ].map((stat) => (
+                <div
+                  key={stat.label}
+                  className="rounded-2xl p-7 text-center"
+                  style={{
+                    background: 'rgba(255,255,255,0.52)',
+                    backdropFilter: 'blur(20px)',
+                    border: '1px solid rgba(255,255,255,0.75)',
+                    boxShadow: '0 8px 32px rgba(15,53,53,0.07)',
+                  }}
+                >
+                  <p className="text-4xl font-black mb-2" style={{ color: '#0f3535' }}>{stat.chiffre}</p>
+                  <p className="text-sm font-medium" style={{ color: '#2d6b6b' }}>{stat.label}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Témoignages */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+              {socialProof.map((t) => (
+                <div
+                  key={t.initiales}
+                  className="rounded-2xl p-6"
+                  style={{
+                    background: 'rgba(255,255,255,0.52)',
+                    backdropFilter: 'blur(20px)',
+                    border: '1px solid rgba(255,255,255,0.75)',
+                    boxShadow: '0 8px 32px rgba(15,53,53,0.07)',
+                  }}
+                >
+                  <div className="flex items-center gap-1 mb-3">
+                    {Array.from({ length: t.etoiles }).map((_, i) => (
+                      <svg key={i} width="14" height="14" viewBox="0 0 24 24" fill="#72b9bb">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                      </svg>
+                    ))}
+                  </div>
+                  <p className="text-sm leading-relaxed mb-4" style={{ color: '#2d6b6b' }}>&ldquo;{t.texte}&rdquo;</p>
+                  <p className="text-xs font-bold" style={{ color: '#0f3535' }}>{t.initiales}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── FAQ ───────────────────────────────────────────────────────────── */}
+        <section className="py-20 px-6">
+          <div className="max-w-3xl mx-auto">
+            <div className="text-center mb-12">
+              <p className="text-sm font-bold uppercase tracking-widest mb-3" style={{ color: '#5a9090' }}>FAQ</p>
+              <h2 className="text-3xl md:text-4xl font-bold" style={{ color: '#0f3535' }}>
+                Questions fréquentes
+              </h2>
+            </div>
+
+            <div className="space-y-3">
+              {faqItems.map((item) => (
+                <details
+                  key={item.question}
+                  className="group rounded-2xl overflow-hidden"
+                  style={{
+                    background: 'rgba(255,255,255,0.52)',
+                    backdropFilter: 'blur(20px)',
+                    border: '1px solid rgba(255,255,255,0.75)',
+                    boxShadow: '0 8px 32px rgba(15,53,53,0.07)',
+                  }}
+                >
+                  <summary className="flex items-center justify-between gap-4 p-6 cursor-pointer list-none select-none">
+                    <span className="font-semibold text-sm sm:text-base" style={{ color: '#0f3535' }}>
+                      {item.question}
+                    </span>
+                    <svg
+                      className="flex-shrink-0 transition-transform duration-300 group-open:rotate-180"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      style={{ color: '#72b9bb' }}
+                    >
+                      <path d="M6 9l6 6 6-6" />
+                    </svg>
+                  </summary>
+                  <div className="px-6 pb-6 text-sm leading-relaxed" style={{ color: '#2d6b6b' }}>
+                    {item.answer}
+                  </div>
+                </details>
               ))}
             </div>
           </div>

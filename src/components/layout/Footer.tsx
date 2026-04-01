@@ -12,6 +12,7 @@ const footerLinks = {
     { label: "Articles & Guides", href: "/articles" },
     { label: "Pays Basque", href: "/pays-basque" },
     { label: "Road Trip en Van", href: "/road-trip-pays-basque-van" },
+    { label: "Road Trip Personnalisé IA", href: "/road-trip-personnalise" },
     { label: "À propos", href: "/a-propos" },
     { label: "Contact", href: "/contact" },
   ],

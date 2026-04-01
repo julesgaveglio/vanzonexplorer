@@ -619,11 +619,11 @@ export default function RoadTripPaysBasquePage() {
                 cta: "Voir les vans",
               },
               {
-                emoji: "🌶️",
-                title: "À propos de Vanzon",
-                desc: "Jules et Elio, les fondateurs de Vanzon Explorer — leur histoire et leur vision du vanlife.",
-                href: "/a-propos",
-                cta: "Découvrir",
+                emoji: "🤖",
+                title: "Crée ton propre itinéraire",
+                desc: "Notre IA génère un road trip sur mesure selon tes envies — gratuit, en 60 secondes.",
+                href: "/road-trip-personnalise",
+                cta: "Créer mon road trip",
               },
             ].map((card) => (
               <Link
