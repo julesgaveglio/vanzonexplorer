@@ -2,6 +2,7 @@
 import Groq from "groq-sdk";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
 import { fetchGmailSignature } from "@/lib/gmail";
+import { parseGroqJson } from "../parse-groq-json";
 
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN!;
 
@@ -64,13 +65,8 @@ async function generateEmailDraft(
     max_tokens:  600,
   });
 
-  const raw     = completion.choices[0]?.message?.content ?? "{}";
-  const cleaned = raw.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "").trim();
-  // Échapper les caractères de contrôle littéraux dans les strings JSON
-  const sanitized = cleaned.replace(/[\x00-\x1F\x7F]/g, (c) =>
-    ({ "\n": "\\n", "\r": "\\r", "\t": "\\t", "\b": "\\b", "\f": "\\f" } as Record<string, string>)[c] ?? ""
-  );
-  const data    = JSON.parse(sanitized) as EmailDraft;
+  const raw  = completion.choices[0]?.message?.content ?? "{}";
+  const data = parseGroqJson<EmailDraft>(raw);
   return data;
 }
 

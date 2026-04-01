@@ -6,6 +6,7 @@ import { createSupabaseAdmin } from "@/lib/supabase/server";
 import { listRecentEmails, getEmailById } from "./gmail-reader";
 import { fetchGmailSignature } from "@/lib/gmail";
 import { getEmailExamples, formatExamplesForPrompt } from "../email-memory";
+import { parseGroqJson } from "../parse-groq-json";
 import Groq from "groq-sdk";
 
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN!;
@@ -200,12 +201,8 @@ async function replyToEmailTool(
     max_tokens:  600,
   });
 
-  const raw     = completion.choices[0]?.message?.content ?? "{}";
-  const cleaned = raw.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "").trim();
-  const sanitized = cleaned.replace(/[\x00-\x1F\x7F]/g, (c) =>
-    ({ "\n": "\\n", "\r": "\\r", "\t": "\\t", "\b": "\\b", "\f": "\\f" } as Record<string, string>)[c] ?? ""
-  );
-  const draft   = JSON.parse(sanitized) as { subject: string; body: string };
+  const raw   = completion.choices[0]?.message?.content ?? "{}";
+  const draft = parseGroqJson<{ subject: string; body: string }>(raw);
 
   // Récupérer signature
   const signature = await fetchGmailSignature("jules@vanzonexplorer.com");
