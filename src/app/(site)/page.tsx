@@ -454,12 +454,14 @@ export default async function HomePage() {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-3">
-                <LiquidButton href="/formation" variant="gold" size="lg">
-                  Découvrir la formation →
-                </LiquidButton>
+                <div className="w-full sm:w-auto">
+                  <LiquidButton href="/formation" variant="gold" size="lg" fullWidth>
+                    Découvrir la formation →
+                  </LiquidButton>
+                </div>
                 <a
                   href="/formation#programme"
-                  className="inline-flex items-center justify-center gap-2 bg-slate-100 text-slate-700 font-semibold px-6 py-4 rounded-2xl text-sm hover:bg-slate-200 transition-colors"
+                  className="flex items-center justify-center gap-2 bg-slate-100 text-slate-700 font-semibold px-6 py-4 rounded-2xl text-sm hover:bg-slate-200 transition-colors w-full sm:w-auto"
                 >
                   Voir le programme
                 </a>
