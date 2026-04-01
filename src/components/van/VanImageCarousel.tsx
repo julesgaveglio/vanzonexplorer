@@ -13,37 +13,61 @@ interface VanImageCarouselProps {
   name: string;
 }
 
+// Détecte un vrai appareil tactile (mobile/tablette) indépendamment de la largeur d'écran
+function isTouchDevice(): boolean {
+  return window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+}
+
 export default function VanImageCarousel({ slides, name }: VanImageCarouselProps) {
   const [current, setCurrent] = useState(0);
   const touchStartX = useRef<number | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const total = slides.length;
 
-  const goTo = useCallback((idx: number) => {
-    setCurrent((idx + total) % total);
-  }, [total]);
+  const stopTimer = useCallback(() => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+  }, []);
 
-  const next = useCallback(() => goTo(current + 1), [current, goTo]);
-  const prev = useCallback(() => goTo(current - 1), [current, goTo]);
-
-  // Reset & restart auto-advance timer
-  const resetTimer = useCallback(() => {
-    if (timerRef.current) clearInterval(timerRef.current);
+  const startAutoPlay = useCallback(() => {
+    stopTimer();
     if (total <= 1) return;
     timerRef.current = setInterval(() => {
       setCurrent((c) => (c + 1) % total);
-    }, 5000);
-  }, [total]);
+    }, 2500);
+  }, [total, stopTimer]);
 
+  // IntersectionObserver — animation mobile uniquement, réinitialisée à chaque apparition
   useEffect(() => {
-    resetTimer();
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [resetTimer]);
+    const el = containerRef.current;
+    if (!el) return;
 
-  // Swipe handlers
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!isTouchDevice()) return;
+        const entry = entries[0];
+        if (entry.isIntersecting) {
+          setCurrent(0);      // repart toujours de la première image
+          startAutoPlay();
+        } else {
+          stopTimer();
+        }
+      },
+      { threshold: 0.4 }     // déclenche quand 40% de la carte est visible
+    );
+
+    observer.observe(el);
+    return () => {
+      observer.disconnect();
+      stopTimer();
+    };
+  }, [startAutoPlay, stopTimer]);
+
+  // ── Swipe tactile ────────────────────────────────────────────────────────────
   const onTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
   };
@@ -52,16 +76,16 @@ export default function VanImageCarousel({ slides, name }: VanImageCarouselProps
     if (touchStartX.current === null) return;
     const diff = touchStartX.current - e.changedTouches[0].clientX;
     if (Math.abs(diff) > 40) {
-      if (diff > 0) next(); else prev();
-      resetTimer();
+      setCurrent((c) => diff > 0 ? (c + 1) % total : (c - 1 + total) % total);
+      startAutoPlay(); // redémarre le timer après un swipe manuel
     }
     touchStartX.current = null;
   };
 
-  const handleDotClick = (idx: number) => {
-    goTo(idx);
-    resetTimer();
-  };
+  // ── Navigation ───────────────────────────────────────────────────────────────
+  const goTo = (idx: number) => setCurrent((idx + total) % total);
+  const prev = () => goTo(current - 1);
+  const next = () => goTo(current + 1);
 
   if (total === 0) {
     return (
@@ -73,6 +97,7 @@ export default function VanImageCarousel({ slides, name }: VanImageCarouselProps
 
   return (
     <div
+      ref={containerRef}
       className="relative w-full h-full select-none"
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
@@ -81,7 +106,9 @@ export default function VanImageCarousel({ slides, name }: VanImageCarouselProps
       {slides.map((slide, idx) => (
         <div
           key={idx}
-          className={`absolute inset-0 transition-opacity duration-500 ${idx === current ? "opacity-100 z-10" : "opacity-0 z-0"}`}
+          className={`absolute inset-0 transition-opacity duration-500 ${
+            idx === current ? "opacity-100 z-10" : "opacity-0 z-0"
+          }`}
         >
           <Image
             src={slide.url}
@@ -94,11 +121,11 @@ export default function VanImageCarousel({ slides, name }: VanImageCarouselProps
         </div>
       ))}
 
-      {/* Prev / Next arrows — visible on hover */}
+      {/* Flèches — visibles au hover sur desktop */}
       {total > 1 && (
         <>
           <button
-            onClick={(e) => { e.preventDefault(); prev(); resetTimer(); }}
+            onClick={(e) => { e.preventDefault(); prev(); }}
             className="absolute left-2 top-1/2 -translate-y-1/2 z-20 w-7 h-7 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
             aria-label="Image précédente"
           >
@@ -107,7 +134,7 @@ export default function VanImageCarousel({ slides, name }: VanImageCarouselProps
             </svg>
           </button>
           <button
-            onClick={(e) => { e.preventDefault(); next(); resetTimer(); }}
+            onClick={(e) => { e.preventDefault(); next(); }}
             className="absolute right-2 top-1/2 -translate-y-1/2 z-20 w-7 h-7 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
             aria-label="Image suivante"
           >
@@ -118,13 +145,13 @@ export default function VanImageCarousel({ slides, name }: VanImageCarouselProps
         </>
       )}
 
-      {/* Dot indicators */}
+      {/* Points de navigation */}
       {total > 1 && (
         <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex gap-1.5">
           {slides.map((_, idx) => (
             <button
               key={idx}
-              onClick={(e) => { e.preventDefault(); handleDotClick(idx); }}
+              onClick={(e) => { e.preventDefault(); goTo(idx); }}
               className={`rounded-full transition-all duration-300 ${
                 idx === current
                   ? "w-4 h-1.5 bg-white"
