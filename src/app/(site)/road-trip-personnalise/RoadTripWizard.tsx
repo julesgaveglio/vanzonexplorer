@@ -148,6 +148,8 @@ export default function RoadTripWizard() {
       ])
     }
 
+    let receivedTerminalEvent = false
+
     try {
       const res = await fetch('/api/road-trip/generate', {
         method: 'POST',
@@ -193,11 +195,12 @@ export default function RoadTripWizard() {
               if (event.type === 'progress' && event.message) {
                 addLine(event.message)
               } else if (event.type === 'done') {
-                // Mark all lines as done, then transition to success
+                receivedTerminalEvent = true
                 setTerminalLines((prev) => prev.map((l) => ({ ...l, done: true })))
                 setTimeout(() => setStatus('success'), 1000)
                 return
               } else if (event.type === 'error') {
+                receivedTerminalEvent = true
                 setErrorMessage(event.message ?? 'Erreur interne, réessaie dans quelques instants.')
                 setStatus('error')
                 return
@@ -207,6 +210,14 @@ export default function RoadTripWizard() {
             }
           }
         }
+      }
+
+      // Stream closed without a terminal event (timeout, disconnection, etc.)
+      if (!receivedTerminalEvent) {
+        setErrorMessage(
+          'La connexion a été interrompue. Vérifie ta boîte mail — ton road trip est peut-être arrivé !'
+        )
+        setStatus('error')
       }
     } catch {
       setErrorMessage('Une erreur réseau est survenue. Vérifie ta connexion et réessaie.')

@@ -150,30 +150,27 @@ async function fetchPexelsPhoto(
   }
 }
 
-// ── Best photo (specific → generic Pexels → Wikipedia thumbnail) ─────────────
+// ── Best photo (specific + generic Pexels in parallel → Wikipedia thumbnail) ──
 async function fetchBestPhoto(
   spot: SpotBase,
   region: string,
   wikiThumbnail?: string
 ): Promise<{ url: string; photographer: string; photoUrl: string; source: string } | null> {
-  // 1. Specific Pexels query (Groq-generated)
   const specificQuery = spot.search_query || `${spot.nom} ${region} France`
-  const specific = await fetchPexelsPhoto(specificQuery)
-  if (specific) return { ...specific, source: 'pexels' }
-
-  // 2. Generic Pexels query (type + region — broader, more likely to return results)
   const genericQuery = `${spot.type} ${region} France`
-  const generic = await fetchPexelsPhoto(genericQuery)
+
+  // Run both Pexels queries in parallel to save time
+  const [specific, generic] = await Promise.all([
+    fetchPexelsPhoto(specificQuery),
+    fetchPexelsPhoto(genericQuery),
+  ])
+
+  if (specific) return { ...specific, source: 'pexels' }
   if (generic) return { ...generic, source: 'pexels-generic' }
 
-  // 3. Wikipedia thumbnail (already fetched in parallel, no extra cost)
+  // Wikipedia thumbnail as last resort (no extra API cost — already fetched)
   if (wikiThumbnail) {
-    return {
-      url: wikiThumbnail,
-      photographer: 'Wikipedia',
-      photoUrl: '',
-      source: 'wikipedia',
-    }
+    return { url: wikiThumbnail, photographer: 'Wikipedia', photoUrl: '', source: 'wikipedia' }
   }
 
   return null
@@ -398,6 +395,25 @@ Important :
 - search_query en anglais, précise et optimisée pour trouver une belle photo (inclure pays/région/saison).
 ${restaurantInstruction}`
 
+  function extractJson(raw: string): ItineraireData {
+    // Strategy 1: try to parse the full response directly
+    try {
+      return JSON.parse(raw.trim()) as ItineraireData
+    } catch { /* fall through */ }
+
+    // Strategy 2: strip markdown code fences
+    const stripped = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim()
+    try {
+      return JSON.parse(stripped) as ItineraireData
+    } catch { /* fall through */ }
+
+    // Strategy 3: extract first {...} block (handles "Here is the JSON: {...}")
+    const match = raw.match(/\{[\s\S]*\}/)
+    if (match) return JSON.parse(match[0]) as ItineraireData
+
+    throw new Error('No valid JSON found in Groq response')
+  }
+
   async function callGroq(temperature: number): Promise<ItineraireData> {
     const completion = await groq.chat.completions.create({
       model: 'llama-3.3-70b-versatile',
@@ -407,15 +423,16 @@ ${restaurantInstruction}`
       ],
       temperature,
       max_tokens: 4000,
+      response_format: { type: 'json_object' },
     })
     const raw = completion.choices[0]?.message?.content ?? ''
-    const cleaned = raw.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim()
-    return JSON.parse(cleaned) as ItineraireData
+    return extractJson(raw)
   }
 
   try {
     return await callGroq(0.7)
-  } catch {
+  } catch (err) {
+    console.error('[road-trip] callGroq(0.7) failed:', err)
     return await callGroq(0)
   }
 }
@@ -428,36 +445,46 @@ async function enrichItineraire(
 ): Promise<ItineraireData> {
   const enrichedJours = await Promise.all(
     itineraire.jours.map(async (jour) => {
-      // Enrich each spot: geocode + wikipedia in parallel, then best photo
+      // Enrich each spot: geocode + wikipedia + photos all in parallel
       const enrichedSpots = await Promise.all(
         jour.spots.map(async (spot) => {
-          const [geoResult, wikiResult] = await Promise.allSettled([
-            geocodeSpot(spot.nom, region),
-            fetchWikipedia(spot.nom),
-          ])
+          try {
+            const [geoResult, wikiResult] = await Promise.allSettled([
+              geocodeSpot(spot.nom, region),
+              fetchWikipedia(spot.nom),
+            ])
 
-          const geo = geoResult.status === 'fulfilled' ? geoResult.value : null
-          const wiki = wikiResult.status === 'fulfilled' ? wikiResult.value : null
+            const geo = geoResult.status === 'fulfilled' ? geoResult.value : null
+            const wiki = wikiResult.status === 'fulfilled' ? wikiResult.value : null
 
-          const photo = await fetchBestPhoto(spot, region, wiki?.thumbnail ?? undefined)
+            const photo = await fetchBestPhoto(spot, region, wiki?.thumbnail ?? undefined)
 
-          return {
-            ...spot,
-            mapsUrl:
-              geo?.mapsUrl ??
-              `https://maps.google.com/?q=${encodeURIComponent(spot.nom + ' France')}`,
-            photo: photo ?? undefined,
-            wiki: wiki ?? undefined,
-            _lat: geo?.lat,
-            _lon: geo?.lon,
-          } as SpotEnriched & { _lat?: number; _lon?: number }
+            return {
+              ...spot,
+              mapsUrl:
+                geo?.mapsUrl ??
+                `https://maps.google.com/?q=${encodeURIComponent(spot.nom + ' France')}`,
+              photo: photo ?? undefined,
+              wiki: wiki ?? undefined,
+              _lat: geo?.lat,
+              _lon: geo?.lon,
+            } as SpotEnriched & { _lat?: number; _lon?: number }
+          } catch {
+            // If enrichment of a spot fails, return it with a fallback Maps URL
+            return {
+              ...spot,
+              mapsUrl: `https://maps.google.com/?q=${encodeURIComponent(spot.nom + ' France')}`,
+              _lat: undefined,
+              _lon: undefined,
+            } as SpotEnriched & { _lat?: number; _lon?: number }
+          }
         })
       )
 
       // Pick nearest campings for this day (using first spot's coordinates)
-      const firstSpot = enrichedSpots[0] as SpotEnriched & { _lat?: number; _lon?: number }
+      const firstSpot = (enrichedSpots[0] ?? null) as (SpotEnriched & { _lat?: number; _lon?: number }) | null
       let campingOptions: CampingOption[] = []
-      if (firstSpot._lat && firstSpot._lon && allCampings.length > 0) {
+      if (firstSpot?._lat && firstSpot?._lon && allCampings.length > 0) {
         campingOptions = nearestCampings(allCampings, firstSpot._lat, firstSpot._lon, 3)
       }
 
@@ -591,17 +618,29 @@ export async function POST(req: NextRequest) {
       await emit('progress', { message: `📍  On a trouvé ${spotCount} endroits qui vont te plaire...` })
       await emit('progress', { message: '🌅  On construit ton itinéraire jour par jour...' })
 
-      // Step 3: Geocode region + fetch all Overpass campings once
+      // Step 3: Geocode region + fetch all Overpass campings once (non-blocking)
       await emit('progress', { message: '🏕️  On recherche les bivouacs et campings de la région...' })
-      const regionGeo = await geocodeSpot(input.region, '')
-      const allCampings =
-        regionGeo.lat && regionGeo.lon
-          ? await fetchOverpassCampings(regionGeo.lat, regionGeo.lon, 80000)
-          : []
+      let allCampings: CampingOption[] = []
+      try {
+        const regionGeo = await geocodeSpot(input.region, '')
+        if (regionGeo.lat && regionGeo.lon) {
+          allCampings = await fetchOverpassCampings(regionGeo.lat, regionGeo.lon, 80000)
+        }
+      } catch {
+        // Overpass failure is non-fatal — we continue without real campings
+        console.error('[road-trip] Overpass fetch failed, continuing without camping options')
+      }
 
       // Step 4: Enrich spots (photos, maps, wikipedia) + assign campings per day
       await emit('progress', { message: '📸  On illustre chaque étape avec de belles photos...' })
-      const enrichedItineraire = await enrichItineraire(itineraire, input.region, allCampings)
+      let enrichedItineraire: ItineraireData
+      try {
+        enrichedItineraire = await enrichItineraire(itineraire, input.region, allCampings)
+      } catch (enrichErr) {
+        console.error('[road-trip] enrichItineraire failed, using raw itinerary:', enrichErr)
+        // Fall back to the raw LLM-generated itinerary (no photos, no maps links, no camping options)
+        enrichedItineraire = itineraire
+      }
 
       await emit('progress', { message: '✍️  On rédige tes conseils pratiques sur mesure...' })
 
