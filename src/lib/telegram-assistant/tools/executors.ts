@@ -202,7 +202,10 @@ async function replyToEmailTool(
 
   const raw     = completion.choices[0]?.message?.content ?? "{}";
   const cleaned = raw.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "").trim();
-  const draft   = JSON.parse(cleaned) as { subject: string; body: string };
+  const sanitized = cleaned.replace(/[\x00-\x1F\x7F]/g, (c) =>
+    ({ "\n": "\\n", "\r": "\\r", "\t": "\\t", "\b": "\\b", "\f": "\\f" } as Record<string, string>)[c] ?? ""
+  );
+  const draft   = JSON.parse(sanitized) as { subject: string; body: string };
 
   // Récupérer signature
   const signature = await fetchGmailSignature("jules@vanzonexplorer.com");

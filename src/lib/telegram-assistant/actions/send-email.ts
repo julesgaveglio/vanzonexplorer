@@ -66,7 +66,11 @@ async function generateEmailDraft(
 
   const raw     = completion.choices[0]?.message?.content ?? "{}";
   const cleaned = raw.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "").trim();
-  const data    = JSON.parse(cleaned) as EmailDraft;
+  // Échapper les caractères de contrôle littéraux dans les strings JSON
+  const sanitized = cleaned.replace(/[\x00-\x1F\x7F]/g, (c) =>
+    ({ "\n": "\\n", "\r": "\\r", "\t": "\\t", "\b": "\\b", "\f": "\\f" } as Record<string, string>)[c] ?? ""
+  );
+  const data    = JSON.parse(sanitized) as EmailDraft;
   return data;
 }
 
@@ -217,7 +221,6 @@ export async function buildAndSendPreview(
     });
   } catch (err) {
     console.error("[send-email] error:", err);
-    const msg = err instanceof Error ? err.message : String(err);
-    await tgSend(chatId, `❌ Debug erreur: ${msg.slice(0, 300)}`);
+    await tgSend(chatId, "❌ Erreur lors de la génération de l'email. Réessaie 🔄");
   }
 }
