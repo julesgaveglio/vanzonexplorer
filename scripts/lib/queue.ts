@@ -39,6 +39,8 @@ export interface ArticleQueueItem {
   addedBy?: string;
   lastOptimizedAt?: string | null;
   lastLinkCheck?: string | null;
+  pillarSlug?: string;
+  clusterTopic?: string;
   createdAt?: string;
 }
 
@@ -79,6 +81,8 @@ function rowToItem(row: Record<string, any>): ArticleQueueItem {
     addedBy:          row.added_by ?? undefined,
     lastOptimizedAt:  row.last_optimized_at ?? null,
     lastLinkCheck:    row.last_link_check ?? null,
+    pillarSlug:       row.pillar_slug ?? undefined,
+    clusterTopic:     row.cluster_topic ?? undefined,
     createdAt:        row.created_at ?? undefined,
   };
 }
@@ -108,6 +112,8 @@ function itemToRow(item: Partial<ArticleQueueItem>): Record<string, unknown> {
   if (item.addedBy          !== undefined) row.added_by          = item.addedBy;
   if (item.lastOptimizedAt  !== undefined) row.last_optimized_at = item.lastOptimizedAt;
   if (item.lastLinkCheck    !== undefined) row.last_link_check   = item.lastLinkCheck;
+  if (item.pillarSlug       !== undefined) row.pillar_slug       = item.pillarSlug;
+  if (item.clusterTopic     !== undefined) row.cluster_topic     = item.clusterTopic;
   return row;
 }
 

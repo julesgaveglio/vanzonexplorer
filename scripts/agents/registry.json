@@ -185,5 +185,22 @@
     "manualCommand": "npx tsx scripts/agents/title-optimizer-agent.ts",
     "tags": ["SEO", "Blog", "Optimisation", "VBA"],
     "pipeline": "Lit article_queue → score Groq → réécrit si <8 → update Supabase"
+  },
+  {
+    "id": "cluster-updater",
+    "name": "Agent Cluster SEO",
+    "emoji": "🗂️",
+    "status": "active",
+    "description": "Maintient automatiquement la stratégie pilier/cluster. Assigne chaque article à son pilier (formation/achat/location) et cluster thématique. Injecte une section 'Sur le même sujet' en fin d'article avec liens vers le pilier et 2-3 articles frères. Tourne mensuellement + après chaque publication.",
+    "trigger": "cron",
+    "schedule": "1er de chaque mois à 11h UTC (après link-optimizer)",
+    "cronExpression": "0 11 1 * *",
+    "file": "scripts/agents/cluster-updater.ts",
+    "workflow": ".github/workflows/monthly-link-optimizer.yml",
+    "apis": ["Supabase", "Sanity"],
+    "output": "Articles Sanity mis à jour + pillar_slug/cluster_topic dans article_queue",
+    "manualCommand": "npx tsx scripts/agents/cluster-updater.ts --dry-run",
+    "tags": ["SEO", "Maillage", "Cluster", "Automatique"],
+    "pipeline": "5b → post link-optimizer, après chaque blog-writer"
   }
 ]

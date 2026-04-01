@@ -22,6 +22,7 @@ import { notifyTelegram } from "../lib/telegram";
 import { getQueueItems, insertQueueItem, type ArticleQueueItem } from "../lib/queue";
 import { startRun, finishRun } from "../lib/agent-runs";
 import { createCostTracker } from "../lib/ai-costs";
+import { assignCluster } from "../lib/cluster";
 
 const PROJECT_ROOT = path.resolve(path.dirname(__filename), "../..");
 const KEYWORDS_FILE = path.join(PROJECT_ROOT, "scripts/data/keywords-research.json");
@@ -332,6 +333,17 @@ async function main() {
     try {
       const meta = await generateArticleBrief(keyword.keyword, segment, segmentLabel, costs);
 
+      // Auto-assigner pilier/cluster
+      const clusterAssignment = assignCluster({
+        targetKeyword: keyword.keyword,
+        title: meta.title,
+        category: meta.category,
+        secondaryKeywords: meta.secondaryKeywords,
+      });
+      if (clusterAssignment) {
+        console.log(`  🗂️  Cluster : ${clusterAssignment.pillarId} → ${clusterAssignment.clusterLabel}`);
+      }
+
       // Check slug uniqueness
       const slugExists = queue.some((a) => a.slug === meta.slug) || newArticles.some((a) => a.slug === meta.slug);
       const finalSlug = slugExists ? `${meta.slug}-${Date.now()}` : meta.slug;
@@ -357,6 +369,8 @@ async function main() {
         searchVolume: keyword.searchVolume,
         competitionLevel: keyword.competitionLevel,
         seoScore: meta.seoScore ?? undefined,
+        pillarSlug:   clusterAssignment?.pillarId ?? undefined,
+        clusterTopic: clusterAssignment?.clusterTopic ?? undefined,
         addedBy: "queue-builder-monthly",
       };
 

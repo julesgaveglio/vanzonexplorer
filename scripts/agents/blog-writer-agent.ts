@@ -31,6 +31,7 @@ import { notifyTelegram } from "../lib/telegram";
 import { claimPendingArticle, updateQueueItem, getQueueItems, type ArticleQueueItem } from "../lib/queue";
 import { startRun, finishRun, logDfsCall } from "../lib/agent-runs";
 import { createCostTracker } from "../lib/ai-costs";
+import { assignCluster } from "../lib/cluster";
 
 // ── Constants ──────────────────────────────────────────────────────────────────
 // scripts/agents/ → project root is two directories up
@@ -775,10 +776,18 @@ Liste à puces comparative obligatoire. ❌ INTERDIT : tableaux Markdown (| col 
 ${externalSources.map((s) => `- [${s.title}](${s.url})`).join("\n")}`
       : `Aucune source externe fournie par Tavily. OBLIGATION : inclure 2-3 liens vers des sources d'autorité officielles françaises que tu connais avec certitude (ex: fr.wikipedia.org, légifrance.gouv.fr, service-public.fr, insee.fr, offices de tourisme officiels). Les liens cassés seront supprimés automatiquement après vérification.`;
 
+  // Prioritize cluster siblings first in the internal links prompt
+  const clusterSiblings = publishedArticles.filter(a => {
+    const assigned = assignCluster({ targetKeyword: a.targetKeyword, title: a.title });
+    return assigned?.pillarId === assignCluster({ targetKeyword: article.targetKeyword, title: article.title })?.pillarId;
+  });
+  const otherArticles = publishedArticles.filter(a => !clusterSiblings.includes(a));
+  const sortedArticles = [...clusterSiblings, ...otherArticles].slice(0, 15);
+
   const publishedArticlesBlock =
-    publishedArticles.length > 0
-      ? `ARTICLES BLOG VANZON DÉJÀ PUBLIÉS (liens internes articles — intègre 2 à 3 liens pertinents si le contexte s'y prête):
-${publishedArticles.slice(0, 15).map((a) => `- [${a.title}](/articles/${a.slug}) — keyword: "${a.targetKeyword}"`).join("\n")}`
+    sortedArticles.length > 0
+      ? `ARTICLES BLOG VANZON DÉJÀ PUBLIÉS (liens internes articles — intègre 2 à 3 liens pertinents si le contexte s'y prête — PRIORITÉ AUX ARTICLES DU MÊME CLUSTER):
+${sortedArticles.map((a) => `- [${a.title}](/articles/${a.slug}) — keyword: "${a.targetKeyword}"`).join("\n")}`
       : "";
 
   // ── Call 1: metadata via Claude Sonnet 4.5 ───────────────────────────────────
@@ -1207,6 +1216,12 @@ async function submitSitemapToGSC(): Promise<void> {
   }
 }
 
+// ── Cluster helpers ───────────────────────────────────────────────────────────
+function getPillarUrl(pillarId: string): string {
+  const map: Record<string, string> = { formation: "/formation", achat: "/achat", location: "/location" };
+  return map[pillarId] ?? "/";
+}
+
 // ── Main ──────────────────────────────────────────────────────────────────────
 async function main(): Promise<void> {
   // Validate required env vars
@@ -1249,6 +1264,22 @@ async function main(): Promise<void> {
     const scoreEmoji = article.seoScore >= 8 ? "✅" : article.seoScore >= 6 ? "⚠️" : "🔴";
     console.log(`  ${scoreEmoji} Score titre queue : ${article.seoScore}/10`);
   }
+
+  // Assigner cluster si pas déjà fait
+  let clusterInfo = article.pillarSlug ? { pillarId: article.pillarSlug, pillarUrl: getPillarUrl(article.pillarSlug), clusterTopic: article.clusterTopic } : null;
+  if (!clusterInfo) {
+    const assigned = assignCluster({
+      targetKeyword: article.targetKeyword,
+      title: article.title,
+      category: article.category,
+      secondaryKeywords: article.secondaryKeywords,
+    });
+    clusterInfo = assigned ? { pillarId: assigned.pillarId, pillarUrl: assigned.pillarUrl, clusterTopic: assigned.clusterTopic } : null;
+  }
+  if (clusterInfo) {
+    console.log(`  Cluster:  ${clusterInfo.pillarId} / ${clusterInfo.clusterTopic}`);
+  }
+
   console.log(`\nStatus updated to "writing"`);
 
   let publishedSuccessfully = false;
@@ -1323,6 +1354,14 @@ async function main(): Promise<void> {
       sanityId,
       publishedAt,
     });
+
+    // Sauvegarder le cluster si pas encore défini dans la queue
+    if (clusterInfo && !article.pillarSlug) {
+      await updateQueueItem(article.id, {
+        pillarSlug: clusterInfo.pillarId,
+        clusterTopic: clusterInfo.clusterTopic ?? undefined,
+      }).catch(() => {}); // non-bloquant
+    }
 
     publishedSuccessfully = true;
 

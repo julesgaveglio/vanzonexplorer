@@ -48,3 +48,14 @@ jobs:
           NEXT_PUBLIC_SANITY_PROJECT_ID: lewexa74
           NEXT_PUBLIC_SANITY_DATASET: production
         run: npx tsx scripts/agents/blog-writer-agent.ts
+
+      - name: Sync cluster links (post-publication)
+        env:
+          SANITY_API_WRITE_TOKEN: ${{ secrets.SANITY_API_WRITE_TOKEN }}
+          NEXT_PUBLIC_SANITY_PROJECT_ID: lewexa74
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: npx tsx scripts/agents/cluster-updater.ts
+        continue-on-error: true

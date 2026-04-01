@@ -1,0 +1,68 @@
+[
+  {
+    "id": "formation",
+    "pillarUrl": "/formation",
+    "label": "Formation Van Business Academy",
+    "clusters": [
+      {
+        "id": "business-rentabilite",
+        "label": "Business & Rentabilité",
+        "keywords": ["rentabilité", "revenus", "business", "gagner argent", "investir", "achat-revente", "revendre", "conciergerie", "louer son van", "est-ce rentable"]
+      },
+      {
+        "id": "reglementation-juridique",
+        "label": "Réglementation & Juridique",
+        "keywords": ["réglementation", "statut juridique", "vasp", "carte grise", "homologation", "assurance van", "cpf", "leasing", "financement"]
+      },
+      {
+        "id": "comparatifs-formations",
+        "label": "Comparatifs Formations",
+        "keywords": ["meikyu", "vanoazo", "camp in van", "amenagetonvan", "van it yourself", "comparatif formation"]
+      },
+      {
+        "id": "demarrer-location",
+        "label": "Démarrer son Activité",
+        "keywords": ["se lancer", "devenir loueur", "créer entreprise", "louer son van", "location van aménagé", "marché location", "se lancer dans la location"]
+      }
+    ]
+  },
+  {
+    "id": "achat",
+    "pillarUrl": "/achat",
+    "label": "Achat Van Aménagé",
+    "clusters": [
+      {
+        "id": "choisir-van",
+        "label": "Choisir son Van",
+        "keywords": ["quel van", "dacia", "volkswagen", "vw", "fourgon occasion", "occasion 5000", "camion aménagé", "van volkswagen"]
+      },
+      {
+        "id": "amenagement-van",
+        "label": "Aménagement",
+        "keywords": ["aménagement", "aménager", "isolation van", "panneau solaire", "kit aménagement", "intérieur van", "budget aménagement", "fourgon aménagé"]
+      },
+      {
+        "id": "achat-vente",
+        "label": "Achat & Revente",
+        "keywords": ["achat revente", "revendre", "occasion", "prix van", "van aménagé prix", "leasing van", "investir van"]
+      }
+    ]
+  },
+  {
+    "id": "location",
+    "pillarUrl": "/location",
+    "label": "Location Van Aménagé",
+    "clusters": [
+      {
+        "id": "tarifs-revenus",
+        "label": "Tarifs & Revenus Location",
+        "keywords": ["tarif location", "prix location", "revenus location", "rentabilité location", "marché location", "louer est-ce rentable"]
+      },
+      {
+        "id": "pratique-location",
+        "label": "Pratique & Contrats",
+        "keywords": ["assurance location", "entre particuliers", "conciergerie", "plateforme", "statut loueur", "contrat location"]
+      }
+    ]
+  }
+]
