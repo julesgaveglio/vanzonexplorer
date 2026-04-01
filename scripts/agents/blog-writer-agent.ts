@@ -42,6 +42,71 @@ function loadAgentPrompt(name: string): string | null {
   const mdPath = path.join(PROMPTS_DIR, `${name}.md`);
   return fs.existsSync(mdPath) ? fs.readFileSync(mdPath, "utf-8").trim() : null;
 }
+
+// ── Vanzon Knowledge Base (Obsidian) ───────────────────────────────────────────
+const VANZON_DB_PATH = path.join(PROJECT_ROOT, "Vanzon DataBase 'Obs'");
+
+/**
+ * Charge tous les fichiers .md du dossier Obsidian, organisés par catégorie.
+ * Retourne null si le dossier n'existe pas.
+ */
+function loadVanzonKnowledgeBase(): string | null {
+  if (!fs.existsSync(VANZON_DB_PATH)) return null;
+
+  const categories: { dir: string; trigger: string }[] = [
+    {
+      dir: "anecdotes",
+      trigger: "location de van, démarrage business, première fois, peur, imprévus, locataires",
+    },
+    {
+      dir: "histoire",
+      trigger: "se lancer, liberté, entrepreneuriat, inspiration, tour du monde, origines",
+    },
+    {
+      dir: "equipe",
+      trigger: "fondateurs, expertise, qui sommes-nous, parcours, aménagement, mécanique",
+    },
+    {
+      dir: "vans",
+      trigger: "Yoni, Xalbat, van spécifique, équipement, aménagement intérieur",
+    },
+    {
+      dir: "territoire",
+      trigger: "Pays Basque, spots, bivouac, nature, randonnée, surf, forêt, montagne",
+    },
+    {
+      dir: "vision",
+      trigger: "environnement, déchets, éthique, business model, revenus, prix, VASP, opinion",
+    },
+    {
+      dir: "blog",
+      trigger: "angle article, idées reçues, opinions, sujets",
+    },
+  ];
+
+  const parts: string[] = [];
+
+  for (const { dir, trigger } of categories) {
+    const dirPath = path.join(VANZON_DB_PATH, dir);
+    if (!fs.existsSync(dirPath)) continue;
+
+    const files = fs.readdirSync(dirPath).filter((f) => f.endsWith(".md"));
+    if (files.length === 0) continue;
+
+    const contents = files
+      .map((f) => {
+        const raw = fs.readFileSync(path.join(dirPath, f), "utf-8").trim();
+        // Supprime les wikilinks Obsidian [[...]] inutiles dans ce contexte
+        return raw.replace(/\[\[([^\]]+)\]\]/g, "$1");
+      })
+      .join("\n\n---\n\n");
+
+    parts.push(`[CATÉGORIE : ${dir.toUpperCase()} — pertinent si l'article aborde : ${trigger}]\n\n${contents}`);
+  }
+
+  if (parts.length === 0) return null;
+  return parts.join("\n\n════════════════════════════════════════\n\n");
+}
 const DFS_BASE = "https://api.dataforseo.com/v3";
 const DFS_LOCATION_CODE = 2250; // France
 const DFS_LANGUAGE_CODE = "fr";
@@ -820,7 +885,8 @@ Réponds UNIQUEMENT avec ce JSON valide (aucune explication, aucune balise markd
   // ── Call 2: article body via Claude Sonnet 4.5 ────────────────────────────────
   console.log(`  [Claude Sonnet 4.5] Generating article body...`);
   const internalLinksBlock = loadAgentPrompt("internal-links");
-  const brandVoiceBlock = loadAgentPrompt("vanzon-brand-voice");
+  // Priorité : base Obsidian complète > fallback vanzon-brand-voice.md condensé
+  const vanzonDB = loadVanzonKnowledgeBase() ?? loadAgentPrompt("vanzon-brand-voice");
   const styleBlock = loadAgentPrompt("blog-writer") ?? `Tu es Jules Gaveglio, co-fondateur de Vanzon Explorer — expert vanlife au Pays Basque depuis 5 ans. Tu rédiges des articles de blog SEO qui classent sur Google et convertissent des lecteurs en clients.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -847,8 +913,33 @@ STYLE & TON
 • Zéro ouverture bateau ("De nos jours…", "Dans un monde où…")
 • Écris comme un humain passionné qui connaît le terrain, pas comme une IA`;
 
+  const memoryBlock = vanzonDB
+    ? `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+MÉMOIRE VIVANTE VANZON — RÈGLES D'UTILISATION INTELLIGENTE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Tu as accès à la mémoire complète de Vanzon Explorer ci-dessous.
+Lis-la en entier avant d'écrire — mais utilise-la avec discernement.
+
+RÈGLES ABSOLUES :
+• Intègre un élément de mémoire SEULEMENT s'il enrichit l'article de façon organique et naturelle
+• Maximum 1 à 2 touches personnelles par article — au-delà c'est forcé
+• Si tu dois "placer" quelque chose, c'est que ça ne va pas — n'écris pas
+• Varie : ne cite pas toujours les mêmes anecdotes d'un article à l'autre
+• Un article purement technique (isolation, homologation, équipement) n'a pas besoin de Jules ni d'Elio
+• Un article sur "se lancer en location" peut naturellement citer le rétroviseur ou la première location
+• Cite les verbatim de Jules entre guillemets quand tu les utilises — jamais paraphrasés
+• N'invente rien. N'extrais que ce qui est explicitement dans la mémoire ci-dessous.
+• Chaque catégorie indique les thèmes d'articles pour lesquels elle est pertinente — respecte-les
+
+${vanzonDB}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`
+    : "";
+
   const bodyPrompt = `${styleBlock}
-${brandVoiceBlock ? `\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nMÉMOIRE DE MARQUE — ANECDOTES & FAITS RÉELS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n${brandVoiceBlock}\n` : ""}
+${memoryBlock}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ARTICLE À RÉDIGER
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
