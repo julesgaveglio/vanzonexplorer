@@ -34,6 +34,51 @@ export const metadata: Metadata = {
   },
 };
 
+const destMeta = [
+  {
+    href: "/location/biarritz",
+    label: "Biarritz",
+    emoji: "🌊",
+    desc: "Surf, plages et couchers de soleil",
+    img: "https://www.destination-biarritz.fr/app/uploads/2024/05/img-1959.webp",
+  },
+  {
+    href: "/location/hossegor",
+    label: "Hossegor",
+    emoji: "🏄",
+    desc: "La Mecque du surf européen",
+    img: "https://hossegor-surf.fr/wp-content/uploads/2022/04/vague-hossegor.jpeg",
+  },
+  {
+    href: "/location/bayonne",
+    label: "Bayonne",
+    emoji: "🏰",
+    desc: "Culture basque et gastronomie",
+    img: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/14/99/72/c2/les-tours-jumelles-de.jpg?w=1200&h=1200&s=1",
+  },
+  {
+    href: "/location/saint-jean-de-luz",
+    label: "Saint-Jean-de-Luz",
+    emoji: "⛵",
+    desc: "Village basque face à l'océan",
+    img: "https://www.saint-jean-de-luz.com/wp-content/uploads/2021/04/p1190705-1600x690.jpg",
+  },
+  {
+    href: "/location/week-end",
+    label: "Week-end",
+    emoji: "🗓️",
+    desc: "2 nuits au minimum, idée d'itinéraire incluse",
+    img: "https://www.vanlifemag.fr/wp-content/uploads/2020/12/AdobeStock_369527107.jpg",
+  },
+  {
+    href: "/location/foret-irati",
+    label: "Forêt d'Irati",
+    emoji: "🌲",
+    desc: "Bivouac, randonnée et nature sauvage",
+    img: "https://media.sudouest.fr/16227503/1000x625/sudouest-photo-1-3807448-1600.jpg?v=1754848800",
+  },
+];
+
 function getSeasonLabel(): string {
   const month = new Date().getMonth(); // 0-11
   if (month >= 5 && month <= 8) return "Vans disponibles cet été";
@@ -270,9 +315,9 @@ export default async function HomePage() {
 
 
       {/* ── OÙ PARTIR EN VAN ──────────────────────────────────────── */}
-      <section className="py-20 bg-slate-50">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="text-center mb-12">
+      <section className="py-20" style={{ background: "linear-gradient(160deg, #EFF6FF 0%, #F0FDFF 100%)" }}>
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-14">
             <span className="badge-glass !px-4 !py-1.5 text-sm font-semibold mb-4 inline-block" style={{ color: "#4D5FEC" }}>
               🗺️ Les destinations
             </span>
@@ -284,67 +329,32 @@ export default async function HomePage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {[
-              {
-                emoji: "🌊",
-                city: "Biarritz",
-                tagline: "Capitale du surf, plages légendaires",
-                href: "/location/biarritz",
-                gradient: "from-blue-600 to-cyan-500",
-              },
-              {
-                emoji: "🏰",
-                city: "Bayonne",
-                tagline: "Chocolat, jambon AOP et vieille ville",
-                href: "/location/bayonne",
-                gradient: "from-rose-500 to-orange-400",
-              },
-              {
-                emoji: "⛵",
-                city: "Saint-Jean-de-Luz",
-                tagline: "Port de pêche, plage protégée, Espagne à 15 min",
-                href: "/location/saint-jean-de-luz",
-                gradient: "from-indigo-600 to-violet-500",
-              },
-              {
-                emoji: "🏄",
-                city: "Hossegor",
-                tagline: "Le temple du surf européen, forêt landaise",
-                href: "/location/hossegor",
-                gradient: "from-emerald-500 to-teal-400",
-              },
-              {
-                emoji: "🌲",
-                city: "Forêt d'Irati",
-                tagline: "Hêtraie millénaire, bivouac altitude, silence total",
-                href: "/location/foret-irati",
-                gradient: "from-green-700 to-emerald-500",
-              },
-              {
-                emoji: "🗓️",
-                city: "Week-end Pays Basque",
-                tagline: "4 idées d'itinéraires pour un week-end parfait",
-                href: "/location/week-end",
-                gradient: "from-amber-500 to-yellow-400",
-              },
-            ].map((dest) => (
-              <a
-                key={dest.city}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {destMeta.map((dest) => (
+              <Link
+                key={dest.href}
                 href={dest.href}
-                className="group relative overflow-hidden rounded-2xl h-44 flex flex-col justify-end p-6 transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl"
-                style={{ background: `linear-gradient(135deg, var(--tw-gradient-stops))` }}
+                className="group relative rounded-2xl overflow-hidden aspect-[4/3] block"
               >
-                <div className={`absolute inset-0 bg-gradient-to-br ${dest.gradient} opacity-90 group-hover:opacity-100 transition-opacity duration-300`} />
-                <div className="relative z-10">
-                  <span className="text-3xl mb-2 block">{dest.emoji}</span>
-                  <h3 className="font-black text-white text-lg leading-tight mb-1">{dest.city}</h3>
-                  <p className="text-white/80 text-sm leading-snug">{dest.tagline}</p>
+                <Image
+                  src={dest.img}
+                  alt={`Van au Pays Basque — ${dest.label}`}
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/30 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-5">
+                  <p className="text-2xl mb-1">{dest.emoji}</p>
+                  <h3 className="text-white font-black text-xl leading-tight">{dest.label}</h3>
+                  <p className="text-white/70 text-sm mt-1">{dest.desc}</p>
                 </div>
-                <div className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-white/30 transition-colors">
-                  <span className="text-white text-sm font-bold">→</span>
+                <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="bg-white/20 backdrop-blur-md text-white text-xs font-semibold px-3 py-1.5 rounded-full border border-white/30">
+                    Découvrir →
+                  </span>
                 </div>
-              </a>
+              </Link>
             ))}
           </div>
         </div>
