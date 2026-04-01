@@ -127,20 +127,23 @@ function removeExistingClusterSection(content: PTBlock[]): PTBlock[] {
 
 async function main() {
   const dryRun = process.argv.includes("--dry-run");
-  const targetSlug = process.argv.find(a => !a.startsWith("-") && a !== process.argv[1] && !a.includes("cluster"));
+  const targetSlug = process.argv.slice(2).find(a => !a.startsWith("-"));
 
   console.log(`🗂️  Cluster Updater${dryRun ? " (DRY RUN)" : ""} — ${new Date().toLocaleDateString("fr-FR")}`);
   if (targetSlug) console.log(`   Mode : article spécifique → "${targetSlug}"`);
 
   const runId = await startRun("cluster-updater", { dryRun, targetSlug });
 
-  // 1. Charger tous les articles publiés
-  const allPublished = await getQueueItems({ status: "published" });
+  // 1. Charger TOUS les articles (pending + published) pour backfill cluster
+  // La section Sanity ne s'injecte que sur les publiés (sanityId présent)
+  const allArticles = await getQueueItems();
+  const allPublished = allArticles.filter(a => a.sanityId);
+  console.log(`\n✓ ${allArticles.length} articles chargés (${allPublished.length} avec Sanity ID)\n`);
   console.log(`\n✓ ${allPublished.length} articles publiés chargés\n`);
 
-  // 2. Assigner cluster aux articles qui n'en ont pas
+  // 2. Assigner cluster aux articles qui n'en ont pas (tous, pas seulement publiés)
   let backfilled = 0;
-  for (const article of allPublished) {
+  for (const article of allArticles) {
     if (article.pillarSlug && article.clusterTopic) continue;
     const assigned = assignCluster({
       targetKeyword: article.targetKeyword,
