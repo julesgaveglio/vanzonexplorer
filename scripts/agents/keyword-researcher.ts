@@ -18,7 +18,7 @@
 import path from "path";
 import Anthropic from "@anthropic-ai/sdk";
 import { getQueueItems, insertQueueItem, type ArticleQueueItem } from "../lib/queue";
-import { startRun, finishRun } from "../lib/agent-runs";
+import { startRun, finishRun, logDfsCall } from "../lib/agent-runs";
 import { createCostTracker, type CostTracker } from "../lib/ai-costs";
 
 // ── Constants ──────────────────────────────────────────────────────────────────
@@ -89,6 +89,7 @@ async function dfsPost<T = unknown>(endpoint: string, body: unknown): Promise<{ 
     throw new Error(`DataForSEO API error ${json.status_code}: ${json.status_message}`);
   }
 
+  void logDfsCall(endpoint, json.cost ?? 0);
   return { result: json.tasks?.[0]?.result?.[0] ?? null, dfsCost: json.cost ?? 0 };
 }
 

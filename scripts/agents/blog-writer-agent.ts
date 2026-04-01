@@ -29,7 +29,7 @@ import { createClient } from "@sanity/client";
 import { searchPexelsPhoto, downloadPexelsPhoto, buildPexelsCredit } from "../../src/lib/pexels";
 import { notifyTelegram } from "../lib/telegram";
 import { claimPendingArticle, updateQueueItem, getQueueItems, type ArticleQueueItem } from "../lib/queue";
-import { startRun, finishRun } from "../lib/agent-runs";
+import { startRun, finishRun, logDfsCall } from "../lib/agent-runs";
 import { createCostTracker } from "../lib/ai-costs";
 
 // ── Constants ──────────────────────────────────────────────────────────────────
@@ -135,6 +135,7 @@ async function dfsPost<T = unknown>(endpoint: string, body: unknown): Promise<{ 
     throw new Error(`DataForSEO API error ${json.status_code}: ${json.status_message}`);
   }
 
+  void logDfsCall(endpoint, json.cost ?? 0);
   return { result: json.tasks?.[0]?.result?.[0] ?? null, dfsCost: json.cost ?? 0 };
 }
 

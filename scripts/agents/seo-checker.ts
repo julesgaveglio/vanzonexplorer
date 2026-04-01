@@ -16,7 +16,7 @@ import { fileURLToPath } from "url";
 import * as path from "path";
 import { notifyTelegram } from "../lib/telegram";
 import { getQueueItems, updateQueueItem } from "../lib/queue";
-import { startRun, finishRun } from "../lib/agent-runs";
+import { startRun, finishRun, logDfsCall } from "../lib/agent-runs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -91,6 +91,7 @@ async function dfsPost<T = unknown>(endpoint: string, body: unknown): Promise<T>
     throw new Error(`DataForSEO API error: ${json.status_message}`);
   }
 
+  void logDfsCall(endpoint, json.cost ?? 0);
   return json.tasks?.[0]?.result?.[0] as T;
 }
 

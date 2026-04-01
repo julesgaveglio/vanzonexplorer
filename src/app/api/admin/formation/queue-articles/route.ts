@@ -1,0 +1,217 @@
+import Groq from "groq-sdk";
+import { createSupabaseAdmin } from "@/lib/supabase/server";
+
+function sseEvent(data: Record<string, unknown>): string {
+  return `data: ${JSON.stringify(data)}\n\n`;
+}
+
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .substring(0, 80);
+}
+
+interface VbaKeyword {
+  keyword: string;
+  search_volume: number;
+  keyword_difficulty: number;
+  topic_cluster: string;
+  opportunity_score: number;
+}
+
+interface ArticleProposal {
+  title: string;
+  slug: string;
+  excerpt: string;
+  targetKeyword: string;
+  secondaryKeywords: string[];
+  category: string;
+  targetWordCount: number;
+  priority: number;
+}
+
+function clusterToCategory(cluster: string): string {
+  if (cluster.includes("Business")) return "Business Van";
+  if (cluster.includes("Aménagement")) return "Aménagement Van";
+  if (cluster.includes("Achat")) return "Achat Van";
+  if (cluster.includes("Location")) return "Location Van";
+  if (cluster.includes("Formation")) return "Business Van";
+  return "Business Van";
+}
+
+export async function POST() {
+  const encoder = new TextEncoder();
+
+  const stream = new ReadableStream({
+    async start(controller) {
+      const send = (data: Record<string, unknown>) => {
+        controller.enqueue(encoder.encode(sseEvent(data)));
+      };
+
+      try {
+        const supabase = createSupabaseAdmin();
+
+        // 1. Lire top 60 keywords de vba_keywords
+        send({ type: "log", level: "info", message: "Lecture des meilleurs mots-clés VBA..." });
+
+        const { data: keywords, error: kwError } = await supabase
+          .from("vba_keywords")
+          .select("keyword, search_volume, keyword_difficulty, topic_cluster, opportunity_score")
+          .order("opportunity_score", { ascending: false })
+          .limit(60);
+
+        if (kwError || !keywords || keywords.length === 0) {
+          send({ type: "log", level: "error", message: "Aucun mot-clé VBA trouvé. Lance d'abord la recherche de mots-clés." });
+          send({ type: "done", inserted: 0, skipped: 0 });
+          controller.close();
+          return;
+        }
+
+        send({ type: "log", level: "info", message: `${keywords.length} mots-clés chargés` });
+
+        // 2. Groq en batches de 15 → générer propositions d'articles
+        const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+        const batchSize = 15;
+        const proposals: ArticleProposal[] = [];
+
+        for (let i = 0; i < keywords.length; i += batchSize) {
+          const batch = (keywords as VbaKeyword[]).slice(i, i + batchSize);
+          const batchNum = Math.floor(i / batchSize) + 1;
+          const totalBatches = Math.ceil(keywords.length / batchSize);
+
+          send({ type: "log", level: "info", message: `Génération batch ${batchNum}/${totalBatches} (${batch.length} mots-clés)...` });
+
+          const kwList = batch.map((k, idx) =>
+            `${idx + 1}. Mot-clé: "${k.keyword}" | Cluster: ${k.topic_cluster} | Volume: ${k.search_volume} | Difficulté: ${Math.round(k.keyword_difficulty ?? 50)}`
+          ).join("\n");
+
+          try {
+            const groqRes = await groq.chat.completions.create({
+              model: "llama-3.3-70b-versatile",
+              messages: [{
+                role: "user",
+                content: `Tu es un expert SEO et formateur en business van aménagé. Pour chaque mot-clé ci-dessous, génère une proposition d'article de blog optimisé SEO pour Vanzon Explorer (formation van aménagé, business, achat-revente, location van).
+
+Pour chaque mot-clé, retourne un objet JSON avec :
+- title: titre accrocheur de l'article (60-70 caractères max)
+- slug: slug URL (tirets, minuscules, pas d'accents, max 60 chars)
+- excerpt: résumé de 150 caractères max
+- targetKeyword: le mot-clé exact donné
+- secondaryKeywords: tableau de 3-5 mots-clés secondaires liés
+- category: une parmi "Business Van" | "Aménagement Van" | "Achat Van" | "Location Van"
+- targetWordCount: nombre de mots cible entre 1200 et 2500
+- priority: priorité de 1 (haute) à 100 (basse) selon le volume/difficulté
+
+Réponds UNIQUEMENT avec un tableau JSON valide. Pas de texte autour.
+
+Mots-clés :
+${kwList}`,
+              }],
+              temperature: 0.4,
+              max_tokens: 4000,
+            });
+
+            const rawContent = groqRes.choices[0]?.message?.content ?? "[]";
+            let batchProposals: ArticleProposal[] = [];
+            try {
+              const jsonMatch = rawContent.match(/\[[\s\S]*\]/);
+              batchProposals = jsonMatch ? JSON.parse(jsonMatch[0]) : JSON.parse(rawContent);
+            } catch {
+              send({ type: "log", level: "error", message: `Erreur parsing batch ${batchNum}: ${rawContent.substring(0, 200)}` });
+            }
+
+            proposals.push(...batchProposals);
+            send({ type: "log", level: "info", message: `Batch ${batchNum} : ${batchProposals.length} articles proposés` });
+
+          } catch (err) {
+            send({ type: "log", level: "error", message: `Erreur Groq batch ${batchNum}: ${err instanceof Error ? err.message : String(err)}` });
+          }
+        }
+
+        send({ type: "log", level: "info", message: `${proposals.length} articles générés, déduplication en cours...` });
+
+        // 3. Dédupliquer vs article_queue existante
+        const { data: existingItems } = await supabase
+          .from("article_queue")
+          .select("target_keyword")
+          .eq("added_by", "vba-keyword-strategy");
+
+        const existingKeywords = new Set(
+          (existingItems ?? []).map((r: { target_keyword: string }) => r.target_keyword?.toLowerCase() ?? "")
+        );
+
+        let inserted = 0;
+        let skipped = 0;
+
+        // 4. Insérer dans article_queue
+        for (const proposal of proposals) {
+          const targetKw = (proposal.targetKeyword ?? "").toLowerCase();
+          if (existingKeywords.has(targetKw)) {
+            skipped++;
+            continue;
+          }
+
+          const slug = proposal.slug || slugify(proposal.title ?? proposal.targetKeyword);
+          const { error: insertError } = await supabase
+            .from("article_queue")
+            .insert({
+              id: crypto.randomUUID(),
+              slug,
+              title: proposal.title,
+              excerpt: proposal.excerpt ?? "",
+              category: proposal.category ?? clusterToCategory("Business Van"),
+              tag: "VBA",
+              read_time: "7 min",
+              target_keyword: proposal.targetKeyword,
+              secondary_keywords: proposal.secondaryKeywords ?? [],
+              target_word_count: proposal.targetWordCount ?? 1500,
+              status: "pending",
+              priority: proposal.priority ?? 50,
+              sanity_id: null,
+              published_at: null,
+              added_by: "vba-keyword-strategy",
+            });
+
+          if (insertError) {
+            if (insertError.code === "23505") {
+              skipped++;
+            } else {
+              send({ type: "log", level: "error", message: `Erreur insert "${proposal.title}": ${insertError.message}` });
+            }
+          } else {
+            inserted++;
+            existingKeywords.add(targetKw);
+          }
+        }
+
+        send({ type: "log", level: "success", message: `${inserted} articles ajoutés à la file, ${skipped} doublons ignorés` });
+        send({ type: "done", inserted, skipped });
+
+      } catch (error) {
+        send({
+          type: "log",
+          level: "error",
+          message: `Erreur: ${error instanceof Error ? error.message : String(error)}`,
+        });
+        send({ type: "done", inserted: 0, skipped: 0 });
+      }
+
+      controller.close();
+    },
+  });
+
+  return new Response(stream, {
+    headers: {
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache",
+      Connection: "keep-alive",
+      "X-Accel-Buffering": "no",
+    },
+  });
+}

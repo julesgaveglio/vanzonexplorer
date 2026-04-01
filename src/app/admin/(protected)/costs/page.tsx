@@ -3,6 +3,7 @@ import { createSupabaseAdmin } from "@/lib/supabase/server";
 import CostKpiBar from "./_components/CostKpiBar";
 import CostChart from "./_components/CostChart";
 import CostRunsTable from "./_components/CostRunsTable";
+import DfsCallsTable, { type DfsLogRow } from "./_components/DfsCallsTable";
 
 export const metadata: Metadata = {
   title: "Coûts IA — Vanzon Admin",
@@ -121,8 +122,33 @@ async function getCostData() {
   }
 }
 
+async function getDfsLogs() {
+  try {
+    const sb = createSupabaseAdmin();
+    const { data, error } = await sb
+      .from("dataforseo_logs")
+      .select("id, created_at, endpoint, label, cost_usd, cost_eur, status_code")
+      .order("created_at", { ascending: false })
+      .limit(500);
+
+    if (error) throw error;
+    const logs = (data ?? []) as DfsLogRow[];
+
+    const now = new Date();
+    const monthStart = new Date(Date.UTC(now.getFullYear(), now.getMonth(), 1));
+    const totalEur = logs.reduce((s, l) => s + Number(l.cost_eur), 0);
+    const thisMonthEur = logs
+      .filter((l) => new Date(l.created_at) >= monthStart)
+      .reduce((s, l) => s + Number(l.cost_eur), 0);
+
+    return { logs, totalEur, thisMonthEur, callCount: logs.length };
+  } catch {
+    return { logs: [], totalEur: 0, thisMonthEur: 0, callCount: 0 };
+  }
+}
+
 export default async function AdminCostsPage() {
-  const data = await getCostData();
+  const [data, dfsData] = await Promise.all([getCostData(), getDfsLogs()]);
 
   const kpis = data?.kpis ?? { allTime: 0, thisMonth: 0, thisWeek: 0, avgPerBlogArticle: 0 };
   const timeSeriesWeekly = data?.timeSeriesWeekly ?? [];
@@ -154,9 +180,23 @@ export default async function AdminCostsPage() {
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-4">
           <span className="w-8 h-px bg-slate-200" />
-          <span className="text-xs font-semibold uppercase tracking-widest text-slate-400">Détail des runs</span>
+          <span className="text-xs font-semibold uppercase tracking-widest text-slate-400">Détail des runs agents</span>
         </div>
         <CostRunsTable runs={recentRuns} />
+      </div>
+
+      {/* DataForSEO logs */}
+      <div className="mb-8">
+        <div className="flex items-center gap-3 mb-4">
+          <span className="w-8 h-px bg-slate-200" />
+          <span className="text-xs font-semibold uppercase tracking-widest text-slate-400">DataForSEO — appels & coûts</span>
+        </div>
+        <DfsCallsTable
+          logs={dfsData.logs}
+          totalEur={dfsData.totalEur}
+          thisMonthEur={dfsData.thisMonthEur}
+          callCount={dfsData.callCount}
+        />
       </div>
     </div>
   );
