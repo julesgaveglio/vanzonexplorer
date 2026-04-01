@@ -14,6 +14,7 @@ import {
   DUREE_OPTIONS,
 } from '@/lib/road-trip/constants'
 import type { InteretValue } from '@/lib/road-trip/constants'
+import { RoadTripTerminal, type TerminalLine } from './RoadTripTerminal'
 
 // ── Zod schema (mirrors API route exactly) ────────────────────────────────────
 const InteretEnum = z.enum(
@@ -88,8 +89,9 @@ const MOIS_LABELS: Record<string, string> = {
 // ── Component ─────────────────────────────────────────────────────────────────
 export default function RoadTripWizard() {
   const [step, setStep] = useState(1)
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+  const [status, setStatus] = useState<'idle' | 'streaming' | 'success' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState('')
+  const [terminalLines, setTerminalLines] = useState<TerminalLine[]>([])
 
   const {
     register,
@@ -132,26 +134,82 @@ export default function RoadTripWizard() {
     )
   }
 
-  // ── Submit ─────────────────────────────────────────────────────────────────
+  // ── Submit (streaming) ─────────────────────────────────────────────────────
   const onSubmit: SubmitHandler<FormData> = async (data) => {
-    setStatus('loading')
+    setStatus('streaming')
+    setTerminalLines([])
+
+    let lineCounter = 0
+    const addLine = (text: string) => {
+      const id = String(++lineCounter)
+      setTerminalLines((prev) => [
+        ...prev.map((l) => ({ ...l, done: true })),
+        { id, text, done: false },
+      ])
+    }
+
     try {
       const res = await fetch('/api/road-trip/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       })
-      const json = await res.json()
+
+      // Non-2xx → pre-flight error (returned as JSON)
       if (!res.ok) {
-        setErrorMessage(
-          json.error || 'Une erreur est survenue, réessaie dans quelques instants.'
-        )
+        const json = await res.json().catch(() => ({})) as { error?: string }
+        setErrorMessage(json.error ?? 'Une erreur est survenue, réessaie dans quelques instants.')
         setStatus('error')
-      } else {
-        setStatus('success')
+        return
+      }
+
+      const reader = res.body?.getReader()
+      if (!reader) {
+        setErrorMessage('Réponse inattendue du serveur.')
+        setStatus('error')
+        return
+      }
+
+      const decoder = new TextDecoder()
+      let buffer = ''
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        buffer += decoder.decode(value, { stream: true })
+        const parts = buffer.split('\n\n')
+        buffer = parts.pop() ?? ''
+
+        for (const part of parts) {
+          for (const raw of part.split('\n')) {
+            if (!raw.startsWith('data: ')) continue
+            try {
+              const event = JSON.parse(raw.slice(6)) as {
+                type: string
+                message?: string
+              }
+
+              if (event.type === 'progress' && event.message) {
+                addLine(event.message)
+              } else if (event.type === 'done') {
+                // Mark all lines as done, then transition to success
+                setTerminalLines((prev) => prev.map((l) => ({ ...l, done: true })))
+                setTimeout(() => setStatus('success'), 1000)
+                return
+              } else if (event.type === 'error') {
+                setErrorMessage(event.message ?? 'Erreur interne, réessaie dans quelques instants.')
+                setStatus('error')
+                return
+              }
+            } catch {
+              // ignore malformed SSE lines
+            }
+          }
+        }
       }
     } catch {
-      setErrorMessage('Une erreur est survenue, réessaie dans quelques instants.')
+      setErrorMessage('Une erreur réseau est survenue. Vérifie ta connexion et réessaie.')
       setStatus('error')
     }
   }
@@ -159,20 +217,14 @@ export default function RoadTripWizard() {
   // ── Progress bar ───────────────────────────────────────────────────────────
   const progressPercent = (step / 4) * 100
 
-  // ── Loading state ──────────────────────────────────────────────────────────
-  if (status === 'loading') {
+  // ── Streaming / terminal state ─────────────────────────────────────────────
+  if (status === 'streaming') {
     return (
-      <div className="p-8 flex flex-col items-center justify-center gap-6 min-h-[320px]">
-        <div className="relative w-16 h-16">
-          <div className="absolute inset-0 rounded-full border-4 border-white/40" />
-          <div className="absolute inset-0 rounded-full border-4 border-[#72b9bb] border-t-transparent animate-spin" />
-        </div>
-        <div className="text-center">
-          <p className="text-lg font-semibold" style={{ color: '#0f3535' }}>Génération en cours…</p>
-          <p className="text-sm mt-1" style={{ color: '#5a9090' }}>
-            On prépare ton road trip personnalisé 🚐
-          </p>
-        </div>
+      <div className="py-2">
+        <p className="text-sm text-center mb-5 font-medium" style={{ color: '#5a9090' }}>
+          On construit ton road trip sur mesure… 🚐
+        </p>
+        <RoadTripTerminal lines={terminalLines} />
       </div>
     )
   }
@@ -536,10 +588,7 @@ export default function RoadTripWizard() {
               <div className="grid grid-cols-2 gap-3 mb-6">
                 <RecapCard label="Prénom" value={values.prenom} />
                 <RecapCard label="Email" value={values.email} truncate />
-                <RecapCard
-                  label="Région"
-                  value={values.region}
-                />
+                <RecapCard label="Région" value={values.region} />
                 <RecapCard
                   label="Durée"
                   value={`${values.duree} jour${values.duree > 1 ? 's' : ''}`}
@@ -594,7 +643,7 @@ export default function RoadTripWizard() {
                 </div>
               </div>
 
-              {/* Error message + retry */}
+              {/* Error message (from streaming failure) */}
               {status === 'error' && (
                 <div className="mb-4 p-4 rounded-xl text-red-600 text-sm flex flex-col gap-3" style={{ background: 'rgba(254,242,242,0.70)', border: '1px solid rgba(254,202,202,0.60)' }}>
                   <p>{errorMessage}</p>

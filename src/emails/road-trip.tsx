@@ -1,6 +1,5 @@
 // src/emails/road-trip.tsx
 // Plain HTML email — no @react-email/components dependency needed
-// Resend accepts raw HTML strings, so we export a function, not a JSX component
 
 interface SpotBase {
   nom: string
@@ -11,8 +10,23 @@ interface SpotBase {
 
 interface SpotEnriched extends SpotBase {
   mapsUrl: string
-  photo?: { url: string; photographer: string; photoUrl: string }
+  photo?: { url: string; photographer: string; photoUrl: string; source?: string }
   wiki?: { extract: string; url: string; thumbnail?: string }
+}
+
+interface CampingOption {
+  name: string
+  mapsUrl: string
+  fee?: string
+  motorhome?: string
+  website?: string
+}
+
+interface RestaurantInfo {
+  nom: string
+  type: string
+  specialite: string
+  description: string
 }
 
 interface JourItineraire {
@@ -21,6 +35,8 @@ interface JourItineraire {
   spots: SpotBase[] | SpotEnriched[]
   camping: string
   campingMapsUrl?: string
+  campingOptions?: CampingOption[]
+  restaurant?: RestaurantInfo
   tips: string
 }
 
@@ -59,9 +75,12 @@ export function buildRoadTripEmail({
       ? `<img src="${enriched.photo.url}" alt="${spot.nom}" width="600" style="width:100%;height:220px;object-fit:cover;display:block;" />`
       : ''
 
-    const creditHtml = enriched?.photo
-      ? `<p style="margin:8px 0 0 0;color:#94A3B8;font-size:11px;">📷 Photo : <a href="${enriched.photo.photoUrl}" style="color:#94A3B8;text-decoration:underline;" target="_blank">${enriched.photo.photographer}</a> via Pexels</p>`
-      : ''
+    const creditHtml =
+      enriched?.photo && enriched.photo.source !== 'wikipedia'
+        ? `<p style="margin:8px 0 0 0;color:#94A3B8;font-size:11px;">📷 <a href="${enriched.photo.photoUrl}" style="color:#94A3B8;text-decoration:underline;" target="_blank">${enriched.photo.photographer}</a> via Pexels</p>`
+        : enriched?.photo?.source === 'wikipedia'
+          ? `<p style="margin:8px 0 0 0;color:#94A3B8;font-size:11px;">📷 Photo via Wikipedia</p>`
+          : ''
 
     const wikiHtml =
       enriched?.wiki?.extract
@@ -99,33 +118,106 @@ export function buildRoadTripEmail({
     `
   }
 
-  // ── Day card ─────────────────────────────────────────────────────────────────
+  // ── Restaurant card ───────────────────────────────────────────────────────────
+  function buildRestaurantCard(restaurant: RestaurantInfo): string {
+    const mapsSearch = `https://maps.google.com/?q=${encodeURIComponent(restaurant.nom + ' ' + region + ' France restaurant')}`
+    return `
+      <div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;padding:16px;margin-top:12px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <div>
+            <p style="margin:0 0 3px 0;color:#C2410C;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">🍽️ Où manger ce soir</p>
+            <p style="margin:0;color:#7C2D12;font-size:11px;">${restaurant.type} · ${restaurant.specialite}</p>
+          </div>
+          <a href="${mapsSearch}" target="_blank" style="display:inline-block;background:#EA580C;color:#FFFFFF;padding:7px 14px;border-radius:20px;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap;flex-shrink:0;">📍 Maps</a>
+        </div>
+        <p style="margin:0 0 6px 0;color:#431407;font-size:15px;font-weight:700;">${restaurant.nom}</p>
+        <p style="margin:0;color:#9A3412;font-size:13px;line-height:1.6;">${restaurant.description}</p>
+      </div>
+    `
+  }
+
+  // ── Camping options (Overpass) ────────────────────────────────────────────────
+  function buildCampingOptionsCard(options: CampingOption[], llmCamping: string, llmMapsUrl?: string): string {
+    const llmUrl = llmMapsUrl ?? `https://maps.google.com/?q=${encodeURIComponent(llmCamping + ' camping France')}`
+
+    // Primary LLM suggestion
+    const primaryCard = `
+      <div style="flex:1;">
+        <p style="margin:0 0 4px 0;color:#166534;font-size:13px;font-weight:700;">🏕️ Ce soir</p>
+        <p style="margin:0;color:#15803D;font-size:14px;">${llmCamping}</p>
+      </div>
+      <a href="${llmUrl}" target="_blank" style="display:inline-block;background:#16A34A;color:#FFFFFF;padding:7px 14px;border-radius:20px;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap;">📍 Maps</a>
+    `
+
+    if (options.length === 0) {
+      return `
+        <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;padding:14px 16px;margin-top:12px;display:flex;align-items:center;gap:12px;">
+          ${primaryCard}
+        </div>
+      `
+    }
+
+    // Overpass options below
+    const optionCards = options
+      .map((c) => {
+        const feeBadge =
+          c.fee === 'no' || c.fee === 'free'
+            ? `<span style="display:inline-block;background:#DCFCE7;color:#166534;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;margin-left:6px;">Gratuit ✅</span>`
+            : c.fee === 'yes'
+              ? `<span style="display:inline-block;background:#FEF9C3;color:#713F12;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;margin-left:6px;">Payant</span>`
+              : ''
+        const vanBadge =
+          c.motorhome === 'yes' || c.motorhome === 'designated'
+            ? `<span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;margin-left:4px;">🚐 Van OK</span>`
+            : ''
+        return `
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #E7F3EA;">
+            <div>
+              <span style="color:#14532D;font-size:13px;font-weight:600;">${c.name}</span>
+              ${feeBadge}
+              ${vanBadge}
+            </div>
+            <a href="${c.mapsUrl}" target="_blank" style="display:inline-block;background:#BBF7D0;color:#166534;padding:5px 12px;border-radius:20px;text-decoration:none;font-size:11px;font-weight:600;white-space:nowrap;flex-shrink:0;">Maps</a>
+          </div>
+        `
+      })
+      .join('')
+
+    return `
+      <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;padding:14px 16px;margin-top:12px;">
+        <div style="display:flex;align-items:center;gap:12px;padding-bottom:12px;border-bottom:1px solid #BBF7D0;">
+          ${primaryCard}
+        </div>
+        <div style="margin-top:10px;">
+          <p style="margin:0 0 8px 0;color:#166534;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">Autres options à proximité</p>
+          ${optionCards}
+        </div>
+      </div>
+    `
+  }
+
+  // ── Day cards ─────────────────────────────────────────────────────────────────
   const joursHtml = itineraire.jours
     .map((jour) => {
       const spotsHtml = jour.spots.map(buildSpotCard).join('')
-
-      const campingUrl = jour.campingMapsUrl
-        ?? `https://maps.google.com/?q=${encodeURIComponent(jour.camping + ' France camping')}`
+      const restaurantHtml = jour.restaurant ? buildRestaurantCard(jour.restaurant) : ''
+      const campingHtml = buildCampingOptionsCard(
+        jour.campingOptions ?? [],
+        jour.camping,
+        jour.campingMapsUrl
+      )
 
       return `
-        <div style="margin-bottom:32px;">
+        <div style="margin-bottom:36px;">
           <div style="border-left:4px solid #2563EB;padding-left:16px;margin-bottom:16px;">
             <p style="margin:0 0 2px 0;color:#2563EB;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;">Jour ${jour.numero}</p>
             <h2 style="margin:0;color:#0F172A;font-size:22px;font-weight:800;line-height:1.2;">${jour.titre}</h2>
           </div>
 
           ${spotsHtml}
+          ${restaurantHtml}
+          ${campingHtml}
 
-          <!-- Camping -->
-          <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;padding:14px 16px;margin-top:12px;display:flex;align-items:center;gap:12px;">
-            <div style="flex:1;">
-              <p style="margin:0 0 4px 0;color:#166534;font-size:13px;font-weight:700;">🏕️ Ce soir</p>
-              <p style="margin:0;color:#15803D;font-size:14px;">${jour.camping}</p>
-            </div>
-            <a href="${campingUrl}" target="_blank" style="display:inline-block;background:#16A34A;color:#FFFFFF;padding:7px 14px;border-radius:20px;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap;">📍 Maps</a>
-          </div>
-
-          <!-- Tips van -->
           ${
             jour.tips
               ? `<div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:10px;padding:14px 16px;margin-top:8px;">
@@ -169,7 +261,6 @@ export function buildRoadTripEmail({
 
     <!-- Hero banner -->
     <div style="background:#FFFFFF;margin:0 20px;border-radius:20px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
-      <!-- Gradient strip -->
       <div style="background:linear-gradient(135deg,#1D4ED8 0%,#0EA5E9 100%);padding:32px 32px 28px;text-align:center;">
         <div style="display:inline-block;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:20px;padding:4px 14px;margin-bottom:16px;">
           <span style="color:#FFFFFF;font-size:12px;font-weight:600;letter-spacing:0.05em;">✨ Généré par IA · Vanzon Explorer</span>
@@ -179,8 +270,6 @@ export function buildRoadTripEmail({
         </h1>
         <p style="margin:0;color:rgba(255,255,255,0.85);font-size:15px;">Salut ${prenom} ! Ton itinéraire sur mesure est prêt 🚐</p>
       </div>
-
-      <!-- Intro text -->
       <div style="padding:24px 28px 20px;">
         <p style="margin:0;color:#334155;font-size:15px;line-height:1.75;">${itineraire.intro}</p>
       </div>
@@ -188,11 +277,8 @@ export function buildRoadTripEmail({
 
     <!-- Main content -->
     <div style="background:#FFFFFF;margin:16px 20px 0;border-radius:20px;padding:28px;box-shadow:0 4px 24px rgba(0,0,0,0.06);">
-
-      <!-- Jours -->
       ${joursHtml}
 
-      <!-- Separator -->
       <div style="border-top:2px solid #EFF6FF;margin:24px 0;"></div>
 
       <!-- Conseils pratiques -->
@@ -200,7 +286,6 @@ export function buildRoadTripEmail({
         <h3 style="margin:0 0 18px 0;color:#1D4ED8;font-size:16px;font-weight:800;">💡 Conseils pratiques van</h3>
         ${conseilsHtml}
       </div>
-
     </div>
 
     <!-- CTA block -->
