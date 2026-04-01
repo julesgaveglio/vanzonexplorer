@@ -414,9 +414,9 @@ ${restaurantInstruction}`
     throw new Error('No valid JSON found in Groq response')
   }
 
-  async function callGroq(temperature: number): Promise<ItineraireData> {
+  async function callGroq(temperature: number, model: string): Promise<ItineraireData> {
     const completion = await groq.chat.completions.create({
-      model: 'llama-3.3-70b-versatile',
+      model,
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt },
@@ -429,11 +429,12 @@ ${restaurantInstruction}`
     return extractJson(raw)
   }
 
+  // Try best model first, fall back to faster model with higher token quota
   try {
-    return await callGroq(0.7)
+    return await callGroq(0.7, 'llama-3.3-70b-versatile')
   } catch (err) {
-    console.error('[road-trip] callGroq(0.7) failed:', err)
-    return await callGroq(0)
+    console.error('[road-trip] llama-3.3-70b failed:', (err as Error).message)
+    return await callGroq(0.5, 'llama-3.1-8b-instant')
   }
 }
 
@@ -680,8 +681,21 @@ export async function POST(req: NextRequest) {
       await emit('progress', { message: '✅  C\'est prêt ! Vérifie ta boîte mail 🎉' })
       await emit('done', {})
     } catch (err) {
-      console.error('[road-trip/generate]', err)
-      await emit('error', { message: 'Erreur interne, réessaie dans quelques instants.' })
+      const errMsg = (err as Error).message ?? ''
+      console.error('[road-trip/generate]', errMsg)
+
+      // Detect Groq rate limit — give a user-friendly message
+      const isRateLimit =
+        errMsg.includes('rate_limit_exceeded') ||
+        errMsg.includes('Rate limit') ||
+        errMsg.includes('429') ||
+        (err as { status?: number }).status === 429
+
+      const userMessage = isRateLimit
+        ? "Notre IA est momentanément surchargée 😅 Réessaie dans 2-3 minutes !"
+        : 'Erreur interne, réessaie dans quelques instants.'
+
+      await emit('error', { message: userMessage })
       await supabase
         .from('road_trip_requests')
         .update({ status: 'error' })
