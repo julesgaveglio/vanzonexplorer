@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -61,6 +61,8 @@ function BurgerIcon({ open }: { open: boolean }) {
 export default function Navbar() {
   const [mobileOpen, setMobileOpen]   = useState(false);
   const [desktopOpen, setDesktopOpen] = useState(false);
+  const [headerHidden, setHeaderHidden] = useState(false);
+  const lastScrollY = useRef(0);
   const pathname  = usePathname();
   const { isSignedIn } = useUser();
   const logoSrc = getNavLogo(pathname);
@@ -70,6 +72,27 @@ export default function Navbar() {
     setMobileOpen(false);
     setDesktopOpen(false);
   }, [pathname]);
+
+  // Hide header on scroll down (mobile only)
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.innerWidth >= 1024 || mobileOpen) return;
+      const currentY = window.scrollY;
+      if (currentY > lastScrollY.current && currentY > 80) {
+        setHeaderHidden(true);
+      } else {
+        setHeaderHidden(false);
+      }
+      lastScrollY.current = currentY;
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [mobileOpen]);
+
+  // Toujours visible quand le menu mobile est ouvert
+  useEffect(() => {
+    if (mobileOpen) setHeaderHidden(false);
+  }, [mobileOpen]);
 
   // Lock body scroll when any menu is open
   useEffect(() => {
@@ -222,7 +245,11 @@ export default function Navbar() {
         )}
       </AnimatePresence>
 
-      <header className="fixed top-0 left-0 right-0 z-50">
+      <motion.header
+        className="fixed top-0 left-0 right-0 z-50"
+        animate={{ y: headerHidden ? "-100%" : 0 }}
+        transition={{ duration: 0.28, ease: [0.32, 0.72, 0, 1] }}
+      >
         <nav
           className="border-b"
           style={{
@@ -380,7 +407,7 @@ export default function Navbar() {
             </motion.div>
           )}
         </AnimatePresence>
-      </header>
+      </motion.header>
     </>
   );
 }
