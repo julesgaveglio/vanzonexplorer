@@ -1,5 +1,7 @@
 import { Metadata } from "next";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
+import { client as sanityClient } from "@/lib/sanity/client";
+import { groq } from "next-sanity";
 import type { ArticleQueueItem, GscMetrics, GaMetrics } from "../types";
 import PublishedArticlesTable from "../_components/PublishedArticlesTable";
 import IntegrationsPanel from "../_components/IntegrationsPanel";
@@ -9,40 +11,96 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+// Tous les articles dans Sanity — source de vérité des articles en ligne
+const sanityArticlesQuery = groq`
+  *[_type == "article"] | order(publishedAt desc) {
+    _id,
+    title,
+    "slug": slug.current,
+    excerpt,
+    category,
+    tag,
+    readTime,
+    publishedAt,
+  }
+`;
+
+interface SanityArticle {
+  _id: string;
+  title: string;
+  slug: string;
+  excerpt?: string;
+  category?: string;
+  tag?: string;
+  readTime?: string;
+  publishedAt?: string;
+}
+
 async function getPublishedArticles(): Promise<ArticleQueueItem[]> {
   try {
+    // 1. Source de vérité : Sanity — TOUS les articles présents dans le CMS
+    const sanityArticles = await sanityClient.fetch<SanityArticle[]>(sanityArticlesQuery);
+
+    if (!sanityArticles || sanityArticles.length === 0) {
+      // Fallback : si Sanity inaccessible, on tente la queue
+      const sb = createSupabaseAdmin();
+      const { data } = await sb
+        .from("article_queue")
+        .select("*")
+        .in("status", ["published", "needs-improvement"])
+        .order("published_at", { ascending: false });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return (data ?? []).map((row: any) => ({
+        id: row.id, slug: row.slug, title: row.title, excerpt: row.excerpt ?? "",
+        category: row.category, tag: row.tag ?? null, readTime: row.read_time ?? "5 min",
+        targetKeyword: row.target_keyword ?? "", secondaryKeywords: row.secondary_keywords ?? [],
+        status: row.status, priority: row.priority, sanityId: row.sanity_id ?? null,
+        publishedAt: row.published_at ?? null, lastSeoCheck: null, seoPosition: row.seo_position ?? null,
+        searchVolume: row.search_volume, competitionLevel: row.competition_level, seoScore: row.seo_score,
+        createdAt: row.created_at,
+      })) as ArticleQueueItem[];
+    }
+
+    // 2. Enrichir avec les données de article_queue (target_keyword, seo_position, etc.)
     const sb = createSupabaseAdmin();
-    const { data, error } = await sb
+    const { data: queueRows } = await sb
       .from("article_queue")
-      .select("*")
-      .in("status", ["published", "needs-improvement"])
-      .order("published_at", { ascending: false });
-    if (error) throw error;
+      .select("slug, target_keyword, seo_position, seo_score, search_volume, competition_level, sanity_id, status, priority, created_at");
+
+    // Index par slug pour lookup O(1)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return (data ?? []).map((row: any) => ({
-      id:               row.id,
-      slug:             row.slug,
-      title:            row.title,
-      excerpt:          row.excerpt ?? "",
-      category:         row.category,
-      tag:              row.tag ?? null,
-      readTime:         row.read_time ?? "5 min",
-      targetKeyword:    row.target_keyword ?? "",
-      secondaryKeywords: row.secondary_keywords ?? [],
-      targetWordCount:  row.target_word_count,
-      wordCountNote:    row.word_count_note,
-      status:           row.status,
-      priority:         row.priority,
-      sanityId:         row.sanity_id ?? null,
-      publishedAt:      row.published_at ?? null,
-      lastSeoCheck:     row.last_seo_check ?? null,
-      seoPosition:      row.seo_position ?? null,
-      searchVolume:     row.search_volume,
-      competitionLevel: row.competition_level,
-      seoScore:         row.seo_score,
-      createdAt:        row.created_at,
-    })) as ArticleQueueItem[];
-  } catch {
+    const queueBySlug = new Map<string, any>();
+    for (const row of queueRows ?? []) {
+      if (row.slug) queueBySlug.set(row.slug, row);
+    }
+
+    // 3. Construire la liste finale depuis Sanity, enrichie de la queue
+    return sanityArticles.map((a) => {
+      const q = queueBySlug.get(a.slug);
+      return {
+        id:               q?.id ?? a._id,
+        slug:             a.slug,
+        title:            a.title ?? "",
+        excerpt:          a.excerpt ?? "",
+        category:         (a.category ?? "Business Van") as ArticleQueueItem["category"],
+        tag:              a.tag ?? null,
+        readTime:         a.readTime ?? "5 min",
+        targetKeyword:    q?.target_keyword ?? "",
+        secondaryKeywords: [],
+        status:           (q?.status === "published" || !q ? "published" : q.status) as ArticleQueueItem["status"],
+        priority:         q?.priority ?? 99,
+        sanityId:         a._id,
+        publishedAt:      a.publishedAt ?? null,
+        lastSeoCheck:     null,
+        seoPosition:      q?.seo_position ?? null,
+        searchVolume:     q?.search_volume,
+        competitionLevel: q?.competition_level,
+        seoScore:         q?.seo_score,
+        createdAt:        q?.created_at,
+      } as ArticleQueueItem;
+    });
+  } catch (e) {
+    console.error("[ArticlesPublies]", e);
     return [];
   }
 }
