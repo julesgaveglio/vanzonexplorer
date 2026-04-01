@@ -144,14 +144,21 @@ export async function buildAndSendPreview(
 
   try {
     // Générer le brouillon
-    const draft = await generateEmailDraft(row.prenom, row.region, row.duree);
+    let draft: EmailDraft;
+    try {
+      draft = await generateEmailDraft(row.prenom, row.region, row.duree);
+    } catch (draftErr) {
+      console.error("[send-email] generateEmailDraft error:", draftErr);
+      await tgSend(chatId, `❌ Erreur génération Groq : ${String(draftErr).slice(0, 200)}`);
+      return;
+    }
 
     // Récupérer la signature Gmail
     const signature = await fetchGmailSignature("jules@vanzonexplorer.com");
 
     // Stocker la pending action
     const pendingId = shortId();
-    await supabase.from("telegram_pending_actions").insert({
+    const { error: insertErr } = await supabase.from("telegram_pending_actions").insert({
       id:         pendingId,
       chat_id:    chatId,
       action:     "send_email",
@@ -173,6 +180,11 @@ export async function buildAndSendPreview(
         },
       },
     });
+    if (insertErr) {
+      console.error("[send-email] insert pending_actions error:", insertErr);
+      await tgSend(chatId, `❌ Erreur DB insert : ${insertErr.message}`);
+      return;
+    }
 
     // Construire le texte d'aperçu (HTML Telegram, pas d'HTML email ici)
     const bodyPreview = draft.body
