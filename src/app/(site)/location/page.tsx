@@ -163,21 +163,21 @@ export default async function LocationPage() {
       />
 
       {/* ── Hero ── */}
-      <section className="relative -mt-16 min-h-screen flex items-end overflow-hidden">
+      <section className="relative -mt-16 min-h-[620px] lg:min-h-screen flex items-start lg:items-end overflow-hidden">
         <div className="absolute inset-0">
           <Image
             src="https://cdn.sanity.io/images/lewexa74/production/d445397965472d300e3dc13d6b1c37503fe8ba25-1920x1080.png?auto=format&q=82"
             alt="Van aménagé au Pays Basque face à l'Atlantique"
             fill
             sizes="100vw"
-            className="object-cover object-center sm:object-center object-right"
+            className="object-cover object-[60%_center] sm:object-center"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-900/50 to-slate-900/20" />
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-950/30 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-900/55 to-slate-900/10" />
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-950/40 via-transparent to-transparent" />
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-6 pb-20 pt-32 w-full">
+        <div className="relative z-10 max-w-7xl mx-auto px-6 pt-28 pb-14 lg:pb-20 lg:pt-32 w-full">
           <nav aria-label="Fil d'Ariane" className="mb-6">
             <ol className="flex items-center gap-2 text-white/50 text-xs font-medium">
               <li><Link href="/" className="hover:text-white/80 transition-colors">Accueil</Link></li>
@@ -191,31 +191,35 @@ export default async function LocationPage() {
               href="https://www.google.com/maps/place/?q=place_id:ChIJ7-3ASe0oTyQR6vNHg7YRicA"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-2 mb-6 transition-transform hover:scale-105 cursor-pointer"
+              className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-2 mb-8 transition-transform hover:scale-105 cursor-pointer"
             >
               <span className="text-amber-400">★★★★★</span>
               <span className="text-white/90 text-sm font-medium">{placeStats.reviewCount} avis Google · {placeStats.ratingDisplay}/5</span>
             </a>
 
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[1.05] mb-6">
+            <h1 className="text-4xl sm:text-4xl md:text-6xl lg:text-7xl font-black text-white leading-[1.08] mb-7">
               Location van aménagé<br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4BC3E3] to-[#4D5FEC]">
                 au Pays Basque
               </span>
             </h1>
 
-            <p className="text-xl text-white/75 leading-relaxed mb-8 max-w-xl">
+            <p className="text-lg sm:text-xl text-white/75 leading-relaxed mb-10 max-w-xl">
               Vans tout équipés, assurance incluse, départ Cambo-les-Bains.
               Surf, montagne, road trip — explorez le Pays Basque en toute liberté dès <strong className="text-white">65€/nuit</strong>.
             </p>
 
-            <div className="flex flex-row gap-3">
-              <LiquidButton href="#nos-vans" variant="blue" size="lg">
-                Voir nos vans disponibles
-              </LiquidButton>
-              <LiquidButton href="/contact" variant="slate" size="lg" shineDelay={1.9}>
-                Nous contacter →
-              </LiquidButton>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+              <div className="flex w-full sm:w-auto">
+                <LiquidButton href="#nos-vans" variant="blue" size="lg" fullWidth>
+                  Voir nos vans disponibles
+                </LiquidButton>
+              </div>
+              <div className="flex w-full sm:w-auto">
+                <LiquidButton href="/contact" variant="slate" size="lg" shineDelay={1.9} fullWidth>
+                  Nous contacter →
+                </LiquidButton>
+              </div>
             </div>
           </div>
 
@@ -242,7 +246,7 @@ export default async function LocationPage() {
       </section>
 
       {/* ── Barre de réassurance ── */}
-      <section className="bg-slate-950 py-5 border-t border-white/5">
+      <section className="hidden sm:block bg-slate-950 py-5 border-t border-white/5">
         <div className="max-w-5xl mx-auto px-6">
           <div className="flex flex-wrap justify-center md:justify-between items-center gap-y-4 gap-x-8 text-white/60 text-sm font-medium">
             {[
