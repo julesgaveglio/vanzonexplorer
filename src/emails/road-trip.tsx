@@ -1,5 +1,5 @@
 // src/emails/road-trip.tsx
-// Plain HTML email — no @react-email/components dependency needed
+// Plain HTML email — mobile-first, table-based layout for maximum email client compatibility
 
 interface SpotBase {
   nom: string
@@ -72,7 +72,7 @@ export function buildRoadTripEmail({
     const enriched = isEnriched(spot) ? spot : null
 
     const photoHtml = enriched?.photo
-      ? `<img src="${enriched.photo.url}" alt="${spot.nom}" width="600" style="width:100%;height:220px;object-fit:cover;display:block;" />`
+      ? `<img src="${enriched.photo.url}" alt="${spot.nom}" width="600" style="width:100%;max-width:600px;height:220px;object-fit:cover;display:block;" />`
       : ''
 
     const creditHtml =
@@ -87,18 +87,19 @@ export function buildRoadTripEmail({
         ? `<p style="margin:8px 0 0 0;color:#64748B;font-size:12px;font-style:italic;line-height:1.5;">${enriched.wiki.extract}</p>`
         : ''
 
+    // Buttons stacked vertically — no flex, full-width blocks on mobile
     const mapsBtn = enriched?.mapsUrl
-      ? `<a href="${enriched.mapsUrl}" target="_blank" style="display:inline-block;background:#2563EB;color:#FFFFFF;padding:8px 16px;border-radius:20px;text-decoration:none;font-size:13px;font-weight:600;margin-right:8px;margin-bottom:8px;">📍 Voir sur Maps</a>`
+      ? `<a href="${enriched.mapsUrl}" target="_blank" style="display:inline-block;background:#2563EB;color:#FFFFFF;padding:10px 20px;border-radius:24px;text-decoration:none;font-size:13px;font-weight:700;margin:4px 6px 4px 0;">📍 Voir sur Maps</a>`
       : ''
 
     const wikiBtn =
       enriched?.wiki?.url
-        ? `<a href="${enriched.wiki.url}" target="_blank" style="display:inline-block;background:#F1F5F9;color:#334155;padding:8px 16px;border-radius:20px;text-decoration:none;font-size:13px;font-weight:600;margin-bottom:8px;">ℹ️ En savoir plus</a>`
+        ? `<a href="${enriched.wiki.url}" target="_blank" style="display:inline-block;background:#F1F5F9;color:#334155;padding:10px 20px;border-radius:24px;text-decoration:none;font-size:13px;font-weight:700;margin:4px 0;">ℹ️ En savoir plus</a>`
         : ''
 
     const ctaHtml =
       mapsBtn || wikiBtn
-        ? `<div style="margin-top:12px;">${mapsBtn}${wikiBtn}</div>`
+        ? `<div style="margin-top:14px;line-height:2;">${mapsBtn}${wikiBtn}</div>`
         : ''
 
     return `
@@ -123,15 +124,11 @@ export function buildRoadTripEmail({
     const mapsSearch = `https://maps.google.com/?q=${encodeURIComponent(restaurant.nom + ' ' + region + ' France restaurant')}`
     return `
       <div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;padding:16px;margin-top:12px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-          <div>
-            <p style="margin:0 0 3px 0;color:#C2410C;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">🍽️ Où manger ce soir</p>
-            <p style="margin:0;color:#7C2D12;font-size:11px;">${restaurant.type} · ${restaurant.specialite}</p>
-          </div>
-          <a href="${mapsSearch}" target="_blank" style="display:inline-block;background:#EA580C;color:#FFFFFF;padding:7px 14px;border-radius:20px;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap;flex-shrink:0;">📍 Maps</a>
-        </div>
+        <p style="margin:0 0 4px 0;color:#C2410C;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">🍽️ Où manger ce soir</p>
+        <p style="margin:0 0 10px 0;color:#7C2D12;font-size:11px;">${restaurant.type} · ${restaurant.specialite}</p>
         <p style="margin:0 0 6px 0;color:#431407;font-size:15px;font-weight:700;">${restaurant.nom}</p>
-        <p style="margin:0;color:#9A3412;font-size:13px;line-height:1.6;">${restaurant.description}</p>
+        <p style="margin:0 0 14px 0;color:#9A3412;font-size:13px;line-height:1.6;">${restaurant.description}</p>
+        <a href="${mapsSearch}" target="_blank" style="display:block;text-align:center;background:#EA580C;color:#FFFFFF;padding:11px 20px;border-radius:24px;text-decoration:none;font-size:13px;font-weight:700;">📍 Voir sur Maps</a>
       </div>
     `
   }
@@ -140,24 +137,22 @@ export function buildRoadTripEmail({
   function buildCampingOptionsCard(options: CampingOption[], llmCamping: string, llmMapsUrl?: string): string {
     const llmUrl = llmMapsUrl ?? `https://maps.google.com/?q=${encodeURIComponent(llmCamping + ' camping France')}`
 
-    // Primary LLM suggestion
+    // Primary LLM suggestion — stacked vertically, full-width Maps button
     const primaryCard = `
-      <div style="flex:1;">
-        <p style="margin:0 0 4px 0;color:#166534;font-size:13px;font-weight:700;">🏕️ Ce soir</p>
-        <p style="margin:0;color:#15803D;font-size:14px;">${llmCamping}</p>
-      </div>
-      <a href="${llmUrl}" target="_blank" style="display:inline-block;background:#16A34A;color:#FFFFFF;padding:7px 14px;border-radius:20px;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap;">📍 Maps</a>
+      <p style="margin:0 0 3px 0;color:#166534;font-size:13px;font-weight:700;">🏕️ Ce soir</p>
+      <p style="margin:0 0 12px 0;color:#15803D;font-size:14px;font-weight:600;">${llmCamping}</p>
+      <a href="${llmUrl}" target="_blank" style="display:block;text-align:center;background:#16A34A;color:#FFFFFF;padding:11px 16px;border-radius:24px;text-decoration:none;font-size:13px;font-weight:700;">📍 Voir sur Maps</a>
     `
 
     if (options.length === 0) {
       return `
-        <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;padding:14px 16px;margin-top:12px;display:flex;align-items:center;gap:12px;">
+        <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;padding:16px;margin-top:12px;">
           ${primaryCard}
         </div>
       `
     }
 
-    // Overpass options below
+    // Overpass options below — each row: name+badges on top, Maps button below
     const optionCards = options
       .map((c) => {
         const feeBadge =
@@ -171,27 +166,23 @@ export function buildRoadTripEmail({
             ? `<span style="display:inline-block;background:#DBEAFE;color:#1D4ED8;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;margin-left:4px;">🚐 Van OK</span>`
             : ''
         return `
-          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #E7F3EA;">
-            <div>
-              <span style="color:#14532D;font-size:13px;font-weight:600;">${c.name}</span>
-              ${feeBadge}
-              ${vanBadge}
+          <div style="padding:12px 0;border-bottom:1px solid #E7F3EA;">
+            <div style="margin-bottom:8px;">
+              <span style="color:#14532D;font-size:13px;font-weight:600;">${c.name}</span>${feeBadge}${vanBadge}
             </div>
-            <a href="${c.mapsUrl}" target="_blank" style="display:inline-block;background:#BBF7D0;color:#166534;padding:5px 12px;border-radius:20px;text-decoration:none;font-size:11px;font-weight:600;white-space:nowrap;flex-shrink:0;">Maps</a>
+            <a href="${c.mapsUrl}" target="_blank" style="display:block;text-align:center;background:#BBF7D0;color:#166534;padding:9px 16px;border-radius:24px;text-decoration:none;font-size:12px;font-weight:700;">📍 Maps</a>
           </div>
         `
       })
       .join('')
 
     return `
-      <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;padding:14px 16px;margin-top:12px;">
-        <div style="display:flex;align-items:center;gap:12px;padding-bottom:12px;border-bottom:1px solid #BBF7D0;">
+      <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;padding:16px;margin-top:12px;">
+        <div style="padding-bottom:14px;border-bottom:1px solid #BBF7D0;margin-bottom:14px;">
           ${primaryCard}
         </div>
-        <div style="margin-top:10px;">
-          <p style="margin:0 0 8px 0;color:#166534;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">Autres options à proximité</p>
-          ${optionCards}
-        </div>
+        <p style="margin:0 0 8px 0;color:#166534;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">Autres options à proximité</p>
+        ${optionCards}
       </div>
     `
   }
@@ -230,14 +221,20 @@ export function buildRoadTripEmail({
     })
     .join('')
 
-  // ── Conseils pratiques ────────────────────────────────────────────────────────
+  // ── Conseils pratiques — table layout for bullet number + text ────────────────
   const conseilsHtml = itineraire.conseils_pratiques
     .map(
       (c, i) =>
-        `<div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;">
-          <span style="display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;background:#2563EB;color:#FFFFFF;border-radius:50%;font-size:13px;font-weight:700;">${i + 1}</span>
-          <p style="margin:0;color:#334155;font-size:14px;line-height:1.6;padding-top:4px;">${c}</p>
-        </div>`
+        `<table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:12px;">
+          <tr>
+            <td width="36" valign="top" style="padding-top:1px;">
+              <div style="width:28px;height:28px;background:#2563EB;color:#FFFFFF;border-radius:50%;font-size:13px;font-weight:700;text-align:center;line-height:28px;">${i + 1}</div>
+            </td>
+            <td valign="top" style="padding-left:10px;">
+              <p style="margin:0;color:#334155;font-size:14px;line-height:1.6;padding-top:4px;">${c}</p>
+            </td>
+          </tr>
+        </table>`
     )
     .join('')
 
@@ -249,9 +246,21 @@ export function buildRoadTripEmail({
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Ton road trip en ${region}</title>
+  <style>
+    @media only screen and (max-width: 600px) {
+      .email-wrapper { padding: 12px 0 32px !important; }
+      .email-card { margin: 0 10px !important; border-radius: 16px !important; }
+      .email-card-inner { padding: 18px 16px !important; }
+      .hero-pad { padding: 24px 16px 20px !important; }
+      .hero-title { font-size: 24px !important; }
+      .cta-block { margin: 12px 10px 0 !important; padding: 24px 16px !important; }
+      .cta-title { font-size: 18px !important; }
+      .cta-btn { padding: 14px 24px !important; font-size: 15px !important; }
+    }
+  </style>
 </head>
 <body style="margin:0;padding:0;background:#F1F5F9;font-family:Arial,Helvetica,sans-serif;">
-  <div style="max-width:600px;margin:0 auto;padding:20px 0 40px;">
+  <div class="email-wrapper" style="max-width:600px;margin:0 auto;padding:20px 0 40px;">
 
     <!-- Logo header -->
     <div style="text-align:center;padding:24px 20px 16px;">
@@ -260,40 +269,42 @@ export function buildRoadTripEmail({
     </div>
 
     <!-- Hero banner -->
-    <div style="background:#FFFFFF;margin:0 20px;border-radius:20px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
-      <div style="background:linear-gradient(135deg,#1D4ED8 0%,#0EA5E9 100%);padding:32px 32px 28px;text-align:center;">
+    <div class="email-card" style="background:#FFFFFF;margin:0 20px;border-radius:20px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+      <div class="hero-pad" style="background:linear-gradient(135deg,#1D4ED8 0%,#0EA5E9 100%);padding:32px 28px 28px;text-align:center;">
         <div style="display:inline-block;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:20px;padding:4px 14px;margin-bottom:16px;">
           <span style="color:#FFFFFF;font-size:12px;font-weight:600;letter-spacing:0.05em;">✨ Généré par IA · Vanzon Explorer</span>
         </div>
-        <h1 style="margin:0 0 10px 0;color:#FFFFFF;font-size:30px;font-weight:800;line-height:1.15;">
+        <h1 class="hero-title" style="margin:0 0 10px 0;color:#FFFFFF;font-size:28px;font-weight:800;line-height:1.2;">
           Ton road trip ${duree}j<br/>en ${region}
         </h1>
         <p style="margin:0;color:rgba(255,255,255,0.85);font-size:15px;">Salut ${prenom} ! Ton itinéraire sur mesure est prêt 🚐</p>
       </div>
-      <div style="padding:24px 28px 20px;">
+      <div class="email-card-inner" style="padding:24px 28px 20px;">
         <p style="margin:0;color:#334155;font-size:15px;line-height:1.75;">${itineraire.intro}</p>
       </div>
     </div>
 
     <!-- Main content -->
-    <div style="background:#FFFFFF;margin:16px 20px 0;border-radius:20px;padding:28px;box-shadow:0 4px 24px rgba(0,0,0,0.06);">
-      ${joursHtml}
+    <div class="email-card" style="background:#FFFFFF;margin:16px 20px 0;border-radius:20px;box-shadow:0 4px 24px rgba(0,0,0,0.06);overflow:hidden;">
+      <div class="email-card-inner" style="padding:28px;">
+        ${joursHtml}
 
-      <div style="border-top:2px solid #EFF6FF;margin:24px 0;"></div>
+        <div style="border-top:2px solid #EFF6FF;margin:24px 0;"></div>
 
-      <!-- Conseils pratiques -->
-      <div style="background:#EFF6FF;border-radius:14px;padding:22px 24px;">
-        <h3 style="margin:0 0 18px 0;color:#1D4ED8;font-size:16px;font-weight:800;">💡 Conseils pratiques van</h3>
-        ${conseilsHtml}
+        <!-- Conseils pratiques -->
+        <div style="background:#EFF6FF;border-radius:14px;padding:22px 20px;">
+          <h3 style="margin:0 0 18px 0;color:#1D4ED8;font-size:16px;font-weight:800;">💡 Conseils pratiques van</h3>
+          ${conseilsHtml}
+        </div>
       </div>
     </div>
 
     <!-- CTA block -->
-    <div style="background:linear-gradient(135deg,#1D4ED8 0%,#0EA5E9 100%);margin:16px 20px 0;border-radius:20px;padding:32px 28px;text-align:center;box-shadow:0 4px 24px rgba(29,78,216,0.25);">
+    <div class="cta-block" style="background:linear-gradient(135deg,#1D4ED8 0%,#0EA5E9 100%);margin:16px 20px 0;border-radius:20px;padding:32px 28px;text-align:center;box-shadow:0 4px 24px rgba(29,78,216,0.25);">
       <p style="margin:0 0 6px 0;color:rgba(255,255,255,0.8);font-size:14px;">Prêt à partir ? Loue ton van dès maintenant.</p>
-      <h2 style="margin:0 0 24px 0;color:#FFFFFF;font-size:22px;font-weight:800;">Départ depuis Cambo-les-Bains,<br/>Pays Basque 🏔️</h2>
-      <a href="https://vanzonexplorer.com/location"
-         style="display:inline-block;padding:16px 40px;background:#FFFFFF;color:#1D4ED8;text-decoration:none;border-radius:30px;font-weight:800;font-size:16px;box-shadow:0 4px 16px rgba(0,0,0,0.15);">
+      <h2 class="cta-title" style="margin:0 0 24px 0;color:#FFFFFF;font-size:22px;font-weight:800;">Départ depuis Cambo-les-Bains,<br/>Pays Basque 🏔️</h2>
+      <a class="cta-btn" href="https://vanzonexplorer.com/location"
+         style="display:block;padding:16px 32px;background:#FFFFFF;color:#1D4ED8;text-decoration:none;border-radius:30px;font-weight:800;font-size:16px;box-shadow:0 4px 16px rgba(0,0,0,0.15);">
         🚐 Louer un van Vanzon Explorer →
       </a>
     </div>
