@@ -4,9 +4,41 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
 import { handleAssistantMessage, handleAssistantCallback } from "@/lib/telegram-assistant/router";
+import Groq from "groq-sdk";
 
 const BOT_TOKEN      = process.env.TELEGRAM_BOT_TOKEN!;
 const WEBHOOK_SECRET = process.env.TELEGRAM_WEBHOOK_SECRET!;
+
+// ── Transcription vocale via Groq Whisper ─────────────────────────────────────
+async function transcribeVoice(fileId: string): Promise<string> {
+  // 1. Obtenir le chemin du fichier depuis Telegram
+  const fileRes = await fetch(
+    `https://api.telegram.org/bot${BOT_TOKEN}/getFile?file_id=${fileId}`
+  );
+  const fileData = await fileRes.json() as { ok: boolean; result?: { file_path: string } };
+  if (!fileData.ok || !fileData.result?.file_path) {
+    throw new Error("[voice] getFile failed");
+  }
+
+  // 2. Télécharger le fichier audio (ogg/opus)
+  const audioRes = await fetch(
+    `https://api.telegram.org/file/bot${BOT_TOKEN}/${fileData.result.file_path}`
+  );
+  if (!audioRes.ok) throw new Error("[voice] download failed");
+
+  const audioBuffer = await audioRes.arrayBuffer();
+  const audioFile = new File([audioBuffer], "voice.ogg", { type: "audio/ogg" });
+
+  // 3. Transcrire avec Groq Whisper
+  const groq = new Groq({ apiKey: process.env.GROQ_API_KEY! });
+  const transcription = await groq.audio.transcriptions.create({
+    file:     audioFile,
+    model:    "whisper-large-v3-turbo",
+    language: "fr",
+  });
+
+  return transcription.text.trim();
+}
 
 async function sendTelegram(chatId: string, text: string) {
   await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
@@ -35,6 +67,7 @@ export async function POST(req: NextRequest) {
       message_id: number;
       chat:       { id: number };
       text?:      string;
+      voice?:     { file_id: string; duration: number };
     };
     callback_query?: {
       id:       string;
@@ -48,6 +81,21 @@ export async function POST(req: NextRequest) {
   if (body.message?.text) {
     const chatId = body.message.chat.id;
     await handleAssistantMessage(body.message.text, chatId);
+    return NextResponse.json({ ok: true });
+  }
+
+  // ── Message vocal → transcription Whisper → Assistant ────────────────────
+  if (body.message?.voice) {
+    const chatId = body.message.chat.id;
+    try {
+      await sendTelegram(String(chatId), "🎙 Transcription en cours...");
+      const transcript = await transcribeVoice(body.message.voice.file_id);
+      await sendTelegram(String(chatId), `🎙 <i>${transcript}</i>`);
+      await handleAssistantMessage(transcript, chatId);
+    } catch (err) {
+      console.error("[webhook] voice transcription error:", err);
+      await sendTelegram(String(chatId), "❌ Impossible de transcrire le message vocal. Réessaie ou envoie un texte.");
+    }
     return NextResponse.json({ ok: true });
   }
 
