@@ -21,13 +21,17 @@ const TOOL_DOT: Record<string, string> = {
   DataForSEO: "#F59E0B",
   Tavily:     "#A855F7",
   SerpAPI:    "#F43F5E",
+  Resend:     "#06B6D4",
 };
 
 interface ApiCostsJson {
   anthropic?:  { input_tokens: number; output_tokens: number; cost_eur: number };
+  gemini?:     { input_tokens: number; output_tokens: number; images?: number; model: string; cost_eur: number };
+  groq?:       { input_tokens: number; output_tokens: number; model: string; cost_eur: number; free_tier?: boolean };
   dataforseo?: { calls: number; cost_eur: number };
   tavily?:     { searches: number; cost_eur: number };
   serpapi?:    { calls: number; cost_eur: number };
+  resend?:     { emails: number; cost_eur: number };
 }
 
 interface RunRow {
@@ -128,6 +132,16 @@ async function getCostData() {
         const tokens = (ac.anthropic.input_tokens ?? 0) + (ac.anthropic.output_tokens ?? 0);
         tools.push({ name: "Anthropic", costEur: ac.anthropic.cost_eur, detail: `${Math.round(tokens / 100) / 10}k tokens` });
       }
+      if (ac.gemini) {
+        const tokens = (ac.gemini.input_tokens ?? 0) + (ac.gemini.output_tokens ?? 0);
+        const imgs = ac.gemini.images ? ` · ${ac.gemini.images} images` : "";
+        tools.push({ name: "Gemini", costEur: ac.gemini.cost_eur ?? 0, detail: `${Math.round(tokens / 100) / 10}k tokens${imgs} — ${ac.gemini.model}` });
+      }
+      if (ac.groq) {
+        const tokens = (ac.groq.input_tokens ?? 0) + (ac.groq.output_tokens ?? 0);
+        const tier = ac.groq.free_tier ? " (gratuit)" : "";
+        tools.push({ name: "Groq", costEur: ac.groq.cost_eur ?? 0, detail: `${Math.round(tokens / 100) / 10}k tokens — ${ac.groq.model}${tier}` });
+      }
       if (ac.dataforseo?.cost_eur) {
         tools.push({ name: "DataForSEO", costEur: ac.dataforseo.cost_eur, detail: `${ac.dataforseo.calls} appels` });
       }
@@ -136,6 +150,9 @@ async function getCostData() {
       }
       if (ac.serpapi?.cost_eur) {
         tools.push({ name: "SerpAPI", costEur: ac.serpapi.cost_eur, detail: `${ac.serpapi.calls} appels` });
+      }
+      if (ac.resend?.emails) {
+        tools.push({ name: "Resend", costEur: ac.resend.cost_eur ?? 0, detail: `${ac.resend.emails} email${ac.resend.emails > 1 ? "s" : ""}` });
       }
 
       const started = new Date(row.started_at);

@@ -25,6 +25,7 @@ const TOOL_CONFIG: Record<string, { bg: string; text: string; dot: string }> = {
   DataForSEO: { bg: "#FEF3C7", text: "#92400E", dot: "#F59E0B" },
   Tavily:     { bg: "#FAF5FF", text: "#6B21A8", dot: "#A855F7" },
   SerpAPI:    { bg: "#FFF1F2", text: "#9F1239", dot: "#F43F5E" },
+  Resend:     { bg: "#ECFEFF", text: "#155E75", dot: "#06B6D4" },
 };
 
 const DEFAULT_TOOL = { bg: "#F1F5F9", text: "#475569", dot: "#94A3B8" };
