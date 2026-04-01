@@ -783,12 +783,15 @@ ${publishedArticles.slice(0, 15).map((a) => `- [${a.title}](/articles/${a.slug})
 
   // ── Call 1: metadata via Claude Sonnet 4.5 ───────────────────────────────────
   console.log(`  [Claude] Generating metadata JSON...`);
+  const lowScoreWarning = (article.seoScore !== undefined && article.seoScore < 6)
+    ? `\n⚠️ IMPORTANT : Le titre proposé dans la queue a un score SEO de ${article.seoScore}/10 (insuffisant). Génère un titre H1 BEAUCOUP plus accrocheur et SEO-optimisé que "${article.title}".`
+    : "";
   const metaPrompt = `Tu génères des métadonnées SEO pour un article de blog.
 
 Site: Vanzon Explorer — location et vente de van aménagé au Pays Basque
 Article: "${article.title}"
 Keyword cible: "${article.targetKeyword}"
-Mots-clés secondaires: ${article.secondaryKeywords.join(", ")}
+Mots-clés secondaires: ${article.secondaryKeywords.join(", ")}${lowScoreWarning}
 
 Réponds UNIQUEMENT avec ce JSON valide (aucune explication, aucune balise markdown):
 {"title":"H1 accrocheur avec keyword principal (60-80 chars)","seoTitle":"title tag SEO max 60 chars","seoDescription":"meta description 140-155 chars avec CTA","excerpt":"accroche article 180-220 chars"}`;
@@ -1242,6 +1245,10 @@ async function main(): Promise<void> {
   console.log(`  Target keyword: ${article.targetKeyword}`);
   console.log(`  Target word count: ${article.targetWordCount ?? 1400} mots`);
   console.log(`  Priority: ${article.priority}`);
+  if (article.seoScore !== undefined) {
+    const scoreEmoji = article.seoScore >= 8 ? "✅" : article.seoScore >= 6 ? "⚠️" : "🔴";
+    console.log(`  ${scoreEmoji} Score titre queue : ${article.seoScore}/10`);
+  }
   console.log(`\nStatus updated to "writing"`);
 
   let publishedSuccessfully = false;
@@ -1318,6 +1325,12 @@ async function main(): Promise<void> {
     });
 
     publishedSuccessfully = true;
+
+    // Flag pour review si titre de qualité basse
+    if ((article.seoScore ?? 10) < 7) {
+      console.warn(`  ⚠️  Article publié avec titre de score ${article.seoScore}/10 — à reviewer`);
+    }
+
     await finishRun(runId, {
       status: "success",
       itemsProcessed: 1,

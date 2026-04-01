@@ -176,6 +176,146 @@ async function callClaude(prompt: string): Promise<ClaudeResponse> {
   return { text, usage: message.usage };
 }
 
+async function callClaudeSonnet(prompt: string): Promise<ClaudeResponse> {
+  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+  const message = await client.messages.create({
+    model: "claude-sonnet-4-6",
+    max_tokens: 2000,
+    messages: [{ role: "user", content: prompt }],
+  });
+  const content = message.content[0];
+  if (content.type !== "text") throw new Error("Claude Sonnet returned non-text response");
+  return { text: content.text.trim(), usage: message.usage };
+}
+
+// ── Portable Text helpers ──────────────────────────────────────────────────────
+
+function randomKey(): string {
+  return Math.random().toString(36).slice(2, 10);
+}
+
+interface PortableTextSpan {
+  _type: "span";
+  _key: string;
+  text: string;
+  marks: string[];
+}
+
+interface PortableTextBlock {
+  _type: "block";
+  _key: string;
+  style: string;
+  children: PortableTextSpan[];
+  markDefs: never[];
+}
+
+function markdownToBlocks(markdown: string): PortableTextBlock[] {
+  const blocks: PortableTextBlock[] = [];
+
+  const lines = markdown.split("\n");
+  let paragraphLines: string[] = [];
+
+  const flushParagraph = () => {
+    const text = paragraphLines.join(" ").trim();
+    if (text) {
+      blocks.push({
+        _type: "block",
+        _key: randomKey(),
+        style: "normal",
+        children: [{ _type: "span", _key: randomKey(), text, marks: [] }],
+        markDefs: [],
+      });
+    }
+    paragraphLines = [];
+  };
+
+  for (const rawLine of lines) {
+    const line = rawLine.trimEnd();
+
+    if (line.startsWith("### ")) {
+      flushParagraph();
+      blocks.push({
+        _type: "block",
+        _key: randomKey(),
+        style: "h3",
+        children: [{ _type: "span", _key: randomKey(), text: line.slice(4).trim(), marks: [] }],
+        markDefs: [],
+      });
+    } else if (line.startsWith("## ")) {
+      flushParagraph();
+      blocks.push({
+        _type: "block",
+        _key: randomKey(),
+        style: "h2",
+        children: [{ _type: "span", _key: randomKey(), text: line.slice(3).trim(), marks: [] }],
+        markDefs: [],
+      });
+    } else if (line === "") {
+      flushParagraph();
+    } else {
+      // Strip leading list markers (- or * or digit.)
+      const cleaned = line.replace(/^[-*]\s+/, "").replace(/^\d+\.\s+/, "");
+      paragraphLines.push(cleaned);
+    }
+  }
+
+  flushParagraph();
+  return blocks;
+}
+
+// ── Content Boost ──────────────────────────────────────────────────────────────
+
+async function generateContentBoost(
+  article: ArticleQueueItem,
+  sanityArticle: SanityArticle,
+  gsc: GscRow,
+  targetKeyword: string
+): Promise<{ blocks: PortableTextBlock[]; h2Title: string; wordCount: number; usage: { input_tokens: number; output_tokens: number } }> {
+  const bodyText = extractBodyText(sanityArticle.body).slice(0, 2000);
+
+  const prompt = `Tu es un expert SEO pour Vanzon Explorer (vanlife Pays Basque, formation business van).
+
+ARTICLE EXISTANT :
+Titre : "${sanityArticle.title}"
+Mot-clé cible : "${targetKeyword}"
+Position actuelle : ${gsc.position}
+
+CORPS EXISTANT (extrait) :
+${bodyText}
+
+MISSION : Génère 1 nouvelle section HTML-ready (format Markdown) pour améliorer cet article.
+
+La section doit :
+- Traiter un angle non couvert dans le corps existant
+- Intégrer naturellement le mot-clé cible et des variantes longue traîne
+- Apporter des données concrètes (chiffres, prix, durées)
+- Faire 250-400 mots
+- Commencer par ## [titre H2 accrocheur avec keyword secondaire]
+
+Réponds UNIQUEMENT avec le texte Markdown de la section.`;
+
+  const { text, usage } = await callClaudeSonnet(prompt);
+  const blocks = markdownToBlocks(text);
+
+  // Extract H2 title from first heading block
+  const h2Block = blocks.find((b) => b.style === "h2");
+  const h2Title = h2Block ? h2Block.children[0]?.text ?? "Section générée" : "Section générée";
+
+  // Count words across all blocks
+  const wordCount = blocks
+    .map((b) => b.children.map((c) => c.text).join(" "))
+    .join(" ")
+    .split(/\s+/)
+    .filter(Boolean).length;
+
+  return { blocks, h2Title, wordCount, usage };
+}
+
+async function appendBlocksToSanity(sanityId: string, blocks: PortableTextBlock[]): Promise<void> {
+  const client = getSanityClient();
+  await client.patch(sanityId).append("body", blocks).commit();
+}
+
 interface OptimizedMeta {
   seoTitle: string;
   seoDescription: string;
@@ -328,6 +468,23 @@ async function main() {
       if (!dryRun) {
         await updateSanityMeta(article.sanityId!, meta);
         await updateQueueItem(article.id, { lastOptimizedAt: new Date().toISOString() });
+      }
+
+      // Content boost — uniquement si position >= 11 (page 2+)
+      if (gsc.position >= 11) {
+        try {
+          const boost = await generateContentBoost(article, sanityArticle, gsc, article.targetKeyword);
+          costs.addAnthropic("sonnet", boost.usage.input_tokens, boost.usage.output_tokens);
+
+          if (dryRun) {
+            console.log(`  [DRY RUN] + Section générée : "${boost.h2Title}" (${boost.wordCount} mots) — non appliquée`);
+          } else {
+            await appendBlocksToSanity(article.sanityId!, boost.blocks);
+            console.log(`  + Section ajoutée : "${boost.h2Title}" (${boost.wordCount} mots)`);
+          }
+        } catch (boostErr) {
+          console.warn(`  ⚠️  Content boost échoué (non bloquant) : ${(boostErr as Error).message}`);
+        }
       }
 
       optimized++;

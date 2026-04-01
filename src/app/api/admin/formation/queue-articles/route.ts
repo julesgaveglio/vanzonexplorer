@@ -205,7 +205,48 @@ ${kwList}`,
               send({ type: "log", level: "error", message: `Erreur parsing batch ${batchNum}: ${rawContent.substring(0, 200)}` });
             }
 
-            proposals.push(...batchProposals);
+            // Filtre les titres de mauvaise qualité et retry une fois
+            const validProposals = batchProposals.filter(p => (p.titleScore ?? 0) >= 8);
+            const weakProposals = batchProposals.filter(p => (p.titleScore ?? 0) < 8);
+
+            if (weakProposals.length > 0) {
+              send({ type: "log", level: "info", message: `${weakProposals.length} titres < 8/10 → retry Groq...` });
+              try {
+                const retryKwList = weakProposals.map((p, idx) =>
+                  `${idx + 1}. Mot-clé: "${p.targetKeyword}" — Titre actuel: "${p.title}" (score: ${p.titleScore}/10)`
+                ).join("\n");
+                const retryRes = await groq.chat.completions.create({
+                  model: "llama-3.3-70b-versatile",
+                  messages: [{ role: "user", content: `Réécris UNIQUEMENT les titres suivants pour qu'ils atteignent un score SEO >= 8/10 selon ces critères :\n1. Mot-clé cible intégré naturellement (0-2pts)\n2. 50-70 caractères (0-2pts)\n3. Power word : guide, méthode, chiffres, étape par étape, erreurs, rentable, 2025 (0-1pt)\n4. Bénéfice explicite (0-1pt)\n5. Positionnement Vanzon (0-1pt)\n6. Français naturel sans title case (0-1pt)\n7. KD-adapté (0-1pt)\n8. Pas de concurrent direct (0-1pt)\n\nRetourne UNIQUEMENT un tableau JSON : [{"targetKeyword": "...", "title": "nouveau titre", "titleScore": 8}]\n\nTitres à améliorer :\n${retryKwList}` }],
+                  temperature: 0.3,
+                  max_tokens: 2000,
+                });
+                const retryContent = retryRes.choices[0]?.message?.content ?? "[]";
+                const jsonRetry = retryContent.match(/\[[\s\S]*\]/);
+                const retriedProposals: Array<{targetKeyword: string; title: string; titleScore: number}> = jsonRetry ? JSON.parse(jsonRetry[0]) : [];
+
+                // Merge: replace weak titles with retried ones
+                for (const retried of retriedProposals) {
+                  const original = weakProposals.find(p => p.targetKeyword === retried.targetKeyword);
+                  if (original) {
+                    original.title = retried.title;
+                    original.titleScore = retried.titleScore;
+                    validProposals.push(original);
+                  }
+                }
+                // Add remaining unmatched weak proposals as-is (fallback)
+                for (const weak of weakProposals) {
+                  if (!validProposals.find(v => v.targetKeyword === weak.targetKeyword)) {
+                    validProposals.push(weak);
+                  }
+                }
+                send({ type: "log", level: "info", message: `Retry : ${retriedProposals.length} titres améliorés` });
+              } catch {
+                // Fallback: use weak proposals as-is
+                validProposals.push(...weakProposals);
+              }
+            }
+            proposals.push(...validProposals);
             send({ type: "log", level: "info", message: `Batch ${batchNum} : ${batchProposals.length} articles proposés` });
 
           } catch (err) {

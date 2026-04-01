@@ -69,6 +69,80 @@ interface GeminiArticleMeta {
   wordCountNote: string;
   category: string;
   tag: string;
+  seoScore?: number;
+}
+
+// ── SEO title scoring ─────────────────────────────────────────────────────────
+
+const POWER_WORDS = [
+  "guide", "méthode", "étape par étape", "erreurs", "rentable",
+  "2025", "comparatif", "comment", "pourquoi",
+];
+
+function scoreTitleSeo(title: string, keyword: string): number {
+  let score = 0;
+
+  // 1. Mot-clé cible intégré naturellement (0-2 pts)
+  const titleLower = title.toLowerCase();
+  const kwLower = keyword.toLowerCase();
+  const kwWords = kwLower.split(" ").filter((w) => w.length > 2);
+  const kwWordsFound = kwWords.filter((w) => titleLower.includes(w)).length;
+  if (titleLower.includes(kwLower)) {
+    score += 2;
+  } else if (kwWords.length > 1 && kwWordsFound >= Math.ceil(kwWords.length * 0.6)) {
+    score += 1;
+  }
+
+  // 2. Longueur 50-70 caractères (0-2 pts)
+  const len = title.length;
+  if (len >= 50 && len <= 70) {
+    score += 2;
+  } else if (len >= 40 && len < 50) {
+    score += 1;
+  } else if (len > 70 && len <= 80) {
+    score += 1;
+  }
+
+  // 3. Power words présents (0-1 pt)
+  const hasPowerWord = POWER_WORDS.some((pw) => titleLower.includes(pw));
+  if (hasPowerWord) score += 1;
+
+  // 4. Bénéfice ou promesse explicite (0-1 pt)
+  const benefitPatterns = [
+    /comment\s/i, /pourquoi\s/i, /\d+\s/,
+    /gratuitement/i, /facilement/i, /rapidement/i,
+    /sans\s/i, /pour\s/i, /afin\s/i,
+    /gagner/i, /économiser/i, /éviter/i, /réussir/i,
+  ];
+  if (benefitPatterns.some((p) => p.test(title))) score += 1;
+
+  // 5. Cohérence positionnement Vanzon (0-1 pt)
+  const vanzonTerms = [
+    "van", "vanlife", "location", "formation", "pays basque",
+    "biarritz", "bayonne", "saint-jean", "business", "aménagé",
+  ];
+  if (vanzonTerms.some((t) => titleLower.includes(t))) score += 1;
+
+  // 6. Pas de title case anglais, français naturel (0-1 pt)
+  // Détecte title case si plusieurs mots consécutifs commencent par une majuscule
+  const words = title.split(/\s+/);
+  const uppercaseWords = words.filter((w, i) => i > 0 && /^[A-Z]/.test(w) && w.length > 3);
+  if (uppercaseWords.length < 2) score += 1;
+
+  // 7. Pas de nom de concurrent direct (0-1 pt)
+  const competitors = ["yescapa", "paulcamper", "goboony", "airbnb", "getaround", "ouicar"];
+  if (!competitors.some((c) => titleLower.includes(c))) score += 1;
+
+  // 8. Score global bonus si titre très accrocheur (0-1 pt)
+  // Accrocheur = combine question + chiffre, ou formule "X erreurs/étapes/conseils"
+  const catchyPatterns = [
+    /\d+\s+(erreurs|étapes|conseils|raisons|astuces|façons)/i,
+    /^comment\s.+(en\s\d+|facilement|rapidement)/i,
+    /\?$/,
+  ];
+  if (catchyPatterns.some((p) => p.test(title))) score += 1;
+
+  return Math.min(score, 10);
 }
 
 // ── Claude ────────────────────────────────────────────────────────────────────
@@ -134,7 +208,45 @@ Règles :
 
   const { text: raw, usage } = await callClaude(prompt);
   costs.addAnthropic("haiku", usage.input_tokens, usage.output_tokens);
-  return JSON.parse(raw) as GeminiArticleMeta;
+  const meta = JSON.parse(raw) as GeminiArticleMeta;
+
+  // ── SEO title scoring ──────────────────────────────────────────────────────
+  let finalTitle = meta.title;
+  let score = scoreTitleSeo(finalTitle, keyword);
+  console.log(`  Score titre : ${score}/10${score < 8 ? " → réécriture" : " ✓"}`);
+
+  if (score < 8) {
+    const retryPrompt = `Tu es un expert SEO en vanlife. Réécris UNIQUEMENT le titre de cet article pour améliorer son score SEO.
+
+Mot-clé cible : "${keyword}"
+Titre actuel : "${finalTitle}"
+Segment : ${segmentLabel}
+
+Critères à respecter :
+- Intègre naturellement le mot-clé cible
+- 50-70 caractères
+- Inclure un power word parmi : guide, méthode, étape par étape, erreurs, rentable, 2025, comparatif, comment, pourquoi
+- Bénéfice ou promesse explicite
+- Ancrage Vanzon : van, location, formation, Pays Basque, Biarritz, business, aménagé
+- Français naturel (pas de Title Case anglais)
+- Aucun concurrent cité (Yescapa, PaulCamper, Goboony...)
+
+Réponds UNIQUEMENT avec le nouveau titre, sans guillemets ni explication.`;
+
+    const { text: newTitle, usage: retryUsage } = await callClaude(retryPrompt);
+    costs.addAnthropic("haiku", retryUsage.input_tokens, retryUsage.output_tokens);
+
+    const cleanTitle = newTitle.trim().replace(/^["«]|["»]$/g, "");
+    const retryScore = scoreTitleSeo(cleanTitle, keyword);
+
+    if (retryScore > score) {
+      finalTitle = cleanTitle;
+      score = retryScore;
+    }
+    console.log(`  Score après réécriture : ${score}/10`);
+  }
+
+  return { ...meta, title: finalTitle, seoScore: score };
 }
 
 // ── Gap analysis ──────────────────────────────────────────────────────────────
@@ -244,6 +356,7 @@ async function main() {
         seoPosition: null,
         searchVolume: keyword.searchVolume,
         competitionLevel: keyword.competitionLevel,
+        seoScore: meta.seoScore ?? undefined,
         addedBy: "queue-builder-monthly",
       };
 
