@@ -3,6 +3,7 @@ import { createSupabaseAdmin } from "@/lib/supabase/server";
 import CostKpiBar from "./_components/CostKpiBar";
 import CostChart from "./_components/CostChart";
 import UnifiedCostTable, { type UnifiedEntry, type ToolCost } from "./_components/UnifiedCostTable";
+import DfsCallsTable, { type DfsLogRow } from "./_components/DfsCallsTable";
 
 export const metadata: Metadata = {
   title: "Coûts — Vanzon Admin",
@@ -173,8 +174,22 @@ async function getRoadTrips(): Promise<RoadTripRow[]> {
   }
 }
 
+async function getDfsLogs(): Promise<DfsLogRow[]> {
+  try {
+    const sb = createSupabaseAdmin();
+    const { data } = await sb
+      .from("dfs_logs")
+      .select("id, created_at, endpoint, label, cost_usd, cost_eur, status_code")
+      .order("created_at", { ascending: false })
+      .limit(500);
+    return (data ?? []) as DfsLogRow[];
+  } catch {
+    return [];
+  }
+}
+
 export default async function AdminCostsPage() {
-  const [data, roadTrips] = await Promise.all([getCostData(), getRoadTrips()]);
+  const [data, roadTrips, dfsLogs] = await Promise.all([getCostData(), getRoadTrips(), getDfsLogs()]);
 
   const now = new Date();
   const monthStart = new Date(Date.UTC(now.getFullYear(), now.getMonth(), 1));
@@ -199,18 +214,37 @@ export default async function AdminCostsPage() {
     .filter((e) => getISOWeek(new Date(e.date)) === currentWeek)
     .reduce((s, e) => s + e.costEur, 0);
 
+  // DataForSEO entries
+  const dfsEntries: UnifiedEntry[] = dfsLogs.map((log) => ({
+    id: log.id,
+    date: log.created_at,
+    type: "dataforseo" as const,
+    label: log.label || log.endpoint,
+    costEur: Number(log.cost_eur) || 0,
+    durationSec: 0,
+    tools: [{ name: "DataForSEO", costEur: Number(log.cost_eur) || 0, detail: log.endpoint }],
+  }));
+
+  const dfsTotal = dfsEntries.reduce((s, e) => s + e.costEur, 0);
+  const dfsThisMonth = dfsEntries
+    .filter((e) => new Date(e.date) >= monthStart)
+    .reduce((s, e) => s + e.costEur, 0);
+  const dfsThisWeek = dfsEntries
+    .filter((e) => getISOWeek(new Date(e.date)) === currentWeek)
+    .reduce((s, e) => s + e.costEur, 0);
+
   const agentEntries = data?.agentEntries ?? [];
   const kpisBase = data?.kpis ?? { allTime: 0, thisMonth: 0, thisWeek: 0, avgPerBlogArticle: 0 };
 
   const kpis = {
-    allTime: kpisBase.allTime + roadTripTotal,
-    thisMonth: kpisBase.thisMonth + roadTripThisMonth,
-    thisWeek: kpisBase.thisWeek + roadTripThisWeek,
+    allTime: kpisBase.allTime + roadTripTotal + dfsTotal,
+    thisMonth: kpisBase.thisMonth + roadTripThisMonth + dfsThisMonth,
+    thisWeek: kpisBase.thisWeek + roadTripThisWeek + dfsThisWeek,
     avgPerBlogArticle: kpisBase.avgPerBlogArticle,
   };
 
   // Merge and sort by date
-  const allEntries: UnifiedEntry[] = [...agentEntries, ...roadTripEntries].sort(
+  const allEntries: UnifiedEntry[] = [...agentEntries, ...roadTripEntries, ...dfsEntries].sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   );
 
@@ -292,6 +326,22 @@ export default async function AdminCostsPage() {
           </span>
         </div>
         <UnifiedCostTable entries={allEntries} />
+      </div>
+
+      {/* DataForSEO detail */}
+      <div className="mb-8">
+        <div className="flex items-center gap-3 mb-4">
+          <span className="w-8 h-px bg-slate-200" />
+          <span className="text-xs font-semibold uppercase tracking-widest text-slate-400">
+            DataForSEO — Détail des appels
+          </span>
+        </div>
+        <DfsCallsTable
+          logs={dfsLogs}
+          totalEur={dfsTotal}
+          thisMonthEur={dfsThisMonth}
+          callCount={dfsLogs.length}
+        />
       </div>
     </div>
   );

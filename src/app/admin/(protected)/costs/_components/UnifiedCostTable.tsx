@@ -11,7 +11,7 @@ export interface ToolCost {
 export interface UnifiedEntry {
   id: string;
   date: string;
-  type: "agent" | "road_trip";
+  type: "agent" | "road_trip" | "dataforseo";
   label: string;
   costEur: number;
   durationSec: number;
@@ -30,8 +30,9 @@ const TOOL_CONFIG: Record<string, { bg: string; text: string; dot: string }> = {
 const DEFAULT_TOOL = { bg: "#F1F5F9", text: "#475569", dot: "#94A3B8" };
 
 const TYPE_CONFIG: Record<string, { bg: string; text: string; active: string; label: string }> = {
-  agent:     { bg: "#EEF2FF", text: "#4F46E5", active: "#4F46E5", label: "Agent" },
-  road_trip: { bg: "#D1FAE5", text: "#065F46", active: "#059669", label: "Road Trip" },
+  agent:      { bg: "#EEF2FF", text: "#4F46E5", active: "#4F46E5", label: "Agent" },
+  road_trip:  { bg: "#D1FAE5", text: "#065F46", active: "#059669", label: "Road Trip" },
+  dataforseo: { bg: "#FEF3C7", text: "#92400E", active: "#F59E0B", label: "DataForSEO" },
 };
 
 function formatDate(iso: string) {
@@ -89,7 +90,7 @@ export default function UnifiedCostTable({ entries }: Props) {
           >
             Tout
           </button>
-          {(["agent", "road_trip"] as const).map((t) => {
+          {(["agent", "road_trip", "dataforseo"] as const).map((t) => {
             const cfg = TYPE_CONFIG[t];
             const isActive = typeFilter === t;
             return (
