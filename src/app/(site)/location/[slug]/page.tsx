@@ -182,7 +182,7 @@ export default async function LocationVanPage({
           </div>
 
           {/* ── DROITE (1/3) — Sticky sidebar ── */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1" id="reserver">
             <div className="glass-card p-6 sticky top-24 space-y-5" style={{ boxShadow: "0 4px 24px rgba(0,0,0,0.08)" }}>
               {/* Prix */}
               {van.startingPricePerNight && (

@@ -96,7 +96,8 @@ function getCTAConfig(pathname: string): CTAConfig {
   if (pathname.startsWith("/location/")) {
     return {
       btnLabel: "Réserver ce van",
-      href: "/location",
+      href: "#reserver",
+      scrollTarget: "reserver",
       ...PALETTE.blue,
     };
   }
