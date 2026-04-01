@@ -211,10 +211,11 @@ async function replyToEmailTool(
   const supabase  = createSupabaseAdmin();
   const pendingId = shortId();
   await supabase.from("telegram_pending_actions").insert({
-    id:      pendingId,
-    chat_id: chatId,
-    action:  "reply_email",
-    state:   "awaiting_confirmation",
+    id:         pendingId,
+    chat_id:    chatId,
+    action:     "reply_email",
+    state:      "awaiting_confirmation",
+    expires_at: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
     payload: {
       action_type:  "gmail_reply",
       to:           original.from,

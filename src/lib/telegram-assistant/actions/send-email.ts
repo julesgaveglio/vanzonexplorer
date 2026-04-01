@@ -103,10 +103,11 @@ export async function sendEmailHandler(
     try {
       const pendingId = shortId();
       await supabase.from("telegram_pending_actions").insert({
-        id:      pendingId,
-        chat_id: chatId,
-        action:  "send_email",
-        state:   "awaiting_selection",
+        id:         pendingId,
+        chat_id:    chatId,
+        action:     "send_email",
+        state:      "awaiting_selection",
+        expires_at: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
         payload: { candidates: rows.map((r) => ({
           id: r.id, prenom: r.prenom, email: r.email,
           region: r.region, duree: r.duree, created_at: r.created_at,
@@ -151,10 +152,11 @@ export async function buildAndSendPreview(
     // Stocker la pending action
     const pendingId = shortId();
     await supabase.from("telegram_pending_actions").insert({
-      id:      pendingId,
-      chat_id: chatId,
-      action:  "send_email",
-      state:   "awaiting_confirmation",
+      id:         pendingId,
+      chat_id:    chatId,
+      action:     "send_email",
+      state:      "awaiting_confirmation",
+      expires_at: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
       payload: {
         action_type: "road_trip_feedback",
         to:          row.email,
