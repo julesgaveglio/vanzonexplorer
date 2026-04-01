@@ -217,6 +217,7 @@ export async function buildAndSendPreview(
     });
   } catch (err) {
     console.error("[send-email] error:", err);
-    await tgSend(chatId, "❌ Erreur lors de la génération de l'email. Réessaie 🔄");
+    const msg = err instanceof Error ? err.message : String(err);
+    await tgSend(chatId, `❌ Debug erreur: ${msg.slice(0, 300)}`);
   }
 }
