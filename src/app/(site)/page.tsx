@@ -50,33 +50,33 @@ export default async function HomePage() {
 
   return (
     <>
-      <section className="relative -mt-16 min-h-[520px] lg:min-h-screen flex items-start lg:items-end overflow-hidden">
+      <section className="relative -mt-16 min-h-[620px] lg:min-h-screen flex items-start lg:items-end overflow-hidden">
         <div className="absolute inset-0">
           <Image
             src="https://cdn.sanity.io/images/lewexa74/production/d445397965472d300e3dc13d6b1c37503fe8ba25-1920x1080.png?auto=format&fit=max&q=82"
             alt="Van aménagé au bord de l'océan au Pays Basque"
             fill
             sizes="100vw"
-            className="object-cover object-center sm:object-center object-right"
+            className="object-cover object-[60%_center] sm:object-center"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-900/50 to-slate-900/20" />
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-950/30 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-900/55 to-slate-900/10" />
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-950/40 via-transparent to-transparent" />
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-6 pt-24 pb-10 lg:pb-20 lg:pt-32 w-full">
+        <div className="relative z-10 max-w-7xl mx-auto px-6 pt-28 pb-14 lg:pb-20 lg:pt-32 w-full">
           <div className="max-w-2xl">
             <a
               href={`https://www.google.com/maps/place/?q=place_id:ChIJ7-3ASe0oTyQR6vNHg7YRicA`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-2 mb-6 transition-transform hover:scale-105 cursor-pointer"
+              className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-2 mb-8 transition-transform hover:scale-105 cursor-pointer"
             >
               <span className="text-amber-400">★★★★★</span>
               <span className="text-white/90 text-sm font-medium">{placeStats.reviewCount} avis Google • {placeStats.ratingDisplay}/5</span>
             </a>
 
-            <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-black text-white leading-[1.05] mb-6">
+            <h1 className="text-4xl sm:text-4xl md:text-6xl lg:text-7xl font-black text-white leading-[1.08] mb-7">
               Location Van Aménagé<br />
               au Pays Basque,<br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4BC3E3] to-[#4D5FEC]">
@@ -84,12 +84,12 @@ export default async function HomePage() {
               </span>
             </h1>
 
-            <p className="text-xl text-white/75 leading-relaxed mb-8 max-w-xl">
+            <p className="text-lg sm:text-xl text-white/75 leading-relaxed mb-10 max-w-xl">
               Louez un van aménagé tout équipé et explorez l&apos;Atlantique,
               les Pyrénées et les villages basques en totale liberté.
             </p>
 
-            <div className="flex flex-row gap-2 sm:gap-3">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-3">
               <LiquidButton href="/location" variant="blue" size="responsive">
                 Louer un van
               </LiquidButton>
@@ -121,7 +121,7 @@ export default async function HomePage() {
         </a>
       </section>
 
-      <section className="bg-slate-950 py-5 border-t border-white/5">
+      <section className="hidden sm:block bg-slate-950 py-5 border-t border-white/5">
         <div className="max-w-5xl mx-auto px-6">
           <div className="flex flex-wrap justify-center md:justify-between items-center gap-y-4 gap-x-8 text-white/60 text-sm font-medium">
             {[
