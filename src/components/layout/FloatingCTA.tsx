@@ -37,6 +37,11 @@ const PALETTE = {
     gradient: "linear-gradient(135deg, #334155 0%, #475569 100%)",
     glow: "0 4px 18px rgba(51, 65, 85, 0.50), 0 1px 4px rgba(71, 85, 105, 0.30)",
   },
+  // Noir — Road Trip Personnalisé
+  black: {
+    gradient: "linear-gradient(135deg, #0F172A 0%, #1E293B 100%)",
+    glow: "0 4px 18px rgba(0, 0, 0, 0.45), 0 1px 4px rgba(15, 23, 42, 0.30)",
+  },
 };
 
 // ── Mapping catégorie article → CTA ──────────────────────────────────────
@@ -111,7 +116,7 @@ function getCTAConfig(pathname: string): CTAConfig {
       btnLabel: 'Générer mon itinéraire',
       href: '#wizard',
       scrollTarget: 'wizard',
-      ...PALETTE.blue,
+      ...PALETTE.black,
     }
   }
 

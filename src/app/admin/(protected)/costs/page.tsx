@@ -2,19 +2,31 @@ import { Metadata } from "next";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
 import CostKpiBar from "./_components/CostKpiBar";
 import CostChart from "./_components/CostChart";
-import CostRunsTable from "./_components/CostRunsTable";
-import DfsCallsTable, { type DfsLogRow } from "./_components/DfsCallsTable";
+import UnifiedCostTable, { type UnifiedEntry, type ToolCost } from "./_components/UnifiedCostTable";
 
 export const metadata: Metadata = {
-  title: "Coûts IA — Vanzon Admin",
+  title: "Coûts — Vanzon Admin",
   robots: { index: false, follow: false },
 };
 
+// ── Coût Tavily par road trip (1 search) ──────────────────────────────────────
+const TAVILY_EUR = 0.004 * 0.92; // $0.004 USD → EUR
+
+// ── Tool colors for the breakdown bar (server-rendered) ──────────────────────
+const TOOL_DOT: Record<string, string> = {
+  Anthropic:  "#6366F1",
+  Gemini:     "#F97316",
+  Groq:       "#22C55E",
+  DataForSEO: "#F59E0B",
+  Tavily:     "#A855F7",
+  SerpAPI:    "#F43F5E",
+};
+
 interface ApiCostsJson {
-  anthropic?: { input_tokens: number; output_tokens: number; cost_eur: number };
+  anthropic?:  { input_tokens: number; output_tokens: number; cost_eur: number };
   dataforseo?: { calls: number; cost_eur: number };
-  tavily?: { searches: number; cost_eur: number };
-  serpapi?: { calls: number; cost_eur: number };
+  tavily?:     { searches: number; cost_eur: number };
+  serpapi?:    { calls: number; cost_eur: number };
 }
 
 interface RunRow {
@@ -26,6 +38,13 @@ interface RunRow {
   api_costs_json: ApiCostsJson | null;
 }
 
+interface RoadTripRow {
+  id: string;
+  created_at: string;
+  region: string;
+  duree: number;
+}
+
 function getISOWeek(d: Date): string {
   const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
   const day = date.getUTCDay() || 7;
@@ -33,6 +52,12 @@ function getISOWeek(d: Date): string {
   const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
   const week = Math.ceil(((date.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
   return `${date.getUTCFullYear()}-W${String(week).padStart(2, "0")}`;
+}
+
+function formatCost(v: number): string {
+  if (v === 0) return "€0.00";
+  if (v < 0.01) return `€${v.toFixed(4)}`;
+  return `€${v.toFixed(2)}`;
 }
 
 async function getCostData() {
@@ -52,12 +77,7 @@ async function getCostData() {
     const monthStart = new Date(Date.UTC(now.getFullYear(), now.getMonth(), 1));
     const currentWeek = getISOWeek(now);
 
-    let allTime = 0;
-    let thisMonth = 0;
-    let thisWeek = 0;
-    let blogCount = 0;
-    let blogTotal = 0;
-
+    let allTime = 0, thisMonth = 0, thisWeek = 0, blogCount = 0, blogTotal = 0;
     const weeklyMap: Record<string, Record<string, number>> = {};
     const monthlyMap: Record<string, Record<string, number>> = {};
 
@@ -69,10 +89,7 @@ async function getCostData() {
       if (startDate >= monthStart) thisMonth += cost;
       if (getISOWeek(startDate) === currentWeek) thisWeek += cost;
 
-      if (row.agent_name === "blog-writer") {
-        blogCount++;
-        blogTotal += cost;
-      }
+      if (row.agent_name === "blog-writer") { blogCount++; blogTotal += cost; }
 
       const week = getISOWeek(startDate);
       if (!weeklyMap[week]) weeklyMap[week] = {};
@@ -102,101 +119,179 @@ async function getCostData() {
       )
       .sort((a, b) => a.period.localeCompare(b.period));
 
-    const recentRuns = rows.slice(0, 100).map((row) => {
+    // Build unified agent entries
+    const agentEntries: UnifiedEntry[] = rows.slice(0, 200).map((row) => {
+      const ac = row.api_costs_json ?? {};
+      const tools: ToolCost[] = [];
+      if (ac.anthropic?.cost_eur) {
+        const tokens = (ac.anthropic.input_tokens ?? 0) + (ac.anthropic.output_tokens ?? 0);
+        tools.push({ name: "Anthropic", costEur: ac.anthropic.cost_eur, detail: `${Math.round(tokens / 100) / 10}k tokens` });
+      }
+      if (ac.dataforseo?.cost_eur) {
+        tools.push({ name: "DataForSEO", costEur: ac.dataforseo.cost_eur, detail: `${ac.dataforseo.calls} appels` });
+      }
+      if (ac.tavily?.cost_eur) {
+        tools.push({ name: "Tavily", costEur: ac.tavily.cost_eur, detail: `${ac.tavily.searches} recherches` });
+      }
+      if (ac.serpapi?.cost_eur) {
+        tools.push({ name: "SerpAPI", costEur: ac.serpapi.cost_eur, detail: `${ac.serpapi.calls} appels` });
+      }
+
       const started = new Date(row.started_at);
       const finished = row.finished_at ? new Date(row.finished_at) : null;
       const durationSec = finished ? Math.round((finished.getTime() - started.getTime()) / 1000) : 0;
+
       return {
         id: row.id,
-        agentName: row.agent_name,
-        startedAt: row.started_at,
-        durationSec,
+        date: row.started_at,
+        type: "agent" as const,
+        label: row.agent_name,
         costEur: Number(row.cost_eur) || 0,
-        apiCosts: (row.api_costs_json ?? {}) as Record<string, { calls?: number; searches?: number; input_tokens?: number; output_tokens?: number; cost_eur: number }>,
+        durationSec,
+        tools,
       };
     });
 
-    return { kpis, timeSeriesWeekly, timeSeriesMonthly, recentRuns };
+    return { kpis, timeSeriesWeekly, timeSeriesMonthly, agentEntries };
   } catch {
     return null;
   }
 }
 
-async function getDfsLogs() {
+async function getRoadTrips(): Promise<RoadTripRow[]> {
   try {
     const sb = createSupabaseAdmin();
-    const { data, error } = await sb
-      .from("dataforseo_logs")
-      .select("id, created_at, endpoint, label, cost_usd, cost_eur, status_code")
+    const { data } = await sb
+      .from("road_trip_requests")
+      .select("id, created_at, region, duree")
+      .eq("status", "sent")
       .order("created_at", { ascending: false })
       .limit(500);
-
-    if (error) throw error;
-    const logs = (data ?? []) as DfsLogRow[];
-
-    const now = new Date();
-    const monthStart = new Date(Date.UTC(now.getFullYear(), now.getMonth(), 1));
-    const totalEur = logs.reduce((s, l) => s + Number(l.cost_eur), 0);
-    const thisMonthEur = logs
-      .filter((l) => new Date(l.created_at) >= monthStart)
-      .reduce((s, l) => s + Number(l.cost_eur), 0);
-
-    return { logs, totalEur, thisMonthEur, callCount: logs.length };
+    return (data ?? []) as RoadTripRow[];
   } catch {
-    return { logs: [], totalEur: 0, thisMonthEur: 0, callCount: 0 };
+    return [];
   }
 }
 
 export default async function AdminCostsPage() {
-  const [data, dfsData] = await Promise.all([getCostData(), getDfsLogs()]);
+  const [data, roadTrips] = await Promise.all([getCostData(), getRoadTrips()]);
 
-  const kpis = data?.kpis ?? { allTime: 0, thisMonth: 0, thisWeek: 0, avgPerBlogArticle: 0 };
+  const now = new Date();
+  const monthStart = new Date(Date.UTC(now.getFullYear(), now.getMonth(), 1));
+  const currentWeek = getISOWeek(now);
+
+  // Road trip entries
+  const roadTripEntries: UnifiedEntry[] = roadTrips.map((rt) => ({
+    id: rt.id,
+    date: rt.created_at,
+    type: "road_trip" as const,
+    label: `Road Trip ${rt.region} — ${rt.duree}j`,
+    costEur: TAVILY_EUR,
+    durationSec: 0,
+    tools: [{ name: "Tavily", costEur: TAVILY_EUR, detail: "1 recherche" }],
+  }));
+
+  const roadTripTotal = roadTripEntries.reduce((s, e) => s + e.costEur, 0);
+  const roadTripThisMonth = roadTripEntries
+    .filter((e) => new Date(e.date) >= monthStart)
+    .reduce((s, e) => s + e.costEur, 0);
+  const roadTripThisWeek = roadTripEntries
+    .filter((e) => getISOWeek(new Date(e.date)) === currentWeek)
+    .reduce((s, e) => s + e.costEur, 0);
+
+  const agentEntries = data?.agentEntries ?? [];
+  const kpisBase = data?.kpis ?? { allTime: 0, thisMonth: 0, thisWeek: 0, avgPerBlogArticle: 0 };
+
+  const kpis = {
+    allTime: kpisBase.allTime + roadTripTotal,
+    thisMonth: kpisBase.thisMonth + roadTripThisMonth,
+    thisWeek: kpisBase.thisWeek + roadTripThisWeek,
+    avgPerBlogArticle: kpisBase.avgPerBlogArticle,
+  };
+
+  // Merge and sort by date
+  const allEntries: UnifiedEntry[] = [...agentEntries, ...roadTripEntries].sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
+
+  // Tool breakdown totals
+  const toolTotals: Record<string, number> = {};
+  for (const entry of allEntries) {
+    for (const tool of entry.tools) {
+      toolTotals[tool.name] = (toolTotals[tool.name] ?? 0) + tool.costEur;
+    }
+  }
+  const toolBreakdown = Object.entries(toolTotals)
+    .sort((a, b) => b[1] - a[1])
+    .filter(([, v]) => v > 0);
+
   const timeSeriesWeekly = data?.timeSeriesWeekly ?? [];
   const timeSeriesMonthly = data?.timeSeriesMonthly ?? [];
-  const recentRuns = data?.recentRuns ?? [];
 
   return (
     <div className="p-4 md:p-8">
       {/* Header */}
       <div className="mb-6 md:mb-8">
         <p className="text-slate-400 text-sm font-medium mb-1">Administration</p>
-        <h1 className="text-2xl md:text-3xl font-black text-slate-900">Coûts IA</h1>
-        <p className="text-slate-500 mt-1">Suivi des dépenses API par agent</p>
+        <h1 className="text-2xl md:text-3xl font-black text-slate-900">Coûts</h1>
+        <p className="text-slate-500 mt-1">Suivi des dépenses par outil — agents, road trips, APIs</p>
       </div>
 
       {/* KPIs */}
       <CostKpiBar kpis={kpis} />
 
+      {/* Tool breakdown */}
+      {toolBreakdown.length > 0 && (
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="w-8 h-px bg-slate-200" />
+            <span className="text-xs font-semibold uppercase tracking-widest text-slate-400">
+              Répartition par outil
+            </span>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+            {toolBreakdown.map(([tool, total]) => {
+              const dot = TOOL_DOT[tool] ?? "#94A3B8";
+              return (
+                <div
+                  key={tool}
+                  className="bg-white rounded-xl border border-slate-100 shadow-sm px-4 py-3"
+                >
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <span
+                      className="w-2 h-2 rounded-full flex-shrink-0"
+                      style={{ background: dot }}
+                    />
+                    <span className="text-xs font-semibold text-slate-500 truncate">{tool}</span>
+                  </div>
+                  <p className="text-lg font-black text-slate-900">{formatCost(total)}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Chart */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-4">
           <span className="w-8 h-px bg-slate-200" />
-          <span className="text-xs font-semibold uppercase tracking-widest text-slate-400">Évolution des coûts</span>
+          <span className="text-xs font-semibold uppercase tracking-widest text-slate-400">
+            Évolution des coûts
+          </span>
         </div>
         <CostChart timeSeriesWeekly={timeSeriesWeekly} timeSeriesMonthly={timeSeriesMonthly} />
       </div>
 
-      {/* Runs table */}
+      {/* Unified table */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-4">
           <span className="w-8 h-px bg-slate-200" />
-          <span className="text-xs font-semibold uppercase tracking-widest text-slate-400">Détail des runs agents</span>
+          <span className="text-xs font-semibold uppercase tracking-widest text-slate-400">
+            Toutes les dépenses
+          </span>
         </div>
-        <CostRunsTable runs={recentRuns} />
-      </div>
-
-      {/* DataForSEO logs */}
-      <div className="mb-8">
-        <div className="flex items-center gap-3 mb-4">
-          <span className="w-8 h-px bg-slate-200" />
-          <span className="text-xs font-semibold uppercase tracking-widest text-slate-400">DataForSEO — appels & coûts</span>
-        </div>
-        <DfsCallsTable
-          logs={dfsData.logs}
-          totalEur={dfsData.totalEur}
-          thisMonthEur={dfsData.thisMonthEur}
-          callCount={dfsData.callCount}
-        />
+        <UnifiedCostTable entries={allEntries} />
       </div>
     </div>
   );
