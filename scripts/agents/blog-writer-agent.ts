@@ -32,6 +32,7 @@ import { claimPendingArticle, updateQueueItem, getQueueItems, type ArticleQueueI
 import { startRun, finishRun, logDfsCall } from "../lib/agent-runs";
 import { createCostTracker } from "../lib/ai-costs";
 import { assignCluster } from "../lib/cluster";
+import { searchVanzonMemory } from "../../src/lib/vanzon-memory/search";
 
 // ── Constants ──────────────────────────────────────────────────────────────────
 // scripts/agents/ → project root is two directories up
@@ -938,7 +939,7 @@ ${vanzonDB}
 `
     : "";
 
-  const bodyPrompt = `${styleBlock}
+  let bodyPrompt = `${styleBlock}
 ${memoryBlock}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ARTICLE À RÉDIGER
@@ -993,6 +994,18 @@ ${externalLinksBlock}
 Format: [texte ancre descriptif](url) — intègre dans des phrases naturelles, jamais en liste nue.
 
 Réponds UNIQUEMENT avec le texte markdown. Aucune explication, aucune balise, aucun JSON.`;
+
+  // Injection des notes mémoire Supabase si pertinentes
+  try {
+    const memories = await searchVanzonMemory({ query: article.targetKeyword ?? article.title, limit: 5 });
+    if (memories.length > 0) {
+      bodyPrompt +=
+        `\n\n💡 Notes internes Vanzon (réutiliser si pertinent) :\n` +
+        memories.map(m => `- **${m.title}** (${m.category}) : ${m.content}`).join("\n");
+    }
+  } catch {
+    // Non-bloquant — la mémoire est optionnelle
+  }
 
   // Scale max tokens to target word count.
   // Formula: content tokens (≈1.5 tokens/word) + safety margin (2000).
