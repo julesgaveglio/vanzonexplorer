@@ -3,6 +3,9 @@ import { sanityFetch } from "@/lib/sanity/client";
 import { getAllRoadTripArticlesQuery } from "@/lib/sanity/queries";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import RoadTripCard from "./_components/RoadTripCard";
+import dynamic from "next/dynamic";
+
+const CatalogMap = dynamic(() => import("./_components/CatalogMap"), { ssr: false });
 
 export const metadata: Metadata = {
   title: "Road Trips en Van en France — Itinéraires par Région | Vanzon Explorer",
@@ -49,6 +52,16 @@ interface RoadTripArticle {
 export default async function RoadTripCataloguePage() {
   const articles = await sanityFetch<RoadTripArticle[]>(getAllRoadTripArticlesQuery) ?? [];
 
+  const mapArticles = articles.map(a => ({
+    id: a._id,
+    title: a.title,
+    regionSlug: a.regionSlug,
+    articleSlug: a.slug,
+    regionName: a.regionName,
+    duree: a.duree,
+    style: a.style,
+  }));
+
   return (
     <main className="min-h-screen bg-bg-primary">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -63,6 +76,11 @@ export default async function RoadTripCataloguePage() {
             {articles.length > 0 ? `${articles.length} itinéraires` : "Des itinéraires"} détaillés avec spots GPS, campings et cartes interactives.
             Du Pays Basque à la Bretagne, partez à l&apos;aventure en van aménagé.
           </p>
+        </div>
+
+        {/* Carte interactive */}
+        <div className="mb-12">
+          <CatalogMap articles={mapArticles} />
         </div>
 
         {/* Grille articles */}

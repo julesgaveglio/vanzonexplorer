@@ -8,6 +8,7 @@ import { getGooglePlaceStats } from "@/lib/google-places";
 import CookieBanner from "@/components/ui/CookieBanner";
 import { LocalBusinessJsonLd, WebSiteJsonLd } from "@/components/seo/JsonLd";
 import "./globals.css";
+import "maplibre-gl/dist/maplibre-gl.css";
 
 const inter = Inter({
   subsets: ["latin"],
