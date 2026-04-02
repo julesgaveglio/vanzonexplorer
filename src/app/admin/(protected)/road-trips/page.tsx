@@ -89,7 +89,7 @@ export default async function RoadTripsAdminPage({
   const currentTab = searchParams.tab ?? "demandes";
 
   // --- Stats ---
-  const [{ count: total }, { count: todaySent }, { count: sentTotal }, { count: reviewCount }, { count: publishedCount }] =
+  const [{ count: total }, { count: todaySent }, , { count: reviewCount }, { count: publishedCount }] =
     await Promise.all([
       supabase
         .from("road_trip_requests")
