@@ -635,7 +635,7 @@ export default function ArticlesPageClient({ sanityArticles = [] }: { sanityArti
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <LiquidButton href="/location" variant="blue" size="lg">
-              🚐 Louer un van pour ce road trip
+              🚐 Louer un van au Pays Basque
             </LiquidButton>
             <LiquidButton href="/formation" variant="gold" size="lg">
               Découvrir la formation

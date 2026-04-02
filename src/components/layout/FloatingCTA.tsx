@@ -46,8 +46,8 @@ const PALETTE = {
 
 // ── Mapping catégorie article → CTA ──────────────────────────────────────
 const ARTICLE_CATEGORY_CTA: Record<string, CTAConfig> = {
-  "Road Trips": { btnLabel: "Louer un van pour ce road trip", href: "/location", ...PALETTE.blue },
-  "Pays Basque": { btnLabel: "Louer un van pour ce road trip", href: "/location", ...PALETTE.blue },
+  "Road Trips": { btnLabel: "Louer un van au Pays Basque", href: "/location", ...PALETTE.blue },
+  "Pays Basque": { btnLabel: "Louer un van au Pays Basque", href: "/location", ...PALETTE.blue },
   "Aménagement Van": { btnLabel: "Trouver mon van", href: "/achat", ...PALETTE.slate },
   "Achat Van": { btnLabel: "Trouver mon van", href: "/achat", ...PALETTE.slate },
   "Business Van": { btnLabel: "Découvrir la formation", href: "/formation", ...PALETTE.gold },
@@ -127,7 +127,7 @@ function getCTAConfig(pathname: string): CTAConfig {
     pathname.startsWith("/road-trip-pays-basque-van")
   ) {
     return {
-      btnLabel: "Louer un van pour ce road trip",
+      btnLabel: "Louer un van au Pays Basque",
       href: "/location",
       ...PALETTE.blue,
     };
@@ -136,7 +136,7 @@ function getCTAConfig(pathname: string): CTAConfig {
   // Articles
   if (pathname.startsWith("/articles")) {
     return {
-      btnLabel: "Louer un van pour ce road trip",
+      btnLabel: "Louer un van au Pays Basque",
       href: "/location",
       ...PALETTE.blue,
     };

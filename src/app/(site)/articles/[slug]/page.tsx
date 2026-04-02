@@ -772,8 +772,8 @@ export default async function ArticleDetailPage({
                 className="btn-primary btn-shine inline-flex items-center justify-center gap-2 text-sm"
               >
                 <span className="flex flex-col items-start leading-tight">
-                  <span>🚐 Louer un van pour ce road trip</span>
-                  <span className="text-[11px] font-normal opacity-80">Disponible dès 65€/nuit — livraison Pays Basque possible</span>
+                  <span>🚐 Louer un van au Pays Basque</span>
+                  <span className="text-[11px] font-normal opacity-80">Disponible dès 65€/nuit</span>
                 </span>
               </Link>
               <Link

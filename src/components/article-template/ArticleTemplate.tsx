@@ -240,8 +240,8 @@ export default function ArticleTemplate({
                 className="inline-flex items-center gap-2 px-6 py-3 bg-[#4D5FEC] hover:bg-[#3B4FD4] text-white font-bold rounded-xl transition-colors text-sm"
               >
                 <span className="flex flex-col items-start leading-tight">
-                  <span>🚐 Louer un van pour ce road trip</span>
-                  <span className="text-[11px] font-normal opacity-80">Disponible dès 65€/nuit — livraison Pays Basque possible</span>
+                  <span>🚐 Louer un van au Pays Basque</span>
+                  <span className="text-[11px] font-normal opacity-80">Disponible dès 65€/nuit</span>
                 </span>
               </Link>
               <Link
