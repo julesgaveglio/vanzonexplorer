@@ -6,6 +6,7 @@ import { createSupabaseAdmin } from "@/lib/supabase/server";
 import { listRecentEmails, getEmailById } from "./gmail-reader";
 import { fetchGmailSignature } from "@/lib/gmail";
 import { getEmailExamples, formatExamplesForPrompt } from "../email-memory";
+import { searchVanzonMemory } from "@/lib/vanzon-memory/search";
 
 import Groq from "groq-sdk";
 
@@ -38,6 +39,7 @@ export async function executeTool(
       case "send_email_to_road_tripper": return await sendEmailToRoadTripper(args, chatId);
       case "list_recent_emails":         return await listRecentEmailsTool(args);
       case "reply_to_email":             return await replyToEmailTool(args, chatId);
+      case "search_memory": return await searchMemoryTool(args);
       default: return JSON.stringify({ error: `Outil inconnu: ${name}` });
     }
   } catch (err) {
@@ -263,5 +265,30 @@ async function replyToEmailTool(
     status:  "preview_sent",
     to:      original.from,
     subject: draft.subject,
+  });
+}
+
+// ── search_memory ─────────────────────────────────────────────────────────────
+async function searchMemoryTool(args: Record<string, unknown>): Promise<string> {
+  const results = await searchVanzonMemory({
+    query:      (args.query      as string)                  ?? "",
+    category:   (args.category   as string | undefined),
+    after_date: (args.after_date as string | undefined),
+    limit:      (args.limit      as number | undefined) ?? 5,
+  });
+
+  if (results.length === 0) {
+    return JSON.stringify({ count: 0, message: "Aucune note trouvée pour cette recherche." });
+  }
+
+  return JSON.stringify({
+    count: results.length,
+    notes: results.map(r => ({
+      title:    r.title,
+      category: r.category,
+      content:  r.content,
+      tags:     r.tags,
+      date:     r.created_at.split("T")[0],
+    })),
   });
 }

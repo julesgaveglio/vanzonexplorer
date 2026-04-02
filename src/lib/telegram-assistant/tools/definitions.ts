@@ -167,4 +167,36 @@ export const TOOL_DEFINITIONS: Groq.Chat.Completions.ChatCompletionTool[] = [
       },
     },
   },
+  {
+    type: "function",
+    function: {
+      name: "search_memory",
+      description:
+        "Recherche dans la mémoire interne Vanzon. " +
+        "Utilise quand Jules demande de retrouver une note, une leçon apprise, une astuce ou une idée. " +
+        "Exemples : 'qu\\'est-ce que j\\'ai noté sur Yoni ?', 'rappelle-moi les leçons sur l\\'aménagement'.",
+      parameters: {
+        type: "object",
+        properties: {
+          query: {
+            type: "string",
+            description: "Texte libre de recherche (ex: 'frigo Yoni', 'méthode aménagement Elio')",
+          },
+          category: {
+            type: "string",
+            description: "Filtrer par catégorie (ex: 'vans', 'blog', 'equipe') — optionnel",
+          },
+          after_date: {
+            type: "string",
+            description: "Filtrer les notes après cette date ISO (ex: '2026-03-01') — optionnel",
+          },
+          limit: {
+            type: "number",
+            description: "Nombre max de résultats (défaut 5)",
+          },
+        },
+        required: ["query"],
+      },
+    },
+  },
 ];
