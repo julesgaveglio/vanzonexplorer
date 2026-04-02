@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS vanzon_memory (
   -- Colonne générée pour le full-text search multi-champs (requis par Supabase JS .textSearch())
   -- Le client Supabase JS ne supporte pas les expressions SQL comme argument de colonne
   fts_vector         TSVECTOR GENERATED ALWAYS AS (
-    to_tsvector('french', title || ' ' || content || ' ' || array_to_string(tags, ' '))
+    to_tsvector('french'::regconfig, title || ' ' || content || ' ' || array_to_string(tags, ' '))
   ) STORED,
   obsidian_synced_at TIMESTAMPTZ,
   created_at         TIMESTAMPTZ NOT NULL DEFAULT NOW()
