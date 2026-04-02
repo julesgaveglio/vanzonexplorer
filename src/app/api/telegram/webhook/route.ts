@@ -61,6 +61,7 @@ async function answerCallback(callbackQueryId: string, text: string) {
 }
 
 export async function POST(req: NextRequest) {
+  try {
   const secret = req.headers.get("X-Telegram-Bot-Api-Secret-Token");
   if (secret !== WEBHOOK_SECRET) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -178,4 +179,8 @@ export async function POST(req: NextRequest) {
   }
 
   return NextResponse.json({ ok: true });
+  } catch (err) {
+    console.error("[webhook] unhandled error:", err);
+    return NextResponse.json({ error: String(err) }, { status: 500 });
+  }
 }
