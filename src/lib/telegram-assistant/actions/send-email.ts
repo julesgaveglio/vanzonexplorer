@@ -19,29 +19,6 @@ function shortId(): string {
   return crypto.randomUUID().replace(/-/g, "").slice(0, 10);
 }
 
-// Convertit le HTML email en texte lisible pour l'aperçu Telegram
-function htmlToTelegramText(html: string): string {
-  return html
-    // Sauts de ligne seulement sur les balises de bloc textuelles
-    .replace(/<\/p>/gi, "\n")
-    .replace(/<br\s*\/?>/gi, "\n")
-    .replace(/<\/h[1-6]>/gi, "\n")
-    // Supprimer tout le reste (tables, divs, spans, attributs…)
-    .replace(/<[^>]+>/g, "")
-    // Entités HTML
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&nbsp;/g, " ")
-    // Supprimer les lignes vides ou purement composées d'espaces
-    .split("\n")
-    .map(l => l.trim())
-    .filter(l => l.length > 0)
-    .join("\n")
-    // Max 2 sauts de ligne consécutifs
-    .replace(/\n{3,}/g, "\n\n")
-    .trim()
-}
 
 // ── Handler principal ─────────────────────────────────────────────────────────
 export async function sendEmailHandler(
@@ -139,18 +116,16 @@ export async function buildAndSendPreview(
     return;
   }
 
-  // Corps complet lisible (Telegram max 4096 chars — réservons ~200 pour l'entête)
-  const bodyText = htmlToTelegramText(html)
-  const MAX_BODY = 3800
-  const bodyDisplay = bodyText.length > MAX_BODY
-    ? bodyText.slice(0, MAX_BODY) + "\n…"
-    : bodyText
-
-  // Échapper les caractères HTML Telegram dans le corps
-  const bodyEscaped = bodyDisplay
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
+  const messageBody =
+    `Bonjour ${row.prenom},\n\n` +
+    `Je suis Jules de Vanzon Explorer, enchanté ! Je suis ravi que vous ayez utilisé notre outil de génération de road trips personnalisés pour planifier votre aventure.\n\n` +
+    `Vous faites partie des premières personnes à le tester, et afin de continuer à l'améliorer, nous aimerions recueillir votre retour sincère et honnête sur le road trip que vous avez reçu par email.\n\n` +
+    `💬 Quelques questions pour vous guider :\n` +
+    `• Avez-vous trouvé toutes les informations que vous recherchiez ?\n` +
+    `• Peut-être avez-vous eu le sentiment qu'il manquait certains éléments ?\n\n` +
+    `Votre retour est très précieux pour nous. Il nous permettra d'identifier les points à améliorer et de continuer à faire évoluer notre outil.\n\n` +
+    `Si vous avez quelques instants pour partager vos impressions, nous vous en serions très reconnaissants.\n\n` +
+    `À bientôt sur la route,\nJules`
 
   const preview =
     `📧 <b>Aperçu de l'email</b>\n` +
@@ -158,7 +133,7 @@ export async function buildAndSendPreview(
     `<b>À :</b> ${row.email}\n` +
     `<b>Objet :</b> ${subject}\n` +
     `─────────────────────\n\n` +
-    `${bodyEscaped}\n\n` +
+    `${messageBody}\n\n` +
     `─────────────────────`;
 
   await tgSend(chatId, preview, {
