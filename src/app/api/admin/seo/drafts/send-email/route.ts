@@ -5,7 +5,7 @@ import { createSupabaseAdmin } from "@/lib/supabase/server";
 import { getGmailAccessToken } from "@/lib/gmail";
 
 const GMAIL_API = "https://gmail.googleapis.com/gmail/v1";
-const LOGO_URL = "https://cdn.sanity.io/images/lewexa74/production/1f483103ef15ee3549eab14ba2801d11b32a9055-313x313.png";
+const LOGO_URL = "https://cdn.sanity.io/images/lewexa74/production/b7dc1f4d7df2897875bab8c7d4b5e1f98dc7b774-1200x800.webp?w=600&h=450&fit=crop&auto=format&q=80";
 
 // ── Template article ──────────────────────────────────────────────────────────
 function articleSection(
@@ -75,9 +75,9 @@ function buildEmailHtml(
       <img
         src="${LOGO_URL}"
         alt="Vanzon Explorer"
-        width="40"
-        height="40"
-        style="display:inline-block;width:40px;height:40px;border-radius:10px;"
+        width="180"
+        height="120"
+        style="display:inline-block;width:180px;height:auto;border-radius:8px;"
       />
     </div>
 
@@ -111,9 +111,9 @@ function buildEmailHtml(
       <img
         src="${LOGO_URL}"
         alt="Vanzon Explorer"
-        width="24"
-        height="24"
-        style="display:inline-block;width:24px;height:24px;border-radius:6px;opacity:0.5;vertical-align:middle;margin-right:6px;"
+        width="80"
+        height="53"
+        style="display:inline-block;width:80px;height:auto;opacity:0.5;vertical-align:middle;margin-right:6px;"
       />
       <span style="font-size:12px;color:#94a3b8;vertical-align:middle;">
         <a href="https://vanzonexplorer.com" style="color:#94a3b8;text-decoration:none;">vanzonexplorer.com</a>
