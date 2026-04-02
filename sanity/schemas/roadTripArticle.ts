@@ -121,8 +121,8 @@ export default defineType({
                   ],
                   preview: {
                     select: { title: "nom", subtitle: "type" },
-                    prepare({ title, subtitle }: { title: string; subtitle: string }) {
-                      return { title: title || "Spot sans nom", subtitle: subtitle || "" };
+                    prepare(value: Record<string, unknown>) {
+                      return { title: String(value.title || "Spot sans nom"), subtitle: String(value.subtitle || "") };
                     },
                   },
                 },
@@ -157,8 +157,8 @@ export default defineType({
           ],
           preview: {
             select: { numero: "numero", titre: "titre" },
-            prepare({ numero, titre }: { numero: number; titre: string }) {
-              return { title: `Jour ${numero || "?"}`, subtitle: titre || "Sans titre" };
+            prepare(value: Record<string, unknown>) {
+              return { title: `Jour ${value.numero || "?"}`, subtitle: String(value.titre || "Sans titre") };
             },
           },
         },
@@ -253,12 +253,13 @@ export default defineType({
       score: "qualityScore",
       media: "coverImage",
     },
-    prepare({ title, region, status, score, media }: { title: string; region: string; status: string; score: number; media: unknown }) {
-      const statusEmoji = status === "published" ? "✅" : "👀";
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    prepare(value: Record<string, any>) {
+      const statusEmoji = value.status === "published" ? "✅" : "👀";
       return {
-        title: title || "Sans titre",
-        subtitle: `${statusEmoji} ${region || "?"} · score: ${score ?? "—"}`,
-        media,
+        title: String(value.title || "Sans titre"),
+        subtitle: `${statusEmoji} ${value.region || "?"} · score: ${value.score ?? "—"}`,
+        media: value.media,
       };
     },
   },
