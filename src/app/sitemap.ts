@@ -1,13 +1,16 @@
 import type { MetadataRoute } from "next";
 import { sanityFetch } from "@/lib/sanity/client";
-import { getAllVanSlugsQuery, getAllArticleSlugsQuery } from "@/lib/sanity/queries";
+import { getAllVanSlugsQuery, getAllArticleSlugsQuery, getAllRoadTripArticleSlugsQuery } from "@/lib/sanity/queries";
 import { VANS } from "@/lib/data/vans";
+
+const ROAD_TRIP_REGIONS = ["pays-basque", "bretagne", "provence", "camargue", "alsace", "dordogne", "corse", "normandie", "ardeche", "pyrenees", "loire", "jura", "vercors", "cotentin", "landes"];
 
 const BASE_URL = "https://vanzonexplorer.com";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const vanSlugs = await sanityFetch<{ slug: string; updatedAt?: string }[]>(getAllVanSlugsQuery) ?? [];
   const articleSlugs = await sanityFetch<{ slug: string; updatedAt?: string }[]>(getAllArticleSlugsQuery) ?? [];
+  const roadTripSlugs = await sanityFetch<{ regionSlug: string; articleSlug: string; updatedAt?: string }[]>(getAllRoadTripArticleSlugsQuery) ?? [];
 
   const staticPages: MetadataRoute.Sitemap = [
     { url: BASE_URL, lastModified: new Date("2026-01-01"), changeFrequency: "weekly", priority: 1 },
@@ -44,5 +47,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  return [...staticPages, ...vanPages, ...articlePages];
+  const roadTripIndexPage: MetadataRoute.Sitemap = [
+    { url: `${BASE_URL}/road-trip`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
+  ];
+
+  const roadTripRegionPages: MetadataRoute.Sitemap = ROAD_TRIP_REGIONS.map((regionSlug) => ({
+    url: `${BASE_URL}/road-trip/${regionSlug}`,
+    lastModified: new Date(),
+    changeFrequency: "weekly" as const,
+    priority: 0.7,
+  }));
+
+  const roadTripArticlePages: MetadataRoute.Sitemap = roadTripSlugs.map(({ regionSlug, articleSlug, updatedAt }) => ({
+    url: `${BASE_URL}/road-trip/${regionSlug}/${articleSlug}`,
+    lastModified: updatedAt ? new Date(updatedAt) : new Date(),
+    changeFrequency: "monthly" as const,
+    priority: 0.8,
+  }));
+
+  return [...staticPages, ...vanPages, ...articlePages, ...roadTripIndexPage, ...roadTripRegionPages, ...roadTripArticlePages];
 }
