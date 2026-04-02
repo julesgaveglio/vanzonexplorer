@@ -209,7 +209,7 @@ npm install --save-dev @types/cheerio
 - Utiliser **obligatoirement** le helper `dfsPost` de `src/lib/dataforseo.ts` (assure le logging automatique des coûts dans `dataforseo_logs`)
 - Le domaine cible est extrait de l'URL saisie : `new URL(inputUrl).hostname`
 - Endpoint authority : `/dataforseo_labs/google/domain_rank_overview/live`
-- Endpoint competitors : `/dataforseo_labs/google/competitors_domain/live` avec `limit: 5`
+- Endpoint competitors : `/dataforseo_labs/google/competitors_domain/live` avec `limit: 5` — utiliser `dfsPostRaw` et accéder à `json.tasks?.[0]?.result` (tableau complet) car `dfsPost` retourne seulement `result[0]`
 - Gérer proprement l'erreur "insufficient funds" DataForSEO (retourner section "Indisponible" sans faire planter le pipeline)
 
 ### Route ai-insights
