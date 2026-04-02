@@ -113,8 +113,6 @@ export default async function RoadTripsAdminPage({
         .eq("status", "published"),
     ]);
 
-  const successRate =
-    (total ?? 0) > 0 ? Math.round(((sentTotal ?? 0) / (total ?? 1)) * 100) : 0;
 
   // --- Review/Published articles ---
   let reviewRows: RoadTripRequest[] = [];
