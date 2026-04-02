@@ -219,5 +219,39 @@
     "manualCommand": "npx tsx scripts/agents/road-trip-feedback-agent.ts",
     "tags": ["Email", "Road Trip", "Feedback", "Automatique"],
     "pipeline": "Standalone — déclenché 24h après road-trip/generate"
+  },
+  {
+    "id": "road-trip-publisher",
+    "name": "Agent Road Trip Publisher",
+    "emoji": "🗺️",
+    "status": "active",
+    "description": "Transforme automatiquement les itinéraires road trip générés (status=sent) en articles SEO publiés dans Sanity. Pipeline : images (Pixabay → SerpApi → Wikipedia) + GeoJSON + enrichissement Anthropic Claude. Tourne toutes les 4h.",
+    "trigger": "cron",
+    "schedule": "Toutes les 4h",
+    "cronExpression": "0 */4 * * *",
+    "file": "scripts/agents/road-trip-publisher-agent.ts",
+    "workflow": ".github/workflows/road-trip-publisher.yml",
+    "apis": ["Anthropic Claude", "Pixabay", "SerpApi", "Supabase", "Sanity", "Telegram"],
+    "output": "Article roadTripArticle créé dans Sanity CMS avec status=review",
+    "manualCommand": "npx tsx scripts/agents/road-trip-publisher-agent.ts",
+    "tags": ["SEO", "Road Trip", "Contenu", "Automatique"],
+    "pipeline": "road_trip_requests (sent) → enrichissement → Sanity (review)"
+  },
+  {
+    "id": "road-trip-seed",
+    "name": "Agent Road Trip Seed",
+    "emoji": "🌱",
+    "status": "active",
+    "description": "Génère 45+ requêtes synthétiques pour seeder le pipeline road trip. 15 régions × 3 combinaisons + 5 extras. Génère aussi les descriptions encyclopédiques pour chaque région via Claude Haiku.",
+    "trigger": "manual",
+    "schedule": "Manuel uniquement",
+    "cronExpression": null,
+    "file": "scripts/agents/road-trip-seed-agent.ts",
+    "workflow": null,
+    "apis": ["Anthropic Claude Haiku", "Supabase", "Telegram"],
+    "output": "road_trip_requests (45+ rows status=sent) + road_trip_regions descriptions",
+    "manualCommand": "npx tsx scripts/agents/road-trip-seed-agent.ts --dry-run",
+    "tags": ["Road Trip", "Seed", "Manuel"],
+    "pipeline": "Standalone — alimente road-trip-publisher"
   }
 ]

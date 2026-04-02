@@ -183,6 +183,99 @@ type ArticleType = {
 
 export type FAQItem = { question: string; answer: string };
 
+interface TouristTripJsonLdProps {
+  name: string;
+  description: string;
+  url: string;
+  image?: string;
+  region: string;
+  duration: number; // jours
+  touristType?: string;
+}
+
+export function TouristTripJsonLd({
+  name,
+  description,
+  url,
+  image,
+  region,
+  duration,
+  touristType = "Vanlife",
+}: TouristTripJsonLdProps) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "TouristTrip",
+    name,
+    description,
+    url,
+    ...(image ? { image } : {}),
+    touristType,
+    itinerary: {
+      "@type": "ItemList",
+      name: `Itinéraire ${region} ${duration} jours`,
+    },
+    provider: {
+      "@type": "Organization",
+      name: "Vanzon Explorer",
+      url: "https://vanzonexplorer.com",
+    },
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+    />
+  );
+}
+
+interface RoadTripFAQJsonLdProps {
+  items: Array<{ question: string; answer: string }>;
+}
+
+export function RoadTripFAQJsonLd({ items }: RoadTripFAQJsonLdProps) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: items.map(({ question, answer }) => ({
+      "@type": "Question",
+      name: question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: answer,
+      },
+    })),
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+    />
+  );
+}
+
+export function OrganizationJsonLd() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Vanzon Explorer",
+    url: "https://vanzonexplorer.com",
+    logo: "https://cdn.sanity.io/images/lewexa74/production/9de5b0e768fa1fcc5ea5aa6f41ac816c249af9b0-1042x417.png",
+    sameAs: [
+      "https://www.instagram.com/vanzonexplorer",
+    ],
+    description: "Location et vente de vans aménagés au Pays Basque. Spécialistes vanlife.",
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+    />
+  );
+}
+
 export function ArticleJsonLd({
   article,
   faqItems = [],

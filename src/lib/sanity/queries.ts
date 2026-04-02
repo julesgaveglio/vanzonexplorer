@@ -347,3 +347,131 @@ export const getHeroCarouselQuery = groq`
     }
   }
 `;
+
+// ── Road Trip Articles ─────────────────────────────────────────────────────────
+
+export const getAllRoadTripArticlesQuery = groq`
+  *[_type == "roadTripArticle" && status == "published"] | order(publishedAt desc) {
+    _id,
+    title,
+    "slug": slug.current,
+    regionSlug,
+    regionName,
+    seoDescription,
+    excerpt,
+    duree,
+    style,
+    profil,
+    periode,
+    interets,
+    qualityScore,
+    publishedAt,
+    "coverImage": coverImage {
+      "url": asset->url,
+      alt,
+      credit
+    }
+  }
+`;
+
+export const getRoadTripArticleBySlugQuery = groq`
+  *[_type == "roadTripArticle" && regionSlug == $regionSlug && slug.current == $articleSlug && status == "published"][0] {
+    _id,
+    title,
+    "slug": slug.current,
+    regionSlug,
+    regionName,
+    seoTitle,
+    seoDescription,
+    chapeau,
+    excerpt,
+    duree,
+    style,
+    profil,
+    periode,
+    interets,
+    intro,
+    jours[] {
+      numero,
+      titre,
+      tips,
+      spots[] {
+        nom,
+        description,
+        type,
+        mapsUrl,
+        "photo": photo {
+          "url": asset->url,
+          alt,
+          credit
+        },
+        wikiExcerpt,
+        wikiUrl,
+        lat,
+        lon
+      },
+      camping,
+      restaurant
+    },
+    conseilsPratiques,
+    faqItems,
+    enResume,
+    geojson,
+    qualityScore,
+    publishedAt,
+    "coverImage": coverImage {
+      "url": asset->url,
+      alt,
+      credit,
+      source
+    },
+    "relatedArticles": relatedArticles[] -> {
+      _id,
+      title,
+      "slug": slug.current,
+      regionSlug,
+      regionName,
+      duree,
+      style,
+      "coverImage": coverImage { "url": asset->url, alt }
+    }
+  }
+`;
+
+export const getRoadTripArticlesByRegionQuery = groq`
+  *[_type == "roadTripArticle" && regionSlug == $regionSlug && status == "published"] | order(publishedAt desc) {
+    _id,
+    title,
+    "slug": slug.current,
+    regionSlug,
+    regionName,
+    seoDescription,
+    excerpt,
+    duree,
+    style,
+    profil,
+    publishedAt,
+    "coverImage": coverImage { "url": asset->url, alt }
+  }
+`;
+
+export const getAllRoadTripArticleSlugsQuery = groq`
+  *[_type == "roadTripArticle" && status == "published"] {
+    "regionSlug": regionSlug,
+    "articleSlug": slug.current,
+    "updatedAt": _updatedAt
+  }
+`;
+
+export const getRelatedRoadTripArticlesQuery = groq`
+  *[_type == "roadTripArticle" && _id in $ids && status == "published"] {
+    _id,
+    title,
+    "slug": slug.current,
+    regionSlug,
+    regionName,
+    duree,
+    style,
+    "coverImage": coverImage { "url": asset->url, alt }
+  }
+`;

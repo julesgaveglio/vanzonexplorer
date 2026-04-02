@@ -25,6 +25,7 @@ export default defineType({
           { title: "Pays Basque", value: "pays-basque" },
           { title: "Formation", value: "formation" },
           { title: "Divers", value: "divers" },
+          { title: "Road Trip", value: "road-trip" },
         ],
         layout: "dropdown",
       },
@@ -93,6 +94,7 @@ export default defineType({
         "pays-basque": "🏔️ Pays Basque",
         formation: "🎓 Formation",
         divers: "📁 Divers",
+        "road-trip": "🗺️ Road Trip",
       };
       return {
         title: title || "Sans titre",
