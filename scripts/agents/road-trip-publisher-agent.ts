@@ -89,13 +89,17 @@ async function main() {
   const cost = createCostTracker("road-trip-publisher");
 
   try {
-    // 1. Récupérer un road trip à traiter
-    const { data: requests, error } = await supabase
+    // 1. Récupérer un road trip à traiter (ID spécifique ou le plus récent)
+    const targetId = process.argv[2] || null;
+    let query = supabase
       .from("road_trip_requests")
       .select("*")
       .eq("status", "sent")
       .is("article_sanity_id", null)
+      .order("created_at", { ascending: false })
       .limit(1);
+    if (targetId) query = query.eq("id", targetId) as typeof query;
+    const { data: requests, error } = await query;
 
     if (error) throw new Error(`Supabase query error: ${error.message}`);
     if (!requests || requests.length === 0) {
@@ -174,12 +178,12 @@ Génère l'article en JSON valide comme spécifié dans le prompt système.`;
 
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-5",
-      max_tokens: 4096,
+      max_tokens: 8192,
       system: systemPrompt,
       messages: [{ role: "user", content: userMessage }],
     });
 
-    cost.addTokens(response.usage.input_tokens, response.usage.output_tokens, "claude-sonnet-4-5");
+    cost.addAnthropic("sonnet", response.usage.input_tokens, response.usage.output_tokens);
 
     let articleData: Record<string, unknown>;
     try {
@@ -310,7 +314,7 @@ Génère l'article en JSON valide comme spécifié dans le prompt système.`;
       `⏱️ ${request.duree} jours · ${request.style_voyage}\n` +
       `📊 Score qualité : ${scoreResult.total}/100\n` +
       `🔗 Sanity ID : \`${createdDoc._id}\`\n` +
-      `💰 Coût : $${cost.getTotalCost().toFixed(4)}`
+      `💰 Coût : $${cost.toRunResult().costEur.toFixed(4)}`
     );
 
     await finishRun(runId, "success", {
@@ -318,13 +322,13 @@ Génère l'article en JSON valide comme spécifié dans le prompt système.`;
       articleSlug,
       regionSlug,
       qualityScore: scoreResult.total,
-      cost: cost.getTotalCost(),
+      cost: cost.toRunResult().costEur,
     });
 
     console.log(`\n🎉 Road trip publié avec succès !`);
     console.log(`   Slug : ${articleSlug}`);
     console.log(`   Score : ${scoreResult.total}/100`);
-    console.log(`   Coût : $${cost.getTotalCost().toFixed(4)}`);
+    console.log(`   Coût : $${cost.toRunResult().costEur.toFixed(4)}`);
 
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);

@@ -180,8 +180,9 @@ export async function fetchSpotImage(
   wikiThumbnail?: string
 ): Promise<SpotImage> {
   const alt = buildAltText(spot, region, type);
-  const filename = `${region}-${spot.toLowerCase().replace(/\s+/g, "-")}-${Date.now()}.jpg`;
-  const storagePath = `${region}/${filename}`;
+  const slugify = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  const filename = `${slugify(region)}-${slugify(spot)}-${Date.now()}.jpg`;
+  const storagePath = `${slugify(region)}/${filename}`;
 
   // 1. Pixabay
   let imageUrl = await searchPixabay(spot, region);
@@ -212,6 +213,15 @@ export async function fetchSpotImage(
 
   try {
     const buffer = await downloadBuffer(imageUrl);
+
+    // Vérifier que c'est bien une image (JPEG/PNG magic bytes)
+    const isJpeg = buffer[0] === 0xFF && buffer[1] === 0xD8;
+    const isPng = buffer[0] === 0x89 && buffer[1] === 0x50;
+    const isWebP = buffer.slice(8, 12).toString() === "WEBP";
+    if (!isJpeg && !isPng && !isWebP) {
+      console.warn(`[image-pipeline] Non-image data received for ${spot}, skipping upload`);
+      return { url: imageUrl, alt, credit, source };
+    }
 
     // Upload en parallèle
     const [sanityId, supaUrl] = await Promise.all([
