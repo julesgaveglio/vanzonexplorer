@@ -9,14 +9,27 @@ CREATE TABLE IF NOT EXISTS vanzon_memory (
   content            TEXT NOT NULL,
   source             TEXT NOT NULL DEFAULT 'telegram_voice',
   tags               TEXT[] NOT NULL DEFAULT '{}',
-  -- Colonne générée pour le full-text search multi-champs (requis par Supabase JS .textSearch())
-  -- Le client Supabase JS ne supporte pas les expressions SQL comme argument de colonne
-  fts_vector         TSVECTOR GENERATED ALWAYS AS (
-    to_tsvector('french'::regconfig, title || ' ' || content || ' ' || array_to_string(tags, ' '))
-  ) STORED,
+  -- Colonne FTS mise à jour par trigger (GENERATED ALWAYS refusé par PostgreSQL sur ces fonctions)
+  fts_vector         TSVECTOR,
   obsidian_synced_at TIMESTAMPTZ,
   created_at         TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+-- Trigger pour maintenir fts_vector à jour à chaque INSERT/UPDATE
+CREATE OR REPLACE FUNCTION vanzon_memory_fts_update() RETURNS trigger AS $$
+BEGIN
+  NEW.fts_vector := to_tsvector('french'::regconfig,
+    COALESCE(NEW.title, '') || ' ' ||
+    COALESCE(NEW.content, '') || ' ' ||
+    COALESCE(array_to_string(NEW.tags, ' '), '')
+  );
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER vanzon_memory_fts_trigger
+  BEFORE INSERT OR UPDATE ON vanzon_memory
+  FOR EACH ROW EXECUTE FUNCTION vanzon_memory_fts_update();
 
 CREATE INDEX IF NOT EXISTS vanzon_memory_category_idx
   ON vanzon_memory(category);
@@ -28,10 +41,8 @@ CREATE INDEX IF NOT EXISTS vanzon_memory_sync_idx
   ON vanzon_memory(obsidian_synced_at)
   WHERE obsidian_synced_at IS NULL;
 
--- Index GIN sur la colonne générée fts_vector
+-- Index GIN sur fts_vector pour la recherche plein texte
 CREATE INDEX IF NOT EXISTS vanzon_memory_fts_idx
   ON vanzon_memory USING gin(fts_vector);
 
--- État 'awaiting_memory_edit' ajouté aux états valides de telegram_pending_actions
--- (états existants : awaiting_confirmation | awaiting_edit | awaiting_selection)
 COMMENT ON TABLE vanzon_memory IS 'Mémoire interne Vanzon — notes vocales catégorisées par Groq';
