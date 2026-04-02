@@ -295,7 +295,8 @@ export async function handleAssistantCallback(
   // ── asst:cancel ──────────────────────────────────────────────────────────
   if (type === "cancel") {
     await supabase.from("telegram_pending_actions").delete().eq("id", pendingId);
-    await tgSend(chatId, "❌ Note annulée.");
+    const cancelMsg = actionType === "memory_save" ? "❌ Note annulée." : "❌ Envoi annulé.";
+    await tgSend(chatId, cancelMsg);
     return;
   }
 

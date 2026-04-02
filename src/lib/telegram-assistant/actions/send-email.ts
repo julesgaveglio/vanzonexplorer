@@ -1,12 +1,12 @@
 // src/lib/telegram-assistant/actions/send-email.ts
-import { groqWithFallback } from "@/lib/groq-with-fallback";
-import { createSupabaseAdmin } from "@/lib/supabase/server";
-import { fetchGmailSignature } from "@/lib/gmail";
+// Envoie l'email de feedback road trip via le template officiel buildRoadTripFeedbackEmail.
+// Pas de génération Groq — le contenu est toujours celui du template.
 
+import { createSupabaseAdmin } from "@/lib/supabase/server";
+import { buildRoadTripFeedbackEmail } from "@/emails/road-trip-feedback";
 
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN!;
 
-// ── Helpers Telegram ──────────────────────────────────────────────────────────
 async function tgSend(chatId: number, text: string, extra?: object) {
   await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
     method:  "POST",
@@ -15,71 +15,46 @@ async function tgSend(chatId: number, text: string, extra?: object) {
   });
 }
 
-// ── ID court (10 chars hex) ───────────────────────────────────────────────────
 function shortId(): string {
   return crypto.randomUUID().replace(/-/g, "").slice(0, 10);
-  // ex: "f47ac10b8e" — callback_data max: "asst:confirm:f47ac10b8e" = 23 chars < 64 bytes Telegram ✓
 }
 
-// ── Génération email via Groq ─────────────────────────────────────────────────
-interface EmailDraft {
-  subject: string;
-  body:    string; // HTML <p> uniquement
-}
-
-async function generateEmailDraft(
-  prenom: string,
-  region: string,
-  duree:  number
-): Promise<EmailDraft> {
-  // Récupérer les exemples few-shot
-  const { getEmailExamples, formatExamplesForPrompt } = await import("../email-memory");
-  const examples    = await getEmailExamples("road_trip_feedback", 3);
-  const examplesStr = formatExamplesForPrompt(examples);
-
-  const { content: raw } = await groqWithFallback({
-    model: "llama-3.3-70b-versatile",
-    response_format: { type: "json_object" },
-    messages: [
-      {
-        role: "system",
-        content:
-          `Tu es Jules Gaveglio, fondateur de Vanzon Explorer (location de vans aménagés au Pays Basque).` +
-          `\nGénère un email professionnel et chaleureux en français pour demander un retour sincère à ${prenom}` +
-          `\nqui a utilisé notre outil de génération de road trip personnalisé pour ${duree} jours en ${region}.` +
-          `\n\nRègles :` +
-          `\n- Ton chaleureux et authentique, pas corporatif` +
-          `\n- Mentionner leur road trip spécifique (région + durée)` +
-          `\n- Demander un retour sincère et honnête sur l'outil` +
-          `\n- 3-4 courts paragraphes maximum` +
-          `\n- PAS de formule de politesse finale — la signature est ajoutée automatiquement` +
-          `\n- Corps en HTML avec uniquement des balises <p>` +
-          examplesStr,
-      },
-      { role: "user", content: `Génère l'email. Réponds avec un JSON {"subject": "...", "body": "<p>...</p>"}` },
-    ],
-    temperature: 0.7,
-    max_tokens:  600,
-  });
-
-  const data = JSON.parse(raw) as EmailDraft;
-  return data;
+// Convertit le HTML email en texte lisible pour l'aperçu Telegram
+function htmlToTelegramText(html: string): string {
+  return html
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/p>/gi, "\n")
+    .replace(/<\/tr>/gi, "\n")
+    .replace(/<\/h[1-6]>/gi, "\n")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&nbsp;/g, " ")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim()
 }
 
 // ── Handler principal ─────────────────────────────────────────────────────────
 export async function sendEmailHandler(
-  params: Record<string, string>,
+  params: { prenom: string; email?: string },
   chatId: number
 ): Promise<void> {
-  const prenom = params.prenom;
+  const { prenom, email } = params;
+
   if (!prenom) {
     await tgSend(chatId, "❓ Je n'ai pas compris à qui envoyer l'email. Précise le prénom.");
     return;
   }
 
-  const supabase = createSupabaseAdmin();
+  // Si un email est fourni directement, on l'utilise sans chercher en DB
+  if (email) {
+    await buildAndSendPreview(chatId, { prenom, email });
+    return;
+  }
 
-  // 1. Chercher dans road_trip_requests (tous les statuts)
+  // Sinon, cherche par prénom dans road_trip_requests
+  const supabase = createSupabaseAdmin();
   const { data: results } = await supabase
     .from("road_trip_requests")
     .select("id, prenom, email, region, duree, created_at")
@@ -88,131 +63,102 @@ export async function sendEmailHandler(
 
   const rows = results ?? [];
 
-  // 2a. Aucun résultat
   if (rows.length === 0) {
-    await tgSend(chatId, `🤷 <b>${prenom}</b> introuvable dans les road trips.`);
+    await tgSend(chatId, `🤷 <b>${prenom}</b> introuvable dans les road trips. Tu peux préciser l'adresse email directement.`);
     return;
   }
 
-  // 2b. Plusieurs résultats — désambiguïsation
   if (rows.length > 1) {
-    try {
-      const pendingId = shortId();
-      await supabase.from("telegram_pending_actions").insert({
-        id:         pendingId,
-        chat_id:    chatId,
-        action:     "send_email",
-        state:      "awaiting_selection",
-        expires_at: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
-        payload: { candidates: rows.map((r) => ({
-          id: r.id, prenom: r.prenom, email: r.email,
-          region: r.region, duree: r.duree, created_at: r.created_at,
-        })) },
-      });
-
-      const buttons = rows.slice(0, 5).map((r, i) => [{
-        text:          `${r.prenom} — ${r.region} (${r.duree}j, ${new Date(r.created_at).toLocaleDateString("fr-FR", { day: "2-digit", month: "short" })})`,
-        callback_data: `asst:select:${pendingId}:${i}`,
-      }]);
-
-      await tgSend(chatId, `📋 Plusieurs <b>${prenom}</b> trouvés. Lequel ?`, {
-        reply_markup: { inline_keyboard: buttons },
-      });
-    } catch (err) {
-      console.error("[send-email] disambiguation error:", err);
-      await tgSend(chatId, "❌ Erreur serveur, réessaie 🔄");
-    }
-    return;
-  }
-
-  // 2c. Un seul résultat — continuer directement
-  await buildAndSendPreview(chatId, rows[0]);
-}
-
-// ── Construire l'aperçu et stocker la pending action ─────────────────────────
-export async function buildAndSendPreview(
-  chatId: number,
-  row: { id: string; prenom: string; email: string; region: string; duree: number }
-): Promise<void> {
-  const supabase = createSupabaseAdmin();
-
-  await tgSend(chatId, "⏳ Génération de l'email en cours...");
-
-  try {
-    // Générer le brouillon
-    let draft: EmailDraft;
-    try {
-      draft = await generateEmailDraft(row.prenom, row.region, row.duree);
-    } catch (draftErr) {
-      console.error("[send-email] generateEmailDraft error:", draftErr);
-      await tgSend(chatId, `❌ Erreur génération Groq : ${String(draftErr).slice(0, 200)}`);
-      return;
-    }
-
-    // Récupérer la signature Gmail
-    const signature = await fetchGmailSignature("jules@vanzonexplorer.com");
-
-    // Stocker la pending action
     const pendingId = shortId();
-    const { error: insertErr } = await supabase.from("telegram_pending_actions").insert({
+    await supabase.from("telegram_pending_actions").insert({
       id:         pendingId,
       chat_id:    chatId,
       action:     "send_email",
-      state:      "awaiting_confirmation",
+      state:      "awaiting_selection",
       expires_at: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
       payload: {
-        action_type: "road_trip_feedback",
-        to:          row.email,
-        subject:     draft.subject,
-        body:        draft.body,
-        signature,
-        prenom:      row.prenom,
-        region:      row.region,
-        duree:       row.duree,
-        context: {
-          prenom: row.prenom,
-          region: row.region,
-          duree:  String(row.duree),
-        },
+        candidates: rows.slice(0, 5).map((r) => ({
+          id: r.id, prenom: r.prenom, email: r.email,
+          region: r.region, duree: r.duree, created_at: r.created_at,
+        })),
       },
     });
-    if (insertErr) {
-      console.error("[send-email] insert pending_actions error:", insertErr);
-      await tgSend(chatId, `❌ Erreur DB insert : ${insertErr.message}`);
-      return;
-    }
 
-    // Construire le texte d'aperçu (HTML Telegram, pas d'HTML email ici)
-    const bodyPreview = draft.body
-      .replace(/<[^>]+>/g, "")   // strip HTML pour aperçu Telegram
-      .slice(0, 400)
-      .trim();
+    const buttons = rows.slice(0, 5).map((r, i) => [{
+      text:          `${r.prenom} — ${r.region} (${r.duree}j, ${new Date(r.created_at).toLocaleDateString("fr-FR", { day: "2-digit", month: "short" })})`,
+      callback_data: `asst:select:${pendingId}:${i}`,
+    }]);
 
-    // Échapper les caractères HTML pour Telegram parse_mode HTML
-    const escaped = bodyPreview
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;");
-
-    const preview =
-      `📧 <b>Aperçu de l'email</b>\n` +
-      `─────────────────────\n` +
-      `<b>À :</b> ${row.email}\n` +
-      `<b>Objet :</b> ${draft.subject}\n\n` +
-      `${escaped}${bodyPreview.length >= 400 ? "…" : ""}\n\n` +
-      `<i>${signature ? "[signature configurée ✓]" : "[aucune signature trouvée]"}</i>\n` +
-      `─────────────────────`;
-
-    await tgSend(chatId, preview, {
-      reply_markup: {
-        inline_keyboard: [[
-          { text: "✅ Envoyer",   callback_data: `asst:confirm:${pendingId}` },
-          { text: "✏️ Modifier", callback_data: `asst:edit:${pendingId}` },
-        ]],
-      },
+    await tgSend(chatId, `📋 Plusieurs <b>${prenom}</b> trouvés. Lequel ?`, {
+      reply_markup: { inline_keyboard: buttons },
     });
-  } catch (err) {
-    console.error("[send-email] error:", err);
-    await tgSend(chatId, "❌ Erreur lors de la génération de l'email. Réessaie 🔄");
+    return;
   }
+
+  await buildAndSendPreview(chatId, rows[0]);
+}
+
+// ── Construire l'aperçu via le template officiel et stocker la pending action ──
+export async function buildAndSendPreview(
+  chatId: number,
+  row: { prenom: string; email: string }
+): Promise<void> {
+  const supabase = createSupabaseAdmin();
+
+  const emailEncoded        = encodeURIComponent(row.email);
+  const { subject, html }   = buildRoadTripFeedbackEmail({ prenom: row.prenom, emailEncoded });
+
+  const pendingId = shortId();
+  const { error: insertErr } = await supabase.from("telegram_pending_actions").insert({
+    id:         pendingId,
+    chat_id:    chatId,
+    action:     "send_email",
+    state:      "awaiting_confirmation",
+    expires_at: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+    payload: {
+      action_type: "road_trip_feedback",
+      to:          row.email,
+      subject,
+      body:        html,
+      signature:   "",        // le template a déjà son propre footer
+      context: { prenom: row.prenom },
+    },
+  });
+
+  if (insertErr) {
+    console.error("[send-email] insert pending_actions error:", insertErr);
+    await tgSend(chatId, `❌ Erreur DB : ${insertErr.message}`);
+    return;
+  }
+
+  // Corps complet lisible (Telegram max 4096 chars — réservons ~200 pour l'entête)
+  const bodyText = htmlToTelegramText(html)
+  const MAX_BODY = 3800
+  const bodyDisplay = bodyText.length > MAX_BODY
+    ? bodyText.slice(0, MAX_BODY) + "\n…"
+    : bodyText
+
+  // Échapper les caractères HTML Telegram dans le corps
+  const bodyEscaped = bodyDisplay
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+
+  const preview =
+    `📧 <b>Aperçu de l'email</b>\n` +
+    `─────────────────────\n` +
+    `<b>À :</b> ${row.email}\n` +
+    `<b>Objet :</b> ${subject}\n` +
+    `─────────────────────\n\n` +
+    `${bodyEscaped}\n\n` +
+    `─────────────────────`;
+
+  await tgSend(chatId, preview, {
+    reply_markup: {
+      inline_keyboard: [[
+        { text: "✅ Envoyer",   callback_data: `asst:confirm:${pendingId}` },
+        { text: "❌ Annuler",  callback_data: `asst:cancel:${pendingId}` },
+      ]],
+    },
+  });
 }

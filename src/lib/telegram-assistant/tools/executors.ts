@@ -139,9 +139,9 @@ async function sendEmailToRoadTripper(
   chatId: number
 ): Promise<string> {
   const prenom = args.prenom as string;
-  // Import dynamique pour éviter la dépendance circulaire
+  const email  = (args.email as string | undefined) ?? "";
   const { sendEmailHandler } = await import("../actions/send-email");
-  await sendEmailHandler({ prenom }, chatId);
+  await sendEmailHandler({ prenom, email }, chatId);
   return JSON.stringify({
     status: "preview_sent",
     message: "Aperçu de l'email envoyé à Jules. Il peut confirmer ou modifier.",
@@ -230,22 +230,28 @@ async function replyToEmailTool(
     },
   });
 
-  // Aperçu Telegram
-  const bodyPreview = draft.body
+  // Corps complet lisible (Telegram max 4096 chars — réservons ~200 pour l'entête)
+  const bodyFull = draft.body
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/p>/gi, "\n")
     .replace(/<[^>]+>/g, "")
-    .slice(0, 400)
-    .trim();
-  const escaped = bodyPreview
+    .replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&nbsp;/g, " ")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim()
+  const MAX_BODY = 3800
+  const bodyDisplay = bodyFull.length > MAX_BODY ? bodyFull.slice(0, MAX_BODY) + "\n…" : bodyFull
+  const escaped = bodyDisplay
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+    .replace(/>/g, "&gt;")
 
   const preview =
     `📧 <b>Aperçu de la réponse</b>\n` +
     `─────────────────────\n` +
     `<b>À :</b> ${original.from}\n` +
-    `<b>Objet :</b> ${draft.subject}\n\n` +
-    `${escaped}${bodyPreview.length >= 400 ? "…" : ""}\n\n` +
+    `<b>Objet :</b> ${draft.subject}\n` +
+    `─────────────────────\n\n` +
+    `${escaped}\n\n` +
     `<i>${signature ? "[signature configurée ✓]" : "[aucune signature]"}</i>\n` +
     `─────────────────────`;
 

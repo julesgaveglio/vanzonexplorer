@@ -104,15 +104,19 @@ export const TOOL_DEFINITIONS: Groq.Chat.Completions.ChatCompletionTool[] = [
     function: {
       name: "send_email_to_road_tripper",
       description:
-        "Déclenche la génération et l'aperçu d'un email de retour road trip pour un voyageur spécifique. " +
-        "Envoie un aperçu Telegram avec boutons Confirmer/Modifier. " +
-        "Utilise quand Jules dit 'envoie un email à [prénom]' ou 'feedback road trip'.",
+        "Envoie un email de demande de retour road trip à un voyageur. " +
+        "Affiche un aperçu Telegram avec boutons Envoyer/Modifier avant d'envoyer. " +
+        "Utilise quand Jules dit 'demande un retour à [prénom]', 'feedback road trip', ou donne un email direct.",
       parameters: {
         type: "object",
         properties: {
           prenom: {
             type: "string",
-            description: "Prénom du voyageur à qui envoyer l'email",
+            description: "Prénom du voyageur",
+          },
+          email: {
+            type: "string",
+            description: "Adresse email du voyageur si fournie directement dans le message",
           },
         },
         required: ["prenom"],
