@@ -55,7 +55,8 @@ export default function ArticleEditorClient({ draft }: Props) {
   const [htmlValue, setHtmlValue] = useState(draft.html_content);
   const [saving, setSaving]     = useState(false);
   const [saved, setSaved]       = useState(false);
-  const [queuing, setQueuing]   = useState(false);
+  const [publishing, setPublishing] = useState(false);
+  const [publishedUrl, setPublishedUrl] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<{ type: "ok" | "err"; msg: string } | null>(null);
   const [linkModal, setLinkModal] = useState(false);
   const [linkUrl, setLinkUrl]   = useState("https://");
@@ -140,20 +141,19 @@ export default function ArticleEditorClient({ draft }: Props) {
     }
   }
 
-  // ── Validate → queue ────────────────────────────────────────────────────────
-  async function handleQueue() {
-    if (!confirm("Valider cet article et l'ajouter à la file de publication ?")) return;
+  // ── Publier directement sur Sanity ──────────────────────────────────────────
+  async function handlePublish() {
+    if (!confirm("Publier cet article directement sur vanzonexplorer.com ?")) return;
     await handleSave(true);
-    setQueuing(true);
-    const res = await fetch(`/api/admin/seo/drafts/${draft.id}/queue`, { method: "POST" });
-    setQueuing(false);
+    setPublishing(true);
+    const res = await fetch(`/api/admin/seo/drafts/${draft.id}/publish`, { method: "POST" });
+    setPublishing(false);
+    const data = await res.json();
     if (!res.ok) {
-      const { error } = await res.json();
-      flash("err", error ?? "Erreur");
+      flash("err", data.error ?? "Erreur lors de la publication");
       return;
     }
-    flash("ok", "Article ajouté à la file de publication ✓");
-    setTimeout(() => router.push("/admin/seo/editeur"), 2000);
+    setPublishedUrl(data.url);
   }
 
   // ── Link insertion ──────────────────────────────────────────────────────────
@@ -182,7 +182,7 @@ export default function ArticleEditorClient({ draft }: Props) {
     setLinkModal(false);
   }
 
-  const isQueued = draft.status === "queued";
+  const isPublished = draft.status === "archived";
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -199,7 +199,7 @@ export default function ArticleEditorClient({ draft }: Props) {
         </button>
         <div className="flex-1" />
         {saved && <span className="text-xs text-emerald-600 font-medium">Sauvegardé ✓</span>}
-        {isQueued && <span className="text-xs bg-green-100 text-green-700 border border-green-200 px-2 py-0.5 rounded-full font-semibold">En file de publication</span>}
+        {isPublished && <span className="text-xs bg-green-100 text-green-700 border border-green-200 px-2 py-0.5 rounded-full font-semibold">Publié</span>}
         <button
           onClick={() => handleSave()}
           disabled={saving}
@@ -207,18 +207,23 @@ export default function ArticleEditorClient({ draft }: Props) {
         >
           {saving ? "Sauvegarde…" : "Sauvegarder"}
         </button>
-        {!isQueued && (
-          <button
-            onClick={handleQueue}
-            disabled={queuing}
-            className="px-4 py-2 bg-emerald-600 text-white text-sm font-semibold rounded-lg hover:bg-emerald-700 transition-colors disabled:opacity-50 flex items-center gap-2"
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <button
+          onClick={handlePublish}
+          disabled={publishing}
+          className="px-4 py-2 bg-[#4D5FEC] hover:bg-[#3B4FD4] text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2 shadow-sm"
+        >
+          {publishing ? (
+            <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
             </svg>
-            {queuing ? "Validation…" : "Valider → File"}
-          </button>
-        )}
+          ) : (
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+          )}
+          {publishing ? "Publication…" : "Publier sur le site"}
+        </button>
       </div>
 
       {/* Feedback */}
@@ -444,6 +449,54 @@ export default function ArticleEditorClient({ draft }: Props) {
               >
                 Appliquer
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal succès publication */}
+      {publishedUrl && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md mx-4 text-center">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5">
+              <svg className="w-8 h-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-black text-slate-900 mb-2">Article publié !</h3>
+            <p className="text-sm text-slate-500 mb-6">
+              L&apos;article est maintenant en ligne sur Vanzon Explorer.
+            </p>
+            <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 mb-6">
+              <svg className="w-4 h-4 text-[#4D5FEC] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+              </svg>
+              <span className="text-xs text-slate-600 font-mono truncate flex-1">{publishedUrl}</span>
+              <button
+                onClick={() => { navigator.clipboard.writeText(publishedUrl); }}
+                title="Copier le lien"
+                className="text-slate-400 hover:text-slate-700 transition-colors flex-shrink-0"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+              </button>
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={() => { setPublishedUrl(null); router.push("/admin/seo/editeur"); }}
+                className="flex-1 px-4 py-2.5 border border-slate-200 text-slate-600 text-sm font-medium rounded-xl hover:bg-slate-50 transition-colors"
+              >
+                Retour à la liste
+              </button>
+              <a
+                href={publishedUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 px-4 py-2.5 bg-[#4D5FEC] hover:bg-[#3B4FD4] text-white text-sm font-semibold rounded-xl transition-colors text-center"
+              >
+                Voir l&apos;article →
+              </a>
             </div>
           </div>
         </div>

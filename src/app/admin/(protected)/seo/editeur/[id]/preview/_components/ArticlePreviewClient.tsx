@@ -16,13 +16,22 @@ interface Draft {
 export default function ArticlePreviewClient({ draft }: { draft: Draft }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [queued, setQueued] = useState(draft.status === "queued");
+  const [published, setPublished] = useState(false);
+  const [publishedUrl, setPublishedUrl] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   function handlePublish() {
-    if (!confirm("Valider cet article et l'ajouter à la file de publication ?")) return;
+    if (!confirm("Publier cet article directement sur vanzonexplorer.com ?")) return;
     startTransition(async () => {
-      const res = await fetch(`/api/admin/seo/drafts/${draft.id}/queue`, { method: "POST" });
-      if (res.ok) setQueued(true);
+      setError(null);
+      const res = await fetch(`/api/admin/seo/drafts/${draft.id}/publish`, { method: "POST" });
+      const data = await res.json();
+      if (res.ok) {
+        setPublished(true);
+        setPublishedUrl(data.url);
+      } else {
+        setError(data.error ?? "Erreur lors de la publication");
+      }
     });
   }
 
@@ -47,6 +56,10 @@ export default function ArticlePreviewClient({ draft }: { draft: Draft }) {
         </div>
 
         <div className="flex items-center gap-2">
+          {error && (
+            <span className="text-xs text-red-600 font-medium max-w-[280px] truncate">{error}</span>
+          )}
+
           <a
             href={`/admin/seo/editeur/${draft.id}`}
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-slate-600 border border-slate-200 rounded-lg hover:border-slate-300 transition-colors"
@@ -57,13 +70,18 @@ export default function ArticlePreviewClient({ draft }: { draft: Draft }) {
             Éditer
           </a>
 
-          {queued ? (
-            <span className="flex items-center gap-1.5 px-3 py-1.5 bg-green-50 text-green-700 border border-green-200 text-xs font-semibold rounded-lg">
+          {published && publishedUrl ? (
+            <a
+              href={publishedUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-green-50 text-green-700 border border-green-200 text-xs font-semibold rounded-lg hover:bg-green-100 transition-colors"
+            >
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              En file de publication
-            </span>
+              Publié — Voir l&apos;article →
+            </a>
           ) : (
             <button
               onClick={handlePublish}
@@ -80,7 +98,7 @@ export default function ArticlePreviewClient({ draft }: { draft: Draft }) {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
               )}
-              Publier l&apos;article
+              {isPending ? "Publication…" : "Publier sur le site"}
             </button>
           )}
         </div>
