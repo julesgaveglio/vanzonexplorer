@@ -1,7 +1,7 @@
 // src/lib/vanzon-memory/categorizer.ts
 // Appelle Groq pour catégoriser une transcription vocale et la formater en markdown.
 
-import Groq from "groq-sdk";
+import { groqWithFallback } from "@/lib/groq-with-fallback";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
 import type { CategorizerResult } from "./types";
 
@@ -76,8 +76,7 @@ export async function categorizeMemory(
     ? `Transcription originale : "${transcript}"\n\nInstruction de correction : "${correction}"\n\nGénère le JSON mis à jour.`
     : `Transcription : "${transcript}"\n\nGénère le JSON de catégorisation.`;
 
-  const groq = new Groq({ apiKey: process.env.GROQ_API_KEY! });
-  const completion = await groq.chat.completions.create({
+  const { content: raw } = await groqWithFallback({
     model:           "llama-3.3-70b-versatile",
     response_format: { type: "json_object" },
     temperature:     0.3,
@@ -87,8 +86,6 @@ export async function categorizeMemory(
       { role: "user",   content: userPrompt },
     ],
   });
-
-  const raw = completion.choices[0]?.message?.content ?? "{}";
   const parsed = JSON.parse(raw) as {
     category?:      string;
     obsidian_file?: string;

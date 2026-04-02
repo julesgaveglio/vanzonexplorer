@@ -27,7 +27,13 @@ Comportement :
 - Si une recherche retourne 0 résultats, dis-le clairement et propose d'élargir les critères`;
 
 export async function runAgent(message: string, chatId: number): Promise<void> {
-  const groq = new Groq({ apiKey: process.env.GROQ_API_KEY! });
+  const keys = [
+    process.env.GROQ_API_KEY,
+    process.env.GROQ_API_KEY_2,
+    process.env.GROQ_API_KEY_3,
+  ].filter(Boolean) as string[];
+
+  let groq = new Groq({ apiKey: keys[0] });
 
   const messages: Groq.Chat.ChatCompletionMessageParam[] = [
     { role: "system", content: SYSTEM_PROMPT },
@@ -36,14 +42,26 @@ export async function runAgent(message: string, chatId: number): Promise<void> {
 
   // Boucle agentique : max 4 tours (message → outils → outils → réponse finale)
   for (let turn = 0; turn < 4; turn++) {
-    const response = await groq.chat.completions.create({
+    let response;
+    try {
+      response = await groq.chat.completions.create({
       model:       "llama-3.3-70b-versatile",
       messages,
       tools:       TOOL_DEFINITIONS,
-      tool_choice: "auto",
-      temperature: 0.3,
-      max_tokens:  1000,
-    });
+        tool_choice: "auto",
+        temperature: 0.3,
+        max_tokens:  1000,
+      });
+    } catch (err) {
+      const msg = String(err);
+      // Rotation de clé si rate limit
+      if (msg.includes("429") && keys.length > 1) {
+        const nextKey = keys.find(k => k !== groq.apiKey);
+        if (nextKey) { groq = new Groq({ apiKey: nextKey }); continue; }
+      }
+      await tgSend(chatId, "⚠️ Assistant temporairement indisponible. Réessaie dans quelques minutes.");
+      return;
+    }
 
     const choice = response.choices[0];
     if (!choice) break;
