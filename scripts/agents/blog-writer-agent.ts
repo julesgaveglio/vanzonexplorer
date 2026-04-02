@@ -77,7 +77,7 @@ function loadVanzonKnowledgeBase(): string | null {
     },
     {
       dir: "vision",
-      trigger: "environnement, déchets, éthique, business model, revenus, prix, VASP, opinion",
+      trigger: "environnement, déchets, éthique, business model, revenus, prix, VASP, opinion, formation, Van Business Academy, VBA, aménagement rentable, plus-value, homologation, patrimoine, kilométrage, négociation",
     },
     {
       dir: "blog",

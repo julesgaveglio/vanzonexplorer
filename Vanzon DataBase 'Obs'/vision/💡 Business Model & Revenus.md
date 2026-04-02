@@ -12,7 +12,7 @@ Avec deux vans, Vanzon ne génère **pas un revenu principal** — mais un excel
 | Moyenne saison | — | 75€/jour |
 | Haute saison | 15 avril → 15 septembre | 95€/jour |
 
-**Revenu estimé par van** : 5 000 à 7 000€ par an (hors assurances et frais de réparation).
+**Revenu estimé par van** : 5 000 à 9 000€ par an nets selon la saison, la localisation et l'optimisation du profil plateforme (hors assurances et frais de réparation).
 
 > *"Avec deux vans, nous ne vivons pas de cette activité comme source de revenu principale. Ils représentent plutôt un excellent investissement complémentaire."*
 
@@ -49,9 +49,10 @@ En parallèle : **accompagner et former** ceux qui veulent se lancer.
 Point important pour la rentabilité et la sécurité :
 
 - Assurances **moins chères** (vans VASP = moins de kilomètres = moins de risques)
-- Meilleure **valeur à la revente**
+- Meilleure **valeur à la revente** : un van VASP se revend **25 000 à 30 000€**, contre 20 000 à 25 000€ sans homologation — soit **+5 000€ minimum**
 - En cas d'accident, une assurance peut **refuser de couvrir** un aménagement camping non déclaré
 - Administrativement plus carré pour la location
+- La carte grise passe en catégorie **camping-car** → moins cher à l'immatriculation
 
 ---
 

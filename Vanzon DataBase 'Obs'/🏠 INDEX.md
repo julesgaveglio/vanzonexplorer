@@ -30,6 +30,9 @@
 - [[💡 Business Model & Revenus]]
 - [[💡 Ce qui nous énerve dans l'industrie]]
 
+### 🎓 Van Business Academy
+- [[🎓 Van Business Academy - Méthode Complète]] — Process 4 étapes, chiffres clés, modèle patrimoine
+
 ### 🗺️ Territoire
 - [[🗺️ Pays Basque — Notre terrain]]
 
