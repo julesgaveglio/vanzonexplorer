@@ -231,7 +231,7 @@ export default function ArticleEditorClient({ draft }: Props) {
       {/* Metadata fields */}
       <div className="bg-white border border-slate-200 rounded-xl p-5 mb-4 space-y-4">
         <div>
-          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">Titre de l'article</label>
+          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">Titre de l&apos;article</label>
           <input
             type="text"
             value={title}
@@ -375,7 +375,7 @@ export default function ArticleEditorClient({ draft }: Props) {
             <EditorContent editor={editor} />
           ) : (
             <div>
-              <p className="text-xs text-slate-500 mb-2">Éditez le HTML directement. Cliquez sur "Appliquer et voir le rendu" pour visualiser.</p>
+              <p className="text-xs text-slate-500 mb-2">Éditez le HTML directement. Cliquez sur &ldquo;Appliquer et voir le rendu&rdquo; pour visualiser.</p>
               <textarea
                 value={htmlValue}
                 onChange={(e) => handleHtmlChange(e.target.value)}
@@ -426,7 +426,7 @@ export default function ArticleEditorClient({ draft }: Props) {
                 className="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                 placeholder="https://vanzonexplorer.com/…"
               />
-              <p className="text-[11px] text-slate-400 mt-1">Le lien s'ouvrira dans un nouvel onglet.</p>
+              <p className="text-[11px] text-slate-400 mt-1">Le lien s&apos;ouvrira dans un nouvel onglet.</p>
             </div>
 
             <div className="flex gap-2 justify-end">

@@ -16,7 +16,7 @@ export default async function EditeurPage() {
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-slate-900">Éditeur de texte</h1>
         <p className="text-sm text-slate-500 mt-1">
-          Brouillons d'articles — modifiez, envoyez par email ou validez pour la file de publication.
+          Brouillons d&apos;articles — modifiez, envoyez par email ou validez pour la file de publication.
         </p>
       </div>
       <DraftsListClient initialDrafts={drafts ?? []} />
