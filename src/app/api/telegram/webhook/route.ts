@@ -4,6 +4,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
 import { handleAssistantMessage, handleAssistantCallback } from "@/lib/telegram-assistant/router";
+import { handleVoiceMemory } from "@/lib/vanzon-memory/handler";
 import Groq, { toFile } from "groq-sdk";
 
 // Timeout Vercel étendu à 60s pour la transcription audio
@@ -87,17 +88,16 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true });
   }
 
-  // ── Message vocal → transcription Whisper → Assistant ────────────────────
+  // ── Message vocal → mémoire Vanzon ───────────────────────────────────────
   if (body.message?.voice) {
     const chatId = body.message.chat.id;
     try {
       await sendTelegram(String(chatId), "🎙 Transcription en cours...");
       const transcript = await transcribeVoice(body.message.voice.file_id);
-      await sendTelegram(String(chatId), `🎙 <i>${transcript}</i>`);
-      await handleAssistantMessage(transcript, chatId);
+      await handleVoiceMemory(transcript, chatId);
     } catch (err) {
-      console.error("[webhook] voice transcription error:", err);
-      await sendTelegram(String(chatId), "❌ Impossible de transcrire le message vocal. Réessaie ou envoie un texte.");
+      console.error("[webhook] voice error:", err);
+      await sendTelegram(String(chatId), "❌ Impossible de traiter le message vocal. Réessaie ou envoie un texte.");
     }
     return NextResponse.json({ ok: true });
   }
