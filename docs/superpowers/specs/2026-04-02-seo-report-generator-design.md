@@ -202,14 +202,14 @@ npm install --save-dev @types/cheerio
 - Parsing HTML avec `cheerio` (obligatoire, pas de regex)
 
 ### Route pagespeed
-- Réutiliser la logique de `/api/admin/psi/route.ts` — elle accepte déjà une URL arbitraire
+- Extraire et dupliquer le bloc de parsing PSI de `/api/admin/psi/route.ts` (construction `rawUrl`, extraction scores/vitals/opportunities) dans la nouvelle route POST — ne pas appeler la route existante en proxy
 - Appeler PSI deux fois : `strategy=mobile` puis `strategy=desktop`
 
 ### Routes DataForSEO (authority + competitors)
 - Utiliser **obligatoirement** le helper `dfsPost` de `src/lib/dataforseo.ts` (assure le logging automatique des coûts dans `dataforseo_logs`)
 - Le domaine cible est extrait de l'URL saisie : `new URL(inputUrl).hostname`
-- Endpoint authority : `domain_rank_overview/live`
-- Endpoint competitors : `competitors_domain/live` avec `limit: 5`
+- Endpoint authority : `/dataforseo_labs/google/domain_rank_overview/live`
+- Endpoint competitors : `/dataforseo_labs/google/competitors_domain/live` avec `limit: 5`
 - Gérer proprement l'erreur "insufficient funds" DataForSEO (retourner section "Indisponible" sans faire planter le pipeline)
 
 ### Route ai-insights
