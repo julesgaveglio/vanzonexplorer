@@ -232,10 +232,11 @@ async function replyToEmailTool(
 
   // Corps complet lisible (Telegram max 4096 chars — réservons ~200 pour l'entête)
   const bodyFull = draft.body
-    .replace(/<br\s*\/?>/gi, "\n")
     .replace(/<\/p>/gi, "\n")
+    .replace(/<br\s*\/?>/gi, "\n")
     .replace(/<[^>]+>/g, "")
     .replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&nbsp;/g, " ")
+    .split("\n").map((l: string) => l.trim()).filter((l: string) => l.length > 0).join("\n")
     .replace(/\n{3,}/g, "\n\n")
     .trim()
   const MAX_BODY = 3800

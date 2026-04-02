@@ -22,15 +22,23 @@ function shortId(): string {
 // Convertit le HTML email en texte lisible pour l'aperçu Telegram
 function htmlToTelegramText(html: string): string {
   return html
-    .replace(/<br\s*\/?>/gi, "\n")
+    // Sauts de ligne seulement sur les balises de bloc textuelles
     .replace(/<\/p>/gi, "\n")
-    .replace(/<\/tr>/gi, "\n")
+    .replace(/<br\s*\/?>/gi, "\n")
     .replace(/<\/h[1-6]>/gi, "\n")
+    // Supprimer tout le reste (tables, divs, spans, attributs…)
     .replace(/<[^>]+>/g, "")
+    // Entités HTML
     .replace(/&amp;/g, "&")
     .replace(/&lt;/g, "<")
     .replace(/&gt;/g, ">")
     .replace(/&nbsp;/g, " ")
+    // Supprimer les lignes vides ou purement composées d'espaces
+    .split("\n")
+    .map(l => l.trim())
+    .filter(l => l.length > 0)
+    .join("\n")
+    // Max 2 sauts de ligne consécutifs
     .replace(/\n{3,}/g, "\n\n")
     .trim()
 }
