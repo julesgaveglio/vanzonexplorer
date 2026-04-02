@@ -7,6 +7,9 @@ import { createSupabaseAdmin } from "@/lib/supabase/server";
 import { runAgent } from "./agent";
 import { sendGmailEmail, replyGmailEmail } from "@/lib/gmail";
 import { saveEmailToMemory } from "./email-memory";
+import { saveMemoryNote } from "@/lib/vanzon-memory/writer";
+import { categorizeMemory } from "@/lib/vanzon-memory/categorizer";
+import type { MemorySavePayload } from "@/lib/vanzon-memory/types";
 
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN!;
 
@@ -40,6 +43,54 @@ export async function handleAssistantMessage(
 ): Promise<void> {
   const supabase = createSupabaseAdmin();
   await cleanExpired(supabase);
+
+  // 0. Vérifier awaiting_memory_edit — AVANT awaiting_edit ET awaiting_selection
+  const { data: memEditAction } = await supabase
+    .from("telegram_pending_actions")
+    .select("*")
+    .eq("chat_id", chatId)
+    .eq("state", "awaiting_memory_edit")
+    .gt("expires_at", new Date().toISOString())
+    .maybeSingle();
+
+  if (memEditAction) {
+    const payload = memEditAction.payload as MemorySavePayload;
+    let updated;
+    try {
+      updated = await categorizeMemory(payload.transcript, text);
+    } catch {
+      await tgSend(chatId, "⚠️ Catégorisation échouée. Réessaie.");
+      return;
+    }
+    const newPayload: MemorySavePayload = { ...payload, ...updated };
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString();
+    await supabase
+      .from("telegram_pending_actions")
+      .update({ state: "awaiting_confirmation", payload: newPayload, expires_at: expiresAt })
+      .eq("id", memEditAction.id as string);
+
+    const tagsDisplay = updated.tags.map((t: string) => `#${t}`).join(" ");
+    const htmlEscape = (s: string) =>
+      s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const preview =
+      `🎙️ <b>Note mise à jour</b>\n\n` +
+      `📂 <b>Destination :</b> ${updated.category}/${updated.obsidian_file}\n` +
+      `🏷️ <b>Tags :</b> ${tagsDisplay || "(aucun)"}\n\n` +
+      `✍️ <b>Note formatée :</b>\n` +
+      `<code>## 📝 ${new Date().toISOString().split("T")[0]}\n${htmlEscape(updated.content)}\nTags : ${htmlEscape(tagsDisplay)}</code>`;
+
+    const pendingId = memEditAction.id as string;
+    await tgSend(chatId, preview, {
+      reply_markup: {
+        inline_keyboard: [[
+          { text: "✅ Sauvegarder", callback_data: `asst:confirm:${pendingId}` },
+          { text: "✏️ Modifier",   callback_data: `asst:edit:${pendingId}`    },
+          { text: "❌ Annuler",    callback_data: `asst:cancel:${pendingId}`  },
+        ]],
+      },
+    });
+    return;
+  }
 
   // 1. Vérifier awaiting_edit AVANT Groq (le texte est le nouveau corps de l'email)
   const { data: editAction } = await supabase
@@ -126,7 +177,7 @@ export async function handleAssistantCallback(
     .maybeSingle();
 
   if (!action) {
-    await tgSend(chatId, "⏱ Demande expirée (10 min). Recommence 🔄");
+    await tgSend(chatId, "⏱ Demande expirée. Recommence 🔄");
     return;
   }
 
@@ -135,6 +186,19 @@ export async function handleAssistantCallback(
 
   // ── asst:confirm ─────────────────────────────────────────────────────────
   if (type === "confirm") {
+    // Branch memory_save — AVANT gmail_reply
+    if (actionType === "memory_save") {
+      try {
+        await saveMemoryNote(payload as unknown as MemorySavePayload);
+        await supabase.from("telegram_pending_actions").delete().eq("id", pendingId);
+        await tgSend(chatId, `✅ Noté dans <b>${(payload as Record<string,string>).category}</b> › ${(payload as Record<string,string>).obsidian_file}`);
+      } catch (err) {
+        console.error("[router] memory confirm error:", err);
+        await tgSend(chatId, "❌ Erreur sauvegarde. Réessaie 🔄");
+      }
+      return;
+    }
+
     try {
       if (actionType === "gmail_reply") {
         await replyGmailEmail({
@@ -174,6 +238,20 @@ export async function handleAssistantCallback(
 
   // ── asst:edit ────────────────────────────────────────────────────────────
   if (type === "edit") {
+    if (actionType === "memory_save") {
+      // Memory edit → awaiting_memory_edit (TTL 60 min)
+      await supabase
+        .from("telegram_pending_actions")
+        .update({
+          state:      "awaiting_memory_edit",
+          expires_at: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
+        })
+        .eq("id", pendingId);
+      await tgSend(chatId, "✏️ Envoie ta correction en texte libre (ex: \"change la destination vers anecdotes\")");
+      return;
+    }
+
+    // Email edit → awaiting_edit (TTL 10 min) — comportement existant inchangé
     await supabase
       .from("telegram_pending_actions")
       .update({
@@ -211,6 +289,13 @@ export async function handleAssistantCallback(
     // Import dynamique pour éviter la circularité
     const { buildAndSendPreview } = await import("./actions/send-email");
     await buildAndSendPreview(chatId, selected);
+    return;
+  }
+
+  // ── asst:cancel ──────────────────────────────────────────────────────────
+  if (type === "cancel") {
+    await supabase.from("telegram_pending_actions").delete().eq("id", pendingId);
+    await tgSend(chatId, "❌ Note annulée.");
     return;
   }
 
