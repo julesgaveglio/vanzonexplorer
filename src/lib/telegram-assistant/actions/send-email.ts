@@ -1,5 +1,5 @@
 // src/lib/telegram-assistant/actions/send-email.ts
-import Groq from "groq-sdk";
+import { groqWithFallback } from "@/lib/groq-with-fallback";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
 import { fetchGmailSignature } from "@/lib/gmail";
 
@@ -37,9 +37,7 @@ async function generateEmailDraft(
   const examples    = await getEmailExamples("road_trip_feedback", 3);
   const examplesStr = formatExamplesForPrompt(examples);
 
-  const groq = new Groq({ apiKey: process.env.GROQ_API_KEY! });
-
-  const completion = await groq.chat.completions.create({
+  const { content: raw } = await groqWithFallback({
     model: "llama-3.3-70b-versatile",
     response_format: { type: "json_object" },
     messages: [
@@ -64,7 +62,6 @@ async function generateEmailDraft(
     max_tokens:  600,
   });
 
-  const raw  = completion.choices[0]?.message?.content ?? "{}";
   const data = JSON.parse(raw) as EmailDraft;
   return data;
 }

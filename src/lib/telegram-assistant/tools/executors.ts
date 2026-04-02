@@ -7,8 +7,7 @@ import { listRecentEmails, getEmailById } from "./gmail-reader";
 import { fetchGmailSignature } from "@/lib/gmail";
 import { getEmailExamples, formatExamplesForPrompt } from "../email-memory";
 import { searchVanzonMemory } from "@/lib/vanzon-memory/search";
-
-import Groq from "groq-sdk";
+import { groqWithFallback } from "@/lib/groq-with-fallback";
 
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN!;
 
@@ -174,9 +173,8 @@ async function replyToEmailTool(
   const examples    = await getEmailExamples("gmail_reply", 3);
   const examplesStr = formatExamplesForPrompt(examples);
 
-  // Générer la réponse avec Groq
-  const groq = new Groq({ apiKey: process.env.GROQ_API_KEY! });
-  const completion = await groq.chat.completions.create({
+  // Générer la réponse avec Groq (fallback modèles légers + Gemini si rate limit)
+  const { content: raw } = await groqWithFallback({
     model: "llama-3.3-70b-versatile",
     response_format: { type: "json_object" },
     messages: [
@@ -202,7 +200,6 @@ async function replyToEmailTool(
     max_tokens:  600,
   });
 
-  const raw   = completion.choices[0]?.message?.content ?? "{}";
   const draft = JSON.parse(raw) as { subject: string; body: string };
 
   // Récupérer signature

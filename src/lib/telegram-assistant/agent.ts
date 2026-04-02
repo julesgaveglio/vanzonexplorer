@@ -26,8 +26,8 @@ Comportement :
 - Ne mentionne pas les IDs techniques dans tes réponses, utilise les prénoms et informations lisibles
 - Si une recherche retourne 0 résultats, dis-le clairement et propose d'élargir les critères`;
 
-// Essaie chaque clé Groq disponible dans l'ordre jusqu'à succès
-async function callGroqWithKeyRotation(
+// Essaie chaque modèle (quota séparé par modèle sur Groq) × clé disponible
+async function callGroqWithFallback(
   params: Parameters<Groq["chat"]["completions"]["create"]>[0] & { stream?: false }
 ): Promise<Groq.Chat.Completions.ChatCompletion> {
   const keys = [
@@ -36,14 +36,23 @@ async function callGroqWithKeyRotation(
     process.env.GROQ_API_KEY_3,
   ].filter(Boolean) as string[];
 
+  // llama-3.1-8b-instant a un quota 500K TPD séparé vs 100K pour le 70b
+  const models = [
+    params.model as string,
+    "llama-3.1-8b-instant",
+    "gemma2-9b-it",
+  ].filter((m, i, arr) => arr.indexOf(m) === i);
+
   let lastErr: Error = new Error("Aucune clé Groq configurée");
-  for (const key of keys) {
-    try {
-      const client = new Groq({ apiKey: key });
-      return await client.chat.completions.create(params);
-    } catch (err) {
-      lastErr = err as Error;
-      console.warn(`[agent] groq key failed: ${lastErr.message.slice(0, 120)}`);
+  for (const model of models) {
+    for (const key of keys) {
+      try {
+        const client = new Groq({ apiKey: key });
+        return await client.chat.completions.create({ ...params, model });
+      } catch (err) {
+        lastErr = err as Error;
+        console.warn(`[agent] ${model} failed: ${lastErr.message.slice(0, 100)}`);
+      }
     }
   }
   throw lastErr;
@@ -59,7 +68,7 @@ export async function runAgent(message: string, chatId: number): Promise<void> {
   for (let turn = 0; turn < 4; turn++) {
     let response: Groq.Chat.Completions.ChatCompletion;
     try {
-      response = await callGroqWithKeyRotation({
+      response = await callGroqWithFallback({
         model:       "llama-3.3-70b-versatile",
         messages,
         tools:       TOOL_DEFINITIONS,
