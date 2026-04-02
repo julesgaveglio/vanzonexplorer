@@ -26,15 +26,30 @@ Comportement :
 - Ne mentionne pas les IDs techniques dans tes réponses, utilise les prénoms et informations lisibles
 - Si une recherche retourne 0 résultats, dis-le clairement et propose d'élargir les critères`;
 
-export async function runAgent(message: string, chatId: number): Promise<void> {
+// Essaie chaque clé Groq disponible dans l'ordre jusqu'à succès
+async function callGroqWithKeyRotation(
+  params: Parameters<Groq["chat"]["completions"]["create"]>[0] & { stream?: false }
+): Promise<Groq.Chat.Completions.ChatCompletion> {
   const keys = [
     process.env.GROQ_API_KEY,
     process.env.GROQ_API_KEY_2,
     process.env.GROQ_API_KEY_3,
   ].filter(Boolean) as string[];
 
-  let groq = new Groq({ apiKey: keys[0] });
+  let lastErr: Error = new Error("Aucune clé Groq configurée");
+  for (const key of keys) {
+    try {
+      const client = new Groq({ apiKey: key });
+      return await client.chat.completions.create(params);
+    } catch (err) {
+      lastErr = err as Error;
+      console.warn(`[agent] groq key failed: ${lastErr.message.slice(0, 120)}`);
+    }
+  }
+  throw lastErr;
+}
 
+export async function runAgent(message: string, chatId: number): Promise<void> {
   const messages: Groq.Chat.ChatCompletionMessageParam[] = [
     { role: "system", content: SYSTEM_PROMPT },
     { role: "user",   content: message },
@@ -42,24 +57,19 @@ export async function runAgent(message: string, chatId: number): Promise<void> {
 
   // Boucle agentique : max 4 tours (message → outils → outils → réponse finale)
   for (let turn = 0; turn < 4; turn++) {
-    let response;
+    let response: Groq.Chat.Completions.ChatCompletion;
     try {
-      response = await groq.chat.completions.create({
-      model:       "llama-3.3-70b-versatile",
-      messages,
-      tools:       TOOL_DEFINITIONS,
+      response = await callGroqWithKeyRotation({
+        model:       "llama-3.3-70b-versatile",
+        messages,
+        tools:       TOOL_DEFINITIONS,
         tool_choice: "auto",
         temperature: 0.3,
         max_tokens:  1000,
       });
     } catch (err) {
-      const msg = String(err);
-      // Rotation de clé si rate limit
-      if (msg.includes("429") && keys.length > 1) {
-        const nextKey = keys.find(k => k !== groq.apiKey);
-        if (nextKey) { groq = new Groq({ apiKey: nextKey }); continue; }
-      }
-      await tgSend(chatId, "⚠️ Assistant temporairement indisponible. Réessaie dans quelques minutes.");
+      console.error("[agent] all groq keys failed:", err);
+      await tgSend(chatId, "⚠️ Assistant temporairement indisponible (quota Groq atteint). Réessaie dans quelques minutes.");
       return;
     }
 
