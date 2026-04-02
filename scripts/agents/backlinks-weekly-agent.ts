@@ -1,77 +1,155 @@
 #!/usr/bin/env tsx
 /**
- * backlinks-weekly-agent.ts — Discovery et suivi backlinks hebdomadaire
+ * backlinks-weekly-agent.ts — Discovery intelligent + extraction email
  * Usage: npx tsx scripts/agents/backlinks-weekly-agent.ts
  * Déclenché par GitHub Actions chaque lundi à 8h UTC
  *
- * Actions :
- * 1. Lance le discovery SerpApi → score Groq → insère nouveaux prospects
- * 2. Envoie des relances pour les prospects contactés > 10 jours sans réponse
- * 3. Envoie un email récap via Resend
+ * Stratégie évolutive :
+ * 1. Charge l'historique des sessions → sélectionne les 4 clusters les moins récents
+ * 2. La méthode de recherche tourne chaque semaine (general → blog → local → forum)
+ * 3. Tavily search (2 keywords/cluster) → collecte de domaines
+ * 4. Jina AI → extraction légère d'emails (contact/about/homepage)
+ * 5. Groq → score de pertinence backlink (multi-clé fallback)
+ * 6. Insère nouveaux prospects (déduplication stricte par domaine)
+ * 7. Enregistre la session pour guider la prochaine rotation
  */
 
 import Groq from "groq-sdk";
 import { createClient } from "@supabase/supabase-js";
 import { notifyTelegram } from "../lib/telegram";
+import KEYWORDS_DATA from "../data/backlink-keywords.json";
 
 // ── Supabase ───────────────────────────────────────────────────────────────────
-
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-// ── SerpApi ────────────────────────────────────────────────────────────────────
+// ── Env checks ─────────────────────────────────────────────────────────────────
+const TAVILY_API_KEY   = process.env.TAVILY_API_KEY   ?? "";
+const JINA_API_KEY     = process.env.JINA_API_KEY     ?? "";
+const GROQ_KEYS        = [
+  process.env.GROQ_API_KEY,
+  process.env.GROQ_API_KEY_2,
+  process.env.GROQ_API_KEY_3,
+].filter(Boolean) as string[];
 
-const SERP_QUERIES = [
-  "meilleur blog van life france",
-  "forum aménagement fourgon",
-  "guide road trip campervan france",
-  "homologation VASP forum",
-  "vanlife france communauté",
-  "blog voyage van aménagé",
-  "forum fourgon aménagé entraide",
-  "site road trip france camping",
-];
+function log(msg: string) {
+  console.log(`[${new Date().toISOString()}] ${msg}`);
+}
 
-const EXCLUDED_DOMAINS = new Set([
-  "youtube.com", "facebook.com", "instagram.com", "twitter.com",
-  "pinterest.com", "tiktok.com", "reddit.com", "wikipedia.org",
-  "amazon.fr", "amazon.com", "leboncoin.fr", "airbnb.fr",
-  "yescapa.fr", "wikicampers.fr", "google.com", "google.fr",
-  "vanzonexplorer.com",
-]);
+// ── Méthodes de recherche (rotation hebdomadaire) ─────────────────────────────
+const METHODS = ["tavily_general", "tavily_blog", "tavily_local", "tavily_forum"] as const;
+type Method = typeof METHODS[number];
 
-interface SerpOrganicResult {
-  link?: string;
+function buildQuery(keyword: string, method: Method): string {
+  switch (method) {
+    case "tavily_blog":   return `blog ${keyword}`;
+    case "tavily_local":  return `${keyword} pays basque`;
+    case "tavily_forum":  return `forum communauté ${keyword}`;
+    default:              return keyword;
+  }
+}
+
+// ── Groq multi-clé fallback ────────────────────────────────────────────────────
+async function groqComplete(messages: Groq.Chat.ChatCompletionMessageParam[], maxTokens = 1500): Promise<string> {
+  for (const key of GROQ_KEYS) {
+    try {
+      const client = new Groq({ apiKey: key });
+      const resp = await client.chat.completions.create({
+        model: "llama-3.3-70b-versatile",
+        messages,
+        temperature: 0.2,
+        max_tokens: maxTokens,
+      });
+      return resp.choices[0]?.message?.content ?? "";
+    } catch (err) {
+      const msg = (err as Error).message ?? "";
+      if (msg.includes("429") || msg.includes("rate_limit")) {
+        log(`  Groq rate limit — rotation clé suivante`);
+        continue;
+      }
+      throw err;
+    }
+  }
+  throw new Error("Toutes les clés Groq sont épuisées");
+}
+
+// ── Tavily search ──────────────────────────────────────────────────────────────
+interface TavilyResult {
+  url?: string;
   title?: string;
-  snippet?: string;
+  content?: string;
 }
 
-interface SerpApiResponse {
-  organic_results?: SerpOrganicResult[];
-  error?: string;
-}
-
-async function searchSerpApi(query: string): Promise<SerpOrganicResult[]> {
-  const params = new URLSearchParams({
-    api_key: process.env.SERPAPI_KEY || "",
-    q: query,
-    hl: "fr",
-    gl: "fr",
-    num: "10",
-    engine: "google",
-  });
+async function searchTavily(query: string): Promise<TavilyResult[]> {
+  if (!TAVILY_API_KEY) return [];
   try {
-    const resp = await fetch(`https://serpapi.com/search?${params}`);
-    if (!resp.ok) return [];
-    const data: SerpApiResponse = await resp.json();
-    return data.organic_results || [];
+    const res = await fetch("https://api.tavily.com/search", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ api_key: TAVILY_API_KEY, query, max_results: 10 }),
+      signal: AbortSignal.timeout(15000),
+    });
+    if (!res.ok) return [];
+    const data = await res.json() as { results?: TavilyResult[] };
+    return data.results ?? [];
   } catch {
     return [];
   }
 }
 
+// ── Extraction d'email via regex (légère, sans API payante) ───────────────────
+const EMAIL_REGEX = /\b[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}\b/g;
+const FAKE_EMAIL_DOMAINS = new Set([
+  "example.com", "sentry.io", "rollbar.com", "google.com", "googleapis.com",
+  "w3.org", "schema.org", "cloudflare.com", "wordpress.com", "woocommerce.com",
+  "gravatar.com", "wp.com", "cdn.com", "amazonaws.com",
+]);
+
+function extractEmailsFromText(text: string): string[] {
+  const matches = text.match(EMAIL_REGEX) ?? [];
+  return [...new Set(matches)].filter((email) => {
+    const domain = email.split("@")[1]?.toLowerCase() ?? "";
+    return !FAKE_EMAIL_DOMAINS.has(domain) && !domain.includes("png") && !domain.includes("jpg");
+  });
+}
+
+// ── Jina scrape (léger, max 3 pages/domaine) ──────────────────────────────────
+async function extractEmailFromDomain(domain: string): Promise<{ email: string; source: string } | null> {
+  if (!JINA_API_KEY) return null;
+
+  const baseUrl = `https://${domain}`;
+  const pagesToTry = [`${baseUrl}/contact`, `${baseUrl}/a-propos`, `${baseUrl}/about`, baseUrl];
+
+  for (const page of pagesToTry) {
+    try {
+      const res = await fetch(`https://r.jina.ai/${page}`, {
+        headers: {
+          Authorization: `Bearer ${JINA_API_KEY}`,
+          Accept: "text/plain",
+          "X-Return-Format": "text",
+          "X-Timeout": "8",
+        },
+        signal: AbortSignal.timeout(10000),
+      });
+      if (!res.ok) continue;
+
+      const text = await res.text();
+      const emails = extractEmailsFromText(text);
+
+      // Préférer un email sur le bon domaine
+      const onDomain = emails.find((e) => e.endsWith(`@${domain}`) || e.endsWith(`@www.${domain}`));
+      if (onDomain) return { email: onDomain, source: "jina_regex" };
+      if (emails[0]) return { email: emails[0], source: "jina_regex" };
+    } catch {
+      // non-bloquant
+    }
+  }
+  return null;
+}
+
+// ── Extraction du domaine ──────────────────────────────────────────────────────
 function extractDomain(url: string): string | null {
   try {
     return new URL(url).hostname.replace(/^www\./, "");
@@ -80,242 +158,274 @@ function extractDomain(url: string): string | null {
   }
 }
 
-// ── Discovery ─────────────────────────────────────────────────────────────────
+// ── Chargement de l'historique des sessions ────────────────────────────────────
+interface Session {
+  clusters_used: string[];
+  session_date: string;
+}
 
-async function runDiscovery(groq: Groq): Promise<number> {
-  console.log("🔍 Lancement du discovery SerpApi...");
+async function loadSessions(): Promise<Session[]> {
+  const { data } = await supabase
+    .from("backlink_scrape_sessions")
+    .select("clusters_used, session_date")
+    .order("session_date", { ascending: false })
+    .limit(16);
+  return data ?? [];
+}
 
-  const allResults: Array<{ result: SerpOrganicResult; query: string }> = [];
-
-  for (let i = 0; i < SERP_QUERIES.length; i += 4) {
-    const batch = SERP_QUERIES.slice(i, i + 4);
-    const batchResults = await Promise.all(
-      batch.map(async (query) => {
-        const results = await searchSerpApi(query);
-        return results.map((r) => ({ result: r, query }));
-      })
-    );
-    allResults.push(...batchResults.flat());
-    // Respectful delay between batches
-    if (i + 4 < SERP_QUERIES.length) {
-      await new Promise((r) => setTimeout(r, 1000));
+// ── Sélection des clusters à cibler cette semaine ─────────────────────────────
+function selectClusters(sessions: Session[]): typeof KEYWORDS_DATA.clusters {
+  // Map cluster_id → dernière utilisation
+  const lastUsed = new Map<string, Date>();
+  for (const session of sessions) {
+    for (const clusterId of session.clusters_used) {
+      const d = new Date(session.session_date);
+      const prev = lastUsed.get(clusterId);
+      if (!prev || d > prev) lastUsed.set(clusterId, d);
     }
   }
 
-  console.log(`  ${allResults.length} résultats collectés`);
+  // Trier par date la plus ancienne → priorité aux clusters jamais utilisés
+  return [...KEYWORDS_DATA.clusters]
+    .map((c) => ({ ...c, _lastUsed: lastUsed.get(c.id) ?? new Date(0) }))
+    .sort((a, b) => a._lastUsed.getTime() - b._lastUsed.getTime())
+    .slice(0, 4)
+    .map(({ _lastUsed: _, ...c }) => c);
+}
 
-  // Extract unique domains
-  const domainMap = new Map<string, { url: string; title: string; snippet: string; query: string }>();
-  for (const { result, query } of allResults) {
-    if (!result.link) continue;
-    const domain = extractDomain(result.link);
-    if (!domain || EXCLUDED_DOMAINS.has(domain)) continue;
-    if (!domainMap.has(domain)) {
-      domainMap.set(domain, {
-        url: result.link,
-        title: result.title || "",
-        snippet: result.snippet || "",
-        query,
-      });
-    }
-  }
+// ── Scoring Groq par batch ─────────────────────────────────────────────────────
+interface Candidate {
+  domain: string;
+  url: string;
+  title: string;
+  snippet: string;
+  query: string;
+}
 
-  // Filter existing domains
-  const { data: existing } = await supabase.from("backlink_prospects").select("domain");
-  const existingDomains = new Set((existing || []).map((r: { domain: string }) => r.domain));
-  const newDomains = [...domainMap.entries()].filter(([d]) => !existingDomains.has(d));
+interface ScoredProspect {
+  domain: string;
+  url: string;
+  type: string;
+  score: number;
+  notes: string;
+  source_query: string;
+}
 
-  console.log(`  ${newDomains.length} nouveaux domaines (${domainMap.size - newDomains.length} déjà en base)`);
-
-  if (newDomains.length === 0) return 0;
-
-  // Score with Groq (max 30 candidates)
-  const candidates = newDomains.slice(0, 30).map(([domain, info]) => ({
-    domain,
-    url: info.url,
-    title: info.title,
-    snippet: info.snippet,
-    query: info.query,
-  }));
-
-  const groqResponse = await groq.chat.completions.create({
-    model: "llama-3.3-70b-versatile",
-    messages: [
-      {
-        role: "user",
-        content: `Expert SEO link building — site location vans aménagés Pays Basque (vanzonexplorer.com).
-Score chaque domaine (1-10) pour pertinence backlink. Garde uniquement score ≥ 5. Max 15 entrées.
+async function scoreWithGroq(candidates: Candidate[]): Promise<ScoredProspect[]> {
+  const raw = await groqComplete([{
+    role: "user",
+    content: `Expert SEO link building — vanzonexplorer.com (location vans aménagés Pays Basque, vanlife, road trip, outdoor).
+Score chaque domaine (1-10) pour pertinence backlink. Inclus uniquement score >= 5.
 Types : "blog", "forum", "partenaire", "annuaire", "media"
 
-Réponds UNIQUEMENT JSON valide :
+Réponds UNIQUEMENT avec un JSON valide (tableau) :
 [{"domain":"...","url":"...","type":"blog","score":7,"notes":"...","source_query":"..."}]
 
-Domaines :
+Domaines à scorer :
 ${JSON.stringify(candidates, null, 2)}`,
-      },
-    ],
-    temperature: 0.2,
-    max_tokens: 2000,
-  });
+  }]);
 
-  const rawContent = groqResponse.choices[0]?.message?.content || "[]";
-  let scored: Array<{ domain: string; url: string; type: string; score: number; notes: string; source_query: string }> = [];
   try {
-    const jsonMatch = rawContent.match(/\[[\s\S]*\]/);
-    if (jsonMatch) scored = JSON.parse(jsonMatch[0]);
+    const match = raw.match(/\[[\s\S]*\]/);
+    if (!match) return [];
+    const scored = JSON.parse(match[0]) as ScoredProspect[];
+    const validTypes = new Set(["blog", "forum", "partenaire", "annuaire", "media"]);
+    return scored
+      .filter((p) => p.domain && p.score >= 5)
+      .map((p) => ({
+        ...p,
+        type: validTypes.has(p.type) ? p.type : "blog",
+        score: Math.min(10, Math.max(1, Math.round(p.score))),
+        notes: p.notes ?? "",
+        source_query: p.source_query ?? candidates.find((c) => c.domain === p.domain)?.query ?? "",
+      }));
   } catch {
-    console.error("  Erreur parsing Groq JSON");
-    return 0;
+    return [];
   }
+}
 
-  const validTypes = ["blog", "forum", "partenaire", "annuaire", "media"];
-  const toInsert = scored
-    .filter((p) => p.domain && p.score >= 5)
-    .map((p) => ({
-      domain: p.domain,
-      url: p.url,
-      type: validTypes.includes(p.type) ? p.type : "blog",
-      score: Math.min(10, Math.max(1, Math.round(p.score))),
-      statut: "découvert",
-      notes: p.notes || "",
-      source_query: p.source_query || candidates.find((c) => c.domain === p.domain)?.query || "",
-    }));
+// ── Discovery principal ────────────────────────────────────────────────────────
+async function runDiscovery(
+  clusters: typeof KEYWORDS_DATA.clusters,
+  method: Method,
+  excludedDomains: Set<string>
+): Promise<{ candidates: Candidate[]; rawCount: number }> {
 
-  if (toInsert.length > 0) {
-    const { error } = await supabase.from("backlink_prospects").insert(toInsert);
-    if (error) {
-      console.error("  Erreur insertion:", error.message);
-      return 0;
+  log(`🔍 Méthode : ${method} — ${clusters.length} clusters`);
+
+  const domainMap = new Map<string, Candidate>();
+
+  for (const cluster of clusters) {
+    // 2 keywords par cluster pour limiter les appels Tavily
+    const selectedKeywords = cluster.keywords.slice(0, 2);
+
+    for (const keyword of selectedKeywords) {
+      const query = buildQuery(keyword, method);
+      log(`  Tavily : "${query}"`);
+
+      const results = await searchTavily(query);
+
+      for (const r of results) {
+        if (!r.url) continue;
+        const domain = extractDomain(r.url);
+        if (!domain || excludedDomains.has(domain) || domainMap.has(domain)) continue;
+        domainMap.set(domain, {
+          domain,
+          url: r.url,
+          title: r.title ?? "",
+          snippet: r.content?.slice(0, 200) ?? "",
+          query,
+        });
+      }
+
+      // Délai poli entre requêtes Tavily
+      await new Promise((r) => setTimeout(r, 800));
     }
   }
 
-  console.log(`  ✅ ${toInsert.length} nouveaux prospects insérés`);
-  return toInsert.length;
+  return {
+    candidates: [...domainMap.values()],
+    rawCount: domainMap.size,
+  };
 }
 
-// ── Relances ──────────────────────────────────────────────────────────────────
+// ── Main ───────────────────────────────────────────────────────────────────────
+async function main() {
+  log("🚀 Backlinks Weekly Agent — démarrage");
 
-async function runFollowUps(): Promise<number> {
-  console.log("📮 Vérification des relances...");
+  if (!TAVILY_API_KEY) throw new Error("TAVILY_API_KEY manquant");
+  if (GROQ_KEYS.length === 0) throw new Error("Aucune GROQ_API_KEY configurée");
 
-  const tenDaysAgo = new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString();
+  // 1. Charger l'historique + domaines existants
+  const [sessions, { data: existingProspects }] = await Promise.all([
+    loadSessions(),
+    supabase.from("backlink_prospects").select("domain"),
+  ]);
 
-  // Prospects contactés > 10 jours sans réponse et pas déjà relancés
-  const { data: staleOutreach } = await supabase
-    .from("backlink_outreach")
-    .select("id, prospect_id, backlink_prospects(domain, statut)")
-    .eq("approved", true)
-    .eq("reply_received", false)
-    .is("follow_up_sent_at", null)
-    .lt("sent_at", tenDaysAgo);
+  const existingDomains = new Set((existingProspects ?? []).map((r: { domain: string }) => r.domain));
+  const excludedDomains = new Set([
+    ...KEYWORDS_DATA.excluded_domains,
+    ...existingDomains,
+  ]);
 
-  if (!staleOutreach || staleOutreach.length === 0) {
-    console.log("  Aucune relance nécessaire");
-    return 0;
-  }
+  log(`📦 ${existingDomains.size} domaines déjà en base`);
 
-  console.log(`  ${staleOutreach.length} prospect(s) à relancer`);
+  // 2. Sélectionner clusters et méthode
+  const selectedClusters = selectClusters(sessions);
+  const method: Method = METHODS[sessions.length % METHODS.length];
 
-  // Mark follow_up_sent_at (actual email sending would require integration)
-  for (const o of staleOutreach) {
-    await supabase
-      .from("backlink_outreach")
-      .update({
-        follow_up_sent_at: new Date().toISOString(),
-      })
-      .eq("id", o.id);
+  log(`📂 Clusters : ${selectedClusters.map((c) => c.id).join(", ")}`);
+  log(`⚙️  Méthode : ${method} (session #${sessions.length + 1})`);
 
-    // Move prospect to "relancé"
-    await supabase
-      .from("backlink_prospects")
-      .update({ statut: "relancé" })
-      .eq("id", o.prospect_id);
-  }
+  // 3. Discovery via Tavily
+  const { candidates, rawCount } = await runDiscovery(selectedClusters, method, excludedDomains);
 
-  return staleOutreach.length;
-}
+  log(`🌐 ${rawCount} domaines trouvés (${candidates.length} nouveaux potentiels)`);
 
-// ── Email récap ───────────────────────────────────────────────────────────────
-
-async function sendRecapEmail(newProspects: number, followUps: number): Promise<void> {
-  if (!process.env.RESEND_API_KEY) {
-    console.log("  RESEND_API_KEY manquant — email récap ignoré");
+  if (candidates.length === 0) {
+    log("Aucun nouveau domaine — session enregistrée sans insertion.");
+    await supabase.from("backlink_scrape_sessions").insert({
+      clusters_used: selectedClusters.map((c) => c.id),
+      keywords_used: selectedClusters.flatMap((c) => c.keywords.slice(0, 2)),
+      method,
+      domains_found: 0, domains_new: 0, emails_found: 0, prospects_inserted: 0,
+    });
+    await notifyTelegram(`🔗 *Backlinks Weekly* — Aucun nouveau domaine (${rawCount} vus, tous déjà en base).`);
     return;
   }
 
-  const { data: stats } = await supabase
-    .from("backlink_prospects")
-    .select("statut");
+  // 4. Limiter à 25 candidats max pour ne pas saturer Jina + Groq
+  const toProcess = candidates.slice(0, 25);
 
-  const counts = {
-    total: stats?.length || 0,
-    contacte: stats?.filter((p: { statut: string }) => p.statut === "contacté").length || 0,
-    obtenu: stats?.filter((p: { statut: string }) => p.statut === "obtenu").length || 0,
-  };
+  // 5. Extraction emails via Jina (en parallèle, max 5 à la fois)
+  log(`📧 Extraction emails Jina sur ${toProcess.length} domaines...`);
+  let emailsFound = 0;
+  const emailMap = new Map<string, { email: string; source: string }>();
 
-  const html = `
-<h2>📊 Récap Backlinks Hebdomadaire — Vanzon Explorer</h2>
-<p>Date : ${new Date().toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p>
+  for (let i = 0; i < toProcess.length; i += 5) {
+    const batch = toProcess.slice(i, i + 5);
+    const results = await Promise.allSettled(
+      batch.map((c) => extractEmailFromDomain(c.domain))
+    );
+    for (let j = 0; j < results.length; j++) {
+      const result = results[j];
+      if (result.status === "fulfilled" && result.value) {
+        emailMap.set(batch[j].domain, result.value);
+        emailsFound++;
+      }
+    }
+    // Délai entre batches Jina
+    if (i + 5 < toProcess.length) await new Promise((r) => setTimeout(r, 1000));
+  }
 
-<h3>Actions de cette semaine</h3>
-<ul>
-  <li>🔍 <strong>${newProspects} nouveaux prospects</strong> découverts et scorés</li>
-  <li>📮 <strong>${followUps} relances</strong> envoyées automatiquement</li>
-</ul>
+  log(`  ${emailsFound} emails extraits`);
 
-<h3>État du pipeline</h3>
-<ul>
-  <li>Total prospects : <strong>${counts.total}</strong></li>
-  <li>Contactés en attente : <strong>${counts.contacte}</strong></li>
-  <li>Backlinks obtenus : <strong>${counts.obtenu}</strong></li>
-</ul>
+  // 6. Scoring Groq par batch de 15
+  log("🎯 Scoring Groq...");
+  const scored: ScoredProspect[] = [];
 
-<p><a href="https://vanzonexplorer.com/admin/backlinks">Voir le Kanban →</a></p>
-  `.trim();
+  for (let i = 0; i < toProcess.length; i += 15) {
+    const batch = toProcess.slice(i, i + 15);
+    const batchScored = await scoreWithGroq(batch);
+    scored.push(...batchScored);
+    if (i + 15 < toProcess.length) await new Promise((r) => setTimeout(r, 500));
+  }
 
-  await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      from: "Vanzon Bot <bot@vanzonexplorer.com>",
-      to: ["gavegliojules@gmail.com"],
-      subject: `📊 Backlinks — ${newProspects} nouveaux prospects cette semaine`,
-      html,
-    }),
-  }).catch((e) => console.error("  Erreur envoi email:", e));
+  log(`  ${scored.length} prospects scorés (score ≥ 5)`);
 
-  console.log("  ✅ Email récap envoyé");
-}
+  // 7. Insertion en DB
+  if (scored.length === 0) {
+    log("Aucun prospect retenu après scoring.");
+  } else {
+    const toInsert = scored.map((p) => ({
+      domain:         p.domain,
+      url:            p.url,
+      type:           p.type,
+      score:          p.score,
+      statut:         "découvert",
+      notes:          p.notes,
+      source_query:   p.source_query,
+      contact_email:  emailMap.get(p.domain)?.email ?? null,
+      contact_source: emailMap.get(p.domain)?.source ?? null,
+    }));
 
-// ── Main ──────────────────────────────────────────────────────────────────────
+    const { error } = await supabase.from("backlink_prospects").insert(toInsert);
+    if (error) throw new Error(`Erreur insertion prospects : ${error.message}`);
 
-async function main() {
-  console.log("🚀 Backlinks Weekly Agent — démarrage");
-  console.log(`   ${new Date().toISOString()}`);
-  console.log("");
+    log(`✅ ${toInsert.length} prospects insérés (dont ${toInsert.filter((p) => p.contact_email).length} avec email)`);
+  }
 
-  const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-
-  const newProspects = await runDiscovery(groq);
-  console.log("");
-
-  const followUps = await runFollowUps();
-  console.log("");
-
-  await sendRecapEmail(newProspects, followUps);
-  console.log("");
-
-  console.log("✅ Agent terminé");
-  console.log(`   ${newProspects} nouveaux prospects | ${followUps} relances`);
-}
-
-main()
-  .then(() => notifyTelegram("🔗 *Backlinks Weekly* — Discovery + relances terminés. Voir /admin/backlinks."))
-  .catch(async (e) => {
-    await notifyTelegram(\`❌ *Backlinks Weekly* — Erreur : \${(e as Error).message}\`);
-    console.error("Erreur fatale:", e);
-    process.exit(1);
+  // 8. Enregistrement de la session
+  await supabase.from("backlink_scrape_sessions").insert({
+    clusters_used:      selectedClusters.map((c) => c.id),
+    keywords_used:      selectedClusters.flatMap((c) => c.keywords.slice(0, 2).map((k) => buildQuery(k, method))),
+    method,
+    domains_found:      rawCount,
+    domains_new:        candidates.length,
+    emails_found:       emailsFound,
+    prospects_inserted: scored.length,
   });
+
+  // 9. Telegram
+  const withEmail = scored.filter((p) => emailMap.has(p.domain)).length;
+  const tgLines = [
+    `🔗 *Backlinks Weekly* — Discovery terminé`,
+    ``,
+    `🌐 Domaines trouvés : ${rawCount}`,
+    `✨ Nouveaux : ${candidates.length}`,
+    `🎯 Scorés (≥5) : ${scored.length}`,
+    `📧 Avec email : ${withEmail}`,
+    `📂 Clusters : ${selectedClusters.map((c) => c.theme).join(", ")}`,
+    `⚙️ Méthode : ${method}`,
+  ].join("\n");
+
+  await notifyTelegram(tgLines);
+  log("✅ Agent terminé");
+}
+
+main().catch(async (err) => {
+  const msg = (err as Error).message ?? String(err);
+  console.error("[backlinks-weekly] FATAL:", msg);
+  await notifyTelegram(`❌ *Backlinks Weekly* — Erreur fatale :\n${msg}`).catch(() => {});
+  process.exit(1);
+});

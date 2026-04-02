@@ -2,7 +2,7 @@ name: Backlinks Daily Outreach
 
 on:
   schedule:
-    - cron: '0 9 * * 1-5'  # Lundi→Vendredi à 9h UTC
+    - cron: '0 9 * * *'  # Tous les jours à 9h UTC (y compris week-end)
   workflow_dispatch:
 
 jobs:
@@ -16,9 +16,9 @@ jobs:
       - run: npm ci
       - run: npx tsx scripts/agents/backlinks-daily-outreach.ts
         env:
-          NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SITE_URL:      ${{ secrets.NEXT_PUBLIC_SITE_URL }}
+          NEXT_PUBLIC_SUPABASE_URL:  ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          RESEND_API_KEY:            ${{ secrets.RESEND_API_KEY }}
+          TELEGRAM_BOT_TOKEN:        ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID:          ${{ secrets.TELEGRAM_CHAT_ID }}

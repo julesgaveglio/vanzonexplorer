@@ -1,0 +1,133 @@
+{
+  "clusters": [
+    {
+      "id": "vanlife_blog_fr",
+      "theme": "Blogs vanlife France",
+      "keywords": [
+        "blog vanlife france",
+        "blogger vie en van aménagé france",
+        "blog voyage fourgon france",
+        "nomade digital van france blog"
+      ],
+      "target_types": ["blog"]
+    },
+    {
+      "id": "camping_pays_basque",
+      "theme": "Camping & bivouac Pays Basque",
+      "keywords": [
+        "camping sauvage pays basque blog",
+        "bivouac pays basque guide site",
+        "dormir plein air pays basque",
+        "nuit insolite pays basque blog"
+      ],
+      "target_types": ["blog", "guide"]
+    },
+    {
+      "id": "road_trip_france_guide",
+      "theme": "Road trip France guides",
+      "keywords": [
+        "guide road trip france blog",
+        "itinéraire road trip van france",
+        "road trip fourgon france guide",
+        "circuit road trip france site"
+      ],
+      "target_types": ["blog", "guide"]
+    },
+    {
+      "id": "randonnee_pays_basque",
+      "theme": "Randonnée & outdoor Pays Basque",
+      "keywords": [
+        "randonnée pays basque blog",
+        "sentiers pays basque guide web",
+        "trek pyrénées atlantiques blog",
+        "outdoor pays basque nature site"
+      ],
+      "target_types": ["blog", "guide"]
+    },
+    {
+      "id": "van_amenage_pratique",
+      "theme": "Guides van aménagé & forum",
+      "keywords": [
+        "forum fourgon aménagé france",
+        "guide aménagement van site",
+        "homologation VASP fourgon blog",
+        "communauté vanlife france forum"
+      ],
+      "target_types": ["blog", "forum", "guide"]
+    },
+    {
+      "id": "bivouac_france",
+      "theme": "Bivouac & camping sauvage France",
+      "keywords": [
+        "bivouac france site",
+        "camping sauvage france blog",
+        "nuit plein air france guide",
+        "dormir nature france site"
+      ],
+      "target_types": ["blog", "guide"]
+    },
+    {
+      "id": "tourisme_pays_basque",
+      "theme": "Tourisme & voyage Pays Basque",
+      "keywords": [
+        "blog voyage pays basque",
+        "que faire pays basque guide web",
+        "week-end pays basque blog",
+        "sortie pays basque site"
+      ],
+      "target_types": ["blog", "media", "annuaire"]
+    },
+    {
+      "id": "outdoor_nature_france",
+      "theme": "Outdoor & slow travel France",
+      "keywords": [
+        "outdoor nature france blog",
+        "slow travel france site",
+        "voyage nature sauvage france blog",
+        "plein air france guide web"
+      ],
+      "target_types": ["blog", "media"]
+    },
+    {
+      "id": "camping_car_fourgon",
+      "theme": "Camping-car & fourgon France",
+      "keywords": [
+        "blog camping-car france",
+        "guide fourgon aménagé france site",
+        "périmètre liberté camping-car france",
+        "van life camping-car france blog"
+      ],
+      "target_types": ["blog", "forum"]
+    },
+    {
+      "id": "surf_sports_basque",
+      "theme": "Surf & sports outdoor Pays Basque",
+      "keywords": [
+        "surf pays basque blog",
+        "sports nautiques pays basque site",
+        "spot surf atlantique biarritz blog",
+        "kitesurf côte basque guide"
+      ],
+      "target_types": ["blog", "media"]
+    },
+    {
+      "id": "ecotourisme_responsable",
+      "theme": "Écotourisme & voyage responsable",
+      "keywords": [
+        "écotourisme france blog",
+        "voyage responsable france site",
+        "tourisme durable france guide",
+        "voyager autrement france blog"
+      ],
+      "target_types": ["blog", "media"]
+    }
+  ],
+  "excluded_domains": [
+    "youtube.com", "facebook.com", "instagram.com", "twitter.com", "x.com",
+    "pinterest.com", "tiktok.com", "reddit.com", "wikipedia.org", "amazon.fr",
+    "amazon.com", "leboncoin.fr", "airbnb.fr", "booking.com", "tripadvisor.fr",
+    "yescapa.fr", "wikicampers.fr", "google.com", "google.fr", "bing.com",
+    "vanzonexplorer.com", "linkedin.com", "etsy.com", "marmiton.org",
+    "mapotempo.com", "decathlon.fr"
+  ]
+}
