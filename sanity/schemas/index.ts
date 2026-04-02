@@ -6,5 +6,6 @@ import heroImages from "./heroImages";
 import siteSettings from "./siteSettings";
 import article from "./article";
 import formationCard from "./formationCard";
+import roadTripArticle from "./roadTripArticle";
 
-export const schemaTypes = [siteSettings, mediaAsset, van, testimonial, spotPaysBasque, heroImages, article, formationCard];
+export const schemaTypes = [siteSettings, mediaAsset, van, testimonial, spotPaysBasque, heroImages, article, formationCard, roadTripArticle];
