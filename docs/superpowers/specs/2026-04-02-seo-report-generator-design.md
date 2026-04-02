@@ -106,15 +106,19 @@ src/app/api/admin/seo-report/
 
 ```sql
 CREATE TABLE seo_reports (
-  id          uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-  url         text NOT NULL,
-  score_global integer,
-  report_data jsonb NOT NULL,
-  created_at  timestamptz DEFAULT now()
+  id           uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  url          text NOT NULL,
+  label        text,                        -- nom client optionnel (ex. "Diem Conseil")
+  score_global numeric(5,2),                -- ex. 74.35 (décimales possibles dans la formule)
+  report_data  jsonb NOT NULL,
+  created_at   timestamptz DEFAULT now()
 );
+
+CREATE INDEX seo_reports_created_at_idx ON seo_reports (created_at DESC);
+CREATE INDEX seo_reports_url_idx ON seo_reports (url);
 ```
 
-`report_data` contient l'intégralité du rapport sérialisé (toutes les sections).
+`report_data` contient l'intégralité du rapport sérialisé (toutes les sections). Le champ `label` permet de distinguer deux rapports sur le même domaine.
 
 ---
 
@@ -178,21 +182,58 @@ Aucune nouvelle variable nécessaire.
 ## Dépendances à installer
 
 ```bash
-npm install @react-pdf/renderer
+npm install @react-pdf/renderer cheerio
+npm install --save-dev @types/cheerio
 ```
 
-Aucune autre dépendance nouvelle — tout le reste est déjà dans le projet.
+`cheerio` est obligatoire pour le parsing HTML on-page (pas de regex — trop fragile pour les attributs multi-lignes, balises imbriquées, entités HTML). `@react-pdf/renderer` est utilisé côté client uniquement.
 
 ---
 
 ## Contraintes techniques
 
-- Toutes les routes API vérifient `auth()` Clerk (`userId` requis)
-- On-page crawler : simple `fetch()` de l'URL cible + parsing avec `cheerio` (ou regex si non installé)
-- PSI : réutiliser la logique de `/api/admin/psi/route.ts` existante, l'adapter pour accepter une URL arbitraire (déjà le cas)
-- DataForSEO : utiliser les endpoints `domain_rank` (authority) et `competitors_domain` (concurrents)
-- Groq : prompt structuré avec toutes les données d'audit, retour JSON parsé
-- PDF généré côté client via `PDFDownloadLink` de `@react-pdf/renderer`
+### Général
+- Toutes les routes API sont en **POST** avec body JSON `{ url: string }` — plus propre que GET avec query params pour des URLs arbitraires
+- Toutes les routes vérifient `auth()` Clerk (`userId` requis)
+
+### Route onpage
+- Validation de l'URL saisie avant tout appel : doit être `https://`, hostname public (pas `localhost`, pas IP privée `10.x`, `192.168.x`, `172.16-31.x`, `169.254.x`) — prévention SSRF
+- `fetch()` avec `AbortSignal.timeout(10000)` pour éviter de bloquer sur une URL lente
+- Parsing HTML avec `cheerio` (obligatoire, pas de regex)
+
+### Route pagespeed
+- Réutiliser la logique de `/api/admin/psi/route.ts` — elle accepte déjà une URL arbitraire
+- Appeler PSI deux fois : `strategy=mobile` puis `strategy=desktop`
+
+### Routes DataForSEO (authority + competitors)
+- Utiliser **obligatoirement** le helper `dfsPost` de `src/lib/dataforseo.ts` (assure le logging automatique des coûts dans `dataforseo_logs`)
+- Le domaine cible est extrait de l'URL saisie : `new URL(inputUrl).hostname`
+- Endpoint authority : `domain_rank_overview/live`
+- Endpoint competitors : `competitors_domain/live` avec `limit: 5`
+- Gérer proprement l'erreur "insufficient funds" DataForSEO (retourner section "Indisponible" sans faire planter le pipeline)
+
+### Route ai-insights
+- Modèle Groq : `llama-3.3-70b-versatile`
+- Retour JSON **strict** selon ce schéma :
+```typescript
+{
+  secteur: string,                  // secteur d'activité détecté automatiquement
+  axes: Array<{
+    titre: string,
+    priorite: "Fort" | "Moyen" | "Faible",
+    description: string,
+    impact: string                  // ex. "Peut améliorer le LCP de ~30%"
+  }>,
+  conclusion: string                // paragraphe de synthèse 3-5 phrases
+}
+```
+- Forcer le JSON avec `response_format: { type: "json_object" }` dans l'appel Groq
+
+### PDF (react-pdf)
+- `SeoReportPDF.tsx` et `PdfDownloadButton.tsx` importés avec `dynamic(() => import(...), { ssr: false })` — react-pdf utilise des APIs canvas non disponibles en SSR
+
+### ReportHistory
+- Charger les **20 derniers rapports** uniquement (`.limit(20).order('created_at', { ascending: false })`)
 
 ---
 
