@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
 
     const rawBuffer = Buffer.from(await file.arrayBuffer());
 
-    // ── 1. Traitement Sharp : recadrage 3:2 + conversion WebP ──
+    // ── 1. Traitement Sharp : conversion WebP, ratio original préservé ──
     const processedBuffer = await processVanImage(rawBuffer, imageRole);
 
     // ── 2. Analyse Gemini Vision + upload Sanity en parallèle ──

@@ -354,9 +354,9 @@ export default function MediaLibrary({ initialItems }: Props) {
                     <div className="relative aspect-[4/3] bg-slate-100 overflow-hidden">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
-                        src={`${item.url}?w=300&h=225&fit=crop&auto=format&q=75`}
+                        src={`${item.url}?w=400&auto=format&fit=max&q=75`}
                         alt={item.alt ?? item.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
                         loading="lazy"
                       />
 
@@ -450,7 +450,7 @@ export default function MediaLibrary({ initialItems }: Props) {
                           <div className="flex items-center gap-3">
                             <div className="w-12 h-9 rounded-lg bg-slate-100 overflow-hidden flex-shrink-0">
                               {/* eslint-disable-next-line @next/next/no-img-element */}
-                              <img src={`${item.url}?w=96&h=72&fit=crop&auto=format`} alt="" className="w-full h-full object-cover" loading="lazy" />
+                              <img src={`${item.url}?w=96&auto=format&fit=max`} alt="" className="w-full h-full object-contain" loading="lazy" />
                             </div>
                             <p className="text-sm font-semibold text-slate-700 truncate max-w-[150px]">{item.title}</p>
                           </div>
