@@ -259,6 +259,15 @@ const navGroups = [
         ),
       },
       {
+        label: "Architecture",
+        href: "/admin/architecture",
+        icon: (
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] flex-shrink-0">
+            <path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3zM10 6.5h4M6.5 10v4M17.5 10v4M10 17.5h4" />
+          </svg>
+        ),
+      },
+      {
         label: "Coûts",
         href: "/admin/costs",
         icon: (
