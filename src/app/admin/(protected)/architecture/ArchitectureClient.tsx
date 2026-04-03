@@ -128,7 +128,7 @@ export function ArchitectureClient() {
 
   function handleNodeClick(_: React.MouseEvent, node: Node) {
     const archNode = data?.nodes.find((n) => n.id === node.id) ?? null
-    setSelectedNode(archNode)
+    setSelectedNode((prev) => (prev?.id === node.id ? null : archNode))
   }
 
   if (loading) {
@@ -209,8 +209,7 @@ export function ArchitectureClient() {
             onNodeClick={handleNodeClick}
             nodeTypes={nodeTypes}
             fitView
-            proOptions={{ hideAttribution: true }}
-            style={{ background: '#0f1117' }}
+style={{ background: '#0f1117' }}
           >
             <Background color="#1e2235" gap={24} size={1} />
             <Controls style={{ background: '#1a1d27', border: '1px solid #2d3148' }} />

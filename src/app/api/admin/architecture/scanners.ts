@@ -196,9 +196,15 @@ const SERVICE_EMOJIS: Record<string, string> = {
   'Pexels': '📷',
   'DataForSEO': '📊',
   'Anthropic Claude': '🧠',
+  'Anthropic Claude Haiku': '🧠',
   'Jina AI': '🕷️',
   'Google Search Console': '🔎',
   'Pinterest API v5': '📌',
+  'Tavily': '🔍',
+  'Hunter.io': '🎯',
+  'ZeroBounce': '✅',
+  'SerpApi': '🔎',
+  'Pixabay': '🖼️',
 }
 
 export function scanExternalServices(agentNodes: ArchNode[]): { nodes: ArchNode[] } {

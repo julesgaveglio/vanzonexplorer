@@ -40,10 +40,17 @@ function Section({ label, children }: { label: string; children: React.ReactNode
 const V: React.CSSProperties = { fontSize: 12, color: '#cbd5e1', lineHeight: 1.5 }
 
 export function NodeDetailPanel({ node, edges, allNodes, onClose }: Props) {
-  // Compute "consumed by" for libs and services
+  // Compute "consumed by" (inbound edges) for libs and services
   const consumedBy = (edges
     .filter((e) => e.target === node.id)
     .map((e) => allNodes.find((n) => n.id === e.source))
+    .filter(Boolean) as ArchNode[])
+    .map((n) => n.label)
+
+  // Compute libs used (outbound imports edges) for api_routes
+  const libsUsed = (edges
+    .filter((e) => e.source === node.id && e.type === 'imports')
+    .map((e) => allNodes.find((n) => n.id === e.target))
     .filter(Boolean) as ArchNode[])
     .map((n) => n.label)
 
@@ -109,8 +116,11 @@ export function NodeDetailPanel({ node, edges, allNodes, onClose }: Props) {
               {node.meta.authRequired ? '🔒 Oui (Clerk)' : '🔓 Non'}
             </p>
           </Section>
+          {libsUsed.length > 0 && (
+            <Section label="Libs internes utilisées"><TagList items={libsUsed} color="#a78bfa" /></Section>
+          )}
           {consumedBy.length > 0 && (
-            <Section label="Utilisé par"><TagList items={consumedBy} color="#a78bfa" /></Section>
+            <Section label="Appelé par"><TagList items={consumedBy} color="#60a5fa" /></Section>
           )}
         </>
       )}
