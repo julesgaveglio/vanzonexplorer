@@ -201,15 +201,16 @@ export function ArchitectureClient() {
       </div>
 
       {/* Graph + panel */}
-      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-        <div style={{ flex: 1 }}>
+      <div style={{ display: 'flex', flex: 1, overflow: 'hidden', minHeight: 0 }}>
+        <div style={{ flex: 1, position: 'relative' }}>
+          <div style={{ position: 'absolute', inset: 0 }}>
           <ReactFlow
             nodes={nodes} edges={edges}
             onNodesChange={onNodesChange} onEdgesChange={onEdgesChange}
             onNodeClick={handleNodeClick}
             nodeTypes={nodeTypes}
             fitView
-style={{ background: '#0f1117' }}
+            style={{ background: '#0f1117' }}
           >
             <Background color="#1e2235" gap={24} size={1} />
             <Controls style={{ background: '#1a1d27', border: '1px solid #2d3148' }} />
@@ -221,6 +222,7 @@ style={{ background: '#0f1117' }}
               }}
             />
           </ReactFlow>
+          </div>
         </div>
         {selectedNode && (
           <NodeDetailPanel
