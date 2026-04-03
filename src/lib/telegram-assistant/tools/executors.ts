@@ -3,7 +3,7 @@
 // Chaque fonction retourne une string JSON envoyée à Groq comme résultat d'outil.
 
 import { createSupabaseAdmin } from "@/lib/supabase/server";
-import { listRecentEmails, getEmailById } from "./gmail-reader";
+import { listRecentEmails, getEmailById, getThreadMessages } from "./gmail-reader";
 import { fetchGmailSignature } from "@/lib/gmail";
 import { getEmailExamples, formatExamplesForPrompt } from "../email-memory";
 import { searchVanzonMemory } from "@/lib/vanzon-memory/search";
@@ -37,6 +37,7 @@ export async function executeTool(
       case "search_prospects":           return await searchProspects(args);
       case "send_email_to_road_tripper": return await sendEmailToRoadTripper(args, chatId);
       case "list_recent_emails":         return await listRecentEmailsTool(args);
+      case "smart_reply_to_email":      return await smartReplyToEmail(args, chatId);
       case "reply_to_email":             return await replyToEmailTool(args, chatId);
       case "search_memory": return await searchMemoryTool(args);
       default: return JSON.stringify({ error: `Outil inconnu: ${name}` });
@@ -154,6 +155,165 @@ async function listRecentEmailsTool(args: Record<string, unknown>): Promise<stri
   const maxResults = (args.max_results as number | undefined) ?? 5;
   const emails = await listRecentEmails(query, maxResults);
   return JSON.stringify({ count: emails.length, emails });
+}
+
+// ── smart_reply_to_email ──────────────────────────────────────────────────────
+async function smartReplyToEmail(
+  args:   Record<string, unknown>,
+  chatId: number
+): Promise<string> {
+  const senderHint   = (args.sender_hint          as string).toLowerCase();
+  const contextInstr = (args.context_instructions as string) ?? "";
+  const subjectHint  = (args.subject_hint         as string | undefined)?.toLowerCase();
+
+  await tgSend(chatId, "🔍 Recherche de l'email en cours...");
+
+  // 1. Fetch 10 derniers emails inbox
+  const emails = await listRecentEmails("in:inbox", 10);
+
+  // 2. Scoring : trouver l'email qui matche sender_hint
+  let candidates = emails.filter((e) =>
+    e.from.toLowerCase().includes(senderHint) ||
+    e.subject.toLowerCase().includes(senderHint)
+  );
+
+  // Affiner avec subject_hint si fourni et plusieurs candidats
+  // (si 1 seul candidat, on le garde même sans subject_hint — évite les faux négatifs)
+  if (subjectHint && candidates.length > 1) {
+    const refined = candidates.filter((e) =>
+      e.subject.toLowerCase().includes(subjectHint)
+    );
+    if (refined.length > 0) candidates = refined;
+  }
+
+  // Cas no-match
+  if (candidates.length === 0) {
+    return JSON.stringify({
+      error: `Aucun email trouvé pour "${args.sender_hint}". Précise le nom complet ou l'adresse email.`,
+    });
+  }
+
+  // Prendre le plus récent (premier dans la liste Gmail = le plus récent)
+  const matched = candidates[0];
+
+  await tgSend(chatId, `📧 Email trouvé : <b>${matched.subject}</b>\n⏳ Génération de la réponse...`);
+
+  // 3. Récupérer l'email complet
+  const original = await getEmailById(matched.id);
+
+  // 4. Thread context si c'est une réponse
+  let threadContext = "";
+  if (original.references && original.references.trim().length > 0) {
+    try {
+      // getThreadMessages exclut déjà le dernier message (l'email courant)
+      const thread = await getThreadMessages(original.thread_id, 3);
+      if (thread.length > 0) {
+        threadContext =
+          "\n\nHistorique de la conversation :\n" +
+          thread.map((m) =>
+            `--- De : ${m.from} (${m.date}) ---\n${m.body}`
+          ).join("\n\n");
+      }
+    } catch {
+      // Thread optionnel — on continue sans
+    }
+  }
+
+  // 5. Few-shot examples (0 si base vide — géré gracieusement)
+  const examples    = await getEmailExamples("gmail_reply", 3);
+  const examplesStr = formatExamplesForPrompt(examples);
+
+  // 6. Générer la réponse
+  const { content: raw } = await groqWithFallback({
+    model: "llama-3.3-70b-versatile",
+    response_format: { type: "json_object" },
+    messages: [
+      {
+        role: "system",
+        content:
+          `Tu es Jules Gaveglio, fondateur de Vanzon Explorer (vans aménagés, Pays Basque).` +
+          `\nTu réponds à un email reçu de : ${original.from}` +
+          `\nSujet original : ${original.subject}` +
+          `\nContenu original :\n${original.body.slice(0, 1000)}` +
+          threadContext +
+          `\n\nInstructions de Jules : ${contextInstr}` +
+          `\n\nRègles :` +
+          `\n- Ton chaleureux et authentique, pas corporatif` +
+          `\n- Réponse directe et utile, 2-3 paragraphes max` +
+          `\n- PAS de formule de politesse finale (signature ajoutée automatiquement)` +
+          `\n- Corps en HTML avec uniquement des balises <p>` +
+          examplesStr,
+      },
+      {
+        role: "user",
+        content: `Génère la réponse. JSON: {"subject": "Re: ${original.subject}", "body": "<p>...</p>"}`,
+      },
+    ],
+    temperature: 0.7,
+    max_tokens:  600,
+  });
+
+  const draft = JSON.parse(raw) as { subject: string; body: string };
+
+  // 7. Signature + pending action + aperçu Telegram (identique à replyToEmailTool)
+  const signature = await fetchGmailSignature("jules@vanzonexplorer.com");
+  const supabase  = createSupabaseAdmin();
+  const pendingId = shortId();
+
+  await supabase.from("telegram_pending_actions").insert({
+    id:         pendingId,
+    chat_id:    chatId,
+    action:     "reply_email",
+    state:      "awaiting_confirmation",
+    expires_at: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+    payload: {
+      action_type:  "gmail_reply",
+      to:           original.from,
+      subject:      draft.subject,
+      body:         draft.body,
+      signature,
+      in_reply_to:  original.message_id_header,
+      references:   original.references,
+      thread_id:    original.thread_id,
+      context: {
+        from:             original.from,
+        subject_original: original.subject,
+      },
+    },
+  });
+
+  // Formater l'aperçu
+  const bodyFull = draft.body
+    .replace(/<\/p>/gi, "\n").replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">")
+    .split("\n").map((l: string) => l.trim()).filter((l: string) => l.length > 0)
+    .join("\n").replace(/\n{3,}/g, "\n\n").trim();
+  const MAX_BODY    = 3800;
+  const bodyDisplay = bodyFull.length > MAX_BODY ? bodyFull.slice(0, MAX_BODY) + "\n…" : bodyFull;
+  const escaped     = bodyDisplay
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+  const preview =
+    `📧 <b>Aperçu de la réponse</b>\n` +
+    `─────────────────────\n` +
+    `<b>À :</b> ${original.from}\n` +
+    `<b>Objet :</b> ${draft.subject}\n` +
+    `─────────────────────\n\n` +
+    `${escaped}\n\n` +
+    `<i>${signature ? "[signature configurée ✓]" : "[aucune signature]"}</i>\n` +
+    `─────────────────────`;
+
+  await tgSend(chatId, preview, {
+    reply_markup: {
+      inline_keyboard: [[
+        { text: "✅ Envoyer",    callback_data: `asst:confirm:${pendingId}` },
+        { text: "✏️ Modifier", callback_data: `asst:edit:${pendingId}` },
+      ]],
+    },
+  });
+
+  return JSON.stringify({ status: "preview_sent", to: original.from, subject: draft.subject });
 }
 
 // ── reply_to_email ────────────────────────────────────────────────────────────

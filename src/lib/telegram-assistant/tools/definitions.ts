@@ -150,11 +150,46 @@ export const TOOL_DEFINITIONS: Groq.Chat.Completions.ChatCompletionTool[] = [
   {
     type: "function",
     function: {
+      name: "smart_reply_to_email",
+      description:
+        "Recherche intelligemment un email par nom ou email de l'expéditeur et génère une réponse " +
+        "en tenant compte du fil de conversation. " +
+        "À préférer à reply_to_email pour tous les cas où Jules dit 'réponds à [nom]' ou 'dernier email de [nom]'. " +
+        "Exemple : 'Réponds au dernier email de Cody Van, dis que les modifications sont ok'.",
+      parameters: {
+        type: "object",
+        properties: {
+          sender_hint: {
+            type: "string",
+            description:
+              "Nom ou email partiel de l'expéditeur (ex: 'Cody Van', 'stephanie', 'cosyvan@gmail.com'). " +
+              "Recherche case-insensitive dans le champ From des 10 derniers emails.",
+          },
+          context_instructions: {
+            type: "string",
+            description:
+              "Ce que Jules veut communiquer dans la réponse. " +
+              "Ex: 'modifications proposées acceptables, répondre aux questions', 'dire que je suis dispo mardi'.",
+          },
+          subject_hint: {
+            type: "string",
+            description:
+              "Mot-clé optionnel dans le sujet pour affiner si plusieurs emails du même expéditeur. " +
+              "Ex: 'modifications', 'devis', 'partenariat'.",
+          },
+        },
+        required: ["sender_hint", "context_instructions"],
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
       name: "reply_to_email",
       description:
-        "Génère une réponse à un email reçu, affiche un aperçu Telegram et attend la confirmation. " +
-        "Utilise après list_recent_emails pour obtenir le message_id. " +
-        "Utilise quand Jules dit 'réponds à [email]' ou 'réponse à [expéditeur]'.",
+        "Génère une réponse à un email via son ID exact. " +
+        "Utilise smart_reply_to_email à la place si tu connais le nom de l'expéditeur. " +
+        "Utilise reply_to_email uniquement si tu as déjà un message_id via list_recent_emails.",
       parameters: {
         type: "object",
         properties: {
