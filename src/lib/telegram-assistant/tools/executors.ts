@@ -175,10 +175,27 @@ async function smartReplyToEmail(
   const emails = await listRecentEmails("in:inbox", 10);
 
   // 2. Scoring : trouver l'email qui matche sender_hint
-  let candidates = emails.filter((e) =>
-    e.from.toLowerCase().includes(senderHint) ||
-    e.subject.toLowerCase().includes(senderHint)
-  );
+  // Stratégie multi-niveaux pour gérer les variations orthographiques (ex: "Cosi Van" → "cosyvan")
+  const normalize = (s: string) => s.toLowerCase().replace(/[\s\-_]/g, "");
+  const senderWords = senderHint.split(/\s+/).filter(w => w.length > 1);
+  const senderNorm  = normalize(senderHint);
+
+  const matchScore = (e: { from: string; subject: string }): number => {
+    const fromL    = e.from.toLowerCase();
+    const subjectL = e.subject.toLowerCase();
+    const fromN    = normalize(fromL);
+    // Exact phrase match = 3, normalized match = 2, any word match = 1
+    if (fromL.includes(senderHint) || subjectL.includes(senderHint)) return 3;
+    if (fromN.includes(senderNorm) || normalize(subjectL).includes(senderNorm)) return 2;
+    if (senderWords.some(w => fromL.includes(w) || subjectL.includes(w))) return 1;
+    return 0;
+  };
+
+  let candidates = emails
+    .map(e => ({ email: e, score: matchScore(e) }))
+    .filter(x => x.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .map(x => x.email);
 
   // Affiner avec subject_hint si fourni et plusieurs candidats
   // (si 1 seul candidat, on le garde même sans subject_hint — évite les faux négatifs)
@@ -189,10 +206,18 @@ async function smartReplyToEmail(
     if (refined.length > 0) candidates = refined;
   }
 
-  // Cas no-match
+  // Cas no-match : envoyer un message direct + liste des derniers expéditeurs
   if (candidates.length === 0) {
+    const senderList = emails.slice(0, 5)
+      .map(e => `• ${e.from.replace(/<.*?>/, "").trim()} — <i>${e.subject.slice(0, 40)}</i>`)
+      .join("\n");
+    await tgSend(chatId,
+      `❌ Aucun email trouvé pour "<b>${args.sender_hint}</b>".\n\n` +
+      `Derniers expéditeurs dans ta boîte :\n${senderList}\n\n` +
+      `Réessaie avec un nom ou email plus précis.`
+    );
     return JSON.stringify({
-      error: `Aucun email trouvé pour "${args.sender_hint}". Précise le nom complet ou l'adresse email.`,
+      error: `Aucun email trouvé pour "${args.sender_hint}". Jules a été informé avec la liste des derniers expéditeurs.`,
     });
   }
 

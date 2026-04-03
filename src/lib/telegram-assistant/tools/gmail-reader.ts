@@ -73,7 +73,7 @@ export async function listRecentEmails(
 
   const listRes = await fetch(
     `https://gmail.googleapis.com/gmail/v1/users/me/messages?${params}`,
-    { headers: { Authorization: `Bearer ${token}` } }
+    { headers: { Authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(8000) }
   );
   const listData = await listRes.json() as { messages?: Array<{ id: string }> };
   const messages = listData.messages ?? [];
@@ -82,7 +82,7 @@ export async function listRecentEmails(
     messages.map(async (msg) => {
       const metaRes = await fetch(
         `https://gmail.googleapis.com/gmail/v1/users/me/messages/${msg.id}?format=metadata&metadataHeaders=From&metadataHeaders=Subject&metadataHeaders=Date`,
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(8000) }
       );
       const meta = await metaRes.json() as {
         id: string;
@@ -110,7 +110,7 @@ export async function getEmailById(messageId: string): Promise<EmailFull> {
 
   const res = await fetch(
     `https://gmail.googleapis.com/gmail/v1/users/me/messages/${messageId}?format=full`,
-    { headers: { Authorization: `Bearer ${token}` } }
+    { headers: { Authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(8000) }
   );
   const data = await res.json() as {
     id:        string;
@@ -148,7 +148,7 @@ export async function getThreadMessages(
 
   const res = await fetch(
     `https://gmail.googleapis.com/gmail/v1/users/me/threads/${threadId}?format=full`,
-    { headers: { Authorization: `Bearer ${token}` } }
+    { headers: { Authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(8000) }
   );
   const data = await res.json() as {
     messages?: Array<{
