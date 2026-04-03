@@ -67,6 +67,8 @@ export default function MediaEditor({ item, onClose, onDelete }: Props) {
   const [saved, setSaved] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analyzeError, setAnalyzeError] = useState<string | null>(null);
 
   // Replace image state
   const [replaceMode, setReplaceMode] = useState(false);
@@ -111,6 +113,27 @@ export default function MediaEditor({ item, onClose, onDelete }: Props) {
 
   // Current image URL (can change after replace)
   const [currentUrl, setCurrentUrl] = useState(item.url);
+
+  async function handleAnalyze() {
+    setIsAnalyzing(true);
+    setAnalyzeError(null);
+    try {
+      const res = await fetch("/api/admin/media/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: currentUrl }),
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error ?? "Erreur inconnue");
+      if (data.alt) setAlt(data.alt);
+      if (data.title) setTitle(data.title);
+      if (data.tags?.length) setTagsInput(data.tags.join(", "));
+    } catch (err) {
+      setAnalyzeError(err instanceof Error ? err.message : "Erreur analyse IA");
+    } finally {
+      setIsAnalyzing(false);
+    }
+  }
 
   const score = seoScore(alt, title, item.tags);
   const scoreStyle = scoreConfig[score];
@@ -322,7 +345,34 @@ export default function MediaEditor({ item, onClose, onDelete }: Props) {
 
             {/* Colonne droite — Metadonnees SEO */}
             <div className="p-6">
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-5">Metadonnees SEO</p>
+              <div className="flex items-center justify-between mb-5">
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Metadonnees SEO</p>
+                <button
+                  onClick={handleAnalyze}
+                  disabled={isAnalyzing}
+                  className="inline-flex items-center gap-2 text-xs font-semibold px-3 py-2 rounded-xl border border-violet-200 text-violet-700 bg-violet-50 hover:bg-violet-100 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                >
+                  {isAnalyzing ? (
+                    <>
+                      <svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                      </svg>
+                      Analyse en cours...
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+                      </svg>
+                      Analyser avec l&apos;IA
+                    </>
+                  )}
+                </button>
+              </div>
+              {analyzeError && (
+                <p className="text-xs text-red-500 mb-3 bg-red-50 px-3 py-2 rounded-lg">{analyzeError}</p>
+              )}
 
               <div className="space-y-5">
                 {/* Title */}
