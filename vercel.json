@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/gmail-style-learning",
+      "schedule": "0 2 * * *"
+    }
+  ]
+}

@@ -9,6 +9,8 @@ export interface EmailMemoryExample {
   context:     Record<string, string>;
   subject:     string;
   body:        string;
+  message_id?: string; // Pour déduplication (cron only)
+  source?:     string; // "telegram" | "gmail_sent"
 }
 
 /**
@@ -23,6 +25,8 @@ export async function saveEmailToMemory(example: EmailMemoryExample): Promise<vo
       context:     example.context,
       subject:     example.subject,
       body:        example.body,
+      ...(example.message_id ? { message_id: example.message_id } : {}),
+      source:      example.source ?? "telegram",
     });
   } catch (err) {
     console.error("[email-memory] saveEmailToMemory error:", err);
