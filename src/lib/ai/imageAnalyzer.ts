@@ -44,7 +44,7 @@ Analyse cette photo et réponds UNIQUEMENT avec un JSON valide (pas de markdown,
 
   try {
     const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -60,12 +60,16 @@ Analyse cette photo et réponds UNIQUEMENT avec un JSON valide (pas de markdown,
       }
     );
 
-    if (!res.ok) throw new Error(`Gemini ${res.status}`);
+    if (!res.ok) {
+      const errBody = await res.text();
+      throw new Error(`Gemini ${res.status}: ${errBody}`);
+    }
 
     const data = (await res.json()) as GeminiResponse;
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
-    const cleaned = text.replace(/```json\n?|\n?```/g, "").trim();
-    const parsed = JSON.parse(cleaned) as VanImageAnalysis;
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error("Aucun JSON dans la réponse Gemini");
+    const parsed = JSON.parse(jsonMatch[0]) as VanImageAnalysis;
 
     return {
       alt: String(parsed.alt || "").slice(0, 200),

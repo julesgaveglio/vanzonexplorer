@@ -1,0 +1,22 @@
+name: Nightly SEO Image Renamer
+
+on:
+  schedule:
+    - cron: '0 2 * * *'   # Chaque nuit à 2h UTC
+  workflow_dispatch:       # Déclenchement manuel possible
+
+jobs:
+  seo-image-renamer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci
+      - run: npx tsx scripts/agents/seo-image-renamer.ts
+        env:
+          SANITY_API_WRITE_TOKEN: ${{ secrets.SANITY_API_WRITE_TOKEN }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}

@@ -255,6 +255,23 @@
     "pipeline": "Standalone — alimente road-trip-publisher"
   },
   {
+    "id": "seo-image-renamer",
+    "name": "Agent SEO Image Renamer",
+    "emoji": "🖼️",
+    "status": "active",
+    "description": "Scanne chaque nuit la médiathèque Sanity et corrige automatiquement les images sans bon alt text. Utilise Gemini 2.5-flash Vision pour générer alt SEO (60-150 chars), title kebab-case et 5-8 tags en français. Complète le webhook Sanity qui traite les nouvelles images en temps réel.",
+    "trigger": "cron",
+    "schedule": "Chaque nuit à 2h UTC",
+    "cronExpression": "0 2 * * *",
+    "file": "scripts/agents/seo-image-renamer.ts",
+    "workflow": ".github/workflows/nightly-seo-image-renamer.yml",
+    "apis": ["Gemini AI", "Sanity", "Telegram"],
+    "output": "mediaAssets Sanity mis à jour (alt, title, tags SEO)",
+    "manualCommand": "npx tsx scripts/agents/seo-image-renamer.ts --dry-run",
+    "tags": ["SEO", "Images", "Médiathèque", "Automatique"],
+    "pipeline": "Standalone — rattrapage nocturne + webhook temps réel"
+  },
+  {
     "id": "memory-obsidian-sync",
     "name": "Sync Mémoire → Obsidian",
     "emoji": "🧠",
