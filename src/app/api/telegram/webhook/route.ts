@@ -89,13 +89,39 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true });
   }
 
-  // ── Message vocal → mémoire Vanzon ───────────────────────────────────────
+  // ── Message vocal → intent detection → agent ou mémoire ─────────────────
   if (body.message?.voice) {
     const chatId = body.message.chat.id;
     try {
       await sendTelegram(String(chatId), "🎙 Transcription en cours...");
       const transcript = await transcribeVoice(body.message.voice.file_id);
-      await handleVoiceMemory(transcript, chatId);
+
+      // Détecter si c'est une action (agent) ou une note (mémoire)
+      // Mots-clés qui indiquent une demande d'action adressée à l'assistant
+      const ACTION_KEYWORDS = [
+        "réponds", "répond", "répondre",
+        "envoie", "envoyer", "envoyer un email",
+        "cherche", "chercher", "trouve", "trouver",
+        "dis", "dire", "dit",
+        "demande", "demander",
+        "liste", "lister", "montre", "montrer",
+        "regarde", "regarder",
+        "génère", "générer", "crée", "créer",
+        "aide", "aider",
+        "est-ce que tu peux", "est ce que tu peux",
+        "tu peux", "peux-tu",
+        "quel", "quelle", "combien", "comment", "quand", "où",
+      ];
+      const lower = transcript.toLowerCase();
+      const isAction = ACTION_KEYWORDS.some(kw => lower.includes(kw));
+
+      if (isAction) {
+        // Traiter comme un message texte → agent principal
+        await handleAssistantMessage(transcript, chatId);
+      } else {
+        // Traiter comme une note vocale → mémoire Vanzon
+        await handleVoiceMemory(transcript, chatId);
+      }
     } catch (err) {
       console.error("[webhook] voice error:", err);
       await sendTelegram(String(chatId), "❌ Impossible de traiter le message vocal. Réessaie ou envoie un texte.");
