@@ -34,7 +34,7 @@ Analyse statique du codebase à chaque appel. Retourne `{ nodes, edges, scannedA
 **Construction des arêtes :**
 
 - `agent → service_externe` : depuis le champ `apis` du registry
-- `agent → route_api` : patterns connus (ex: `road-trip-publisher` → `road-trip/generate`)
+- `agent → route_api` : depuis un champ optionnel `routes` ajouté à chaque entrée de `registry.json` (ex: `"routes": ["road-trip/generate"]`). Pour les agents sans ce champ, aucune arête agent→route n'est créée — pas de mapping hardcodé.
 - `route_api → lib` : regex sur les imports du fichier (`import.*from.*src/lib/`)
 - `lib → service_externe` : regex sur les imports du fichier
 
@@ -58,6 +58,7 @@ type Node = {
     // api_routes
     methods?: string[]
     section?: string
+    // authRequired: détecté par présence de `auth()` ou `currentUser()` dans le fichier (import Clerk)
     authRequired?: boolean
     // all
     mtime?: number
@@ -82,14 +83,20 @@ type ArchitectureResponse = {
 ### 2. Page — `/admin/architecture`
 
 **Fichiers :**
-- `src/app/admin/(protected)/architecture/page.tsx` — Server Component minimal, rend `ArchitectureClient`
+- `src/app/admin/(protected)/architecture/page.tsx` — Server Component minimal, importe `ArchitectureClient` via `next/dynamic` avec `{ ssr: false }` (React Flow utilise des APIs browser, SSR cassé sans ça)
 - `src/app/admin/(protected)/architecture/ArchitectureClient.tsx` — Client Component principal
 - `src/app/admin/(protected)/architecture/_components/NodeDetailPanel.tsx` — Panneau de détail
 
 #### ArchitectureClient
 
+**États UI :**
+- **Loading** : squelette gris animé (spinner centré) pendant le fetch initial
+- **Error** : message d'erreur centré + bouton "Réessayer" si le fetch échoue
+- **Empty** : message "Aucun nœud trouvé" si la réponse contient 0 nœuds (ne devrait pas arriver en pratique)
+- **Success** : graphe React Flow
+
 - Fetch `/api/admin/architecture` au mount
-- Détection des nœuds modifiés : compare `node.meta.mtime` avec `localStorage['arch_last_visit']` (timestamp ISO stocké à chaque visite)
+- Détection des nœuds modifiés : compare `node.meta.mtime` avec `localStorage['arch_last_visit']`. Si la clé n'existe pas (première visite), aucun badge n'est affiché. La clé est écrite/mise à jour à chaque visite avec le timestamp courant.
 - Rend le graphe avec **React Flow** (`@xyflow/react`)
 - Layout automatique avec **dagre** (`dagre` ou `@dagrejs/dagre`)
 - Barre de filtres en haut : chips toggle par type (Agents / Routes API / Libs / Services ext.) + champ de recherche textuelle
@@ -152,7 +159,7 @@ Contenu selon le type du nœud sélectionné :
 - Filterbar : chips colorées par type + champ de recherche
 - Légende en bas à gauche du canvas (overlay flottant)
 - Panel de détail à droite (300px fixe), se ferme en recliquant le nœud ou via ✕
-- Intégration dans la sidebar admin existante (entrée "Architecture" à ajouter)
+- Intégration dans la sidebar admin : groupe **"Système"** (`src/app/admin/_components/AdminSidebar.tsx`), après l'entrée "Agents IA". Label : "Architecture", href : `/admin/architecture`, icône : SVG `<path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3zM10 6.5h4M6.5 10v4M17.5 10v4M10 17.5h4"/>` (grille de nœuds connectés).
 
 ---
 
