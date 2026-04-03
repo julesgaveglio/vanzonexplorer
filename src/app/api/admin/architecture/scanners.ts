@@ -256,7 +256,7 @@ export function buildLibServiceEdges(libNodes: ArchNode[]): ArchEdge[] {
       if (pattern.test(combined)) {
         const serviceId = `service:${name.toLowerCase().replace(/\s+/g, '-')}`
         edges.push({
-          id: `edge:lib:${libNode.id}:service:${serviceId}`,
+          id: `edge:${libNode.id}:${serviceId}`,
           source: libNode.id,
           target: serviceId,
           type: 'consumes',
