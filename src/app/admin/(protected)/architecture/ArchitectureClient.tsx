@@ -133,7 +133,7 @@ export function ArchitectureClient() {
 
   if (loading) {
     return (
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0f1117' }}>
+      <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0f1117' }}>
         <div style={{ color: '#64748b', fontSize: 14 }}>Analyse du codebase en cours…</div>
       </div>
     )
@@ -141,7 +141,7 @@ export function ArchitectureClient() {
 
   if (error) {
     return (
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#0f1117', gap: 12 }}>
+      <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#0f1117', gap: 12 }}>
         <div style={{ color: '#f87171', fontSize: 14 }}>Erreur : {error}</div>
         <button onClick={fetchData} style={{ padding: '8px 16px', background: '#2d3148', color: '#e2e8f0', border: '1px solid #3d4266', borderRadius: 6, cursor: 'pointer', fontSize: 13 }}>
           Réessayer
@@ -152,14 +152,14 @@ export function ArchitectureClient() {
 
   if (!data || data.nodes.length === 0) {
     return (
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0f1117' }}>
+      <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0f1117' }}>
         <div style={{ color: '#64748b', fontSize: 14 }}>Aucun nœud trouvé.</div>
       </div>
     )
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#0f1117' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: '#0f1117' }}>
       {/* Topbar */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 16px', background: '#1a1d27', borderBottom: '1px solid #2d3148', flexShrink: 0 }}>
         <span style={{ fontSize: 16 }}>🗺️</span>
