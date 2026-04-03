@@ -1,25 +1,7 @@
 "use client";
 import { useEffect, useRef } from "react";
 import type maplibregl from "maplibre-gl";
-
-// Centroïdes des 15 régions
-const REGION_CENTROIDS: Record<string, [number, number]> = {
-  "pays-basque":  [-1.4440, 43.2951],
-  "bretagne":     [-3.0000, 48.1000],
-  "provence":     [ 5.5000, 43.7000],
-  "camargue":     [ 4.5500, 43.5200],
-  "alsace":       [ 7.4500, 48.3300],
-  "dordogne":     [ 0.7200, 44.9000],
-  "corse":        [ 9.0000, 42.0500],
-  "normandie":    [-0.3500, 49.1800],
-  "ardeche":      [ 4.2500, 44.6500],
-  "pyrenees":     [ 0.9500, 42.8500],
-  "loire":        [ 1.5000, 47.5000],
-  "jura":         [ 5.8000, 46.7000],
-  "vercors":      [ 5.4000, 44.9500],
-  "cotentin":     [-1.4500, 49.5000],
-  "landes":       [-1.0000, 43.9500],
-};
+import { REGION_CENTROIDS } from "./regionData";
 
 interface Article {
   id: string;
@@ -33,9 +15,10 @@ interface Article {
 
 interface CatalogMapProps {
   articles: Article[];
+  flyTo?: { coords: [number, number]; zoom: number } | null;
 }
 
-export default function CatalogMap({ articles }: CatalogMapProps) {
+export default function CatalogMap({ articles, flyTo }: CatalogMapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
 
@@ -50,6 +33,8 @@ export default function CatalogMap({ articles }: CatalogMapProps) {
         style: `https://api.maptiler.com/maps/outdoor-v2/style.json?key=${MAPTILER_KEY}`,
         center: [2.3, 46.5],
         zoom: 5,
+        minZoom: 4.5,
+        maxBounds: [[-7, 40.5], [11, 52]],
         attributionControl: false,
       });
 
@@ -129,6 +114,19 @@ export default function CatalogMap({ articles }: CatalogMapProps) {
       mapRef.current = null;
     };
   }, [articles]);
+
+  // Fly to selected location when search changes
+  useEffect(() => {
+    if (!flyTo || !mapRef.current) return;
+    const map = mapRef.current;
+    const doFly = () =>
+      map.flyTo({ center: flyTo.coords, zoom: flyTo.zoom, duration: 1200 });
+    if (map.loaded()) {
+      doFly();
+    } else {
+      map.once("load", doFly);
+    }
+  }, [flyTo]);
 
   return (
     <div className="relative w-full rounded-2xl overflow-hidden shadow-md border border-slate-200">
