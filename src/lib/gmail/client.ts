@@ -4,9 +4,9 @@
  * et la signature Gmail configurée est automatiquement récupérée et ajoutée.
  *
  * Env vars requises :
- *   GOOGLE_GMAIL_CLIENT_ID      — OAuth2 client ID (peut être le même que GOOGLE_GSC_CLIENT_ID)
- *   GOOGLE_GMAIL_CLIENT_SECRET  — OAuth2 client secret
- *   GOOGLE_GMAIL_REFRESH_TOKEN  — Refresh token avec scopes : gmail.send + gmail.settings.basic
+ *   GOOGLE_GSC_CLIENT_ID       — OAuth2 client ID (partagé avec GSC)
+ *   GOOGLE_GSC_CLIENT_SECRET   — OAuth2 client secret (partagé avec GSC)
+ *   GOOGLE_GMAIL_REFRESH_TOKEN — Refresh token avec scopes : gmail.send + gmail.settings.basic
  */
 
 const GMAIL_USER = "jules@vanzonexplorer.com";
@@ -19,8 +19,8 @@ export async function getGmailAccessToken(): Promise<string> {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams({
-      client_id: process.env.GOOGLE_GMAIL_CLIENT_ID!,
-      client_secret: process.env.GOOGLE_GMAIL_CLIENT_SECRET!,
+      client_id: process.env.GOOGLE_GSC_CLIENT_ID!,
+      client_secret: process.env.GOOGLE_GSC_CLIENT_SECRET!,
       refresh_token: process.env.GOOGLE_GMAIL_REFRESH_TOKEN!,
       grant_type: "refresh_token",
     }).toString(),
@@ -178,8 +178,8 @@ ${bodyParagraphs}${signatureBlock}
 // ── Vérifie que les env vars Gmail sont configurées ────────────────────────
 export function isGmailConfigured(): boolean {
   return !!(
-    process.env.GOOGLE_GMAIL_CLIENT_ID &&
-    process.env.GOOGLE_GMAIL_CLIENT_SECRET &&
+    process.env.GOOGLE_GSC_CLIENT_ID &&
+    process.env.GOOGLE_GSC_CLIENT_SECRET &&
     process.env.GOOGLE_GMAIL_REFRESH_TOKEN
   );
 }
