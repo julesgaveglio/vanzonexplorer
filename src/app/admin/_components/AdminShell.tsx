@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { UserButton } from "@clerk/nextjs";
@@ -8,15 +8,36 @@ import AdminSidebar from "./AdminSidebar";
 
 export default function AdminShell({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
+
+  // Persister l'état collapsed dans localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem("admin-sidebar-collapsed");
+    if (saved === "true") setCollapsed(true);
+  }, []);
+
+  function toggleCollapsed() {
+    const next = !collapsed;
+    setCollapsed(next);
+    localStorage.setItem("admin-sidebar-collapsed", String(next));
+  }
+
+  const sidebarWidth = collapsed ? 60 : 260;
 
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
-      {/* Sidebar (gère son propre overlay mobile) */}
-      <AdminSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <AdminSidebar
+        open={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        collapsed={collapsed}
+        onToggleCollapsed={toggleCollapsed}
+      />
 
-      {/* Zone principale */}
-      <div className="lg:pl-[260px] flex flex-col min-h-screen">
-
+      {/* Zone principale — s'adapte à la largeur de la sidebar */}
+      <div
+        className="flex flex-col min-h-screen transition-[padding] duration-300 ease-in-out"
+        style={{ paddingLeft: `${sidebarWidth}px` }}
+      >
         {/* Top bar mobile */}
         <header className="lg:hidden sticky top-0 z-20 bg-white border-b border-slate-200 px-4 py-3 flex items-center gap-3 shadow-sm">
           <button
@@ -42,18 +63,12 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
           </Link>
 
           <div className="ml-auto">
-            <UserButton
-              appearance={{
-                elements: { avatarBox: "w-8 h-8" },
-              }}
-            />
+            <UserButton appearance={{ elements: { avatarBox: "w-8 h-8" } }} />
           </div>
         </header>
 
         {/* Contenu */}
-        <main className="flex-1">
-          {children}
-        </main>
+        <main className="flex-1">{children}</main>
       </div>
     </div>
   );
