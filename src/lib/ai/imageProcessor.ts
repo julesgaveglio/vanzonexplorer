@@ -1,25 +1,20 @@
 import sharp from "sharp";
 
-// Toutes les photos de vans sont en 3:2 (format galerie Sanity : 900×600).
-// L'image principale utilise le même ratio pour cohérence visuelle.
+// Conserver pour compatibilité avec les imports existants
 export type ImageRole = "gallery";
 
-const PRESETS: Record<ImageRole, { width: number; height: number }> = {
-  gallery: { width: 1200, height: 800 },   // 3:2 — cohérent avec imagePresets.gallery (900×600)
-};
-
 /**
- * Recadre et convertit une image en WebP optimisé.
- * Toujours 1200×800 (3:2), qualité 85.
- * L'input est attendu post-upload de l'utilisateur (taille quelconque).
+ * Convertit une image en WebP optimisé en préservant le ratio original.
+ * Limite la dimension max à 2000px (sans rogner).
+ * Les formats proportionnels (card, hero, OG…) sont générés à la demande
+ * via les paramètres d'URL Sanity CDN.
  */
 export async function processVanImage(
   buffer: Buffer,
-  role: ImageRole = "gallery"
+  _role: ImageRole = "gallery"
 ): Promise<Buffer> {
-  const { width, height } = PRESETS[role];
   return sharp(buffer)
-    .resize(width, height, { fit: "cover", position: "centre" })
+    .resize(2000, 2000, { fit: "inside", withoutEnlargement: true })
     .webp({ quality: 85 })
     .toBuffer();
 }
