@@ -11,6 +11,7 @@ export type ImageRole = "gallery";
  */
 export async function processVanImage(
   buffer: Buffer,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _role: ImageRole = "gallery"
 ): Promise<Buffer> {
   return sharp(buffer)
