@@ -9,11 +9,7 @@ export type ImageRole = "gallery";
  * Les formats proportionnels (card, hero, OG…) sont générés à la demande
  * via les paramètres d'URL Sanity CDN.
  */
-export async function processVanImage(
-  buffer: Buffer,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _role: ImageRole = "gallery"
-): Promise<Buffer> {
+export async function processVanImage(buffer: Buffer): Promise<Buffer> {
   return sharp(buffer)
     .resize(2000, 2000, { fit: "inside", withoutEnlargement: true })
     .webp({ quality: 85 })

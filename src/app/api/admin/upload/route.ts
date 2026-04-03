@@ -3,7 +3,6 @@ import { auth } from "@clerk/nextjs/server";
 import { NextRequest } from "next/server";
 import { processVanImage } from "@/lib/ai/imageProcessor";
 import { analyzeVanImage } from "@/lib/ai/imageAnalyzer";
-import type { ImageRole } from "@/lib/ai/imageProcessor";
 
 const writeClient = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
@@ -33,7 +32,6 @@ export async function POST(req: NextRequest) {
         : vanNameForCat.toLowerCase().includes("xalbat")
           ? "van-xalbat"
           : "divers";
-    const imageRole = ((formData.get("imageRole") as string) || "gallery") as ImageRole;
     const vanName = (formData.get("vanName") as string) || undefined;
 
     if (!file) return Response.json({ error: "Fichier manquant" }, { status: 400 });
@@ -41,7 +39,7 @@ export async function POST(req: NextRequest) {
     const rawBuffer = Buffer.from(await file.arrayBuffer());
 
     // ── 1. Traitement Sharp : conversion WebP, ratio original préservé ──
-    const processedBuffer = await processVanImage(rawBuffer, imageRole);
+    const processedBuffer = await processVanImage(rawBuffer);
 
     // ── 2. Analyse Gemini Vision + upload Sanity en parallèle ──
     const [asset, aiMeta] = await Promise.all([
