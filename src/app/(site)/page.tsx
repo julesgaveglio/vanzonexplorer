@@ -122,16 +122,11 @@ export default async function HomePage() {
             </a>
 
             <h1 className="text-4xl sm:text-4xl md:text-6xl lg:text-7xl font-black text-white leading-[1.08] mb-7">
-              Location Van Aménagé<br />
-              au Pays Basque,<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4BC3E3] to-[#4D5FEC]">
-                à votre rythme.
-              </span>
+              Rendre accessible à tous le goût de la liberté
             </h1>
 
             <p className="text-lg sm:text-xl text-white/75 leading-relaxed mb-10 max-w-xl">
-              Louez un van aménagé tout équipé et explorez l&apos;Atlantique,
-              les Pyrénées et les villages basques en totale liberté.
+              Location, achat de vans aménagés au Pays Basque, et formation Van Business Academy partout en France.
             </p>
 
             <div className="flex flex-col sm:flex-row sm:items-center gap-3">

@@ -76,8 +76,7 @@ export default function Footer() {
               />
             </Link>
             <p className="text-text-muted text-sm mt-4 max-w-xs leading-relaxed">
-              Location, achat de vans aménagés, et formation vanlife au
-              Pays Basque. Explorez la côte basque en toute liberté.
+              Location, achat de vans aménagés au Pays Basque, et formation Van Business Academy partout en France.
             </p>
 
             {/* Socials */}
