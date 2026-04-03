@@ -103,9 +103,48 @@ export async function updateMediaAsset(
   revalidatePath("/admin/media");
 }
 
-// ── Delete a mediaAsset document (not the underlying asset)
+// ── Delete a mediaAsset document AND its underlying Sanity image asset
 export async function deleteMediaAsset(id: string) {
   await requireAuth();
+
+  // Récupérer la référence à l'asset Sanity avant suppression
+  const doc = await adminReadClient.fetch<{ assetRef?: string }>(
+    groq`*[_id == $id][0]{ "assetRef": image.asset._ref }`,
+    { id }
+  );
+
   await adminWriteClient.delete(id);
+
+  // Supprimer l'asset binaire (best-effort : peut échouer s'il est référencé ailleurs)
+  if (doc?.assetRef) {
+    try {
+      await adminWriteClient.delete(doc.assetRef);
+    } catch {
+      // Asset encore référencé dans un autre document — on ne bloque pas
+    }
+  }
+
+  revalidatePath("/admin/media");
+}
+
+// ── Suppression groupée de plusieurs mediaAssets + leurs assets binaires
+export async function bulkDeleteMediaAssets(ids: string[]) {
+  await requireAuth();
+  if (!ids.length) return;
+
+  // Récupérer tous les refs d'assets en une seule requête
+  const docs = await adminReadClient.fetch<{ _id: string; assetRef?: string }[]>(
+    groq`*[_id in $ids]{ _id, "assetRef": image.asset._ref }`,
+    { ids }
+  );
+
+  // Supprimer les documents en parallèle
+  await Promise.all(ids.map((id) => adminWriteClient.delete(id)));
+
+  // Supprimer les assets binaires (best-effort)
+  await Promise.allSettled(
+    docs.filter((d) => d.assetRef).map((d) => adminWriteClient.delete(d.assetRef!))
+  );
+
   revalidatePath("/admin/media");
 }
