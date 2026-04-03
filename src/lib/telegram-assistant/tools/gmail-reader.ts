@@ -50,6 +50,9 @@ interface GmailPayload {
   headers?:  Array<{ name: string; value: string }>;
 }
 
+/** Maximum chars per thread message body to include in LLM prompts (token budget). */
+const THREAD_BODY_PREVIEW_CHARS = 400;
+
 // ── API ────────────────────────────────────────────────────────────────────────
 
 /**
@@ -141,7 +144,6 @@ export async function getThreadMessages(
   threadId: string,
   max = 3
 ): Promise<ThreadMessage[]> {
-  const THREAD_BODY_PREVIEW_CHARS = 400; // token budget per message for LLM prompts
   const token = await getGmailAccessToken();
 
   const res = await fetch(

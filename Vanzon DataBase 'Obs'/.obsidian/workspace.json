@@ -11,10 +11,14 @@
             "id": "6a7b7ed356fff62c",
             "type": "leaf",
             "state": {
-              "type": "graph",
-              "state": {},
-              "icon": "lucide-git-fork",
-              "title": "Vue graphique"
+              "type": "markdown",
+              "state": {
+                "file": "blog/✍️ Idées reçues sur le vanlife.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "✍️ Idées reçues sur le vanlife"
             }
           }
         ]
@@ -182,20 +186,21 @@
   "active": "6a7b7ed356fff62c",
   "lastOpenFiles": [
     "blog/✍️ Angles & Sujets Blog.md",
+    "territoire/🗺️ Pays Basque — Notre terrain.md",
+    "anecdotes/🎭 Première location.md",
+    "vans/🚐 Yoni.md",
+    "🏠 INDEX.md",
+    "vision/🎓 Van Business Academy - Méthode Complète.md",
+    "vision/💡 Valeurs de Vanzon.md",
+    "vision/💡 Ce qui nous énerve dans l'industrie.md",
+    "vision/💡 Business Model & Revenus.md",
     "blog/✍️ Opinions tranchées.md",
     "blog/✍️ Idées reçues sur le vanlife.md",
-    "territoire/🗺️ Pays Basque — Notre terrain.md",
-    "🏠 INDEX.md",
     "blog",
-    "vision/💡 Ce qui nous énerve dans l'industrie.md",
     "territoire",
-    "vision/💡 Business Model & Revenus.md",
-    "vision/💡 Valeurs de Vanzon.md",
     "vision",
     "anecdotes/🎭 Les nuits d'aménagement.md",
     "anecdotes/🎭 L'incident du rétroviseur.md",
-    "anecdotes/🎭 Première location.md",
-    "vans/🚐 Yoni.md",
     "anecdotes/🎭 Première nuit dans le van.md",
     "anecdotes",
     "vans/🚐 Xalbat.md",

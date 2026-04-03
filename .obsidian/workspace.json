@@ -11,14 +11,10 @@
             "id": "b8275303781ae3d2",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "agents/cmo-reputation.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "cmo-reputation"
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "Vue graphique"
             }
           }
         ]
@@ -180,19 +176,23 @@
       "bases:Créer une nouvelle base": false
     }
   },
-  "active": "5af769bd8e8be0dd",
+  "active": "b8275303781ae3d2",
   "lastOpenFiles": [
-    "node_modules/maplibre-gl/LICENSE.txt",
-    "node_modules/maplibre-gl/dist/LICENSE.txt",
-    "node_modules/maplibre-gl/src/shaders/terrain.vertex.glsl.g.ts",
-    "node_modules/maplibre-gl/src/shaders/terrain.fragment.glsl.g.ts",
-    "node_modules/maplibre-gl/src/tile/tile_manager_raster_dem.ts",
-    "node_modules/maplibre-gl/src/tile/tile_manager_raster_dem.test.ts",
-    "node_modules/maplibre-gl/src/tile/tile_manager_raster.ts",
-    "node_modules/maplibre-gl/src/tile/tile_manager_in_view_tiles.ts",
-    "node_modules/maplibre-gl/src/tile/tile_manager_in_view_tiles.test.ts",
-    "node_modules/maplibre-gl/src/tile/tile_manager.ts",
-    "node_modules/maplibre-gl/src/tile/tile_manager.test.ts",
+    "Vanzon DataBase 'Obs'/histoire/📖 Naissance de Vanzon.md",
+    "Vanzon DataBase 'Obs'/equipe/👤 Jules.md",
+    "Vanzon DataBase 'Obs'/vans/🚐 Yoni.md",
+    "agents/cmo-reputation.md",
+    "src/app/api/admin/seo/drafts/[id]/publish/route.ts",
+    "src/app/api/admin/seo/drafts/[id]/publish",
+    "src/components/article-template/ArticleTemplate.tsx",
+    "src/components/article-template",
+    "src/app/admin/(protected)/seo/editeur/[id]/preview/_components/ArticlePreviewClient.tsx",
+    "src/app/admin/(protected)/seo/editeur/[id]/preview/_components",
+    "src/app/admin/(protected)/seo/editeur/[id]/preview/page.tsx",
+    "src/app/admin/(protected)/seo/editeur/[id]/preview",
+    "scripts/seed-labelvanlife-articles.ts",
+    "scripts/seed-vba-articles.ts",
+    "Vanzon DataBase 'Obs'/vision/🎓 Van Business Academy - Méthode Complète.md",
     "node_modules/maplibre-gl/src/css/svg/maplibregl-ctrl-zoom-out.svg",
     "node_modules/maplibre-gl/src/css/svg/maplibregl-ctrl-globe.svg",
     "node_modules/maplibre-gl/src/css/svg/maplibregl-ctrl-zoom-in.svg",
@@ -223,10 +223,6 @@
     "node_modules/protocol-buffers-schema/README.md",
     "node_modules/potpack/README.md",
     "node_modules/@mapbox/point-geometry/README.md",
-    "node_modules/tinyqueue/README.md",
-    "node_modules/earcut/README.md",
-    "node_modules/@maplibre/vt-pbf/README.md",
-    "node_modules/@mapbox/vector-tile/README.md",
-    "node_modules/@mapbox/whoots-js/README.md"
+    "node_modules/tinyqueue/README.md"
   ]
 }

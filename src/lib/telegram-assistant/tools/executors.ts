@@ -37,7 +37,7 @@ export async function executeTool(
       case "search_prospects":           return await searchProspects(args);
       case "send_email_to_road_tripper": return await sendEmailToRoadTripper(args, chatId);
       case "list_recent_emails":         return await listRecentEmailsTool(args);
-      case "smart_reply_to_email":      return await smartReplyToEmail(args, chatId);
+      case "smart_reply_to_email":       return await smartReplyToEmail(args, chatId);
       case "reply_to_email":             return await replyToEmailTool(args, chatId);
       case "search_memory": return await searchMemoryTool(args);
       default: return JSON.stringify({ error: `Outil inconnu: ${name}` });
@@ -162,8 +162,11 @@ async function smartReplyToEmail(
   args:   Record<string, unknown>,
   chatId: number
 ): Promise<string> {
-  const senderHint   = (args.sender_hint          as string).toLowerCase();
-  const contextInstr = (args.context_instructions as string) ?? "";
+  if (!args.sender_hint || typeof args.sender_hint !== "string") {
+    return JSON.stringify({ error: "sender_hint manquant. Précise le nom ou l'email de l'expéditeur." });
+  }
+  const senderHint   = args.sender_hint.toLowerCase();
+  const contextInstr = (args.context_instructions as string | undefined) ?? "";
   const subjectHint  = (args.subject_hint         as string | undefined)?.toLowerCase();
 
   await tgSend(chatId, "🔍 Recherche de l'email en cours...");
@@ -286,7 +289,7 @@ async function smartReplyToEmail(
   const bodyFull = draft.body
     .replace(/<\/p>/gi, "\n").replace(/<br\s*\/?>/gi, "\n")
     .replace(/<[^>]+>/g, "")
-    .replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">")
+    .replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&nbsp;/g, " ")
     .split("\n").map((l: string) => l.trim()).filter((l: string) => l.length > 0)
     .join("\n").replace(/\n{3,}/g, "\n\n").trim();
   const MAX_BODY    = 3800;
