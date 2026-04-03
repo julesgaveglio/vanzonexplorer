@@ -293,7 +293,9 @@ export const getArticleBySlugQuery = groq`
       alt,
       credit,
       pexelsId,
-      pexelsUrl
+      pexelsUrl,
+      "width": asset->metadata.dimensions.width,
+      "height": asset->metadata.dimensions.height
     }
   }
 `;

@@ -33,7 +33,7 @@ type ArticleDoc = {
   content?: PortableBlock[];
   seoTitle?: string;
   seoDescription?: string;
-  coverImage?: { url: string; alt?: string; credit?: string; pexelsUrl?: string } | null;
+  coverImage?: { url: string; alt?: string; credit?: string; pexelsUrl?: string; width?: number; height?: number } | null;
 };
 
 type RelatedArticle = {
@@ -581,23 +581,50 @@ export default async function ArticleDetailPage({
       <ArticleJsonLd article={{ ...article, updatedAt: article.updatedAt }} faqItems={faqItems} />
 
       {/* ── Hero cover image ── */}
-      {article.coverImage?.url && (
-        <div className="relative w-full h-[55vh] min-h-[340px] max-h-[560px] bg-slate-100">
-          <Image
-            src={article.coverImage.url}
-            alt={article.coverImage.alt ?? article.title}
-            fill
-            className="object-cover"
-            priority
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-900/20 to-transparent" />
-          {article.coverImage.credit && (
-            <p className="absolute bottom-3 right-4 text-white/65 text-xs bg-black/20 backdrop-blur-sm px-2 py-0.5 rounded-full">
-              {article.coverImage.credit}
-            </p>
-          )}
-        </div>
-      )}
+      {article.coverImage?.url && (() => {
+        const NATURAL_RATIO_SLUGS = [
+          "pourquoi-la-vanlife-a-besoin-dun-label-aujourdhui-et-la-vision-derriere-label-vanlife",
+          "la-labellisation-des-lieux-vanlife-cest-quoi-concretement-et-comment-ca-marche",
+          "la-carte-membre-vanlife-comment-ca-marche-et-quels-avantages-concrets",
+        ];
+        const useNaturalRatio = NATURAL_RATIO_SLUGS.includes(article.slug);
+        const { width, height } = article.coverImage;
+
+        if (useNaturalRatio && width && height) {
+          return (
+            <div className="w-full bg-slate-100 flex justify-center">
+              <div className="w-full max-w-[1120px] px-4 sm:px-6 pt-8">
+                <Image
+                  src={article.coverImage.url}
+                  alt={article.coverImage.alt ?? article.title}
+                  width={width}
+                  height={height}
+                  className="w-full h-auto rounded-2xl object-contain"
+                  priority
+                />
+              </div>
+            </div>
+          );
+        }
+
+        return (
+          <div className="relative w-full h-[55vh] min-h-[340px] max-h-[560px] bg-slate-100">
+            <Image
+              src={article.coverImage.url}
+              alt={article.coverImage.alt ?? article.title}
+              fill
+              className="object-cover"
+              priority
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-900/20 to-transparent" />
+            {article.coverImage.credit && (
+              <p className="absolute bottom-3 right-4 text-white/65 text-xs bg-black/20 backdrop-blur-sm px-2 py-0.5 rounded-full">
+                {article.coverImage.credit}
+              </p>
+            )}
+          </div>
+        );
+      })()}
 
       {/* ── Two-column layout ── */}
       <div className="max-w-[1120px] mx-auto px-4 sm:px-6 py-12 lg:grid lg:grid-cols-[1fr_272px] lg:gap-16 lg:items-start">
