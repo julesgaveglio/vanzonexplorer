@@ -122,7 +122,7 @@ export default async function HomePage() {
             </a>
 
             <h1 className="text-4xl sm:text-4xl md:text-6xl lg:text-7xl font-black text-white leading-[1.08] mb-7">
-              Rendre accessible à tous le goût de la liberté
+              Rendre accessible à tous le goût de la <span className="bg-gradient-to-r from-blue-400 to-sky-300 bg-clip-text text-transparent">liberté</span>
             </h1>
 
             <p className="text-lg sm:text-xl text-white/75 leading-relaxed mb-10 max-w-xl">
