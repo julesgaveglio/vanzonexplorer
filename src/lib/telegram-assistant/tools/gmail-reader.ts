@@ -18,6 +18,12 @@ export interface EmailFull extends EmailSummary {
   references:        string;  // valeur du header References
 }
 
+export interface ThreadMessage {
+  from:    string;
+  date:    string;
+  body:    string; // plain text, tronqué à 400 chars
+}
+
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
 function getHeader(headers: Array<{ name: string; value: string }>, name: string): string {
@@ -124,4 +130,43 @@ export async function getEmailById(messageId: string): Promise<EmailFull> {
     message_id_header: getHeader(headers, "Message-ID"),
     references:        getHeader(headers, "References"),
   };
+}
+
+/**
+ * Récupère les derniers messages d'un thread Gmail.
+ * @param threadId  ID du thread Gmail
+ * @param max       Nombre max de messages à retourner (défaut 3)
+ */
+export async function getThreadMessages(
+  threadId: string,
+  max = 3
+): Promise<ThreadMessage[]> {
+  const token = await getGmailAccessToken();
+
+  const res = await fetch(
+    `https://gmail.googleapis.com/gmail/v1/users/me/threads/${threadId}?format=full`,
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  const data = await res.json() as {
+    messages?: Array<{
+      payload: GmailPayload & { headers: Array<{ name: string; value: string }> };
+    }>;
+  };
+
+  const messages = data.messages ?? [];
+  // Prendre les `max` derniers messages (hors dernier = email courant déjà lu)
+  const slice = messages.slice(-max);
+
+  // Exclure le dernier message du thread (= l'email courant, déjà lu en entier séparément)
+  const withoutCurrent = slice.length > 1 ? slice.slice(0, -1) : [];
+
+  return withoutCurrent.map((msg) => {
+    const headers = msg.payload.headers ?? [];
+    const body    = extractPlainText(msg.payload);
+    return {
+      from: getHeader(headers, "From"),
+      date: getHeader(headers, "Date"),
+      body: body.slice(0, 400),
+    };
+  });
 }
