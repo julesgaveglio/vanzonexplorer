@@ -103,10 +103,10 @@ export async function GET(req: NextRequest) {
       // Sauvegarder
       await saveEmailToMemory({
         action_type: "gmail_reply",
-        context:     { from: to, subject },
+        context:     { to, subject },
         subject,
         body:        body.slice(0, 800),
-        message_id:  messageId || undefined,
+        message_id:  messageId,
         source:      "gmail_sent",
       });
 
