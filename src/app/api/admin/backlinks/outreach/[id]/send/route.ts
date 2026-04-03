@@ -1,8 +1,6 @@
 import { NextRequest } from "next/server";
-import { Resend } from "resend";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
-
-const FROM_EMAIL = "Jules — Vanzon Explorer <jules@vanzonexplorer.com>";
+import { sendViaGmail, isGmailConfigured } from "@/lib/gmail/client";
 
 interface OutreachRow {
   id: string;
@@ -27,7 +25,7 @@ export async function POST(
 
   const supabase = createSupabaseAdmin();
 
-  // Fetch outreach record
+  // Charger le brouillon
   const { data: outreach, error: fetchError } = await supabase
     .from("backlink_outreach")
     .select("*")
@@ -56,45 +54,22 @@ export async function POST(
     return Response.json({ success: false, error: "Corps de l'email vide" }, { status: 400 });
   }
 
-  if (!process.env.RESEND_API_KEY) {
-    return Response.json({ success: false, error: "RESEND_API_KEY non configuré" }, { status: 500 });
+  if (!isGmailConfigured()) {
+    return Response.json(
+      { success: false, error: "Gmail API non configurée (GOOGLE_GMAIL_CLIENT_ID / CLIENT_SECRET / REFRESH_TOKEN manquants)" },
+      { status: 500 }
+    );
   }
 
-  // Convert plain text email body to HTML (preserve line breaks)
-  const htmlBody = `
-<!DOCTYPE html>
-<html>
-<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 15px; line-height: 1.6; color: #1a1a1a; max-width: 600px; margin: 0 auto; padding: 20px;">
-  ${finalBody
-    .split("\n\n")
-    .map((para) =>
-      `<p style="margin: 0 0 16px 0;">${para.replace(/\n/g, "<br>")}</p>`
-    )
-    .join("")}
-</body>
-</html>`.trim();
-
   try {
-    const resend = new Resend(process.env.RESEND_API_KEY);
-
-    const { data: sendData, error: sendError } = await resend.emails.send({
-      from: FROM_EMAIL,
-      to: [toEmail],
+    // Envoi via Gmail API — email visible dans la boîte "Envoyés" + signature auto
+    const { messageId, threadId } = await sendViaGmail({
+      to: toEmail,
       subject: finalSubject,
-      html: htmlBody,
-      text: finalBody,
-      // Reply-to ensures replies go to Jules's real inbox
-      replyTo: "jules@vanzonexplorer.com",
+      textBody: finalBody,
     });
 
-    if (sendError) {
-      return Response.json(
-        { success: false, error: `Resend error: ${sendError.message}` },
-        { status: 500 }
-      );
-    }
-
-    // Update outreach record
+    // Mettre à jour le brouillon outreach
     await supabase
       .from("backlink_outreach")
       .update({
@@ -106,7 +81,7 @@ export async function POST(
       })
       .eq("id", params.id);
 
-    // Move prospect to "contacté"
+    // Passer le prospect en "contacté"
     await supabase
       .from("backlink_prospects")
       .update({ statut: "contacté" })
@@ -114,7 +89,8 @@ export async function POST(
 
     return Response.json({
       success: true,
-      messageId: sendData?.id,
+      messageId,
+      threadId,
       sentTo: toEmail,
     });
   } catch (error) {
