@@ -110,7 +110,8 @@ export async function runAgent(message: string, chatId: number): Promise<void> {
       // Ces outils envoient leur propre aperçu Telegram — pas besoin de réponse supplémentaire
       if (
         toolCall.function.name === "send_email_to_road_tripper" ||
-        toolCall.function.name === "reply_to_email"
+        toolCall.function.name === "reply_to_email" ||
+        toolCall.function.name === "smart_reply_to_email"
       ) {
         hasEmailPreview = true;
       }
