@@ -141,6 +141,7 @@ export async function getThreadMessages(
   threadId: string,
   max = 3
 ): Promise<ThreadMessage[]> {
+  const THREAD_BODY_PREVIEW_CHARS = 400; // token budget per message for LLM prompts
   const token = await getGmailAccessToken();
 
   const res = await fetch(
@@ -154,8 +155,8 @@ export async function getThreadMessages(
   };
 
   const messages = data.messages ?? [];
-  // Prendre les `max` derniers messages (hors dernier = email courant déjà lu)
-  const slice = messages.slice(-max);
+  // Fetch max+1 to account for excluding the current email (last message in thread)
+  const slice = messages.slice(-(max + 1));
 
   // Exclure le dernier message du thread (= l'email courant, déjà lu en entier séparément)
   const withoutCurrent = slice.length > 1 ? slice.slice(0, -1) : [];
@@ -166,7 +167,7 @@ export async function getThreadMessages(
     return {
       from: getHeader(headers, "From"),
       date: getHeader(headers, "Date"),
-      body: body.slice(0, 400),
+      body: body.slice(0, THREAD_BODY_PREVIEW_CHARS),
     };
   });
 }
