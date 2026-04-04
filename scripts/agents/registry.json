@@ -391,6 +391,23 @@
     "pipeline": "Standalone — lit Vanzon Memory Database/🔒 INTERNE/strategie/"
   },
   {
+    "id": "strategic-review-daily",
+    "name": "Agent Review Stratégique Quotidien",
+    "emoji": "📋",
+    "status": "active",
+    "description": "Tous les jours à 7h Paris : collecte contexte (git log 24h + stats Supabase + état projet), analyse Groq, nettoie les tâches Todoist obsolètes, crée 5 nouvelles tâches priorisées par impact, envoie un récap Telegram.",
+    "trigger": "cron",
+    "schedule": "Tous les jours à 7h Paris (5h UTC)",
+    "cronExpression": "0 5 * * *",
+    "file": "scripts/agents/strategic-review-daily.ts",
+    "workflow": ".github/workflows/strategic-review-daily.yml",
+    "apis": ["Supabase", "Groq", "Todoist", "Telegram"],
+    "output": "5 tâches Todoist priorisées + nettoyage + Telegram récap",
+    "manualCommand": "npx tsx scripts/agents/strategic-review-daily.ts",
+    "tags": ["Stratégie", "Todoist", "Automatique", "Quotidien"],
+    "pipeline": "Standalone — lit état projet + stats + git log → Groq → Todoist"
+  },
+  {
     "id": "backlinks-weekly-agent",
     "name": "Agent Backlinks Discovery Hebdomadaire",
     "emoji": "🔗",
