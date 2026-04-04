@@ -2,6 +2,8 @@ import { NextRequest } from "next/server";
 import Groq from "groq-sdk";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
 import { discoverEmails } from "@/lib/email-discovery";
+import { requireAdmin } from "@/lib/auth";
+import { NextResponse } from "next/server";
 
 interface BacklinkProspect {
   id: string;
@@ -43,6 +45,8 @@ RÈGLES STRICTES :
 9. Ton : direct, humain, entre collègues — pas un commercial, pas un robot`;
 
 export async function POST(req: NextRequest) {
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
   const body = await req.json().catch(() => ({}));
   const { prospectId }: { prospectId: string } = body;
 

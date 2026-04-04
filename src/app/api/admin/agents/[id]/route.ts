@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import { requireAdmin } from "@/lib/auth";
 
 const PROMPTS_DIR = path.join(process.cwd(), "scripts/agents/prompts");
 
@@ -17,6 +18,8 @@ export async function GET(
   _req: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
   const fileName = AGENT_PROMPT_FILES[params.id];
   if (!fileName) {
     return NextResponse.json({ error: "Agent inconnu" }, { status: 404 });
@@ -35,6 +38,8 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
   const fileName = AGENT_PROMPT_FILES[params.id];
   if (!fileName) {
     return NextResponse.json({ error: "Agent inconnu" }, { status: 404 });

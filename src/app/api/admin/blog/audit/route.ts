@@ -1,4 +1,6 @@
 import { NextRequest } from "next/server";
+import { requireAdmin } from "@/lib/auth";
+import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -8,6 +10,8 @@ function sseEncode(encoder: TextEncoder, data: object): Uint8Array {
 }
 
 export async function POST(req: NextRequest) {
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
   const { slug, targetKeyword } = await req.json().catch(() => ({ slug: null, targetKeyword: null }));
 
   if (!slug || !targetKeyword) {

@@ -1,7 +1,11 @@
+import { requireAdmin } from "@/lib/auth";
+import { NextResponse } from "next/server";
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
   if (process.env.NODE_ENV !== 'development') {
     return new Response(null, { status: 404 });
   }

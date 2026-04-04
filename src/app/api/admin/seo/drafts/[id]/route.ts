@@ -1,8 +1,11 @@
 // src/app/api/admin/seo/drafts/[id]/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/auth";
 
 export async function GET(_: NextRequest, { params }: { params: { id: string } }) {
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
   const supabase = createSupabaseAdmin();
   const { data, error } = await supabase
     .from("draft_articles")
@@ -15,6 +18,8 @@ export async function GET(_: NextRequest, { params }: { params: { id: string } }
 }
 
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
   const supabase = createSupabaseAdmin();
   const body = await req.json();
 
@@ -35,6 +40,8 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 }
 
 export async function DELETE(_: NextRequest, { params }: { params: { id: string } }) {
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
   const supabase = createSupabaseAdmin();
   const { error } = await supabase
     .from("draft_articles")

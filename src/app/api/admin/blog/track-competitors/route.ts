@@ -1,5 +1,7 @@
 import { readFile, writeFile } from "fs/promises";
 import path from "path";
+import { requireAdmin } from "@/lib/auth";
+import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -50,6 +52,8 @@ interface Opportunity {
 }
 
 export async function POST() {
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
   const encoder = new TextEncoder();
 
   const stream = new ReadableStream({

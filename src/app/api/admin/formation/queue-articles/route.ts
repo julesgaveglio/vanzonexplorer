@@ -1,8 +1,12 @@
 import Groq from "groq-sdk";
 import { NextRequest } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/auth";
+import { NextResponse } from "next/server";
 
 export async function GET() {
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
   const supabase = createSupabaseAdmin();
   const { data, error } = await supabase
     .from("article_queue")
@@ -15,6 +19,8 @@ export async function GET() {
 }
 
 export async function PATCH(req: NextRequest) {
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
   const supabase = createSupabaseAdmin();
   const body = await req.json();
   const { articles } = body as {
@@ -51,6 +57,8 @@ export async function PATCH(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
   const supabase = createSupabaseAdmin();
   const { id } = await req.json() as { id: string };
 
@@ -107,6 +115,8 @@ function clusterToCategory(cluster: string): string {
 }
 
 export async function POST() {
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
   const encoder = new TextEncoder();
 
   const stream = new ReadableStream({

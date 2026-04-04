@@ -1,6 +1,10 @@
 import { createSupabaseAdmin } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/auth";
+import { NextResponse } from "next/server";
 
 export async function GET() {
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
   const supabase = createSupabaseAdmin();
 
   const [totalRes, vbaRes, pendingRes, publishedRes] = await Promise.all([

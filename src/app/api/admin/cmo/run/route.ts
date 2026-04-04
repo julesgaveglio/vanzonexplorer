@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
 import Groq from "groq-sdk";
+import { requireAdmin } from "@/lib/auth";
 
 function getCurrentSeason(): "haute" | "moyenne" | "basse" {
   const now = new Date();
@@ -57,6 +58,8 @@ async function generateReport(type: "weekly" | "monthly"): Promise<GeneratedRepo
 }
 
 export async function POST(req: NextRequest) {
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
   const body = await req.json() as {
     type: "weekly" | "monthly" | "adhoc";
     trigger?: boolean;

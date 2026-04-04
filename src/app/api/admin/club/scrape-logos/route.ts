@@ -1,6 +1,8 @@
 import { NextRequest } from "next/server";
 import { createClient as createSanityClient } from "@sanity/client";
 import { createClient } from "@supabase/supabase-js";
+import { requireAdmin } from "@/lib/auth";
+import { NextResponse } from "next/server";
 
 function getSanityClient() {
   return createSanityClient({
@@ -126,6 +128,8 @@ async function scrapeLogo(websiteUrl: string, brandName: string): Promise<string
 }
 
 export async function POST(req: NextRequest) {
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
   const body = await req.json().catch(() => ({}));
   const brandId: string | undefined = body.brandId; // optional: scrape one specific brand
 

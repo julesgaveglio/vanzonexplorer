@@ -1,10 +1,14 @@
 // import type is erased at compile time — safe even with the runtime guard below
 import type { FSWatcher } from 'fs';
+import { requireAdmin } from "@/lib/auth";
+import { NextResponse } from "next/server";
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
   // Guard local-only — before any effective fs import
   if (process.env.NODE_ENV !== 'development') {
     return new Response(null, { status: 404 });

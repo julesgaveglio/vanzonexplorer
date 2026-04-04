@@ -1,6 +1,8 @@
 import Groq from "groq-sdk";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
 import { dfsPostRaw, DFS_LOCATION_CODE, DFS_LANGUAGE_CODE } from "@/lib/dataforseo";
+import { requireAdmin } from "@/lib/auth";
+import { NextResponse } from "next/server";
 
 function sseEvent(data: Record<string, unknown>): string {
   return `data: ${JSON.stringify(data)}\n\n`;
@@ -23,6 +25,8 @@ interface DfsRawResponse {
 }
 
 export async function GET() {
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
   const supabase = createSupabaseAdmin();
   const { data, error } = await supabase
     .from("vba_competitors")
@@ -37,6 +41,8 @@ export async function GET() {
 }
 
 export async function POST() {
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
   const encoder = new TextEncoder();
 
   const stream = new ReadableStream({

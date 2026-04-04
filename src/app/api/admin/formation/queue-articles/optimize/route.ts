@@ -1,5 +1,7 @@
 import Groq from "groq-sdk";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/auth";
+import { NextResponse } from "next/server";
 
 function sseEvent(data: Record<string, unknown>): string {
   return `data: ${JSON.stringify(data)}\n\n`;
@@ -71,6 +73,8 @@ ${articleList}`;
 }
 
 export async function POST() {
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
   const encoder = new TextEncoder();
 
   const stream = new ReadableStream({

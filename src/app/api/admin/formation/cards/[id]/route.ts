@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { adminReadClient, adminWriteClient } from "@/lib/sanity/adminClient";
 import { groq } from "next-sanity";
 import { revalidatePath } from "next/cache";
+import { requireAdmin } from "@/lib/auth";
 
 function urlToAssetRef(url: string): string | null {
   try {
@@ -63,6 +64,8 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
   const { id } = await params;
   try {
     const formData = await req.formData();
@@ -92,6 +95,8 @@ export async function DELETE(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
   const { id } = await params;
   try {
     await adminWriteClient.delete(id);

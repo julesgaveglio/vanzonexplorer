@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { adminWriteClient } from "@/lib/sanity/adminClient";
 import { revalidatePath } from "next/cache";
+import { requireAdmin } from "@/lib/auth";
 
 export async function POST(req: NextRequest) {
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
   try {
     const { cards } = (await req.json()) as { cards: { id: string; sortOrder: number }[] };
     if (!Array.isArray(cards)) {

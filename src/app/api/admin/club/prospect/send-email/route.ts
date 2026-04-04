@@ -1,4 +1,6 @@
 import { NextRequest } from "next/server";
+import { requireAdmin } from "@/lib/auth";
+import { NextResponse } from "next/server";
 
 const SENDER_EMAIL = "jules@vanzonexplorer.com";
 const SENDER_NAME = "Jules - Vanzon Explorer"; // ASCII only in From header
@@ -106,6 +108,8 @@ function buildRawMessage({
 }
 
 export async function POST(req: NextRequest) {
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
   const { prospectId, to, cc, subject, body } = await req.json();
 
   if (!prospectId || !to || !subject || !body) {

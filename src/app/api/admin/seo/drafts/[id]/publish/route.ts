@@ -3,6 +3,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
 import { adminWriteClient } from "@/lib/sanity/adminClient";
+import { requireAdmin } from "@/lib/auth";
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -206,6 +207,8 @@ function inferCategory(targetUrl?: string): string {
 // ── Route POST ────────────────────────────────────────────────────────────────
 
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
   const supabase = createSupabaseAdmin();
 
   // 1. Récupérer le brouillon

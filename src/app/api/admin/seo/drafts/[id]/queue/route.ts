@@ -2,6 +2,7 @@
 // Valide un brouillon → l'insère dans article_queue + met à jour son statut
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/auth";
 
 function slugify(text: string): string {
   return text
@@ -20,6 +21,8 @@ function stripHtml(html: string): string {
 }
 
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
   const supabase = createSupabaseAdmin();
 
   // 1. Récupérer le brouillon

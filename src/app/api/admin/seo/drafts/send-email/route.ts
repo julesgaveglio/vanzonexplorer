@@ -3,6 +3,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
 import { getGmailAccessToken } from "@/lib/gmail";
+import { requireAdmin } from "@/lib/auth";
 
 const GMAIL_API = "https://gmail.googleapis.com/gmail/v1";
 
@@ -108,6 +109,8 @@ function buildEmailHtml(
 
 // ── Handler ───────────────────────────────────────────────────────────────────
 export async function POST(req: NextRequest) {
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
   const { ids, to } = await req.json() as { ids: string[]; to: string };
 
   if (!ids?.length || !to) {

@@ -2,6 +2,8 @@ import { NextRequest } from "next/server";
 import Groq from "groq-sdk";
 import { createClient as createSanityClient } from "@sanity/client";
 import { createClient } from "@supabase/supabase-js";
+import { requireAdmin } from "@/lib/auth";
+import { NextResponse } from "next/server";
 
 // ── UTILS ──────────────────────────────────────────────────────────────────────
 
@@ -460,6 +462,8 @@ Règles :
 // ── MAIN HANDLER ──────────────────────────────────────────────────────────────
 
 export async function POST(req: NextRequest) {
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
   const body = await req.json();
   const emailText: string = body.emailText || "";
 
