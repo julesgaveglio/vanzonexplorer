@@ -103,6 +103,11 @@ export default function BacklinksClient({ initialData }: { initialData: InitialD
   const [discoveryLog, setDiscoveryLog] = useState<string[]>([]);
   const logRef = useRef<HTMLDivElement>(null);
 
+  // Add prospect modal
+  const [addModal, setAddModal] = useState(false);
+  const [addForm, setAddForm] = useState({ domain: "", url: "", type: "annuaire" as ProspectType, score: 7, notes: "" });
+  const [adding, setAdding] = useState(false);
+
   // Outreach modal
   const [outreachModal, setOutreachModal] = useState<{
     prospect: Prospect;
@@ -118,6 +123,28 @@ export default function BacklinksClient({ initialData }: { initialData: InitialD
 
   // Drag & drop
   const [dragging, setDragging] = useState<string | null>(null);
+
+  // ── Add prospect ──────────────────────────────────────────────────────────
+
+  async function addProspect() {
+    if (!addForm.domain || !addForm.url) return;
+    setAdding(true);
+    try {
+      const resp = await fetch("/api/admin/backlinks/prospects", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(addForm),
+      });
+      const data = await resp.json();
+      if (data.success && data.prospect) {
+        setProspects((prev) => [data.prospect, ...prev]);
+        setAddModal(false);
+        setAddForm({ domain: "", url: "", type: "annuaire", score: 7, notes: "" });
+      }
+    } finally {
+      setAdding(false);
+    }
+  }
 
   // ── Discovery ──────────────────────────────────────────────────────────────
 
@@ -308,6 +335,10 @@ export default function BacklinksClient({ initialData }: { initialData: InitialD
               {stats.pendingApproval} en attente
             </span>
           )}
+          <button onClick={() => setAddModal(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-xl transition-colors">
+            + Ajouter
+          </button>
           <button onClick={launchDiscovery} disabled={discovering}
             className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white text-sm font-semibold rounded-xl transition-colors">
             {discovering ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
@@ -441,6 +472,63 @@ export default function BacklinksClient({ initialData }: { initialData: InitialD
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {/* ── ADD PROSPECT MODAL ──────────────────────────────────────────────── */}
+      {addModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+              <h2 className="font-bold text-slate-900">Ajouter un prospect</h2>
+              <button onClick={() => setAddModal(false)} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-500">
+                <XCircle className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wide">Domaine</label>
+                <input type="text" value={addForm.domain} onChange={(e) => setAddForm((f) => ({ ...f, domain: e.target.value }))}
+                  placeholder="exemple.fr" className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-blue-400" />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wide">URL cible</label>
+                <input type="text" value={addForm.url} onChange={(e) => setAddForm((f) => ({ ...f, url: e.target.value }))}
+                  placeholder="https://exemple.fr/page" className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-blue-400" />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wide">Type</label>
+                  <select value={addForm.type} onChange={(e) => setAddForm((f) => ({ ...f, type: e.target.value as ProspectType }))}
+                    className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-blue-400">
+                    <option value="annuaire">Annuaire</option>
+                    <option value="blog">Blog</option>
+                    <option value="partenaire">Partenaire</option>
+                    <option value="media">Média</option>
+                    <option value="forum">Forum</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wide">Score /10</label>
+                  <input type="number" min={1} max={10} value={addForm.score} onChange={(e) => setAddForm((f) => ({ ...f, score: Number(e.target.value) }))}
+                    className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-blue-400" />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wide">Notes</label>
+                <textarea value={addForm.notes} onChange={(e) => setAddForm((f) => ({ ...f, notes: e.target.value }))}
+                  rows={2} placeholder="OT local, lien institutionnel..."
+                  className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-blue-400 resize-none" />
+              </div>
+            </div>
+            <div className="px-6 py-4 border-t border-slate-100 bg-slate-50 flex justify-end">
+              <button onClick={addProspect} disabled={adding || !addForm.domain || !addForm.url}
+                className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white text-sm font-semibold rounded-xl transition-colors">
+                {adding ? <Loader2 className="w-4 h-4 animate-spin" /> : <Link2 className="w-4 h-4" />}
+                {adding ? "Ajout…" : "Ajouter"}
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
