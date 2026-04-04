@@ -16,7 +16,7 @@ import {
 import type { InteretValue } from '@/lib/road-trip/constants'
 import { RoadTripTerminal, type TerminalLine } from './RoadTripTerminal'
 
-// ── Zod schema (mirrors API route exactly) ────────────────────────────────────
+// ── Zod schema ──────────────────────────────────────────────────────────────────
 const InteretEnum = z.enum(
   INTERETS_OPTIONS.map((o) => o.value) as [string, ...string[]]
 )
@@ -28,7 +28,7 @@ const schema = z.object({
   duree: z.number().int().min(1).max(14),
   interets: z
     .array(InteretEnum)
-    .min(1, { message: 'Choisis au moins un intérêt' })
+    .min(1, { message: 'Choisissez au moins un intérêt' })
     .max(7),
   style_voyage: z.enum(['lent', 'explorer', 'aventure']),
   periode: z.enum(MOIS_OPTIONS),
@@ -39,38 +39,33 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>
 
-// ── Step field mapping ────────────────────────────────────────────────────────
 const STEP_FIELDS: Record<number, (keyof FormData)[]> = {
   1: ['prenom', 'email', 'region', 'duree'],
   2: ['interets', 'style_voyage', 'periode'],
   3: ['profil_voyageur', 'budget', 'experience_van'],
 }
 
-// ── Animation variants ────────────────────────────────────────────────────────
 const variants = {
   enter: { x: 50, opacity: 0 },
   center: { x: 0, opacity: 1 },
   exit: { x: -50, opacity: 0 },
 }
 
-// ── Shared input class ────────────────────────────────────────────────────────
 const inputClass =
-  'bg-white/75 border border-teal-200 focus:ring-teal-300 focus:border-teal-400 rounded-xl px-4 py-3 w-full focus:outline-none focus:ring-2 transition-colors placeholder:text-[#5a9090] text-[#0f3535] text-sm'
+  'bg-white border border-slate-200 focus:ring-blue-200 focus:border-blue-400 rounded-xl px-4 py-3 w-full focus:outline-none focus:ring-2 transition-colors placeholder:text-slate-400 text-slate-900 text-sm'
 
-const labelClass = 'text-sm font-semibold text-[#0f3535]'
+const labelClass = 'text-sm font-semibold text-slate-900'
 const errorClass = 'text-rose-500 text-sm mt-1'
 
-// ── Radio card classes ────────────────────────────────────────────────────────
 function radioCardClass(selected: boolean) {
   return [
     'cursor-pointer border rounded-xl p-4 transition-all duration-200 text-left',
     selected
-      ? 'border-[#72b9bb] bg-[#72b9bb]/[0.12] shadow-sm'
-      : 'border-white/60 bg-white/50 hover:bg-white/70 hover:border-[#72b9bb]/60',
+      ? 'border-blue-400 bg-blue-50 shadow-sm'
+      : 'border-slate-200 bg-white hover:bg-slate-50 hover:border-blue-300',
   ].join(' ')
 }
 
-// ── Mois label helper ─────────────────────────────────────────────────────────
 const MOIS_LABELS: Record<string, string> = {
   janvier: 'Janvier',
   fevrier: 'Février',
@@ -86,7 +81,6 @@ const MOIS_LABELS: Record<string, string> = {
   decembre: 'Décembre',
 }
 
-// ── Component ─────────────────────────────────────────────────────────────────
 export default function RoadTripWizard() {
   const [step, setStep] = useState(1)
   const [status, setStatus] = useState<'idle' | 'streaming' | 'success' | 'error'>('idle')
@@ -116,7 +110,6 @@ export default function RoadTripWizard() {
     },
   })
 
-  // ── Navigation ─────────────────────────────────────────────────────────────
   const handleNext = async () => {
     const valid = await trigger(STEP_FIELDS[step] as (keyof FormData)[])
     if (valid) setStep((s) => s + 1)
@@ -124,7 +117,6 @@ export default function RoadTripWizard() {
 
   const handleBack = () => setStep((s) => s - 1)
 
-  // ── Interets toggle ────────────────────────────────────────────────────────
   const toggleInteret = (value: InteretValue) => {
     const current = watch('interets') as InteretValue[]
     const exists = current.includes(value)
@@ -134,7 +126,6 @@ export default function RoadTripWizard() {
     )
   }
 
-  // ── Submit (streaming) ─────────────────────────────────────────────────────
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     setStatus('streaming')
     setTerminalLines([])
@@ -157,10 +148,9 @@ export default function RoadTripWizard() {
         body: JSON.stringify(data),
       })
 
-      // Non-2xx → pre-flight error (returned as JSON)
       if (!res.ok) {
         const json = await res.json().catch(() => ({})) as { error?: string }
-        setErrorMessage(json.error ?? 'Une erreur est survenue, réessaie dans quelques instants.')
+        setErrorMessage(json.error ?? 'Une erreur est survenue, réessayez dans quelques instants.')
         setStatus('error')
         return
       }
@@ -201,7 +191,7 @@ export default function RoadTripWizard() {
                 return
               } else if (event.type === 'error') {
                 receivedTerminalEvent = true
-                setErrorMessage(event.message ?? 'Erreur interne, réessaie dans quelques instants.')
+                setErrorMessage(event.message ?? 'Erreur interne, réessayez dans quelques instants.')
                 setStatus('error')
                 return
               }
@@ -212,35 +202,33 @@ export default function RoadTripWizard() {
         }
       }
 
-      // Stream closed without a terminal event (timeout, disconnection, etc.)
       if (!receivedTerminalEvent) {
         setErrorMessage(
-          'La connexion a été interrompue. Vérifie ta boîte mail — ton road trip est peut-être arrivé !'
+          'La connexion a été interrompue. Vérifiez votre boîte mail — votre road trip est peut-être arrivé !'
         )
         setStatus('error')
       }
     } catch {
-      setErrorMessage('Une erreur réseau est survenue. Vérifie ta connexion et réessaie.')
+      setErrorMessage('Une erreur réseau est survenue. Vérifiez votre connexion et réessayez.')
       setStatus('error')
     }
   }
 
-  // ── Progress bar ───────────────────────────────────────────────────────────
   const progressPercent = (step / 4) * 100
 
-  // ── Streaming / terminal state ─────────────────────────────────────────────
+  // ── Streaming state ──────────────────────────────────────────────────────────
   if (status === 'streaming') {
     return (
       <div className="py-2">
-        <p className="text-sm text-center mb-5 font-medium" style={{ color: '#5a9090' }}>
-          On construit ton road trip sur mesure… 🚐
+        <p className="text-sm text-center mb-5 font-medium text-slate-500">
+          Construction de votre road trip sur mesure...
         </p>
         <RoadTripTerminal lines={terminalLines} />
       </div>
     )
   }
 
-  // ── Success state ──────────────────────────────────────────────────────────
+  // ── Success state ────────────────────────────────────────────────────────────
   if (status === 'success') {
     return (
       <motion.div
@@ -249,22 +237,19 @@ export default function RoadTripWizard() {
         transition={{ type: 'spring', duration: 0.5 }}
         className="p-8 flex flex-col items-center justify-center gap-6 min-h-[320px] text-center"
       >
-        <div className="w-20 h-20 rounded-full flex items-center justify-center text-4xl" style={{ background: 'rgba(114,185,187,0.15)' }}>
+        <div className="w-20 h-20 rounded-full bg-blue-50 flex items-center justify-center text-4xl">
           🚐
         </div>
         <div>
-          <h3 className="text-2xl font-bold mb-2" style={{ color: '#0f3535' }}>
+          <h3 className="text-2xl font-bold text-slate-900 mb-2">
             C&apos;est parti !
           </h3>
-          <p className="max-w-sm mx-auto" style={{ color: '#2d6b6b' }}>
-            Ton road trip arrive dans ta boîte mail !<br />
-            Vérifie aussi tes spams si besoin.
+          <p className="text-slate-500 max-w-sm mx-auto">
+            Votre road trip arrive dans votre boîte mail !<br />
+            Vérifiez aussi vos spams si besoin.
           </p>
         </div>
-        <div
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border"
-          style={{ background: 'rgba(114,185,187,0.15)', color: '#1a5c5c', borderColor: 'rgba(114,185,187,0.30)' }}
-        >
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-green-50 text-green-700 border border-green-200">
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
           </svg>
@@ -274,7 +259,7 @@ export default function RoadTripWizard() {
     )
   }
 
-  // ── Main form ──────────────────────────────────────────────────────────────
+  // ── Main form ────────────────────────────────────────────────────────────────
   const values = watch()
   const selectedInterets = watch('interets') as InteretValue[]
   const selectedStyle = watch('style_voyage')
@@ -287,17 +272,16 @@ export default function RoadTripWizard() {
       {/* Progress bar */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium" style={{ color: '#5a9090' }}>
+          <span className="text-sm font-medium text-slate-500">
             Étape {step} sur 4
           </span>
-          <span className="text-sm font-medium" style={{ color: '#2a8080' }}>
+          <span className="text-sm font-medium text-accent-blue">
             {Math.round(progressPercent)}%
           </span>
         </div>
-        <div className="h-2 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.40)' }}>
+        <div className="h-2 rounded-full overflow-hidden bg-slate-100">
           <motion.div
-            className="h-full rounded-full"
-            style={{ background: 'linear-gradient(90deg, #72b9bb 0%, #8cc5b8 100%)' }}
+            className="h-full rounded-full bg-gradient-to-r from-blue-500 to-cyan-500"
             initial={false}
             animate={{ width: `${progressPercent}%` }}
             transition={{ duration: 0.4, ease: 'easeOut' }}
@@ -308,7 +292,7 @@ export default function RoadTripWizard() {
       {/* Steps */}
       <form onSubmit={handleSubmit(onSubmit)}>
         <AnimatePresence mode="wait">
-          {/* ── Step 1: Ton van trip ── */}
+          {/* ── Step 1 ── */}
           {step === 1 && (
             <motion.div
               key={1}
@@ -318,13 +302,13 @@ export default function RoadTripWizard() {
               exit="exit"
               transition={{ duration: 0.3, ease: 'easeInOut' }}
             >
-              <h2 className="text-xl font-bold mb-6" style={{ color: '#0f3535' }}>
-                Ton van trip 🗺️
+              <h2 className="text-xl font-bold text-slate-900 mb-6">
+                Votre van trip
               </h2>
 
               <div className="space-y-5">
                 <div>
-                  <label htmlFor="field-prenom" className={labelClass}>Ton prénom</label>
+                  <label htmlFor="field-prenom" className={labelClass}>Votre prénom</label>
                   <input
                     {...register('prenom')}
                     id="field-prenom"
@@ -332,13 +316,11 @@ export default function RoadTripWizard() {
                     placeholder="Ex : Marie"
                     className={`${inputClass} mt-1.5`}
                   />
-                  {errors.prenom && (
-                    <p className={errorClass}>{errors.prenom.message}</p>
-                  )}
+                  {errors.prenom && <p className={errorClass}>{errors.prenom.message}</p>}
                 </div>
 
                 <div>
-                  <label htmlFor="field-email" className={labelClass}>Ton email</label>
+                  <label htmlFor="field-email" className={labelClass}>Votre email</label>
                   <input
                     {...register('email')}
                     id="field-email"
@@ -346,25 +328,19 @@ export default function RoadTripWizard() {
                     placeholder="marie@example.com"
                     className={`${inputClass} mt-1.5`}
                   />
-                  {errors.email && (
-                    <p className={errorClass}>{errors.email.message}</p>
-                  )}
+                  {errors.email && <p className={errorClass}>{errors.email.message}</p>}
                 </div>
 
                 <div>
-                  <label htmlFor="field-region" className={labelClass}>
-                    Région souhaitée
-                  </label>
+                  <label htmlFor="field-region" className={labelClass}>Région souhaitée</label>
                   <input
                     {...register('region')}
                     id="field-region"
                     type="text"
-                    placeholder="Ex : Pays Basque, Bretagne, Provence…"
+                    placeholder="Ex : Pays Basque, Bretagne, Provence..."
                     className={`${inputClass} mt-1.5`}
                   />
-                  {errors.region && (
-                    <p className={errorClass}>{errors.region.message}</p>
-                  )}
+                  {errors.region && <p className={errorClass}>{errors.region.message}</p>}
                 </div>
 
                 <div>
@@ -376,15 +352,13 @@ export default function RoadTripWizard() {
                       </option>
                     ))}
                   </select>
-                  {errors.duree && (
-                    <p className={errorClass}>{errors.duree.message}</p>
-                  )}
+                  {errors.duree && <p className={errorClass}>{errors.duree.message}</p>}
                 </div>
               </div>
             </motion.div>
           )}
 
-          {/* ── Step 2: Tes envies ── */}
+          {/* ── Step 2 ── */}
           {step === 2 && (
             <motion.div
               key={2}
@@ -394,16 +368,15 @@ export default function RoadTripWizard() {
               exit="exit"
               transition={{ duration: 0.3, ease: 'easeInOut' }}
             >
-              <h2 className="text-xl font-bold mb-6" style={{ color: '#0f3535' }}>
-                Tes envies ✨
+              <h2 className="text-xl font-bold text-slate-900 mb-6">
+                Vos envies
               </h2>
 
               <div className="space-y-6">
-                {/* Interets */}
                 <div>
                   <label className={labelClass}>
-                    Tes centres d&apos;intérêt{' '}
-                    <span className="font-normal" style={{ color: '#5a9090' }}>(plusieurs choix possibles)</span>
+                    Vos centres d&apos;intérêt{' '}
+                    <span className="font-normal text-slate-400">(plusieurs choix possibles)</span>
                   </label>
                   <div className="grid grid-cols-2 gap-2 mt-2">
                     {INTERETS_OPTIONS.map((opt) => {
@@ -417,8 +390,8 @@ export default function RoadTripWizard() {
                           className={[
                             'px-3 py-2.5 rounded-lg border text-sm font-medium transition-all duration-200 text-left',
                             selected
-                              ? 'border-[#72b9bb] bg-[#72b9bb]/[0.12] text-[#1a5c5c]'
-                              : 'border-white/60 bg-white/50 text-[#2d6b6b] hover:bg-white/70',
+                              ? 'border-blue-400 bg-blue-50 text-blue-700'
+                              : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50',
                           ].join(' ')}
                         >
                           {opt.label}
@@ -426,12 +399,9 @@ export default function RoadTripWizard() {
                       )
                     })}
                   </div>
-                  {errors.interets && (
-                    <p className={errorClass}>{errors.interets.message}</p>
-                  )}
+                  {errors.interets && <p className={errorClass}>{errors.interets.message}</p>}
                 </div>
 
-                {/* Style voyage */}
                 <div>
                   <label className={labelClass}>Style de voyage</label>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-2">
@@ -443,40 +413,30 @@ export default function RoadTripWizard() {
                         onClick={() => setValue('style_voyage', opt.value)}
                         className={radioCardClass(selectedStyle === opt.value)}
                       >
-                        <p className="font-semibold text-sm" style={{ color: '#0f3535' }}>
-                          {opt.label}
-                        </p>
-                        <p className="text-xs mt-0.5" style={{ color: '#5a9090' }}>{opt.desc}</p>
+                        <p className="font-semibold text-sm text-slate-900">{opt.label}</p>
+                        <p className="text-xs mt-0.5 text-slate-400">{opt.desc}</p>
                       </button>
                     ))}
                   </div>
-                  {errors.style_voyage && (
-                    <p className={errorClass}>{errors.style_voyage.message}</p>
-                  )}
+                  {errors.style_voyage && <p className={errorClass}>{errors.style_voyage.message}</p>}
                 </div>
 
-                {/* Periode */}
                 <div>
                   <label className={labelClass}>Période de voyage</label>
-                  <select
-                    {...register('periode')}
-                    className={`${inputClass} mt-1.5`}
-                  >
+                  <select {...register('periode')} className={`${inputClass} mt-1.5`}>
                     {MOIS_OPTIONS.map((mois) => (
                       <option key={mois} value={mois}>
                         {MOIS_LABELS[mois] ?? mois}
                       </option>
                     ))}
                   </select>
-                  {errors.periode && (
-                    <p className={errorClass}>{errors.periode.message}</p>
-                  )}
+                  {errors.periode && <p className={errorClass}>{errors.periode.message}</p>}
                 </div>
               </div>
             </motion.div>
           )}
 
-          {/* ── Step 3: Ton profil ── */}
+          {/* ── Step 3 ── */}
           {step === 3 && (
             <motion.div
               key={3}
@@ -486,14 +446,13 @@ export default function RoadTripWizard() {
               exit="exit"
               transition={{ duration: 0.3, ease: 'easeInOut' }}
             >
-              <h2 className="text-xl font-bold mb-6" style={{ color: '#0f3535' }}>
-                Ton profil 👤
+              <h2 className="text-xl font-bold text-slate-900 mb-6">
+                Votre profil
               </h2>
 
               <div className="space-y-6">
-                {/* Profil voyageur */}
                 <div>
-                  <label className={labelClass}>Tu voyages…</label>
+                  <label className={labelClass}>Vous voyagez...</label>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-2">
                     {PROFIL_VOYAGEUR_OPTIONS.map((opt) => (
                       <button
@@ -507,18 +466,13 @@ export default function RoadTripWizard() {
                         ].join(' ')}
                       >
                         <span className="text-2xl">{opt.emoji}</span>
-                        <span className="text-sm font-semibold" style={{ color: '#0f3535' }}>
-                          {opt.label}
-                        </span>
+                        <span className="text-sm font-semibold text-slate-900">{opt.label}</span>
                       </button>
                     ))}
                   </div>
-                  {errors.profil_voyageur && (
-                    <p className={errorClass}>{errors.profil_voyageur.message}</p>
-                  )}
+                  {errors.profil_voyageur && <p className={errorClass}>{errors.profil_voyageur.message}</p>}
                 </div>
 
-                {/* Budget */}
                 <div>
                   <label className={labelClass}>Budget hébergement</label>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-2">
@@ -530,19 +484,14 @@ export default function RoadTripWizard() {
                         onClick={() => setValue('budget', opt.value)}
                         className={radioCardClass(selectedBudget === opt.value)}
                       >
-                        <p className="font-semibold text-sm" style={{ color: '#0f3535' }}>
-                          {opt.label}
-                        </p>
-                        <p className="text-xs mt-0.5" style={{ color: '#5a9090' }}>{opt.desc}</p>
+                        <p className="font-semibold text-sm text-slate-900">{opt.label}</p>
+                        <p className="text-xs mt-0.5 text-slate-400">{opt.desc}</p>
                       </button>
                     ))}
                   </div>
-                  {errors.budget && (
-                    <p className={errorClass}>{errors.budget.message}</p>
-                  )}
+                  {errors.budget && <p className={errorClass}>{errors.budget.message}</p>}
                 </div>
 
-                {/* Experience van */}
                 <div>
                   <label className={labelClass}>Expérience en van</label>
                   <div className="flex gap-3 mt-2">
@@ -553,11 +502,11 @@ export default function RoadTripWizard() {
                       className={[
                         'flex-1 py-3 rounded-xl border text-sm font-medium transition-all duration-200',
                         !selectedExperience
-                          ? 'border-[#72b9bb] bg-[#72b9bb]/[0.12] text-[#1a5c5c]'
-                          : 'border-white/60 bg-white/50 text-[#2d6b6b] hover:bg-white/70',
+                          ? 'border-blue-400 bg-blue-50 text-blue-700'
+                          : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50',
                       ].join(' ')}
                     >
-                      🌱 Première fois
+                      Première fois
                     </button>
                     <button
                       type="button"
@@ -566,11 +515,11 @@ export default function RoadTripWizard() {
                       className={[
                         'flex-1 py-3 rounded-xl border text-sm font-medium transition-all duration-200',
                         selectedExperience
-                          ? 'border-[#72b9bb] bg-[#72b9bb]/[0.12] text-[#1a5c5c]'
-                          : 'border-white/60 bg-white/50 text-[#2d6b6b] hover:bg-white/70',
+                          ? 'border-blue-400 bg-blue-50 text-blue-700'
+                          : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50',
                       ].join(' ')}
                     >
-                      🚐 Habitué(e)
+                      Habitué(e)
                     </button>
                   </div>
                 </div>
@@ -588,14 +537,13 @@ export default function RoadTripWizard() {
               exit="exit"
               transition={{ duration: 0.3, ease: 'easeInOut' }}
             >
-              <h2 className="text-xl font-bold mb-2" style={{ color: '#0f3535' }}>
-                Confirmation 🎯
+              <h2 className="text-xl font-bold text-slate-900 mb-2">
+                Confirmation
               </h2>
-              <p className="text-sm mb-6" style={{ color: '#5a9090' }}>
-                Vérifie tes informations avant de générer ton road trip.
+              <p className="text-sm text-slate-500 mb-6">
+                Vérifiez vos informations avant de générer votre road trip.
               </p>
 
-              {/* Recap grid */}
               <div className="grid grid-cols-2 gap-3 mb-6">
                 <RecapCard label="Prénom" value={values.prenom} />
                 <RecapCard label="Email" value={values.email} truncate />
@@ -632,20 +580,15 @@ export default function RoadTripWizard() {
                   label="Expérience"
                   value={values.experience_van ? 'Habitué(e)' : 'Première fois'}
                 />
-                <div className="col-span-2 rounded-xl p-3" style={{ background: 'rgba(255,255,255,0.50)', border: '1px solid rgba(255,255,255,0.60)' }}>
-                  <p className="text-xs mb-1.5 font-medium uppercase tracking-wide" style={{ color: '#5a9090' }}>
+                <div className="col-span-2 rounded-xl p-3 bg-slate-50 border border-slate-200">
+                  <p className="text-xs mb-1.5 font-medium uppercase tracking-wide text-slate-400">
                     Intérêts
                   </p>
                   <div className="flex flex-wrap gap-1.5">
                     {(watch('interets') as InteretValue[]).map((v) => (
                       <span
                         key={v}
-                        className="px-2.5 py-1 rounded-full text-xs font-medium border"
-                        style={{
-                          background: 'rgba(114,185,187,0.12)',
-                          color: '#1a5c5c',
-                          borderColor: 'rgba(114,185,187,0.25)',
-                        }}
+                        className="px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200"
                       >
                         {INTERETS_OPTIONS.find((o) => o.value === v)?.label ?? v}
                       </span>
@@ -654,9 +597,8 @@ export default function RoadTripWizard() {
                 </div>
               </div>
 
-              {/* Error message (from streaming failure) */}
               {status === 'error' && (
-                <div className="mb-4 p-4 rounded-xl text-red-600 text-sm flex flex-col gap-3" style={{ background: 'rgba(254,242,242,0.70)', border: '1px solid rgba(254,202,202,0.60)' }}>
+                <div className="mb-4 p-4 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm flex flex-col gap-3">
                   <p>{errorMessage}</p>
                   <button
                     type="button"
@@ -668,40 +610,36 @@ export default function RoadTripWizard() {
                 </div>
               )}
 
-              {/* Submit button */}
               {status !== 'error' && (
                 <button
                   type="submit"
-                  className="w-full text-base py-3.5 rounded-xl font-semibold text-white transition-all hover:opacity-90"
-                  style={{ background: '#2a8080' }}
+                  className="btn-primary w-full text-base py-3.5 rounded-xl font-semibold text-white"
                 >
-                  Générer mon road trip 🚐
+                  Générer mon road trip
                 </button>
               )}
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Navigation buttons */}
+        {/* Navigation */}
         {step < 4 && (
           <div className="flex gap-3 mt-8">
             {step > 1 && (
               <button
                 type="button"
                 onClick={handleBack}
-                className="flex-1 py-3 rounded-xl border text-sm font-medium transition-colors"
-                style={{ background: 'rgba(255,255,255,0.55)', borderColor: 'rgba(255,255,255,0.70)', color: '#2d6b6b' }}
+                className="flex-1 py-3 rounded-xl border border-slate-200 bg-white text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50"
               >
-                ← Retour
+                Retour
               </button>
             )}
             <button
               type="button"
               onClick={handleNext}
-              className="flex-1 py-3 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90"
-              style={{ background: '#2a8080' }}
+              className="btn-primary flex-1 py-3 rounded-xl text-sm font-semibold text-white"
             >
-              Suivant →
+              Suivant
             </button>
           </div>
         )}
@@ -709,10 +647,9 @@ export default function RoadTripWizard() {
           <button
             type="button"
             onClick={handleBack}
-            className="w-full mt-3 py-3 rounded-xl border text-sm font-medium transition-colors"
-            style={{ background: 'rgba(255,255,255,0.55)', borderColor: 'rgba(255,255,255,0.70)', color: '#2d6b6b' }}
+            className="w-full mt-3 py-3 rounded-xl border border-slate-200 bg-white text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50"
           >
-            ← Modifier
+            Modifier
           </button>
         )}
       </form>
@@ -720,7 +657,6 @@ export default function RoadTripWizard() {
   )
 }
 
-// ── RecapCard subcomponent ────────────────────────────────────────────────────
 function RecapCard({
   label,
   value,
@@ -731,17 +667,11 @@ function RecapCard({
   truncate?: boolean
 }) {
   return (
-    <div className="rounded-xl p-3" style={{ background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(114,185,187,0.30)' }}>
-      <p className="text-xs font-medium uppercase tracking-wide mb-0.5" style={{ color: '#5a9090' }}>
+    <div className="rounded-xl p-3 bg-slate-50 border border-slate-200">
+      <p className="text-xs font-medium uppercase tracking-wide text-slate-400 mb-0.5">
         {label}
       </p>
-      <p
-        className={[
-          'text-sm font-semibold',
-          truncate ? 'truncate' : '',
-        ].join(' ')}
-        style={{ color: '#0f3535' }}
-      >
+      <p className={`text-sm font-semibold text-slate-900 ${truncate ? 'truncate' : ''}`}>
         {value}
       </p>
     </div>
