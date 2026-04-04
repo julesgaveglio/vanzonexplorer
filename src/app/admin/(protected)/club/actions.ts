@@ -2,6 +2,7 @@
 
 import { createSupabaseAdmin } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { slugify } from "@/lib/slugify";
 
 // ── MARQUES ──────────────────────────────────────────────────────
 
@@ -217,15 +218,4 @@ export async function getCategoriesAdmin() {
   const { data, error } = await sb.from("categories").select("*").order("sort_order");
   if (error) throw error;
   return data;
-}
-
-// ── UTILS ─────────────────────────────────────────────────────────
-
-function slugify(str: string) {
-  return str
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
 }

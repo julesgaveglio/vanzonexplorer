@@ -16,6 +16,7 @@ import ArticleFAQ from "./_components/ArticleFAQ";
 import ArticleCategorySync from "./_components/ArticleCategorySync";
 import ShareButton from "./_components/ShareButton";
 import RoadTripCTA from "@/components/ui/RoadTripCTA";
+import { slugify } from "@/lib/slugify";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -52,20 +53,6 @@ type PortableBlock = {
 };
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
-
-function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/[àâä]/g, "a")
-    .replace(/[éèêë]/g, "e")
-    .replace(/[îï]/g, "i")
-    .replace(/[ôö]/g, "o")
-    .replace(/[ùûü]/g, "u")
-    .replace(/ç/g, "c")
-    .replace(/ñ/g, "n")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
-}
 
 function getBlockText(block: PortableBlock): string {
   return block.children?.map((c) => c.text ?? "").join("") ?? "";

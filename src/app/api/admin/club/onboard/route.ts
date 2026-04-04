@@ -5,20 +5,7 @@ import { createClient } from "@supabase/supabase-js";
 import { requireAdmin } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import { createSSEResponse } from "@/lib/sse";
-
-// ── UTILS ──────────────────────────────────────────────────────────────────────
-
-function slugify(s: string): string {
-  return s
-    .toLowerCase()
-    .replace(/[éèêë]/g, "e")
-    .replace(/[àâä]/g, "a")
-    .replace(/[ùûü]/g, "u")
-    .replace(/[ôö]/g, "o")
-    .replace(/[îï]/g, "i")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
-}
+import { slugify } from "@/lib/slugify";
 
 // ── TYPES ──────────────────────────────────────────────────────────────────────
 

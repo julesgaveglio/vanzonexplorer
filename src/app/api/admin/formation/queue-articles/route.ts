@@ -4,6 +4,7 @@ import { createSupabaseAdmin } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import { createSSEResponse } from "@/lib/sse";
+import { slugify } from "@/lib/slugify";
 
 export async function GET() {
   const check = await requireAdmin();
@@ -68,18 +69,6 @@ export async function DELETE(req: NextRequest) {
   const { error } = await supabase.from("article_queue").delete().eq("id", id);
   if (error) return Response.json({ error: error.message }, { status: 500 });
   return Response.json({ deleted: true });
-}
-
-function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9\s-]/g, "")
-    .trim()
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-")
-    .substring(0, 80);
 }
 
 interface VbaKeyword {

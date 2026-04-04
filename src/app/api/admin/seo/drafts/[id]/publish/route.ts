@@ -4,22 +4,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
 import { adminWriteClient } from "@/lib/sanity/adminClient";
 import { requireAdmin } from "@/lib/auth";
+import { slugify } from "@/lib/slugify";
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
 function randomKey(): string {
   return Math.random().toString(36).slice(2, 10);
-}
-
-function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9\s-]/g, "")
-    .trim()
-    .replace(/\s+/g, "-")
-    .slice(0, 96);
 }
 
 function readingTime(html: string): string {

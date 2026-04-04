@@ -3,19 +3,10 @@ import path from "path";
 import { requireAdmin } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import { createSSEResponse } from "@/lib/sse";
+import { slugify } from "@/lib/slugify";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-function slugify(str: string): string {
-  return str
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "")
-    .slice(0, 80);
-}
 
 const BLOCKED_DOMAINS = ["google.com", "pinterest.com", "amazon.fr", "youtube.com"];
 
