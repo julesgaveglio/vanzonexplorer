@@ -1,17 +1,11 @@
 // src/app/api/admin/facebook-outreach/schedule/route.ts
 import { NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
-import { auth, currentUser } from "@clerk/nextjs/server";
-
-async function guard() {
-  const { userId } = await auth();
-  if (!userId) return false;
-  const user = await currentUser();
-  return user?.emailAddresses?.[0]?.emailAddress === "gavegliojules@gmail.com";
-}
+import { requireAdmin } from "@/lib/auth";
 
 export async function GET() {
-  if (!(await guard())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
   const supabase = createSupabaseAdmin();
   const { data, error } = await supabase
     .from("facebook_outreach_schedule")

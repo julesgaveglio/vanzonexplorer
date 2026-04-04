@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs/server";
+import { requireAdmin } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
 export const revalidate = 3600;
@@ -6,8 +6,8 @@ export const revalidate = 3600;
 const VANZON_URL = "https://vanzonexplorer.com/vanzon";
 
 export async function GET() {
-  const { userId } = await auth();
-  if (!userId) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
 
   const apiKey = process.env.GOOGLE_PSI_API_KEY ?? process.env.GOOGLE_PLACES_API_KEY;
   if (!apiKey) return NextResponse.json({ error: "GOOGLE_PSI_API_KEY non configuré" }, { status: 500 });

@@ -1,19 +1,11 @@
 // src/app/api/admin/facebook-outreach/groups/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
-import { auth, currentUser } from "@clerk/nextjs/server";
-
-const ALLOWED = "gavegliojules@gmail.com";
-
-async function guard() {
-  const { userId } = await auth();
-  if (!userId) return false;
-  const user = await currentUser();
-  return user?.emailAddresses?.[0]?.emailAddress === ALLOWED;
-}
+import { requireAdmin } from "@/lib/auth";
 
 export async function GET() {
-  if (!(await guard())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
   const supabase = createSupabaseAdmin();
   const { data, error } = await supabase
     .from("facebook_groups")
@@ -24,7 +16,8 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  if (!(await guard())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
   const body = await req.json() as {
     group_name: string;
     group_url: string;
@@ -39,7 +32,8 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
-  if (!(await guard())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
   const { id, ...updates } = await req.json() as { id: string; [k: string]: unknown };
   const supabase = createSupabaseAdmin();
   const { data, error } = await supabase
@@ -53,7 +47,8 @@ export async function PATCH(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  if (!(await guard())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
   const { id } = await req.json() as { id: string };
   const supabase = createSupabaseAdmin();
   const { error } = await supabase.from("facebook_groups").delete().eq("id", id);

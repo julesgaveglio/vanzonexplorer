@@ -1,12 +1,12 @@
-import { auth } from "@clerk/nextjs/server";
+import { requireAdmin } from "@/lib/auth";
 import { NextRequest, NextResponse } from "next/server";
 import { dfsPost } from "@/lib/dataforseo";
 
 const SCHEMA_TYPES = ["LocalBusiness", "Product", "FAQPage", "BreadcrumbList", "Article"];
 
 export async function GET(req: NextRequest) {
-  const { userId } = await auth();
-  if (!userId) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
 
   const url = req.nextUrl.searchParams.get("url");
   if (!url) return NextResponse.json({ error: "url requis" }, { status: 400 });

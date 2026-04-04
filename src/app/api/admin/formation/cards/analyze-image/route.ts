@@ -1,20 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { adminWriteClient } from "@/lib/sanity/adminClient";
-import { auth, currentUser } from "@clerk/nextjs/server";
-
-const ALLOWED_EMAIL = "gavegliojules@gmail.com";
+import { requireAdmin } from "@/lib/auth";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 export async function POST(req: NextRequest) {
-  const { userId } = await auth();
-  if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-  const user = await currentUser();
-  if (user?.emailAddresses?.[0]?.emailAddress !== ALLOWED_EMAIL) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
 
   try {
     const formData = await req.formData();

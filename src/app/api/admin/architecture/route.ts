@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
+import { requireAdmin } from '@/lib/auth'
 import { scanAgents, scanApiRoutes, scanLibs, scanExternalServices, buildLibServiceEdges } from './scanners'
 import { ArchNode, ArchEdge, ArchitectureResponse } from './types'
 
 export const dynamic = 'force-dynamic'
 
 export async function GET() {
-  const { userId } = await auth()
-  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const check = await requireAdmin()
+  if (check instanceof NextResponse) return check
   try {
     const { nodes: agentNodes, edges: agentEdges } = scanAgents()
     const { nodes: routeNodes, edges: routeEdges } = scanApiRoutes()

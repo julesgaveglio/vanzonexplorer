@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { requireAdmin } from "@/lib/auth";
 import type { PsiResult } from "@/types/seo-report";
 
 async function runPsi(url: string, strategy: "mobile" | "desktop"): Promise<PsiResult> {
@@ -63,8 +63,8 @@ async function runPsi(url: string, strategy: "mobile" | "desktop"): Promise<PsiR
 }
 
 export async function POST(req: NextRequest) {
-  const { userId } = await auth();
-  if (!userId) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
 
   const { url } = await req.json();
   if (!url) return NextResponse.json({ error: "url requis" }, { status: 400 });

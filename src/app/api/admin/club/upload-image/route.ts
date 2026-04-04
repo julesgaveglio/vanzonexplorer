@@ -1,6 +1,6 @@
 import { createClient } from "@sanity/client";
-import { auth } from "@clerk/nextjs/server";
-import { NextRequest } from "next/server";
+import { requireAdmin } from "@/lib/auth";
+import { NextRequest, NextResponse } from "next/server";
 import sharp from "sharp";
 
 const writeClient = createClient({
@@ -38,8 +38,8 @@ async function processLogo(buffer: Buffer): Promise<Buffer> {
 }
 
 export async function POST(req: NextRequest) {
-  const { userId } = await auth();
-  if (!userId) return Response.json({ error: "Non autorisé" }, { status: 401 });
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
 
   try {
     const formData = await req.formData();

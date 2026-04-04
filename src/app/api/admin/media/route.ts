@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { requireAdmin } from "@/lib/auth";
 import { adminReadClient } from "@/lib/sanity/adminClient";
 import { groq } from "next-sanity";
-
-const ALLOWED_EMAIL = "gavegliojules@gmail.com";
 
 const mediaQuery = groq`
   *[_type == "mediaAsset"] | order(_createdAt desc) {
@@ -18,16 +16,8 @@ const mediaQuery = groq`
 `;
 
 export async function GET() {
-  const { userId } = await auth();
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const user = await currentUser();
-  const email = user?.emailAddresses?.[0]?.emailAddress;
-  if (email !== ALLOWED_EMAIL) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
 
   const items = await adminReadClient.fetch(mediaQuery) ?? [];
   return NextResponse.json(items);
