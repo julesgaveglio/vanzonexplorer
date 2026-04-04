@@ -28,9 +28,9 @@ export const metadata: Metadata = {
 const BENEFITS = [
   {
     icon: Percent,
-    title: "Commission réduite de moitié",
+    title: "5% de commission au lancement",
     description:
-      "Yescapa prend 16% sur chaque réservation. Vanzon : 8 à 10%. Sur une semaine à 95€/nuit, ça représente plus de 60€ de différence dans votre poche.",
+      "Yescapa prend 16% sur chaque réservation. Vanzon : 5% les 6 premiers mois, puis 8%. Sur une semaine à 95€/nuit, c'est plus de 70€ de différence dans votre poche.",
     color: "bg-blue-50 text-blue-600",
   },
   {
@@ -127,20 +127,20 @@ export default function ProposerVotreVanPage() {
               Vous louez déjà votre van ?
               <br />
               <span className="bg-gradient-to-r from-blue-400 to-sky-300 bg-clip-text text-transparent">
-                Ajoutez un canal. Payez moins.
+                Ajoutez un canal à 5%.
               </span>
             </h1>
 
             <p className="text-lg sm:text-xl text-white/70 leading-relaxed max-w-xl">
               Vanzon Explorer est une plateforme de location de vans aménagés
-              avec une commission 2x moins élevée que Yescapa.
+              avec une commission à 5% au lancement (vs 16% Yescapa).
               Gardez vos canaux actuels, ajoutez le nôtre.
             </p>
           </div>
 
           <div className="hidden lg:flex gap-4 absolute bottom-20 right-6">
             {[
-              { value: "8-10%", label: "commission", sub: "vs 16% ailleurs" },
+              { value: "5%", label: "commission", sub: "6 premiers mois" },
               { value: "0€", label: "inscription", sub: "gratuite" },
               { value: "0", label: "exclusivité", sub: "requise" },
             ].map((stat) => (
@@ -166,7 +166,7 @@ export default function ProposerVotreVanPage() {
           <div className="flex flex-wrap justify-center md:justify-between items-center gap-y-4 gap-x-8 text-white/60 text-sm font-medium">
             {[
               { icon: "🚐", text: "On loue nos propres vans au Pays Basque" },
-              { icon: "📉", text: "Commission 8-10% vs 16% Yescapa" },
+              { icon: "📉", text: "5% de commission au lancement, puis 8%" },
               { icon: "🤝", text: "Compatible avec tous vos canaux actuels" },
             ].map((item) => (
               <div key={item.text} className="flex items-center gap-2">
@@ -256,7 +256,7 @@ export default function ProposerVotreVanPage() {
                 {[
                   { icon: "✓", text: "Inscription gratuite, pas de CB demandée" },
                   { icon: "✓", text: "Gardez Yescapa, Le Bon Coin et vos autres canaux" },
-                  { icon: "✓", text: "Commission 8-10% au lieu de 16%" },
+                  { icon: "✓", text: "5% de commission les 6 premiers mois, puis 8%" },
                   { icon: "✓", text: "Vos prix, vos disponibilités, vos règles" },
                 ].map((item) => (
                   <div key={item.text} className="flex items-center gap-3">
