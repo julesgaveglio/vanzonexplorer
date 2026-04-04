@@ -6,19 +6,12 @@
 :root {
   --bg-primary: #FFFFFF;
   --bg-secondary: #F8FAFC;
-  --bg-elevated: #F1F5F9;
-  --bg-subtle: #E2E8F0;
   --accent-blue: #3B82F6;
-  --accent-teal: #0EA5E9;
-  --accent-gold: #F59E0B;
-  --accent-green: #10B981;
   --text-primary: #0F172A;
   --text-secondary: #334155;
   --text-muted: #64748B;
   --text-light: #94A3B8;
   --border-default: rgba(0, 0, 0, 0.06);
-  --border-glass: rgba(255, 255, 255, 0.70);
-  --border-active: rgba(59, 130, 246, 0.40);
 }
 
 html {
@@ -175,10 +168,6 @@ body {
 }
 
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(12px); }
     to   { opacity: 1; transform: translateY(0); }
@@ -194,49 +183,9 @@ body {
     100% { transform: skewX(-20deg) translateX(340%); }
   }
 
-  /* Shimmer skeleton loader */
-  @keyframes shimmer {
-    0%   { background-position: -200% center; }
-    100% { background-position: 200% center; }
-  }
-  .animate-shimmer {
-    background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
-    background-size: 200% auto;
-    animation: shimmer 1.5s linear infinite;
-  }
-
-  /* Smooth underline link */
-  .link-underline {
-    position: relative;
-  }
-  .link-underline::after {
-    content: "";
-    position: absolute;
-    bottom: -1px;
-    left: 0;
-    width: 0;
-    height: 1px;
-    background: currentColor;
-    transition: width 0.2s ease;
-  }
-  .link-underline:hover::after {
-    width: 100%;
-  }
-
-  /* Ping dot for availability indicator */
-  @keyframes ping-slow {
-    75%, 100% { transform: scale(2); opacity: 0; }
-  }
-  .animate-ping-slow {
-    animation: ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite;
-  }
 }
 
 /* ━━━ Club Privé — Variables & Utilities ━━━ */
-:root {
-  --club-border: 268 25% 87%;
-  --radius: 0.75rem;
-}
 
 /* Club marquee animation */
 @keyframes marquee {
