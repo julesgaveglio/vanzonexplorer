@@ -127,7 +127,7 @@ export default function ProposerVotreVanPage() {
               Vous louez déjà votre van ?
               <br />
               <span className="bg-gradient-to-r from-blue-400 to-sky-300 bg-clip-text text-transparent">
-                Ajoutez un canal à 5%.
+                Ajoutez un canal. Payez moins.
               </span>
             </h1>
 
