@@ -8,7 +8,7 @@ import {
   getAllArticleSlugsQuery,
   getRelatedArticlesQuery,
 } from "@/lib/sanity/queries";
-import { ArticleJsonLd, type FAQItem } from "@/components/seo/JsonLd";
+import { ArticleJsonLd } from "@/components/seo/JsonLd";
 import ArticleTOC from "./_components/ArticleTOC";
 import ReadingProgressBar from "./_components/ReadingProgressBar";
 import ArticleFAQ from "./_components/ArticleFAQ";
