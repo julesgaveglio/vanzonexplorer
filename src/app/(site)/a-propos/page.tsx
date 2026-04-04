@@ -147,7 +147,7 @@ export default async function AProposPage() {
               { value: fleetCount, label: "vans en location", sub: "Pays Basque" },
               { value: brandCount, label: "marques partenaires", sub: "Club Privé" },
               { value: "20+", label: "locations réalisées", sub: "et ça grandit" },
-              { value: "2024", label: "année de création", sub: "Anglet, Pays Basque" },
+              { value: "2024", label: "année de création", sub: "Cambo-les-Bains, Pays Basque" },
             ].map((s) => (
               <div key={s.label} className="flex flex-col items-center">
                 <span className="text-4xl md:text-5xl font-black text-slate-900 leading-none">
@@ -290,7 +290,7 @@ export default async function AProposPage() {
                 <span className="text-sm text-amber-600 font-medium">Directeur Général &amp; Co-fondateur</span>
               </div>
               <p className="text-slate-600 leading-relaxed">
-                Elio est le spécialiste du concret et surtout de la mécanique. C&apos;est lui qui t&apos;aide à{" "}
+                Elio est le spécialiste du concret et surtout de la mécanique. C&apos;est lui qui vous aide à{" "}
                 <strong className="text-slate-800">choisir le bon fourgon dès le départ</strong>, éviter les erreurs qui coûtent très cher, analyser l&apos;état réel d&apos;un véhicule, négocier au bon prix et viser le meilleur rapport qualité-prix.
               </p>
               <div className="flex flex-wrap gap-2 mt-6">

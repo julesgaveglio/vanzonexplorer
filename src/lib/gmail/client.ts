@@ -9,7 +9,7 @@
  *   GOOGLE_GMAIL_REFRESH_TOKEN — Refresh token avec scopes : gmail.send + gmail.settings.basic
  */
 
-const GMAIL_USER = "jules@vanzonexplorer.com";
+const GMAIL_USER = "contact@vanzonexplorer.com";
 const TOKEN_URL = "https://oauth2.googleapis.com/token";
 const GMAIL_API = "https://gmail.googleapis.com/gmail/v1/users/me";
 
@@ -151,7 +151,7 @@ ${bodyParagraphs}${signatureBlock}
 
   // 4. Construire et envoyer le message MIME
   const raw = buildMimeMessage({
-    from: `Jules — Vanzon Explorer <${GMAIL_USER}>`,
+    from: `Vanzon Explorer <${GMAIL_USER}>`,
     to: options.to,
     subject: options.subject,
     htmlBody,
