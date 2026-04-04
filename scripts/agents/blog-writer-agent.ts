@@ -45,7 +45,7 @@ function loadAgentPrompt(name: string): string | null {
 }
 
 // ── Vanzon Knowledge Base (Obsidian) ───────────────────────────────────────────
-const VANZON_DB_PATH = path.join(PROJECT_ROOT, "Vanzon DataBase 'Obs'");
+const VANZON_DB_PATH = path.join(PROJECT_ROOT, "Vanzon Memory Database");
 
 /**
  * Charge tous les fichiers .md du dossier Obsidian, organisés par catégorie.

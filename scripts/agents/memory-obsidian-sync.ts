@@ -3,7 +3,7 @@
  * memory-obsidian-sync.ts
  *
  * Synchronise les notes Supabase vanzon_memory non encore synchées
- * vers les fichiers Obsidian (Vanzon DataBase 'Obs'/).
+ * vers les fichiers Obsidian (Vanzon Memory Database/).
  *
  * Usage : npx tsx scripts/agents/memory-obsidian-sync.ts
  *
@@ -18,7 +18,7 @@ import "dotenv/config";
 
 const __filename = fileURLToPath(import.meta.url);
 const PROJECT_ROOT = path.resolve(path.dirname(__filename), "../..");
-const OBSIDIAN_ROOT = path.join(PROJECT_ROOT, "Vanzon DataBase 'Obs'");
+const OBSIDIAN_ROOT = path.join(PROJECT_ROOT, "Vanzon Memory Database");
 
 function getSupabase() {
   return createClient(
