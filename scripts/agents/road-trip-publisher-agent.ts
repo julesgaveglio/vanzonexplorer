@@ -30,6 +30,7 @@ import { createCostTracker } from "../lib/ai-costs";
 import { fetchSpotImage } from "../lib/image-pipeline";
 import { buildGeoJSON, type SpotGeo } from "../lib/geojson-builder";
 import { calculateQualityScore } from "../lib/quality-score";
+import { slugify } from "../../src/lib/slugify";
 
 // Resolve paths
 const PROJECT_ROOT = path.resolve(path.dirname(__filename), "../..");
@@ -51,19 +52,6 @@ const supabase = createSupabaseClient(
 );
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-
-// ── Slugify ───────────────────────────────────────────────────────────────────
-function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9\s-]/g, "")
-    .trim()
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-")
-    .slice(0, 96);
-}
 
 // ── Load prompt ───────────────────────────────────────────────────────────────
 function loadPrompt(): string {

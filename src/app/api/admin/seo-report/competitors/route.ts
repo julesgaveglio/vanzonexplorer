@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { requireAdmin } from "@/lib/auth";
 import { dfsPostRaw } from "@/lib/dataforseo";
 import type { CompetitorsData } from "@/types/seo-report";
 
@@ -14,8 +14,8 @@ interface DfsCompetitorsRaw {
 }
 
 export async function POST(req: NextRequest) {
-  const { userId } = await auth();
-  if (!userId) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
 
   const body = await req.json();
   const { url } = body;

@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { requireAdmin } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
-  const { userId } = await auth();
-  if (!userId) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
 
   const url = req.nextUrl.searchParams.get("url");
   const strategy = req.nextUrl.searchParams.get("strategy") ?? "mobile";

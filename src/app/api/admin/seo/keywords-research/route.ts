@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs/server";
+import { requireAdmin } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import { dfsPost, DFS_LOCATION, DFS_LANGUAGE_CODE } from "@/lib/dataforseo";
 import { KEYWORDS, KeywordData } from "@/app/admin/(protected)/keywords/data/keywords";
@@ -22,8 +22,8 @@ interface DFSResult {
 }
 
 export async function POST() {
-  const { userId } = await auth();
-  if (!userId) return NextResponse.json({ error: "Non autorise" }, { status: 401 });
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
 
   try {
     const keywordList = KEYWORDS.map((k) => k.keyword);

@@ -1,9 +1,8 @@
 import { createSupabaseAdmin } from "@/lib/supabase/server";
 import { dfsPostRaw, DFS_LOCATION_CODE, DFS_LANGUAGE_CODE } from "@/lib/dataforseo";
-
-function sseEvent(data: Record<string, unknown>): string {
-  return `data: ${JSON.stringify(data)}\n\n`;
-}
+import { requireAdmin } from "@/lib/auth";
+import { NextResponse } from "next/server";
+import { createSSEResponse } from "@/lib/sse";
 
 interface DfsKeywordItem {
   keyword?: string;
@@ -55,6 +54,8 @@ function assignCluster(keyword: string): string {
 }
 
 export async function GET() {
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
   const supabase = createSupabaseAdmin();
   const { data, error } = await supabase
     .from("vba_keywords")
@@ -69,16 +70,12 @@ export async function GET() {
 }
 
 export async function POST() {
-  const encoder = new TextEncoder();
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
 
-  const stream = new ReadableStream({
-    async start(controller) {
-      const send = (data: Record<string, unknown>) => {
-        controller.enqueue(encoder.encode(sseEvent(data)));
-      };
-
-      try {
-        // 7 batches de seeds
+  return createSSEResponse(async (send) => {
+    try {
+    // 7 batches de seeds
         const seedBatches = [
           ["formation van aménagé", "formation vanlife"],
           ["business van aménagé", "rentabilité location van"],
@@ -126,7 +123,6 @@ export async function POST() {
         if (uniqueKeywords.length === 0) {
           send({ type: "log", level: "error", message: "Aucun mot-clé collecté, arrêt." });
           send({ type: "done", count: 0 });
-          controller.close();
           return;
         }
 
@@ -237,17 +233,5 @@ export async function POST() {
         });
         send({ type: "done", count: 0 });
       }
-
-      controller.close();
-    },
-  });
-
-  return new Response(stream, {
-    headers: {
-      "Content-Type": "text/event-stream",
-      "Cache-Control": "no-cache",
-      Connection: "keep-alive",
-      "X-Accel-Buffering": "no",
-    },
   });
 }

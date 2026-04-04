@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { adminReadClient, adminWriteClient } from "@/lib/sanity/adminClient";
 import { groq } from "next-sanity";
 import { revalidatePath } from "next/cache";
+import { requireAdmin } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -84,6 +85,8 @@ async function resolveImageRef(
 }
 
 export async function GET() {
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
   try {
     const cards = await adminReadClient.fetch(allCardsQuery);
     return NextResponse.json({ cards: cards ?? [] });
@@ -94,6 +97,8 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
   try {
     const formData = await req.formData();
     const title = formData.get("title") as string;

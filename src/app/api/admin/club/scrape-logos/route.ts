@@ -1,6 +1,9 @@
 import { NextRequest } from "next/server";
 import { createClient as createSanityClient } from "@sanity/client";
 import { createClient } from "@supabase/supabase-js";
+import { requireAdmin } from "@/lib/auth";
+import { NextResponse } from "next/server";
+import { createSSEResponse } from "@/lib/sse";
 
 function getSanityClient() {
   return createSanityClient({
@@ -17,10 +20,6 @@ function getSupabase() {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
-}
-
-function sseEvent(data: Record<string, unknown>): string {
-  return `data: ${JSON.stringify(data)}\n\n`;
 }
 
 /** Strategies to find a logo from a brand's homepage */
@@ -126,67 +125,47 @@ async function scrapeLogo(websiteUrl: string, brandName: string): Promise<string
 }
 
 export async function POST(req: NextRequest) {
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
   const body = await req.json().catch(() => ({}));
   const brandId: string | undefined = body.brandId; // optional: scrape one specific brand
 
-  const stream = new ReadableStream({
-    async start(controller) {
-      function send(data: Record<string, unknown>) {
-        controller.enqueue(new TextEncoder().encode(sseEvent(data)));
+  return createSSEResponse(async (send) => {
+    const sb = getSupabase();
+
+    // Fetch brands to process
+    let query = sb.from("brands").select("id, name, website_url, logo_url").eq("status", "active");
+    if (brandId) query = query.eq("id", brandId);
+
+    const { data: brands, error } = await query;
+    if (error) {
+      send({ type: "error", message: `Erreur Supabase: ${error.message}` });
+      return;
+    }
+
+    send({ type: "log", level: "info", message: `🔍 ${brands.length} marque(s) à traiter...` });
+
+    let updated = 0;
+    for (const brand of brands as Array<{ id: string; name: string; website_url: string | null; logo_url: string | null }>) {
+      if (!brand.website_url) {
+        send({ type: "log", level: "warning", message: `⚠️ ${brand.name} — pas d'URL, ignoré` });
+        continue;
       }
 
-      try {
-        const sb = getSupabase();
+      send({ type: "log", level: "info", message: `🔍 Scraping logo ${brand.name} (${brand.website_url})...` });
 
-        // Fetch brands to process
-        let query = sb.from("brands").select("id, name, website_url, logo_url").eq("status", "active");
-        if (brandId) query = query.eq("id", brandId);
+      const logoUrl = await scrapeLogo(brand.website_url, brand.name);
 
-        const { data: brands, error } = await query;
-        if (error) {
-          send({ type: "error", message: `Erreur Supabase: ${error.message}` });
-          controller.close();
-          return;
-        }
-
-        send({ type: "log", level: "info", message: `🔍 ${brands.length} marque(s) à traiter...` });
-
-        let updated = 0;
-        for (const brand of brands as Array<{ id: string; name: string; website_url: string | null; logo_url: string | null }>) {
-          if (!brand.website_url) {
-            send({ type: "log", level: "warning", message: `⚠️ ${brand.name} — pas d'URL, ignoré` });
-            continue;
-          }
-
-          send({ type: "log", level: "info", message: `🔍 Scraping logo ${brand.name} (${brand.website_url})...` });
-
-          const logoUrl = await scrapeLogo(brand.website_url, brand.name);
-
-          if (logoUrl) {
-            await sb.from("brands").update({ logo_url: logoUrl }).eq("id", brand.id);
-            send({ type: "log", level: "success", message: `✅ Logo ${brand.name} uploadé` });
-            send({ type: "brand", id: brand.id, name: brand.name, logoUrl });
-            updated++;
-          } else {
-            send({ type: "log", level: "warning", message: `⚠️ Aucun logo trouvé pour ${brand.name}` });
-          }
-        }
-
-        send({ type: "done", updated, total: brands.length });
-      } catch (e) {
-        controller.enqueue(new TextEncoder().encode(sseEvent({ type: "error", message: String(e) })));
-      } finally {
-        controller.close();
+      if (logoUrl) {
+        await sb.from("brands").update({ logo_url: logoUrl }).eq("id", brand.id);
+        send({ type: "log", level: "success", message: `✅ Logo ${brand.name} uploadé` });
+        send({ type: "brand", id: brand.id, name: brand.name, logoUrl });
+        updated++;
+      } else {
+        send({ type: "log", level: "warning", message: `⚠️ Aucun logo trouvé pour ${brand.name}` });
       }
-    },
-  });
+    }
 
-  return new Response(stream, {
-    headers: {
-      "Content-Type": "text/event-stream",
-      "Cache-Control": "no-cache",
-      Connection: "keep-alive",
-      "X-Accel-Buffering": "no",
-    },
+    send({ type: "done", updated, total: brands.length });
   });
 }

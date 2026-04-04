@@ -15,6 +15,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useMemo } from "react";
+import { slugify } from "@/lib/slugify";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -37,20 +38,6 @@ interface ArticleTemplateProps {
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
-
-function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/[àâä]/g, "a")
-    .replace(/[éèêë]/g, "e")
-    .replace(/[îï]/g, "i")
-    .replace(/[ôö]/g, "o")
-    .replace(/[ùûü]/g, "u")
-    .replace(/ç/g, "c")
-    .replace(/ñ/g, "n")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
-}
 
 /** Extrait les titres h2/h3 depuis le HTML brut */
 function extractTOC(html: string): TOCItem[] {

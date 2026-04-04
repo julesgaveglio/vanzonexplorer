@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireAdmin } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
   const code = req.nextUrl.searchParams.get("code");
   const error = req.nextUrl.searchParams.get("error");
 

@@ -1,10 +1,9 @@
 import Groq from "groq-sdk";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
 import { dfsPostRaw, DFS_LOCATION_CODE, DFS_LANGUAGE_CODE } from "@/lib/dataforseo";
-
-function sseEvent(data: Record<string, unknown>): string {
-  return `data: ${JSON.stringify(data)}\n\n`;
-}
+import { requireAdmin } from "@/lib/auth";
+import { NextResponse } from "next/server";
+import { createSSEResponse } from "@/lib/sse";
 
 interface DfsOrganicItem {
   type?: string;
@@ -23,6 +22,8 @@ interface DfsRawResponse {
 }
 
 export async function GET() {
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
   const supabase = createSupabaseAdmin();
   const { data, error } = await supabase
     .from("vba_competitors")
@@ -37,16 +38,12 @@ export async function GET() {
 }
 
 export async function POST() {
-  const encoder = new TextEncoder();
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
 
-  const stream = new ReadableStream({
-    async start(controller) {
-      const send = (data: Record<string, unknown>) => {
-        controller.enqueue(encoder.encode(sseEvent(data)));
-      };
-
-      try {
-        const formationKeywords = [
+  return createSSEResponse(async (send) => {
+    try {
+    const formationKeywords = [
           "formation van aménagé",
           "formation vanlife business",
           "acheter van aménagé pour louer",
@@ -232,17 +229,5 @@ ${context}`,
         });
         send({ type: "done", count: 0 });
       }
-
-      controller.close();
-    },
-  });
-
-  return new Response(stream, {
-    headers: {
-      "Content-Type": "text/event-stream",
-      "Cache-Control": "no-cache",
-      Connection: "keep-alive",
-      "X-Accel-Buffering": "no",
-    },
   });
 }

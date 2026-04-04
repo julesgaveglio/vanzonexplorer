@@ -9,49 +9,11 @@
  *   SUPABASE_SERVICE_ROLE_KEY
  */
 
-import { createClient } from "@supabase/supabase-js";
+import { getSupabaseClient } from "./supabase";
+import type { ArticleQueueItem, ArticleStatus } from "../../src/types/article-queue";
 
-// ── Types ─────────────────────────────────────────────────────────────────────
-
-export type ArticleStatus = "pending" | "writing" | "published" | "needs-improvement";
-
-export interface ArticleQueueItem {
-  id: string;
-  slug: string;
-  title: string;
-  excerpt: string;
-  category: string;
-  tag: string | null;
-  readTime: string;
-  targetKeyword: string;
-  secondaryKeywords: string[];
-  targetWordCount?: number;
-  wordCountNote?: string;
-  status: ArticleStatus;
-  priority: number;
-  sanityId: string | null;
-  publishedAt: string | null;
-  lastSeoCheck: string | null;
-  seoPosition: number | null;
-  searchVolume?: number;
-  competitionLevel?: string;
-  seoScore?: number;
-  addedBy?: string;
-  lastOptimizedAt?: string | null;
-  lastLinkCheck?: string | null;
-  pillarSlug?: string;
-  clusterTopic?: string;
-  createdAt?: string;
-}
-
-// ── Supabase client (service_role — server only) ──────────────────────────────
-
-function getClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) throw new Error("Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY");
-  return createClient(url, key, { auth: { persistSession: false } });
-}
+// Re-export for consumers that import from this module
+export type { ArticleQueueItem, ArticleStatus } from "../../src/types/article-queue";
 
 // ── Row mappers (snake_case DB ↔ camelCase TS) ────────────────────────────────
 
@@ -121,7 +83,7 @@ function itemToRow(item: Partial<ArticleQueueItem>): Record<string, unknown> {
 
 /** Récupère toute la queue, optionnellement filtrée par status. */
 export async function getQueueItems(filter?: { status?: ArticleStatus }): Promise<ArticleQueueItem[]> {
-  const sb = getClient();
+  const sb = getSupabaseClient();
   let query = sb.from("article_queue").select("*").order("priority", { ascending: true }).order("created_at", { ascending: true });
   if (filter?.status) query = query.eq("status", filter.status);
   const { data, error } = await query;
@@ -131,7 +93,7 @@ export async function getQueueItems(filter?: { status?: ArticleStatus }): Promis
 
 /** Récupère un article par id/slug. */
 export async function getQueueItem(id: string): Promise<ArticleQueueItem | null> {
-  const sb = getClient();
+  const sb = getSupabaseClient();
   const { data, error } = await sb.from("article_queue").select("*").eq("id", id).maybeSingle();
   if (error) throw new Error(`getQueueItem: ${error.message}`);
   return data ? rowToItem(data) : null;
@@ -143,7 +105,7 @@ export async function getQueueItem(id: string): Promise<ArticleQueueItem | null>
  * Retourne null si rien de disponible.
  */
 export async function claimPendingArticle(slug?: string): Promise<ArticleQueueItem | null> {
-  const sb = getClient();
+  const sb = getSupabaseClient();
   const { data, error } = await sb.rpc("claim_pending_article", { p_slug: slug ?? null });
   if (error) throw new Error(`claimPendingArticle: ${error.message}`);
   const rows = data as Record<string, unknown>[] | null;
@@ -152,7 +114,7 @@ export async function claimPendingArticle(slug?: string): Promise<ArticleQueueIt
 
 /** Met à jour des champs spécifiques d'un article. */
 export async function updateQueueItem(id: string, updates: Partial<ArticleQueueItem>): Promise<void> {
-  const sb = getClient();
+  const sb = getSupabaseClient();
   const row = itemToRow(updates);
   if (Object.keys(row).length === 0) return;
   const { error } = await sb.from("article_queue").update(row).eq("id", id);
@@ -161,7 +123,7 @@ export async function updateQueueItem(id: string, updates: Partial<ArticleQueueI
 
 /** Insère un nouvel article (ignore si id déjà présent). */
 export async function insertQueueItem(item: ArticleQueueItem): Promise<{ inserted: boolean }> {
-  const sb = getClient();
+  const sb = getSupabaseClient();
   const row = itemToRow(item);
   const { error } = await sb.from("article_queue").insert(row);
   if (error) {
@@ -174,14 +136,14 @@ export async function insertQueueItem(item: ArticleQueueItem): Promise<{ inserte
 
 /** Supprime un article de la queue. */
 export async function deleteQueueItem(id: string): Promise<void> {
-  const sb = getClient();
+  const sb = getSupabaseClient();
   const { error } = await sb.from("article_queue").delete().eq("id", id);
   if (error) throw new Error(`deleteQueueItem(${id}): ${error.message}`);
 }
 
 /** Vérifie si un article existe déjà (par id ou keyword). */
 export async function itemExists(opts: { id?: string; targetKeyword?: string }): Promise<boolean> {
-  const sb = getClient();
+  const sb = getSupabaseClient();
   let query = sb.from("article_queue").select("id", { count: "exact", head: true });
   if (opts.id)            query = query.eq("id", opts.id);
   else if (opts.targetKeyword) query = query.ilike("target_keyword", opts.targetKeyword);

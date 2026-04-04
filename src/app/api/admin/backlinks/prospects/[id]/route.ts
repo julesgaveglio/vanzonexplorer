@@ -1,5 +1,6 @@
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/auth";
 
 type Statut = "découvert" | "contacté" | "relancé" | "obtenu" | "rejeté";
 
@@ -7,6 +8,8 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
   const body = await req.json().catch(() => ({}));
   const { statut }: { statut?: Statut } = body;
 

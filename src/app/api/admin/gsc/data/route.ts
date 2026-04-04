@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { requireAdmin } from "@/lib/auth";
 
 async function getAccessToken(): Promise<string> {
   const res = await fetch("https://oauth2.googleapis.com/token", {
@@ -17,6 +18,8 @@ async function getAccessToken(): Promise<string> {
 }
 
 export async function GET() {
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
   const refreshToken = process.env.GOOGLE_GSC_REFRESH_TOKEN;
   if (!refreshToken) {
     return NextResponse.json({ error: "not_connected" }, { status: 401 });

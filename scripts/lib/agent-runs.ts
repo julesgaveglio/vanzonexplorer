@@ -5,10 +5,8 @@
  * Each agent calls startRun() at the beginning, finishRun() at the end.
  */
 
-import { createClient } from "@supabase/supabase-js";
 import type { ApiCostsJson } from "./ai-costs";
-
-const USD_TO_EUR = 0.92;
+import { getSupabaseClient, USD_TO_EUR } from "./supabase";
 
 const ENDPOINT_LABELS: Record<string, string> = {
   "/serp/google/organic/live/advanced":                    "Analyse SERP Google — positions organiques",
@@ -30,13 +28,6 @@ const ENDPOINT_LABELS: Record<string, string> = {
   "/content_analysis/search/live":                         "Analyse de contenu — recherche",
 };
 
-function getClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) throw new Error("Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY");
-  return createClient(url, key, { auth: { persistSession: false } });
-}
-
 export interface RunResult {
   status: "success" | "error";
   itemsProcessed?: number;
@@ -56,7 +47,7 @@ export interface RunResult {
 export async function logDfsCall(endpoint: string, costUsd: number): Promise<void> {
   if (costUsd <= 0) return;
   try {
-    const sb = getClient();
+    const sb = getSupabaseClient();
     const label = ENDPOINT_LABELS[endpoint] ?? endpoint.split("/").filter(Boolean).join(" / ");
     await sb.from("dataforseo_logs").insert({
       endpoint,
@@ -76,7 +67,7 @@ export async function startRun(
   metadata?: Record<string, unknown>
 ): Promise<string> {
   try {
-    const sb = getClient();
+    const sb = getSupabaseClient();
     const { data, error } = await sb
       .from("agent_runs")
       .insert({ agent_name: agentName, status: "running", metadata })
@@ -94,7 +85,7 @@ export async function startRun(
 export async function finishRun(runId: string, result: RunResult): Promise<void> {
   if (runId === "no-op") return;
   try {
-    const sb = getClient();
+    const sb = getSupabaseClient();
     await sb.from("agent_runs").update({
       finished_at:     new Date().toISOString(),
       status:          result.status,

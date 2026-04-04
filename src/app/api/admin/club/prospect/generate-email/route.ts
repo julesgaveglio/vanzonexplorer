@@ -1,6 +1,8 @@
 import { NextRequest } from "next/server";
 import Groq from "groq-sdk";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/auth";
+import { NextResponse } from "next/server";
 
 const CATEGORY_ANGLES: Record<string, string> = {
   énergie: "Autonomie électrique en van, lifestyle nomade",
@@ -26,6 +28,8 @@ interface Prospect {
 }
 
 export async function POST(req: NextRequest) {
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
   const body = await req.json();
   const { prospectId }: { prospectId: string } = body;
 

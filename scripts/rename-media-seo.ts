@@ -7,6 +7,7 @@ import * as path from 'path'
 import { createClient } from '@sanity/client'
 import { createCostTracker } from './lib/ai-costs'
 import { startRun, finishRun } from './lib/agent-runs'
+import { slugify } from '../src/lib/slugify'
 
 dotenv.config({ path: path.join(__dirname, '..', '.env.local') })
 
@@ -65,17 +66,6 @@ function isBadSeoName(asset: MediaAsset): boolean {
   return false
 }
 
-// ── Slugify ───────────────────────────────────────────────────────────────────
-function slugify(str: string): string {
-  return str
-    .toLowerCase()
-    .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // remove accents
-    .replace(/[^a-z0-9\s-]/g, '')
-    .trim()
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .slice(0, 80)
-}
 
 // ── Analyse Gemini Vision (direct HTTP) ──────────────────────────────────────
 async function analyzeWithGemini(asset: MediaAsset): Promise<{ title: string; alt: string; tags: string[] }> {

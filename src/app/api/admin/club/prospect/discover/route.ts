@@ -1,10 +1,9 @@
 import { NextRequest } from "next/server";
 import Groq from "groq-sdk";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
-
-function sseEvent(data: Record<string, unknown>): string {
-  return `data: ${JSON.stringify(data)}\n\n`;
-}
+import { requireAdmin } from "@/lib/auth";
+import { NextResponse } from "next/server";
+import { createSSEResponse } from "@/lib/sse";
 
 interface TavilyResult {
   url?: string;
@@ -28,6 +27,8 @@ interface ProspectCandidate {
 }
 
 export async function POST(req: NextRequest) {
+  const check = await requireAdmin();
+  if (check instanceof NextResponse) return check;
   const body = await req.json();
   const {
     categories,
@@ -35,17 +36,10 @@ export async function POST(req: NextRequest) {
     max = 20,
   }: { categories?: string[]; country?: string; max?: number } = body;
 
-  const encoder = new TextEncoder();
-
-  const stream = new ReadableStream({
-    async start(controller) {
-      const send = (data: Record<string, unknown>) => {
-        controller.enqueue(encoder.encode(sseEvent(data)));
-      };
-
-      try {
-        // Build search queries
-        const queries: string[] = [];
+  return createSSEResponse(async (send) => {
+    try {
+    // Build search queries
+    const queries: string[] = [];
 
         if (categories && categories.length > 0) {
           for (const category of categories) {
@@ -217,17 +211,5 @@ ${resultsContext}`,
         });
         send({ type: "done", count: 0 });
       }
-
-      controller.close();
-    },
-  });
-
-  return new Response(stream, {
-    headers: {
-      "Content-Type": "text/event-stream",
-      "Cache-Control": "no-cache",
-      Connection: "keep-alive",
-      "X-Accel-Buffering": "no",
-    },
   });
 }
