@@ -21,17 +21,17 @@
     "name": "Agent Backlinks Daily Outreach",
     "emoji": "🎯",
     "status": "active",
-    "description": "Chaque jour à 9h UTC, contacte automatiquement 3 prospects backlink (score max, statut \"découvert\", sans outreach existant). Pour chaque : discovery email complet (Jina × 12 + Hunter.io + ZeroBounce), génération email personnalisé via Groq (prompt OUTREACH), envoi via Resend. S'arrête à 3 envois réussis même si MAX_TRIES (10) n'est pas atteint.",
+    "description": "Mar-Ven à 9h30 Paris : 4 phases automatiques. (1) Détecte les réponses Gmail et analyse le sentiment via Groq (positif→obtenu, négatif→rejeté). (2) Relance automatique J+4 dans le même thread Gmail. (3) Contacte 5 nouveaux prospects/jour (discovery email Jina+Hunter+ZeroBounce, email personnalisé Groq, envoi Gmail API). (4) Applique le label BACKLINKS sur chaque email envoyé. Notification Telegram récap.",
     "trigger": "cron",
-    "schedule": "Tous les jours à 9h UTC",
-    "cronExpression": "0 9 * * *",
+    "schedule": "Mardi-Vendredi à 9h30 Paris (7h30 UTC)",
+    "cronExpression": "30 7 * * 2-5",
     "file": "scripts/agents/backlinks-daily-outreach.ts",
     "workflow": ".github/workflows/backlinks-daily-outreach.yml",
-    "apis": ["Supabase", "Jina AI", "Hunter.io", "ZeroBounce", "Groq", "Resend"],
-    "output": "3 emails envoyés + prospects passés en statut \"contacté\" + récap admin + Telegram",
+    "apis": ["Supabase", "Gmail API", "Jina AI", "Hunter.io", "ZeroBounce", "Groq", "Telegram"],
+    "output": "5 emails/jour + relances J+4 + détection réponses + label BACKLINKS + Telegram",
     "manualCommand": "npx tsx scripts/agents/backlinks-daily-outreach.ts",
     "tags": ["Backlinks", "SEO", "Outreach", "Automatique"],
-    "pipeline": "Standalone"
+    "pipeline": "Standalone — alimenté par backlinks-weekly-agent"
   },
   {
     "id": "keyword-research-quarterly",

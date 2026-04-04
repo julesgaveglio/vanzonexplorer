@@ -48,7 +48,7 @@ The `(club)` group has its own DM Mono font and `bg-cream text-earth` color sche
 **2. Supabase** (`src/lib/supabase/server.ts`)
 - `createSupabaseAdmin()` — service_role key, bypasses RLS, server-only
 - `createSupabaseAnon()` — public read
-- Key tables: `profiles`, `products`, `brands`, `vans_location`, `prospects`, `vba_competitors`, `vba_keywords`
+- Key tables: `profiles`, `products`, `brands`, `vans_location`, `prospects`, `vba_competitors`, `vba_keywords`, `backlink_prospects`, `backlink_outreach`, `backlink_scrape_sessions`, `facebook_groups`, `facebook_outreach_schedule`, `road_trip_requests`, `cmo_reports`, `marketplace_leads`
 - `profiles.plan = "club_member"` controls Club Privé access (Club is 100% free — no Stripe, no subscription)
 
 **3. Clerk** — authentication
@@ -82,20 +82,42 @@ Added during architecture refactoring — use these instead of duplicating logic
 - `src/types/article-queue.ts` — canonical `ArticleQueueItem` type
 - `src/components/article/` — shared article components: `ArticleTable`, `PortableTextComponents`, `SectionCTA`
 
+### Gmail API client (`src/lib/gmail/client.ts`)
+
+Sends emails from `jules@vanzonexplorer.com` via Gmail API OAuth2. Automatically fetches and appends the Gmail signature. Supports:
+- `sendViaGmail()` — send (or reply in thread with `threadId` + `inReplyTo`)
+- `getGmailLabelId()` / `applyGmailLabel()` — label management
+- `getThreadMessages()` — read all messages in a thread (reply detection)
+- `getMessageHeader()` — fetch specific MIME headers
+
+### Email discovery (`src/lib/email-discovery/index.ts`)
+
+7-stage pipeline to find contact emails for a domain: Jina AI scraping (12 pages) → Hunter.io → Snov.io → regex extraction → ZeroBounce validation → Groq consolidation. Exports `discoverEmails(domainOrUrl, options)`.
+
 ### AI agent scripts (`scripts/agents/`)
 
-- `blog-writer-agent.ts` — reads `scripts/data/article-queue.json`, generates SEO articles using Gemini, fetches Pexels cover images via DataForSEO SERP, publishes to Sanity. **Markdown tables are forbidden in prompts** — use bullet lists instead.
-- `keyword-researcher.ts` — DataForSEO keyword research
-- `seo-checker.ts` — SEO analysis
+22 agents registered in `scripts/agents/registry.json` (visible at `/admin/agents`). Key agents:
+
+- `blog-writer-agent.ts` — 3 articles SEO/semaine via Gemini → Sanity. **Markdown tables are forbidden in prompts** — use bullet lists instead.
+- `backlinks-daily-outreach.ts` — Mar-Ven 9h30 Paris. 4 phases : reply detection (Gmail threads + Groq sentiment) → follow-up J+4 → 5 nouveaux outreach/jour (email discovery + Groq email + Gmail API) → label BACKLINKS + Telegram recap.
+- `backlinks-weekly-agent.ts` — Lundi 8h. Découvre prospects via Tavily (rotation 4 méthodes), score Groq ≥5, insère dans `backlink_prospects`.
+- `road-trip-publisher-agent.ts` — Toutes les 4h. Transforme les road trips générés en articles SEO Sanity.
+- `cmo-weekly-agent.ts` / `cmo-monthly-agent.ts` — Rapports marketing hebdo/mensuel via Groq.
+- `keyword-researcher.ts` — DataForSEO keyword research (manuel)
+- `seo-checker.ts` — Audit SEO hebdomadaire
 
 ### Admin panel (`/admin`)
 
-Sections: Dashboard, SEO Analytics, Mots-Clés, Performance (PSI), Blog, Vans, Marques, Produits, Spots, Media, Prospection, Road Trips.
+Sections: Dashboard, SEO Analytics, Mots-Clés, Performance (PSI), Blog, Vans, Marques, Produits, Spots, Media, Prospection, Road Trips, Backlinks, Agents, Marketing (CMO).
 
 **Prospection** (`/admin/club/prospection`) — internal CRM for partner brand outreach. Separate `prospects` Supabase table (distinct from `brands`). Three AI-powered API routes using SSE streaming:
 - `/api/admin/club/prospect/discover` — Tavily search + Groq analysis
 - `/api/admin/club/prospect/enrich` — Jina AI site scraping + Groq contact extraction
 - `/api/admin/club/prospect/generate-email` — Groq personalized email generation
+
+**Backlinks SEO** (`/admin/backlinks`) — Kanban board for backlink prospect management. Columns: découvert → contacté → relancé → obtenu / rejeté. Features: AI-powered prospect discovery (SSE), email generation + sending via Gmail API, drag & drop status. Tables: `backlink_prospects`, `backlink_outreach`, `backlink_scrape_sessions`. Automated by `backlinks-daily-outreach.ts` (5 emails/day + follow-ups + reply detection) and `backlinks-weekly-agent.ts` (prospect discovery).
+
+**Marketplace MVP-0** (`/proposer-votre-van`) — Landing page for van owner pre-registration. Simple form → Supabase `marketplace_leads` table. Goal: validate interest from 5 van owners before building the full marketplace.
 
 **Road Trip Personnalisé** (`/road-trip-personnalise`) — AI-powered itinerary generator. Wizard collects region/duration/interests/profile → Tavily search + Groq (llama-3.3-70b) → Resend email. Stores requests in Supabase `road_trip_requests` table. Rate limited (3 req/IP/hour). Admin at `/admin/road-trips`.
 
@@ -135,6 +157,11 @@ GOOGLE_PSI_API_KEY=
 GOOGLE_GSC_CLIENT_ID=
 GOOGLE_GSC_CLIENT_SECRET=
 GOOGLE_GSC_REFRESH_TOKEN=
+# Gmail API (outreach backlinks)
+GOOGLE_GMAIL_REFRESH_TOKEN=
+# Email discovery (backlinks)
+HUNTER_API_KEY=
+ZEROBOUNCE_API_KEY=
 # Pinterest automation
 PINTEREST_APP_ID=
 PINTEREST_APP_SECRET=

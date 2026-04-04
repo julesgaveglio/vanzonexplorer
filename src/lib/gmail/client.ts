@@ -6,10 +6,10 @@
  * Env vars requises :
  *   GOOGLE_GSC_CLIENT_ID       — OAuth2 client ID (partagé avec GSC)
  *   GOOGLE_GSC_CLIENT_SECRET   — OAuth2 client secret (partagé avec GSC)
- *   GOOGLE_GMAIL_REFRESH_TOKEN — Refresh token avec scopes : gmail.send + gmail.settings.basic
+ *   GOOGLE_GMAIL_REFRESH_TOKEN — Refresh token avec scopes : gmail.send + gmail.settings.basic + gmail.labels + gmail.readonly
  */
 
-const GMAIL_USER = "contact@vanzonexplorer.com";
+const GMAIL_USER = "jules@vanzonexplorer.com";
 const TOKEN_URL = "https://oauth2.googleapis.com/token";
 const GMAIL_API = "https://gmail.googleapis.com/gmail/v1/users/me";
 
@@ -61,15 +61,23 @@ function buildMimeMessage(options: {
   subject: string;
   htmlBody: string;
   textBody: string;
+  inReplyTo?: string;
+  references?: string;
 }): string {
   const boundary = `vanzon_${Date.now()}_boundary`;
   const textB64 = Buffer.from(options.textBody, "utf-8").toString("base64");
   const htmlB64 = Buffer.from(options.htmlBody, "utf-8").toString("base64");
 
-  const mime = [
+  const headers = [
     `From: ${options.from}`,
     `To: ${options.to}`,
     `Subject: ${encodeSubject(options.subject)}`,
+  ];
+  if (options.inReplyTo) headers.push(`In-Reply-To: ${options.inReplyTo}`);
+  if (options.references) headers.push(`References: ${options.references}`);
+
+  const mime = [
+    ...headers,
     "MIME-Version: 1.0",
     `Content-Type: multipart/alternative; boundary="${boundary}"`,
     "",
@@ -114,7 +122,10 @@ function signatureHtmlToText(html: string): string {
 export interface GmailSendOptions {
   to: string;
   subject: string;
-  textBody: string; // Corps en texte brut (généré par Groq)
+  textBody: string;
+  threadId?: string;
+  inReplyTo?: string;
+  references?: string;
 }
 
 export interface GmailSendResult {
@@ -156,7 +167,12 @@ ${bodyParagraphs}${signatureBlock}
     subject: options.subject,
     htmlBody,
     textBody,
+    inReplyTo: options.inReplyTo,
+    references: options.references,
   });
+
+  const sendPayload: Record<string, string> = { raw };
+  if (options.threadId) sendPayload.threadId = options.threadId;
 
   const res = await fetch(`${GMAIL_API}/messages/send`, {
     method: "POST",
@@ -164,7 +180,7 @@ ${bodyParagraphs}${signatureBlock}
       Authorization: `Bearer ${accessToken}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ raw }),
+    body: JSON.stringify(sendPayload),
   });
 
   const data = (await res.json()) as { id?: string; threadId?: string; error?: { message?: string } };
@@ -181,5 +197,122 @@ export function isGmailConfigured(): boolean {
     process.env.GOOGLE_GSC_CLIENT_ID &&
     process.env.GOOGLE_GSC_CLIENT_SECRET &&
     process.env.GOOGLE_GMAIL_REFRESH_TOKEN
+  );
+}
+
+// ── Récupère l'ID d'un label Gmail par son nom ─────────────────────────────
+export async function getGmailLabelId(
+  accessToken: string,
+  labelName: string
+): Promise<string | null> {
+  const res = await fetch(`${GMAIL_API}/labels`, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+  if (!res.ok) return null;
+  const data = (await res.json()) as {
+    labels?: Array<{ id: string; name: string }>;
+  };
+  const label = data.labels?.find(
+    (l) => l.name.toLowerCase() === labelName.toLowerCase()
+  );
+  return label?.id ?? null;
+}
+
+// ── Applique un label à un message Gmail ────────────────────────────────────
+export async function applyGmailLabel(
+  accessToken: string,
+  messageId: string,
+  labelId: string
+): Promise<void> {
+  await fetch(`${GMAIL_API}/messages/${messageId}/modify`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ addLabelIds: [labelId] }),
+  });
+}
+
+// ── Récupère les messages d'un thread Gmail ─────────────────────────────────
+export interface GmailThreadMessage {
+  id: string;
+  from: string;
+  date: string;
+  snippet: string;
+  bodyText: string;
+}
+
+export async function getThreadMessages(
+  accessToken: string,
+  threadId: string
+): Promise<GmailThreadMessage[]> {
+  const res = await fetch(
+    `${GMAIL_API}/threads/${threadId}?format=full`,
+    { headers: { Authorization: `Bearer ${accessToken}` } }
+  );
+  if (!res.ok) return [];
+
+  const data = (await res.json()) as {
+    messages?: Array<{
+      id: string;
+      snippet: string;
+      payload: {
+        headers: Array<{ name: string; value: string }>;
+        parts?: Array<{ mimeType: string; body: { data?: string } }>;
+        body?: { data?: string };
+      };
+    }>;
+  };
+
+  return (data.messages ?? []).map((msg) => {
+    const getHeader = (name: string) =>
+      msg.payload.headers.find(
+        (h) => h.name.toLowerCase() === name.toLowerCase()
+      )?.value ?? "";
+
+    // Extraire le body text depuis les parts ou le body direct
+    let bodyData = "";
+    if (msg.payload.parts) {
+      const textPart = msg.payload.parts.find(
+        (p) => p.mimeType === "text/plain"
+      );
+      bodyData = textPart?.body?.data ?? "";
+    } else {
+      bodyData = msg.payload.body?.data ?? "";
+    }
+
+    const bodyText = bodyData
+      ? Buffer.from(bodyData.replace(/-/g, "+").replace(/_/g, "/"), "base64").toString("utf-8")
+      : msg.snippet;
+
+    return {
+      id: msg.id,
+      from: getHeader("From"),
+      date: getHeader("Date"),
+      snippet: msg.snippet,
+      bodyText,
+    };
+  });
+}
+
+// ── Récupère le Message-ID header d'un message Gmail ────────────────────────
+export async function getMessageHeader(
+  accessToken: string,
+  messageId: string,
+  headerName: string
+): Promise<string> {
+  const res = await fetch(
+    `${GMAIL_API}/messages/${messageId}?format=metadata&metadataHeaders=${headerName}`,
+    { headers: { Authorization: `Bearer ${accessToken}` } }
+  );
+  if (!res.ok) return "";
+  const data = (await res.json()) as {
+    payload?: { headers?: Array<{ name: string; value: string }> };
+  };
+  return (
+    data.payload?.headers?.find(
+      (h) => h.name.toLowerCase() === headerName.toLowerCase()
+    )?.value ?? ""
   );
 }
