@@ -1,17 +1,17 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { Euro, Shield, Zap, Users, ArrowRight } from "lucide-react";
+import { Percent, Shield, Zap, Users, ArrowRight } from "lucide-react";
 import VanOwnerForm from "./_components/VanOwnerForm";
 
 export const metadata: Metadata = {
-  title: "Louez votre van aménagé | Vanzon Explorer",
+  title: "Proposer votre van à la location | Vanzon Explorer",
   description:
-    "Votre van dort au garage ? Louez-le sur Vanzon Explorer et gagnez jusqu'à 800€/mois. Inscription gratuite, aucune exclusivité, vous gardez le contrôle.",
+    "Vous louez déjà votre van ? Ajoutez Vanzon Explorer comme canal de location supplémentaire. Commission réduite, trafic organique qualifié, aucune exclusivité.",
   alternates: { canonical: "https://vanzonexplorer.com/proposer-votre-van" },
   openGraph: {
-    title: "Louez votre van aménagé | Vanzon Explorer",
+    title: "Proposer votre van à la location | Vanzon Explorer",
     description:
-      "Votre van dort au garage ? Louez-le sur Vanzon Explorer et gagnez jusqu'à 800€/mois. Inscription gratuite.",
+      "Un canal de location supplémentaire pour votre van aménagé. Commission réduite vs Yescapa, trafic organique, zéro exclusivité.",
     type: "website",
     url: "https://vanzonexplorer.com/proposer-votre-van",
     images: [
@@ -27,31 +27,31 @@ export const metadata: Metadata = {
 
 const BENEFITS = [
   {
-    icon: Euro,
-    title: "Gagnez jusqu'à 800€/mois",
+    icon: Percent,
+    title: "Commission réduite de moitié",
     description:
-      "Un van loué 7 jours par mois à 95€/jour = 665€ net dans votre poche. En haute saison, certains propriétaires dépassent les 1 000€. Votre van travaille pendant que vous ne l'utilisez pas.",
+      "Yescapa prend 16% sur chaque réservation. Vanzon : 8 à 10%. Sur une semaine à 95€/nuit, ça représente plus de 60€ de différence dans votre poche.",
     color: "bg-blue-50 text-blue-600",
   },
   {
     icon: Shield,
-    title: "Vous gardez le contrôle total",
+    title: "Aucune exclusivité",
     description:
-      "C'est votre van, vos règles. Vous fixez vos prix, vos disponibilités et vos conditions. Aucune exclusivité : gardez vos autres canaux. Vanzon est un revenu en plus, pas un remplacement.",
+      "Gardez Yescapa, Le Bon Coin, ou tout autre canal. Vanzon est un canal supplémentaire qui vous amène des réservations en plus, pas un remplacement.",
     color: "bg-teal-50 text-teal-600",
   },
   {
     icon: Zap,
-    title: "On s'occupe de tout le reste",
+    title: "Trafic organique qualifié",
     description:
-      "Vous n'avez rien à faire côté marketing. On gère la visibilité de votre van, le référencement Google et la mise en relation avec les voyageurs. Vous, vous accueillez et vous encaissez.",
+      "Notre blog attire chaque mois des milliers de passionnés vanlife via Google. Ces visiteurs cherchent un van pour leur prochain road trip — pas un comparateur de prix.",
     color: "bg-amber-50 text-amber-600",
   },
   {
     icon: Users,
-    title: "Des locataires passionnés, pas des touristes lambda",
+    title: "Construit par des propriétaires",
     description:
-      "Notre audience, ce sont des passionnés de vanlife qui planifient leur road trip. Ils cherchent un van avec une histoire, pas le premier prix sur un comparateur. Résultat : respect du véhicule et meilleures évaluations.",
+      "On loue nous-mêmes deux vans au Pays Basque. On connaît les galères Yescapa, les questions des locataires, la saisonnalité. La plateforme est pensée pour des gens comme nous.",
     color: "bg-purple-50 text-purple-600",
   },
 ];
@@ -59,18 +59,18 @@ const BENEFITS = [
 const STEPS = [
   {
     number: "01",
-    title: "Vous remplissez le formulaire",
-    description: "30 secondes, 4 champs, aucun engagement. On ne vous demande ni CB, ni contrat.",
+    title: "Laissez-nous vos coordonnées",
+    description: "4 champs, 30 secondes. Ni CB, ni contrat, ni engagement.",
   },
   {
     number: "02",
-    title: "On vous appelle sous 48h",
-    description: "On discute de votre van, de vos attentes tarifaires et on crée votre page ensemble.",
+    title: "On échange par téléphone",
+    description: "On discute de votre van, de vos attentes et de comment Vanzon peut compléter vos canaux actuels.",
   },
   {
     number: "03",
-    title: "Vous recevez vos premiers voyageurs",
-    description: "Votre van est visible par des milliers de passionnés vanlife. Vous commencez à générer des revenus.",
+    title: "Votre van a sa page dédiée",
+    description: "On crée ensemble la page de votre van, visible par notre audience de passionnés vanlife.",
   },
 ];
 
@@ -120,28 +120,29 @@ export default function ProposerVotreVanPage() {
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-2 mb-8">
               <span className="text-green-400">●</span>
-              <span className="text-white/90 text-sm font-medium">Inscription gratuite — aucun engagement</span>
+              <span className="text-white/90 text-sm font-medium">Inscription gratuite — aucune exclusivité</span>
             </div>
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-[1.08] mb-6">
-              Votre van dort au garage ?
+              Vous louez déjà votre van ?
               <br />
               <span className="bg-gradient-to-r from-blue-400 to-sky-300 bg-clip-text text-transparent">
-                Louez-le. Gagnez jusqu&apos;à 800€/mois.
+                Ajoutez un canal. Payez moins.
               </span>
             </h1>
 
             <p className="text-lg sm:text-xl text-white/70 leading-relaxed max-w-xl">
-              Vanzon Explorer est une plateforme de location de vans aménagés entre particuliers.
-              On trouve les voyageurs, vous encaissez les revenus. C&apos;est aussi simple que ça.
+              Vanzon Explorer est une plateforme de location de vans aménagés
+              avec une commission 2x moins élevée que Yescapa.
+              Gardez vos canaux actuels, ajoutez le nôtre.
             </p>
           </div>
 
           <div className="hidden lg:flex gap-4 absolute bottom-20 right-6">
             {[
-              { value: "800€", label: "par mois", sub: "jusqu'à" },
-              { value: "0€", label: "inscription", sub: "toujours" },
-              { value: "0%", label: "exclusivité", sub: "requise" },
+              { value: "8-10%", label: "commission", sub: "vs 16% ailleurs" },
+              { value: "0€", label: "inscription", sub: "gratuite" },
+              { value: "0", label: "exclusivité", sub: "requise" },
             ].map((stat) => (
               <div key={stat.label} className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-5 py-4 text-center min-w-[100px]">
                 <div className="text-xs text-white/60 font-medium mb-0.5">{stat.sub}</div>
@@ -164,9 +165,9 @@ export default function ProposerVotreVanPage() {
         <div className="max-w-5xl mx-auto px-6">
           <div className="flex flex-wrap justify-center md:justify-between items-center gap-y-4 gap-x-8 text-white/60 text-sm font-medium">
             {[
-              { icon: "🚐", text: "Plateforme 100% spécialisée vanlife" },
-              { icon: "💰", text: "Vous fixez vos prix" },
-              { icon: "🤝", text: "Aucune exclusivité — gardez vos autres canaux" },
+              { icon: "🚐", text: "On loue nos propres vans au Pays Basque" },
+              { icon: "📉", text: "Commission 8-10% vs 16% Yescapa" },
+              { icon: "🤝", text: "Compatible avec tous vos canaux actuels" },
             ].map((item) => (
               <div key={item.text} className="flex items-center gap-2">
                 <span>{item.icon}</span>
@@ -182,14 +183,15 @@ export default function ProposerVotreVanPage() {
         <div className="max-w-5xl mx-auto px-6">
           <div className="text-center mb-14">
             <span className="badge-glass !px-4 !py-1.5 text-sm font-semibold mb-4 inline-block text-blue-500">
-              Ce que vous y gagnez
+              Pourquoi ajouter Vanzon
             </span>
             <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-3">
-              Votre van rapporte de l&apos;argent au lieu de rouiller.
+              Un canal de location en plus, une commission en moins.
             </h2>
-            <p className="text-slate-500 text-lg max-w-xl mx-auto">
-              On est propriétaires de vans nous aussi. On a construit la plateforme qu&apos;on
-              aurait aimé trouver : simple, honnête, et faite pour les vrais passionnés.
+            <p className="text-slate-500 text-lg max-w-2xl mx-auto">
+              Vous connaissez déjà la location de van. Nous aussi — on loue deux fourgons
+              aménagés depuis le Pays Basque. Vanzon, c&apos;est la plateforme
+              qu&apos;on a construite pour répondre à nos propres frustrations.
             </p>
           </div>
 
@@ -212,10 +214,10 @@ export default function ProposerVotreVanPage() {
         <div className="max-w-4xl mx-auto px-6">
           <div className="text-center mb-14">
             <span className="badge-glass !px-4 !py-1.5 text-sm font-semibold mb-4 inline-block" style={{ color: "#4D5FEC" }}>
-              3 étapes
+              Comment ça marche
             </span>
             <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-3">
-              Simple comme bonjour.
+              3 étapes, aucune prise de tête.
             </h2>
           </div>
 
@@ -240,24 +242,22 @@ export default function ProposerVotreVanPage() {
           <div className="grid lg:grid-cols-2 gap-12 items-start">
             <div>
               <span className="badge-glass !px-4 !py-1.5 text-sm font-semibold mb-5 inline-block" style={{ color: "#4D5FEC" }}>
-                Commencer maintenant
+                Rejoindre Vanzon
               </span>
               <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-5 leading-tight">
-                Inscrivez votre van,
-                <br />
-                commencez à gagner.
+                On en discute ?
               </h2>
               <p className="text-slate-500 text-lg leading-relaxed mb-8">
-                Remplissez le formulaire, on vous rappelle sous 48h pour créer votre page van
-                ensemble. Aucun engagement, aucun frais.
+                Laissez-nous vos coordonnées, on vous rappelle pour parler de votre van
+                et voir si Vanzon peut compléter vos canaux actuels. Aucun engagement.
               </p>
 
               <div className="space-y-4">
                 {[
-                  { icon: "✓", text: "0€ — inscription 100% gratuite" },
-                  { icon: "✓", text: "Aucune exclusivité — gardez Yescapa, Le Bon Coin, etc." },
-                  { icon: "✓", text: "On crée votre page van pro ensemble" },
-                  { icon: "✓", text: "Vous fixez vos prix, vos disponibilités, vos règles" },
+                  { icon: "✓", text: "Inscription gratuite, pas de CB demandée" },
+                  { icon: "✓", text: "Gardez Yescapa, Le Bon Coin et vos autres canaux" },
+                  { icon: "✓", text: "Commission 8-10% au lieu de 16%" },
+                  { icon: "✓", text: "Vos prix, vos disponibilités, vos règles" },
                 ].map((item) => (
                   <div key={item.text} className="flex items-center gap-3">
                     <span className="flex-shrink-0 w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-xs font-bold">
@@ -291,18 +291,18 @@ export default function ProposerVotreVanPage() {
 
         <div className="relative z-10 max-w-3xl mx-auto px-6 text-center">
           <h2 className="text-4xl md:text-5xl font-black text-white mb-5 leading-tight">
-            Votre van ne rapporte rien
+            Même van, même effort,
             <br />
-            quand il dort au garage.
+            meilleure commission.
           </h2>
           <p className="text-white/70 text-xl mb-10 leading-relaxed">
-            Inscription gratuite en 30 secondes. On vous rappelle sous 48h.
+            30 secondes pour s&apos;inscrire. On vous rappelle pour en discuter.
           </p>
           <a
             href="#formulaire"
             className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/30 text-white font-semibold px-8 py-4 rounded-full hover:bg-white/20 transition-colors"
           >
-            Inscrire mon van gratuitement <ArrowRight className="w-4 h-4" />
+            Proposer mon van <ArrowRight className="w-4 h-4" />
           </a>
         </div>
       </section>

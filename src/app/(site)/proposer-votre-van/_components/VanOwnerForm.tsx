@@ -144,7 +144,7 @@ export default function VanOwnerForm() {
         fullWidth
         disabled={isSubmitting}
       >
-        {isSubmitting ? "Inscription en cours..." : "Inscrire mon van gratuitement"}
+        {isSubmitting ? "Envoi en cours..." : "Proposer mon van"}
       </LiquidButton>
 
       <p className="text-xs text-text-secondary text-center">
