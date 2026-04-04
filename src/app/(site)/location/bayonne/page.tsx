@@ -25,12 +25,15 @@ const XALBAT_IMG =
   "https://cdn.sanity.io/images/lewexa74/production/04d93973d30c5eede51f954d1432a50a5f82ef9b-1080x750.png?auto=format&q=82";
 
 export default async function LocationBayonnePage() {
-  const [heroPhoto, photoTown, photoFood, photoFestival, placeStats] =
+  const [heroPhoto, photoRemparts, photoCathedrale, photoJambon, photoChocolat, photoFetes, photoMusee, placeStats] =
     await Promise.all([
-      fetchPexelsPhoto("bayonne basque city river cathedral france", FALLBACK_IMG),
-      fetchPexelsPhoto("bayonne old town medieval architecture", FALLBACK_IMG),
-      fetchPexelsPhoto("basque food jambon chocolate artisan", FALLBACK_IMG),
-      fetchPexelsPhoto("bayonne river festival basque", FALLBACK_IMG),
+      fetchPexelsPhoto("colorful riverside houses old town france", FALLBACK_IMG),
+      fetchPexelsPhoto("medieval stone rampart fortress wall", FALLBACK_IMG),
+      fetchPexelsPhoto("gothic cathedral cloister arches sunlight", FALLBACK_IMG),
+      fetchPexelsPhoto("cured ham leg hanging delicatessen artisan", FALLBACK_IMG),
+      fetchPexelsPhoto("artisan chocolate pralines handmade luxury", FALLBACK_IMG),
+      fetchPexelsPhoto("street festival crowd celebration music summer", FALLBACK_IMG),
+      fetchPexelsPhoto("museum gallery cultural exhibition interior", FALLBACK_IMG),
       getGooglePlaceStats(),
     ]);
 
@@ -39,37 +42,37 @@ export default async function LocationBayonnePage() {
       icon: "🏰",
       title: "Vieille ville et remparts",
       desc: "Remparts médiévaux classés, ruelles animées, quais de la Nive. Bayonne est l'une des villes les mieux conservées du Sud-Ouest.",
-      photo: photoTown,
+      photo: photoRemparts,
     },
     {
       icon: "⛪",
       title: "Cathédrale Sainte-Marie",
       desc: "Joyau gothique du XIIIe siècle, inscrit au patrimoine mondial. Le cloître est un havre de paix.",
-      photo: photoTown,
+      photo: photoCathedrale,
     },
     {
       icon: "🍖",
       title: "Jambon de Bayonne AOP",
       desc: "L'un des meilleurs jambons au monde. Visite de maison Pierre Ibaïalde ou dégustation au marché couvert.",
-      photo: photoFood,
+      photo: photoJambon,
     },
     {
       icon: "🍫",
       title: "Chocolat artisanal",
       desc: "Bayonne est la capitale française du chocolat depuis le XVIIe siècle. Cazenave, Puyodebat, Daranatz — faites le tour des chocolatiers.",
-      photo: photoFood,
+      photo: photoChocolat,
     },
     {
       icon: "🎉",
       title: "Fêtes de Bayonne",
       desc: "Début août, les plus grandes fêtes du Sud-Ouest. 5 jours de musique, corridas et ambiance basque explosive.",
-      photo: photoFestival,
+      photo: photoFetes,
     },
     {
       icon: "🏛️",
       title: "Musée Basque",
       desc: "La meilleure introduction à la culture basque : langue, histoire, traditions. Incontournable.",
-      photo: photoFestival,
+      photo: photoMusee,
     },
   ];
 

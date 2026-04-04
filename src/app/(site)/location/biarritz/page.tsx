@@ -25,12 +25,15 @@ const YONI_IMG =
   "https://cdn.sanity.io/images/lewexa74/production/660105a28e577c33f642a8fdff528d88925642e3-1080x750.png?auto=format&q=82";
 
 export default async function LocationBiarritzPage() {
-  const [heroPhoto, photoSurf, photoMarket, photoCoast, placeStats] =
+  const [heroPhoto, photoCoteBasques, photoMilady, photoHalles, photoRuePort, photoRocher, photoPhare, placeStats] =
     await Promise.all([
-      fetchPexelsPhoto("biarritz atlantic coast beach surf france", FALLBACK_IMG),
-      fetchPexelsPhoto("biarritz surf waves atlantic beach", FALLBACK_IMG),
-      fetchPexelsPhoto("basque country market pintxos food", FALLBACK_IMG),
-      fetchPexelsPhoto("biarritz coastline lighthouse panorama", FALLBACK_IMG),
+      fetchPexelsPhoto("biarritz grande plage ocean sunset", FALLBACK_IMG),
+      fetchPexelsPhoto("surfer wave atlantic coast france", FALLBACK_IMG),
+      fetchPexelsPhoto("calm sandy beach family swimming ocean", FALLBACK_IMG),
+      fetchPexelsPhoto("french food market cheese ham tapas", FALLBACK_IMG),
+      fetchPexelsPhoto("narrow street restaurant terrace evening lights", FALLBACK_IMG),
+      fetchPexelsPhoto("rocky cliff ocean walkway dramatic coast", FALLBACK_IMG),
+      fetchPexelsPhoto("white lighthouse cliff ocean panorama", FALLBACK_IMG),
       getGooglePlaceStats(),
     ]);
 
@@ -39,37 +42,37 @@ export default async function LocationBiarritzPage() {
       icon: "🌊",
       title: "Côte des Basques",
       desc: "Le spot de surf le plus iconique de France. Lever tôt, waves parfaites, et le parking gratuit hors saison.",
-      photo: photoSurf,
+      photo: photoCoteBasques,
     },
     {
       icon: "🏄",
       title: "Plage Milady",
       desc: "Plus calme que la Côte des Basques, idéale pour débuter le surf ou se baigner en famille.",
-      photo: photoSurf,
+      photo: photoMilady,
     },
     {
       icon: "🏛️",
       title: "Marché des Halles",
       desc: "Pintxos, jambon de Bayonne, fromages basques. Le meilleur petit-déjeuner avant de partir surfer.",
-      photo: photoMarket,
+      photo: photoHalles,
     },
     {
       icon: "🍽️",
       title: "Rue du Port",
       desc: "Tapas, txakoli et ambiance basque garantie. Le soir, l'animation est dans les rues.",
-      photo: photoMarket,
+      photo: photoRuePort,
     },
     {
       icon: "🗿",
       title: "Rocher de la Vierge",
       desc: "Vue à 360° sur l'Atlantique depuis la passerelle. Incontournable au coucher de soleil.",
-      photo: photoCoast,
+      photo: photoRocher,
     },
     {
       icon: "💡",
       title: "Phare de Biarritz",
       desc: "Par temps clair, vue sur les Pyrénées et l'Espagne. À 10 min à pied du centre.",
-      photo: photoCoast,
+      photo: photoPhare,
     },
   ];
 

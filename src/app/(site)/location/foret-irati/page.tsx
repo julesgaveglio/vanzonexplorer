@@ -82,12 +82,15 @@ const itineraryDays = [
 ];
 
 export default async function LocationForetIratiPage() {
-  const [heroPhoto, photoForest, photoSheep, photoCol, placeStats] =
+  const [heroPhoto, photoHetraie, photoFaune, photoRando, photoFromage, photoCols, photoBivouac, placeStats] =
     await Promise.all([
-      fetchPexelsPhoto("irati forest beech trees autumn pyrenees", FALLBACK_IMG),
-      fetchPexelsPhoto("beech forest misty mountains hiking pyrenees", FALLBACK_IMG),
-      fetchPexelsPhoto("mountain shepherd sheep basque country", FALLBACK_IMG),
-      fetchPexelsPhoto("pyrenees col mountain road basque", FALLBACK_IMG),
+      fetchPexelsPhoto("ancient beech forest autumn golden leaves", FALLBACK_IMG),
+      fetchPexelsPhoto("dense green beech forest sunbeam canopy", FALLBACK_IMG),
+      fetchPexelsPhoto("vulture eagle soaring mountain sky", FALLBACK_IMG),
+      fetchPexelsPhoto("mountain hiking trail forest lake", FALLBACK_IMG),
+      fetchPexelsPhoto("artisan sheep cheese wheels rustic wooden", FALLBACK_IMG),
+      fetchPexelsPhoto("mountain pass panoramic view green valley", FALLBACK_IMG),
+      fetchPexelsPhoto("campervan starry night sky milky way", FALLBACK_IMG),
       getGooglePlaceStats(),
     ]);
 
@@ -96,37 +99,37 @@ export default async function LocationForetIratiPage() {
       icon: "🌲",
       title: "La Hêtraie millénaire",
       desc: "L'une des dernières grandes forêts primitives d'Europe. 17 000 hectares de hêtres centenaires, un silence absolu, une lumière filtrée incomparable.",
-      photo: photoForest,
+      photo: photoHetraie,
     },
     {
       icon: "🦅",
       title: "Faune sauvage",
       desc: "Vautours fauves en vol thermique, cerfs en rut à l'automne, isards dans les rochers. Irati est un sanctuaire animalier accessible.",
-      photo: photoForest,
+      photo: photoFaune,
     },
     {
       icon: "🥾",
       title: "Randonnées balisées",
       desc: "80 km de sentiers balisés. Du tour du lac d'Irabia (3h) à la traversée du massif (2 jours). Toute la forêt est accessible à pied.",
-      photo: photoSheep,
+      photo: photoRando,
     },
     {
       icon: "🧀",
       title: "Fromages de brebis",
       desc: "Les bergeries du piémont produisent l'Ossau-Iraty AOP. Visite et dégustation directement chez les producteurs — une expérience authentique.",
-      photo: photoSheep,
+      photo: photoFromage,
     },
     {
       icon: "🏔️",
       title: "Cols et points de vue",
       desc: "Le col d'Organbidexka (1284m) offre un panorama à 360° sur les Pyrénées. Le col Bagargui est un des plus beaux du Pays Basque.",
-      photo: photoCol,
+      photo: photoCols,
     },
     {
       icon: "🌙",
       title: "Bivouac altitude",
       desc: "Dormir dans le van au cœur de la forêt, à 900m d'altitude. La nuit étoilée d'Irati est parmi les plus belles de France — pollution lumineuse nulle.",
-      photo: photoCol,
+      photo: photoBivouac,
     },
   ];
 

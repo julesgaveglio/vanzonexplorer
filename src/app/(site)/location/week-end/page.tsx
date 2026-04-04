@@ -80,11 +80,11 @@ const itineraryDays = [
 export default async function LocationWeekEndPage() {
   const [heroPhoto, photoSurf, photoFood, photoMountain, photoCoast, placeStats] =
     await Promise.all([
-      fetchPexelsPhoto("basque country road trip van coast mountains", FALLBACK_IMG),
-      fetchPexelsPhoto("biarritz surf beach atlantique waves", FALLBACK_IMG),
-      fetchPexelsPhoto("bayonne basque food pintxos gastronomy", FALLBACK_IMG),
-      fetchPexelsPhoto("pyrenees mountains basque hiking trail", FALLBACK_IMG),
-      fetchPexelsPhoto("basque coast village sunset atlantic", FALLBACK_IMG),
+      fetchPexelsPhoto("campervan parked scenic coastal road sunset", FALLBACK_IMG),
+      fetchPexelsPhoto("surfer walking beach surfboard golden hour", FALLBACK_IMG),
+      fetchPexelsPhoto("tapas pintxos spanish food plates wine bar", FALLBACK_IMG),
+      fetchPexelsPhoto("green mountain trail hiker pyrenees morning", FALLBACK_IMG),
+      fetchPexelsPhoto("coastal village colorful houses ocean cliff sunset", FALLBACK_IMG),
       getGooglePlaceStats(),
     ]);
 

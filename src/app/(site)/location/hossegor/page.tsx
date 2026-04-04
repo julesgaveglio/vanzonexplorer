@@ -25,12 +25,15 @@ const XALBAT_IMG =
   "https://cdn.sanity.io/images/lewexa74/production/04d93973d30c5eede51f954d1432a50a5f82ef9b-1080x750.png?auto=format&q=82";
 
 export default async function LocationHossegorPage() {
-  const [heroPhoto, photoSurf, photoForest, photoVillage, placeStats] =
+  const [heroPhoto, photoGraviere, photoEstagnots, photoForet, photoCoteSauvage, photoVillageLac, photoCapbreton, placeStats] =
     await Promise.all([
-      fetchPexelsPhoto("hossegor surf waves barrel beach landes", FALLBACK_IMG),
-      fetchPexelsPhoto("surfing big waves barrel atlantic", FALLBACK_IMG),
-      fetchPexelsPhoto("pine forest landes beach france", FALLBACK_IMG),
-      fetchPexelsPhoto("surf village hossegor lake", FALLBACK_IMG),
+      fetchPexelsPhoto("powerful ocean wave tube barrel surfing", FALLBACK_IMG),
+      fetchPexelsPhoto("big wave surfer tube barrel ocean", FALLBACK_IMG),
+      fetchPexelsPhoto("surfer sandy beach beginner longboard", FALLBACK_IMG),
+      fetchPexelsPhoto("pine tree forest path sunlight green", FALLBACK_IMG),
+      fetchPexelsPhoto("wild empty sand beach dunes atlantic", FALLBACK_IMG),
+      fetchPexelsPhoto("lakeside town houses calm water reflection", FALLBACK_IMG),
+      fetchPexelsPhoto("fishing port jetty pier sunset boats", FALLBACK_IMG),
       getGooglePlaceStats(),
     ]);
 
@@ -39,37 +42,37 @@ export default async function LocationHossegorPage() {
       icon: "🌊",
       title: "La Gravière",
       desc: "Le reef le plus puissant d'Europe. Les vagues tubulaires de La Gravière accueillent le Quiksilver Pro chaque automne. Réservé aux surfers confirmés.",
-      photo: photoSurf,
+      photo: photoGraviere,
     },
     {
       icon: "🏄",
       title: "Les Estagnots",
       desc: "Moins exposé que La Gravière, Les Estagnots est le meilleur spot pour les intermédiaires. Fond de sable, vagues régulières.",
-      photo: photoSurf,
+      photo: photoEstagnots,
     },
     {
       icon: "🌲",
       title: "Forêt landaise",
       desc: "La plus grande forêt de pins d'Europe à deux pas de la plage. Balades, vélo, champignons en automne. Un contraste saisissant mer-forêt.",
-      photo: photoForest,
+      photo: photoForet,
     },
     {
       icon: "🏖️",
       title: "La Côte Sauvage",
       desc: "40 km de plages de sable fin entre Hossegor et Biscarrosse. Accessible en van, peu fréquentée hors saison.",
-      photo: photoForest,
+      photo: photoCoteSauvage,
     },
     {
       icon: "🏘️",
       title: "Le Village et le Lac",
       desc: "Hossegor est la ville la plus chic des Landes. Architectures basques, boutiques surf, restaurants gastro. Le lac marin pour les sports calmes.",
-      photo: photoVillage,
+      photo: photoVillageLac,
     },
     {
       icon: "🎯",
       title: "Capbreton et ses jetées",
       desc: "À 3 km, Capbreton est un port de pêche et un paradis pour les pêcheurs de bar et de thon. Les jetées au coucher du soleil sont magiques.",
-      photo: photoVillage,
+      photo: photoCapbreton,
     },
   ];
 

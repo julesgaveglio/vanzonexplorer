@@ -440,15 +440,6 @@ export default async function LocationPage() {
       {/* ── CTA final ── */}
       <section className="relative py-28 overflow-hidden">
         <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, #0F153A 0%, #1e2d6b 100%)" }} />
-        <div className="absolute inset-0 opacity-20">
-          <Image
-            src="https://cdn.sanity.io/images/lewexa74/production/660105a28e577c33f642a8fdff528d88925642e3-1080x750.png?auto=format&q=80"
-            alt="Van aménagé Vanzon Explorer au Pays Basque"
-            fill
-            sizes="100vw"
-            className="object-cover"
-          />
-        </div>
         <div className="relative z-10 max-w-3xl mx-auto px-6 text-center">
           <h2 className="text-4xl md:text-5xl font-black text-white mb-5 leading-tight">
             Prêt à explorer<br />le Pays Basque en van ?
