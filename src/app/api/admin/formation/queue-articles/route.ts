@@ -3,6 +3,7 @@ import { NextRequest } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/auth";
 import { NextResponse } from "next/server";
+import { createSSEResponse } from "@/lib/sse";
 
 export async function GET() {
   const check = await requireAdmin();
@@ -69,10 +70,6 @@ export async function DELETE(req: NextRequest) {
   return Response.json({ deleted: true });
 }
 
-function sseEvent(data: Record<string, unknown>): string {
-  return `data: ${JSON.stringify(data)}\n\n`;
-}
-
 function slugify(text: string): string {
   return text
     .toLowerCase()
@@ -117,16 +114,10 @@ function clusterToCategory(cluster: string): string {
 export async function POST() {
   const check = await requireAdmin();
   if (check instanceof NextResponse) return check;
-  const encoder = new TextEncoder();
 
-  const stream = new ReadableStream({
-    async start(controller) {
-      const send = (data: Record<string, unknown>) => {
-        controller.enqueue(encoder.encode(sseEvent(data)));
-      };
-
-      try {
-        const supabase = createSupabaseAdmin();
+  return createSSEResponse(async (send) => {
+    try {
+    const supabase = createSupabaseAdmin();
 
         // 1. Lire top 60 keywords de vba_keywords
         send({ type: "log", level: "info", message: "Lecture des meilleurs mots-clés VBA..." });
@@ -140,7 +131,6 @@ export async function POST() {
         if (kwError || !keywords || keywords.length === 0) {
           send({ type: "log", level: "error", message: "Aucun mot-clé VBA trouvé. Lance d'abord la recherche de mots-clés." });
           send({ type: "done", inserted: 0, skipped: 0 });
-          controller.close();
           return;
         }
 
@@ -332,17 +322,5 @@ ${kwList}`,
         });
         send({ type: "done", inserted: 0, skipped: 0 });
       }
-
-      controller.close();
-    },
-  });
-
-  return new Response(stream, {
-    headers: {
-      "Content-Type": "text/event-stream",
-      "Cache-Control": "no-cache",
-      Connection: "keep-alive",
-      "X-Accel-Buffering": "no",
-    },
   });
 }

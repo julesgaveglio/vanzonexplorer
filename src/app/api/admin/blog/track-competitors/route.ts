@@ -2,13 +2,10 @@ import { readFile, writeFile } from "fs/promises";
 import path from "path";
 import { requireAdmin } from "@/lib/auth";
 import { NextResponse } from "next/server";
+import { createSSEResponse } from "@/lib/sse";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-function sseEncode(encoder: TextEncoder, data: object): Uint8Array {
-  return encoder.encode(`data: ${JSON.stringify(data)}\n\n`);
-}
 
 function slugify(str: string): string {
   return str
@@ -54,20 +51,12 @@ interface Opportunity {
 export async function POST() {
   const check = await requireAdmin();
   if (check instanceof NextResponse) return check;
-  const encoder = new TextEncoder();
 
-  const stream = new ReadableStream({
-    async start(controller) {
-      function sendLog(message: string) {
-        controller.enqueue(sseEncode(encoder, { type: "log", message }));
-      }
+  return createSSEResponse(async (send) => {
+    const sendLog = (message: string) => send({ type: "log", message });
+    const sendDone = (result: Record<string, unknown>) => send({ type: "done", result });
 
-      function sendDone(result: object) {
-        controller.enqueue(sseEncode(encoder, { type: "done", result }));
-      }
-
-      try {
-        const dfsLogin = process.env.DATAFORSEO_LOGIN;
+    const dfsLogin = process.env.DATAFORSEO_LOGIN;
         const dfsPassword = process.env.DATAFORSEO_PASSWORD;
         const tavilyKey = process.env.TAVILY_API_KEY;
         const groqKey = process.env.GROQ_API_KEY;
@@ -76,7 +65,6 @@ export async function POST() {
           sendLog(
             "Erreur : variables d'environnement manquantes (DATAFORSEO_LOGIN, DATAFORSEO_PASSWORD, TAVILY_API_KEY, GROQ_API_KEY)."
           );
-          controller.close();
           return;
         }
 
@@ -308,24 +296,5 @@ export async function POST() {
           addedToQueue,
           summary: competitorsSummary,
         });
-      } catch (err) {
-        controller.enqueue(
-          sseEncode(encoder, {
-            type: "log",
-            message: `Erreur fatale : ${(err as Error).message}`,
-          })
-        );
-      } finally {
-        controller.close();
-      }
-    },
-  });
-
-  return new Response(stream, {
-    headers: {
-      "Content-Type": "text/event-stream",
-      "Cache-Control": "no-cache",
-      Connection: "keep-alive",
-    },
   });
 }

@@ -4,6 +4,7 @@ import { createClient as createSanityClient } from "@sanity/client";
 import { createClient } from "@supabase/supabase-js";
 import { requireAdmin } from "@/lib/auth";
 import { NextResponse } from "next/server";
+import { createSSEResponse } from "@/lib/sse";
 
 // ── UTILS ──────────────────────────────────────────────────────────────────────
 
@@ -17,10 +18,6 @@ function slugify(s: string): string {
     .replace(/[îï]/g, "i")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
-}
-
-function sseEvent(data: Record<string, unknown>): string {
-  return `data: ${JSON.stringify(data)}\n\n`;
 }
 
 // ── TYPES ──────────────────────────────────────────────────────────────────────
@@ -469,27 +466,21 @@ export async function POST(req: NextRequest) {
 
   if (!emailText.trim()) {
     return new Response(
-      sseEvent({ type: "error", message: "Email vide" }),
+      `data: ${JSON.stringify({ type: "error", message: "Email vide" })}\n\n`,
       { headers: { "Content-Type": "text/event-stream" } }
     );
   }
 
-  const stream = new ReadableStream({
-    async start(controller) {
-      function send(data: Record<string, unknown>) {
-        controller.enqueue(new TextEncoder().encode(sseEvent(data)));
-      }
-
-      try {
-        // ── STEP 1: Parse email ──────────────────────────────────────────
-        send({ type: "log", level: "info", message: "📧 Analyse de l'email en cours..." });
+  return createSSEResponse(async (send) => {
+    // ── STEP 1: Parse email ──────────────────────────────────────────
+    send({ type: "log", level: "info", message: "📧 Analyse de l'email en cours..." });
 
         let parsed: ParsedEmail;
         try {
           parsed = await claudeParseEmail(emailText);
         } catch (e) {
           send({ type: "error", message: `Erreur parsing email: ${String(e)}` });
-          controller.close();
+
           return;
         }
 
@@ -594,7 +585,7 @@ export async function POST(req: NextRequest) {
           );
         } catch (e) {
           send({ type: "error", message: `Erreur analyse Claude: ${String(e)}` });
-          controller.close();
+
           return;
         }
 
@@ -766,7 +757,7 @@ export async function POST(req: NextRequest) {
             type: "error",
             message: `Erreur création marque: ${brandError.message}`,
           });
-          controller.close();
+
           return;
         }
 
@@ -862,24 +853,5 @@ export async function POST(req: NextRequest) {
           level: "success",
           message: `🎉 Onboarding terminé ! Marque "${parsed.brandName}" créée avec ${productsCreated} produits.`,
         });
-      } catch (e) {
-        controller.enqueue(
-          new TextEncoder().encode(
-            sseEvent({ type: "error", message: `Erreur inattendue: ${String(e)}` })
-          )
-        );
-      } finally {
-        controller.close();
-      }
-    },
-  });
-
-  return new Response(stream, {
-    headers: {
-      "Content-Type": "text/event-stream",
-      "Cache-Control": "no-cache",
-      Connection: "keep-alive",
-      "X-Accel-Buffering": "no",
-    },
   });
 }

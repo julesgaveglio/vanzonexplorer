@@ -2,10 +2,7 @@ import Groq from "groq-sdk";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/auth";
 import { NextResponse } from "next/server";
-
-function sseEvent(data: Record<string, unknown>): string {
-  return `data: ${JSON.stringify(data)}\n\n`;
-}
+import { createSSEResponse } from "@/lib/sse";
 
 interface ArticleQueueRow {
   id: string;
@@ -75,16 +72,10 @@ ${articleList}`;
 export async function POST() {
   const check = await requireAdmin();
   if (check instanceof NextResponse) return check;
-  const encoder = new TextEncoder();
 
-  const stream = new ReadableStream({
-    async start(controller) {
-      const send = (data: Record<string, unknown>) => {
-        controller.enqueue(encoder.encode(sseEvent(data)));
-      };
-
-      try {
-        const supabase = createSupabaseAdmin();
+  return createSSEResponse(async (send) => {
+    try {
+    const supabase = createSupabaseAdmin();
 
         // 1. Charger les articles pending
         send({ type: "log", level: "info", message: "Chargement des articles en attente..." });
@@ -98,7 +89,6 @@ export async function POST() {
         if (articlesError || !pendingArticles || pendingArticles.length === 0) {
           send({ type: "log", level: "error", message: articlesError?.message ?? "Aucun article pending trouvé" });
           send({ type: "done", scored: 0, rewritten: 0 });
-          controller.close();
           return;
         }
 
@@ -235,17 +225,5 @@ export async function POST() {
         });
         send({ type: "done", scored: 0, rewritten: 0 });
       }
-
-      controller.close();
-    },
-  });
-
-  return new Response(stream, {
-    headers: {
-      "Content-Type": "text/event-stream",
-      "Cache-Control": "no-cache",
-      Connection: "keep-alive",
-      "X-Accel-Buffering": "no",
-    },
   });
 }

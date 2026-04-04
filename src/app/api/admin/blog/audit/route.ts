@@ -1,13 +1,10 @@
 import { NextRequest } from "next/server";
 import { requireAdmin } from "@/lib/auth";
 import { NextResponse } from "next/server";
+import { createSSEResponse } from "@/lib/sse";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-function sseEncode(encoder: TextEncoder, data: object): Uint8Array {
-  return encoder.encode(`data: ${JSON.stringify(data)}\n\n`);
-}
 
 export async function POST(req: NextRequest) {
   const check = await requireAdmin();
@@ -18,21 +15,12 @@ export async function POST(req: NextRequest) {
     return new Response(JSON.stringify({ error: "slug and targetKeyword are required" }), { status: 400 });
   }
 
-  const encoder = new TextEncoder();
+  return createSSEResponse(async (send) => {
+    const sendLog = (message: string) => send({ type: "log", message });
+    const sendDone = (result: Record<string, unknown>) => send({ type: "done", result });
 
-  const stream = new ReadableStream({
-    async start(controller) {
-      function sendLog(message: string) {
-        controller.enqueue(sseEncode(encoder, { type: "log", message }));
-      }
-
-      function sendDone(result: object) {
-        controller.enqueue(sseEncode(encoder, { type: "done", result }));
-      }
-
-      try {
-        // Step 1: Fetch article via Jina
-        sendLog("Lecture de l'article en cours...");
+    // Step 1: Fetch article via Jina
+    sendLog("Lecture de l'article en cours...");
 
         const jinaLogin = process.env.JINA_API_KEY;
         const dfsLogin = process.env.DATAFORSEO_LOGIN;
@@ -41,7 +29,6 @@ export async function POST(req: NextRequest) {
 
         if (!jinaLogin || !dfsLogin || !dfsPassword || !groqKey) {
           sendLog("Erreur : variables d'environnement manquantes (JINA_API_KEY, DATAFORSEO_LOGIN, DATAFORSEO_PASSWORD, GROQ_API_KEY).");
-          controller.close();
           return;
         }
 
@@ -229,24 +216,5 @@ Réponds UNIQUEMENT avec le JSON, sans markdown.
           competitorUrls: top3Urls,
           timestamp: new Date().toISOString(),
         });
-      } catch (err) {
-        controller.enqueue(
-          sseEncode(encoder, {
-            type: "log",
-            message: `Erreur fatale : ${(err as Error).message}`,
-          })
-        );
-      } finally {
-        controller.close();
-      }
-    },
-  });
-
-  return new Response(stream, {
-    headers: {
-      "Content-Type": "text/event-stream",
-      "Cache-Control": "no-cache",
-      Connection: "keep-alive",
-    },
   });
 }

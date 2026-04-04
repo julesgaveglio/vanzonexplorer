@@ -2,10 +2,7 @@ import { NextRequest } from "next/server";
 import Groq from "groq-sdk";
 import { requireAdmin } from "@/lib/auth";
 import { NextResponse } from "next/server";
-
-function sseEvent(data: Record<string, unknown>): string {
-  return `data: ${JSON.stringify(data)}\n\n`;
-}
+import { createSSEResponse } from "@/lib/sse";
 
 const CMO_SYSTEM_PROMPT = `Tu es le Directeur Marketing 360° de Vanzon Explorer, une entreprise de location et vente de vans aménagés au Pays Basque (Biarritz area).
 
@@ -27,50 +24,29 @@ export async function POST(req: NextRequest) {
   const { question } = (await req.json()) as { question: string };
 
   const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-  const encoder = new TextEncoder();
 
-  const stream = new ReadableStream({
-    async start(controller) {
-      const send = (data: Record<string, unknown>) => {
-        controller.enqueue(encoder.encode(sseEvent(data)));
-      };
+  return createSSEResponse(async (send) => {
+    send({ type: "start" });
 
-      try {
-        send({ type: "start" });
+    const completion = await groq.chat.completions.create({
+      model: "llama-3.3-70b-versatile",
+      messages: [
+        { role: "system", content: CMO_SYSTEM_PROMPT },
+        { role: "user", content: question },
+      ],
+      stream: true,
+      max_tokens: 2048,
+    });
 
-        const completion = await groq.chat.completions.create({
-          model: "llama-3.3-70b-versatile",
-          messages: [
-            { role: "system", content: CMO_SYSTEM_PROMPT },
-            { role: "user", content: question },
-          ],
-          stream: true,
-          max_tokens: 2048,
-        });
-
-        let fullText = "";
-        for await (const chunk of completion) {
-          const delta = chunk.choices[0]?.delta?.content ?? "";
-          if (delta) {
-            fullText += delta;
-            send({ type: "delta", text: delta });
-          }
-        }
-
-        send({ type: "done", fullText });
-      } catch (err) {
-        send({ type: "error", message: err instanceof Error ? err.message : "Erreur inconnue" });
-      } finally {
-        controller.close();
+    let fullText = "";
+    for await (const chunk of completion) {
+      const delta = chunk.choices[0]?.delta?.content ?? "";
+      if (delta) {
+        fullText += delta;
+        send({ type: "delta", text: delta });
       }
-    },
-  });
+    }
 
-  return new Response(stream, {
-    headers: {
-      "Content-Type": "text/event-stream",
-      "Cache-Control": "no-cache",
-      Connection: "keep-alive",
-    },
+    send({ type: "done", fullText });
   });
 }

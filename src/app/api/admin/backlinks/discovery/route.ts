@@ -3,10 +3,7 @@ import Groq from "groq-sdk";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/auth";
 import { NextResponse } from "next/server";
-
-function sseEvent(data: Record<string, unknown>): string {
-  return `data: ${JSON.stringify(data)}\n\n`;
-}
+import { createSSEResponse } from "@/lib/sse";
 
 interface SerpApiOrganicResult {
   link?: string;
@@ -87,20 +84,13 @@ export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}));
   const { max = 15 }: { max?: number } = body;
 
-  const encoder = new TextEncoder();
-
-  const stream = new ReadableStream({
-    async start(controller) {
-      const send = (data: Record<string, unknown>) => {
-        controller.enqueue(encoder.encode(sseEvent(data)));
-      };
-
-      try {
-        send({
-          type: "log",
-          level: "info",
-          message: `Lancement de ${SERP_QUERIES.length} recherches SerpApi...`,
-        });
+  return createSSEResponse(async (send) => {
+    try {
+      send({
+        type: "log",
+        level: "info",
+        message: `Lancement de ${SERP_QUERIES.length} recherches SerpApi...`,
+      });
 
         // Run SerpApi queries in parallel (by batches of 5 to avoid rate limits)
         const allResults: Array<{ result: SerpApiOrganicResult; query: string }> = [];
@@ -162,7 +152,6 @@ export async function POST(req: NextRequest) {
         if (newDomains.length === 0) {
           send({ type: "log", level: "success", message: "Aucun nouveau prospect à ajouter." });
           send({ type: "done", count: 0 });
-          controller.close();
           return;
         }
 
@@ -298,17 +287,5 @@ ${JSON.stringify(candidatesForGroq, null, 2)}`,
         });
         send({ type: "done", count: 0 });
       }
-
-      controller.close();
-    },
-  });
-
-  return new Response(stream, {
-    headers: {
-      "Content-Type": "text/event-stream",
-      "Cache-Control": "no-cache",
-      Connection: "keep-alive",
-      "X-Accel-Buffering": "no",
-    },
   });
 }
