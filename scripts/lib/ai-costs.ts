@@ -5,7 +5,7 @@
  * Supports Anthropic, DataForSEO, Tavily, and SerpAPI.
  */
 
-const USD_TO_EUR = 0.92;
+import { USD_TO_EUR } from "./supabase";
 
 const RATES = {
   // Anthropic (Claude)
