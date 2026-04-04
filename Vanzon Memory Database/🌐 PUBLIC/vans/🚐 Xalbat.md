@@ -9,7 +9,9 @@
 - **Type** : Fourgon aménagé (Renault Trafic 3 blanc)
 - **Couleur** : Blanc
 - **Statut** : En location sur Yescapa
-- **Homologation** : CTTE (utilitaire aménagé)
+- **Homologation** : CTTE — **NON VASP** (utilitaire aménagé, pas homologué véhicule de loisirs)
+
+> ⚠️ **Important pour les articles** : Ne jamais écrire que Xalbat est un VASP. Ce n'est pas le cas. C'est un utilitaire (CTTE) avec aménagement intérieur, non homologué en véhicule de loisirs.
 
 ---
 

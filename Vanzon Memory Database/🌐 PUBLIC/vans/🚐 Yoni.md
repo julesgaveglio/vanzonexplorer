@@ -9,7 +9,9 @@
 - **Type** : Fourgon aménagé (Renault Trafic)
 - **Couleur** : Vert
 - **Statut** : En location sur Yescapa
-- **Homologation** : CTTE (utilitaire aménagé, non homologué VASP)
+- **Homologation** : CTTE — **NON VASP** (utilitaire aménagé, pas homologué véhicule de loisirs)
+
+> ⚠️ **Important pour les articles** : Ne jamais écrire que Yoni est un VASP. Ce n'est pas le cas. C'est un utilitaire (CTTE) avec aménagement intérieur, non homologué en véhicule de loisirs.
 
 ---
 
