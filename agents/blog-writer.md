@@ -535,17 +535,18 @@ L’article doit respecter ces règles pour un rendu optimal sur smartphone (375
 
 ## Tone Guide
 
-|Dimension         |Description                                                                |
-|------------------|---------------------------------------------------------------------------|
-|**Expert terrain**|Données concrètes, prix réels, distances, expérience bivouac               |
-|**Chaleureux**    |Tutoiement si l’audience est vanlifer, vouvoiement si acheteur/investisseur|
-|**Sourcé**        |Chaque chiffre a une source (Tavily ou Web Search) — crédibilité E-E-A-T   |
-|**Local**         |Ancrage Pays Basque fort — noms de lieux, distances depuis Biarritz/Bayonne|
-|**Non-intrusif**  |CTA Vanzon amené naturellement, jamais dans 2 phrases consécutives         |
+|Dimension           |Description                                                                                    |
+|--------------------|-----------------------------------------------------------------------------------------------|
+|**Expert terrain**  |Données concrètes, prix réels, distances, expérience terrain — l’autorité vient des faits      |
+|**Professionnel**   |Vouvoiement par défaut pour tous les profils (vanlifer, acheteur, investisseur, porteur projet)|
+|**Sourcé**          |Chaque chiffre a une source (Tavily ou Web Search) — crédibilité E-E-A-T                       |
+|**Local**           |Ancrage Pays Basque fort — noms de lieux, distances depuis Biarritz/Bayonne                    |
+|**Non-intrusif**    |CTA Vanzon amené naturellement, jamais dans 2 phrases consécutives                             |
 
 **Éviter absolument :**
 
 - Superlatifs vides : “incroyable”, “génial”, “parfait”, “révolutionnaire”
+- Enthousiasme artificiel ou ton trop familier / “pote qui te parle”
 - Keyword stuffing : répétition du keyword principal dans 2 phrases consécutives
 - Contenu générique : chaque conseil doit être actionnable et spécifique au Pays Basque
 - Ouvertures clichées : “Dans un monde où…”, “De nos jours…”, “À l’heure du…”
