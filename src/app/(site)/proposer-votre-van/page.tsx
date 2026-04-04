@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Proposer votre van à la location | Vanzon Explorer",
     description:
-      "Un canal de location supplémentaire pour votre van aménagé. Commission réduite vs Yescapa, trafic organique, zéro exclusivité.",
+      "Un canal de location supplémentaire pour votre van aménagé. Commission réduite, trafic organique qualifié, zéro exclusivité.",
     type: "website",
     url: "https://vanzonexplorer.com/proposer-votre-van",
     images: [
@@ -30,14 +30,14 @@ const BENEFITS = [
     icon: Percent,
     title: "5% de commission au lancement",
     description:
-      "Yescapa prend 16% sur chaque réservation. Vanzon : 5% les 6 premiers mois, puis 8%. Sur une semaine à 95€/nuit, c'est plus de 70€ de différence dans votre poche.",
+      "La plupart des plateformes prennent 15% ou plus. Vanzon : 5% les 6 premiers mois, puis 8%. Sur une semaine à 95€/nuit, la différence est réelle.",
     color: "bg-blue-50 text-blue-600",
   },
   {
     icon: Shield,
     title: "Aucune exclusivité",
     description:
-      "Gardez Yescapa, Le Bon Coin, ou tout autre canal. Vanzon est un canal supplémentaire qui vous amène des réservations en plus, pas un remplacement.",
+      "Gardez vos plateformes actuelles. Vanzon est un canal supplémentaire qui vous amène des réservations en plus, pas un remplacement.",
     color: "bg-teal-50 text-teal-600",
   },
   {
@@ -51,7 +51,7 @@ const BENEFITS = [
     icon: Users,
     title: "Construit par des propriétaires",
     description:
-      "On loue nous-mêmes deux vans au Pays Basque. On connaît les galères Yescapa, les questions des locataires, la saisonnalité. La plateforme est pensée pour des gens comme nous.",
+      "On loue nous-mêmes deux vans au Pays Basque. On connaît les questions des locataires, la saisonnalité, les imprévus. La plateforme est pensée pour des gens comme nous.",
     color: "bg-purple-50 text-purple-600",
   },
 ];
@@ -133,7 +133,7 @@ export default function ProposerVotreVanPage() {
 
             <p className="text-lg sm:text-xl text-white/70 leading-relaxed max-w-xl">
               Vanzon Explorer est une plateforme de location de vans aménagés
-              avec une commission à 5% au lancement (vs 16% Yescapa).
+              avec une commission à 5% au lancement.
               Gardez vos canaux actuels, ajoutez le nôtre.
             </p>
           </div>
@@ -255,7 +255,7 @@ export default function ProposerVotreVanPage() {
               <div className="space-y-4">
                 {[
                   { icon: "✓", text: "Inscription gratuite, pas de CB demandée" },
-                  { icon: "✓", text: "Gardez Yescapa, Le Bon Coin et vos autres canaux" },
+                  { icon: "✓", text: "Gardez vos autres plateformes en parallèle" },
                   { icon: "✓", text: "5% de commission les 6 premiers mois, puis 8%" },
                   { icon: "✓", text: "Vos prix, vos disponibilités, vos règles" },
                 ].map((item) => (
