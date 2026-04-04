@@ -3,13 +3,13 @@
  * road-trip-publisher-agent.ts
  *
  * Transforme les road trips générés (status='sent') en articles SEO Sanity.
- * Pipeline : Supabase → Images → GeoJSON → Anthropic → Sanity → Notification
+ * Pipeline : Supabase → Images → GeoJSON → Gemini 2.5 Flash → Sanity → Notification
  *
  * Usage:
  *   npx tsx scripts/agents/road-trip-publisher-agent.ts
  *
  * Required env vars:
- *   ANTHROPIC_API_KEY
+ *   GEMINI_API_KEY
  *   SANITY_API_WRITE_TOKEN
  *   NEXT_PUBLIC_SUPABASE_URL
  *   SUPABASE_SERVICE_ROLE_KEY
@@ -20,7 +20,6 @@
 
 import fs from "fs";
 import path from "path";
-import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@sanity/client";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { normalizeRegion, getRegionName } from "../lib/region-normalizer";
@@ -51,13 +50,56 @@ const supabase = createSupabaseClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-
 // ── Load prompt ───────────────────────────────────────────────────────────────
 function loadPrompt(): string {
   const promptPath = path.join(PROJECT_ROOT, "scripts/agents/prompts/road-trip-publisher.md");
   if (fs.existsSync(promptPath)) return fs.readFileSync(promptPath, "utf-8");
   return "Tu es un expert SEO vanlife. Génère un article road trip structuré en JSON valide.";
+}
+
+// ── Gemini 2.5 Flash ─────────────────────────────────────────────────────────
+async function callGemini(
+  prompt: string,
+  opts: { json?: boolean; maxTokens?: number } = {}
+): Promise<{ text: string; inputTokens: number; outputTokens: number }> {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) throw new Error("GEMINI_API_KEY manquante");
+
+  const res = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: {
+          maxOutputTokens: opts.maxTokens ?? 8192,
+          temperature: 0.5,
+          thinkingConfig: { thinkingBudget: 0 },
+          ...(opts.json ? { responseMimeType: "application/json" } : {}),
+        },
+      }),
+    }
+  );
+
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`Gemini API error ${res.status}: ${errText}`);
+  }
+
+  const json = await res.json() as {
+    candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
+    usageMetadata?: { promptTokenCount?: number; candidatesTokenCount?: number };
+  };
+
+  const text = json.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+  if (!text) throw new Error("Gemini returned empty response");
+
+  return {
+    text,
+    inputTokens: json.usageMetadata?.promptTokenCount ?? 0,
+    outputTokens: json.usageMetadata?.candidatesTokenCount ?? 0,
+  };
 }
 
 // ── Portable Text builder ─────────────────────────────────────────────────────
@@ -77,13 +119,16 @@ async function main() {
   const cost = createCostTracker("road-trip-publisher");
 
   try {
-    // 1. Récupérer un road trip à traiter (ID spécifique ou le plus récent)
+    // 1. Récupérer un road trip RÉCENT à traiter (créé dans les dernières 6h)
+    //    Les anciens road trips sont ignorés — on ne publie que les nouvelles demandes.
     const targetId = process.argv[2] || null;
+    const sixHoursAgo = new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString();
     let query = supabase
       .from("road_trip_requests")
       .select("*")
       .eq("status", "sent")
       .is("article_sanity_id", null)
+      .gte("created_at", sixHoursAgo)
       .order("created_at", { ascending: false })
       .limit(1);
     if (targetId) query = query.eq("id", targetId) as typeof query;
@@ -147,10 +192,14 @@ async function main() {
     const geojson = buildGeoJSON(spotsGeo);
     console.log(`🗺️ GeoJSON : ${geojson.features.length} features`);
 
-    // 7. Appel Anthropic
-    console.log("🤖 Génération contenu avec Anthropic...");
+    // 7. Appel Gemini 2.5 Flash
+    console.log("🤖 Génération contenu avec Gemini 2.5 Flash...");
     const systemPrompt = loadPrompt();
-    const userMessage = `Voici les données du road trip à transformer en article SEO :
+    const fullPrompt = `${systemPrompt}
+
+---
+
+Voici les données du road trip à transformer en article SEO :
 
 RÉGION : ${regionName}
 DURÉE : ${request.duree} jours
@@ -162,25 +211,19 @@ INTÉRÊTS : ${(request.interets || []).join(", ")}
 ITINÉRAIRE JSON :
 ${JSON.stringify(itineraire, null, 2).slice(0, 8000)}
 
-Génère l'article en JSON valide comme spécifié dans le prompt système.`;
+Génère l'article en JSON valide comme spécifié dans les instructions.`;
 
-    const response = await anthropic.messages.create({
-      model: "claude-sonnet-4-5",
-      max_tokens: 8192,
-      system: systemPrompt,
-      messages: [{ role: "user", content: userMessage }],
-    });
+    const geminiResult = await callGemini(fullPrompt, { json: true, maxTokens: 8192 });
 
-    cost.addAnthropic("sonnet", response.usage.input_tokens, response.usage.output_tokens);
+    cost.addGemini(geminiResult.inputTokens, geminiResult.outputTokens, 0, "gemini-2.5-flash");
 
     let articleData: Record<string, unknown>;
     try {
-      const rawText = response.content[0].type === "text" ? response.content[0].text : "";
-      const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+      const jsonMatch = geminiResult.text.match(/\{[\s\S]*\}/);
       if (!jsonMatch) throw new Error("No JSON found in response");
       articleData = JSON.parse(jsonMatch[0]);
     } catch (err) {
-      throw new Error(`Failed to parse Anthropic JSON response: ${err}`);
+      throw new Error(`Failed to parse Gemini JSON response: ${err}`);
     }
 
     // 8. Construire le document Sanity
