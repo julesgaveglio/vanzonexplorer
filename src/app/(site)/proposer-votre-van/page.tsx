@@ -1,17 +1,17 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { TrendingUp, Shield, Zap, Users, ArrowRight } from "lucide-react";
+import { Euro, Shield, Zap, Users, ArrowRight } from "lucide-react";
 import VanOwnerForm from "./_components/VanOwnerForm";
 
 export const metadata: Metadata = {
-  title: "Proposer votre van | Vanzon Explorer",
+  title: "Louez votre van aménagé | Vanzon Explorer",
   description:
-    "Rejoignez Vanzon Explorer et rentabilisez votre van aménagé. Plateforme spécialisée vanlife, trafic organique qualifié, gestion simplifiée. Inscription gratuite.",
+    "Votre van dort au garage ? Louez-le sur Vanzon Explorer et gagnez jusqu'à 800€/mois. Inscription gratuite, aucune exclusivité, vous gardez le contrôle.",
   alternates: { canonical: "https://vanzonexplorer.com/proposer-votre-van" },
   openGraph: {
-    title: "Proposer votre van | Vanzon Explorer",
+    title: "Louez votre van aménagé | Vanzon Explorer",
     description:
-      "Rentabilisez votre van aménagé sur Vanzon Explorer — la plateforme pensée par des vanlifers, pour des vanlifers.",
+      "Votre van dort au garage ? Louez-le sur Vanzon Explorer et gagnez jusqu'à 800€/mois. Inscription gratuite.",
     type: "website",
     url: "https://vanzonexplorer.com/proposer-votre-van",
     images: [
@@ -27,31 +27,31 @@ export const metadata: Metadata = {
 
 const BENEFITS = [
   {
-    icon: TrendingUp,
-    title: "Des voyageurs qualifiés",
+    icon: Euro,
+    title: "Gagnez jusqu'à 800€/mois",
     description:
-      "Notre blog SEO et notre IA road trip attirent des milliers de passionnés vanlife chaque mois. Pas du trafic générique — des gens qui cherchent exactement votre van.",
+      "Un van loué 7 jours par mois à 95€/jour = 665€ net dans votre poche. En haute saison, certains propriétaires dépassent les 1 000€. Votre van travaille pendant que vous ne l'utilisez pas.",
     color: "bg-blue-50 text-blue-600",
   },
   {
     icon: Shield,
-    title: "Vous gardez le contrôle",
+    title: "Vous gardez le contrôle total",
     description:
-      "Vos prix, vos disponibilités, vos règles. Pas d'exclusivité — gardez vos autres canaux en parallèle. Vanzon est un canal supplémentaire, pas un remplacement.",
+      "C'est votre van, vos règles. Vous fixez vos prix, vos disponibilités et vos conditions. Aucune exclusivité : gardez vos autres canaux. Vanzon est un revenu en plus, pas un remplacement.",
     color: "bg-teal-50 text-teal-600",
   },
   {
     icon: Zap,
-    title: "Zéro complexité",
+    title: "On s'occupe de tout le reste",
     description:
-      "On gère la visibilité, le référencement et la mise en relation. Vous n'avez qu'à accueillir vos voyageurs et profiter des revenus.",
+      "Vous n'avez rien à faire côté marketing. On gère la visibilité de votre van, le référencement Google et la mise en relation avec les voyageurs. Vous, vous accueillez et vous encaissez.",
     color: "bg-amber-50 text-amber-600",
   },
   {
     icon: Users,
-    title: "Une communauté, pas un catalogue",
+    title: "Des locataires passionnés, pas des touristes lambda",
     description:
-      "Vanzon n'est pas un listing anonyme. Chaque van a sa page dédiée, son histoire, sa personnalité. Vos locataires vous choisissent, pas juste un prix.",
+      "Notre audience, ce sont des passionnés de vanlife qui planifient leur road trip. Ils cherchent un van avec une histoire, pas le premier prix sur un comparateur. Résultat : respect du véhicule et meilleures évaluations.",
     color: "bg-purple-50 text-purple-600",
   },
 ];
@@ -59,18 +59,18 @@ const BENEFITS = [
 const STEPS = [
   {
     number: "01",
-    title: "Inscrivez-vous",
-    description: "Remplissez le formulaire ci-dessous. 30 secondes, aucun engagement.",
+    title: "Vous remplissez le formulaire",
+    description: "30 secondes, 4 champs, aucun engagement. On ne vous demande ni CB, ni contrat.",
   },
   {
     number: "02",
-    title: "On vous appelle",
-    description: "On discute de votre van, vos attentes et on prépare votre page ensemble.",
+    title: "On vous appelle sous 48h",
+    description: "On discute de votre van, de vos attentes tarifaires et on crée votre page ensemble.",
   },
   {
     number: "03",
-    title: "Votre van est en ligne",
-    description: "Page dédiée, visible par notre audience, prêt à recevoir ses premiers voyageurs.",
+    title: "Vous recevez vos premiers voyageurs",
+    description: "Votre van est visible par des milliers de passionnés vanlife. Vous commencez à générer des revenus.",
   },
 ];
 
@@ -120,28 +120,28 @@ export default function ProposerVotreVanPage() {
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-2 mb-8">
               <span className="text-green-400">●</span>
-              <span className="text-white/90 text-sm font-medium">Inscriptions ouvertes — places limitées</span>
+              <span className="text-white/90 text-sm font-medium">Inscription gratuite — aucun engagement</span>
             </div>
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-[1.08] mb-6">
-              Votre van mérite
+              Votre van dort au garage ?
               <br />
               <span className="bg-gradient-to-r from-blue-400 to-sky-300 bg-clip-text text-transparent">
-                de voyager plus.
+                Louez-le. Gagnez jusqu&apos;à 800€/mois.
               </span>
             </h1>
 
             <p className="text-lg sm:text-xl text-white/70 leading-relaxed max-w-xl">
-              Rejoignez la plateforme Vanzon Explorer et donnez à votre van aménagé
-              la visibilité qu&apos;il mérite auprès de voyageurs passionnés.
+              Vanzon Explorer est une plateforme de location de vans aménagés entre particuliers.
+              On trouve les voyageurs, vous encaissez les revenus. C&apos;est aussi simple que ça.
             </p>
           </div>
 
           <div className="hidden lg:flex gap-4 absolute bottom-20 right-6">
             {[
-              { value: "3k+", label: "visiteurs", sub: "par mois" },
-              { value: "50+", label: "articles", sub: "SEO publiés" },
+              { value: "800€", label: "par mois", sub: "jusqu'à" },
               { value: "0€", label: "inscription", sub: "toujours" },
+              { value: "0%", label: "exclusivité", sub: "requise" },
             ].map((stat) => (
               <div key={stat.label} className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-5 py-4 text-center min-w-[100px]">
                 <div className="text-xs text-white/60 font-medium mb-0.5">{stat.sub}</div>
@@ -164,9 +164,9 @@ export default function ProposerVotreVanPage() {
         <div className="max-w-5xl mx-auto px-6">
           <div className="flex flex-wrap justify-center md:justify-between items-center gap-y-4 gap-x-8 text-white/60 text-sm font-medium">
             {[
-              { icon: "🚐", text: "Spécialiste vanlife" },
-              { icon: "📍", text: "Basé au Pays Basque" },
-              { icon: "🤝", text: "Aucune exclusivité requise" },
+              { icon: "🚐", text: "Plateforme 100% spécialisée vanlife" },
+              { icon: "💰", text: "Vous fixez vos prix" },
+              { icon: "🤝", text: "Aucune exclusivité — gardez vos autres canaux" },
             ].map((item) => (
               <div key={item.text} className="flex items-center gap-2">
                 <span>{item.icon}</span>
@@ -182,14 +182,14 @@ export default function ProposerVotreVanPage() {
         <div className="max-w-5xl mx-auto px-6">
           <div className="text-center mb-14">
             <span className="badge-glass !px-4 !py-1.5 text-sm font-semibold mb-4 inline-block text-blue-500">
-              Pourquoi Vanzon
+              Ce que vous y gagnez
             </span>
             <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-3">
-              Pas juste une plateforme de plus.
+              Votre van rapporte de l&apos;argent au lieu de rouiller.
             </h2>
             <p className="text-slate-500 text-lg max-w-xl mx-auto">
-              Vanzon est construit par des passionnés de van, pas par une startup de la tech.
-              On comprend votre van parce qu&apos;on en a aussi.
+              On est propriétaires de vans nous aussi. On a construit la plateforme qu&apos;on
+              aurait aimé trouver : simple, honnête, et faite pour les vrais passionnés.
             </p>
           </div>
 
@@ -235,29 +235,29 @@ export default function ProposerVotreVanPage() {
       </section>
 
       {/* ── FORMULAIRE ───────────────────────────────────────────── */}
-      <section className="py-20 bg-white">
+      <section id="formulaire" className="py-20 bg-white scroll-mt-20">
         <div className="max-w-5xl mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-start">
             <div>
               <span className="badge-glass !px-4 !py-1.5 text-sm font-semibold mb-5 inline-block" style={{ color: "#4D5FEC" }}>
-                Avant-première
+                Commencer maintenant
               </span>
               <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-5 leading-tight">
-                Inscrivez votre van
+                Inscrivez votre van,
                 <br />
-                en 30 secondes.
+                commencez à gagner.
               </h2>
               <p className="text-slate-500 text-lg leading-relaxed mb-8">
-                Aucun engagement. On vous recontacte personnellement pour discuter de votre van
-                et voir ensemble si Vanzon est le bon fit.
+                Remplissez le formulaire, on vous rappelle sous 48h pour créer votre page van
+                ensemble. Aucun engagement, aucun frais.
               </p>
 
               <div className="space-y-4">
                 {[
-                  { icon: "✓", text: "Inscription 100% gratuite" },
-                  { icon: "✓", text: "Aucune exclusivité — gardez vos autres canaux" },
-                  { icon: "✓", text: "On crée votre page van ensemble" },
-                  { icon: "✓", text: "Vous fixez vos prix et vos disponibilités" },
+                  { icon: "✓", text: "0€ — inscription 100% gratuite" },
+                  { icon: "✓", text: "Aucune exclusivité — gardez Yescapa, Le Bon Coin, etc." },
+                  { icon: "✓", text: "On crée votre page van pro ensemble" },
+                  { icon: "✓", text: "Vous fixez vos prix, vos disponibilités, vos règles" },
                 ].map((item) => (
                   <div key={item.text} className="flex items-center gap-3">
                     <span className="flex-shrink-0 w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-xs font-bold">
@@ -291,18 +291,18 @@ export default function ProposerVotreVanPage() {
 
         <div className="relative z-10 max-w-3xl mx-auto px-6 text-center">
           <h2 className="text-4xl md:text-5xl font-black text-white mb-5 leading-tight">
-            Prêt à donner une
+            Votre van ne rapporte rien
             <br />
-            seconde vie à votre van ?
+            quand il dort au garage.
           </h2>
           <p className="text-white/70 text-xl mb-10 leading-relaxed">
-            Rejoignez les premiers propriétaires Vanzon Explorer.
+            Inscription gratuite en 30 secondes. On vous rappelle sous 48h.
           </p>
           <a
-            href="#avantages"
+            href="#formulaire"
             className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/30 text-white font-semibold px-8 py-4 rounded-full hover:bg-white/20 transition-colors"
           >
-            Inscrire mon van <ArrowRight className="w-4 h-4" />
+            Inscrire mon van gratuitement <ArrowRight className="w-4 h-4" />
           </a>
         </div>
       </section>
