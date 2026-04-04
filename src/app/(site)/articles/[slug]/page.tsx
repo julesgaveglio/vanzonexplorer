@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { PortableText } from "@portabletext/react";
 import { sanityFetch } from "@/lib/sanity/client";
 import {
   getArticleBySlugQuery,
@@ -10,13 +9,25 @@ import {
   getRelatedArticlesQuery,
 } from "@/lib/sanity/queries";
 import { ArticleJsonLd, type FAQItem } from "@/components/seo/JsonLd";
-import ArticleTOC, { type TOCHeading } from "./_components/ArticleTOC";
+import ArticleTOC from "./_components/ArticleTOC";
 import ReadingProgressBar from "./_components/ReadingProgressBar";
 import ArticleFAQ from "./_components/ArticleFAQ";
 import ArticleCategorySync from "./_components/ArticleCategorySync";
 import ShareButton from "./_components/ShareButton";
 import RoadTripCTA from "@/components/ui/RoadTripCTA";
-import { slugify } from "@/lib/slugify";
+import {
+  extractHeadings,
+  extractFAQ,
+  contentBeforeFAQ,
+  contentAfterFAQ,
+  splitBySections,
+  categoryColorMap,
+  formatDate,
+  type PortableBlock,
+  type TOCHeading,
+} from "@/lib/article-utils";
+import { makePortableComponents, renderBlocks } from "@/components/article/PortableTextComponents";
+import { SectionCTA } from "@/components/article/SectionCTA";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -34,7 +45,14 @@ type ArticleDoc = {
   content?: PortableBlock[];
   seoTitle?: string;
   seoDescription?: string;
-  coverImage?: { url: string; alt?: string; credit?: string; pexelsUrl?: string; width?: number; height?: number } | null;
+  coverImage?: {
+    url: string;
+    alt?: string;
+    credit?: string;
+    pexelsUrl?: string;
+    width?: number;
+    height?: number;
+  } | null;
 };
 
 type RelatedArticle = {
@@ -44,112 +62,6 @@ type RelatedArticle = {
   category: string;
   readTime?: string;
 };
-
-type PortableBlock = {
-  _type: string;
-  _key: string;
-  style?: string;
-  children?: Array<{ _type: string; text?: string; marks?: string[] }>;
-};
-
-// ── Helpers ────────────────────────────────────────────────────────────────────
-
-function getBlockText(block: PortableBlock): string {
-  return block.children?.map((c) => c.text ?? "").join("") ?? "";
-}
-
-function extractHeadings(content: PortableBlock[]): TOCHeading[] {
-  return content
-    .filter((b) => b._type === "block" && (b.style === "h2" || b.style === "h3"))
-    .map((b) => ({
-      id: slugify(getBlockText(b)),
-      text: getBlockText(b),
-      level: (b.style === "h2" ? 2 : 3) as 2 | 3,
-    }));
-}
-
-function extractFAQ(content: PortableBlock[]): FAQItem[] {
-  const items: FAQItem[] = [];
-  let inFAQ = false;
-  let currentQ = "";
-  let currentA = "";
-
-  for (const block of content) {
-    if (block._type !== "block") continue;
-    const text = getBlockText(block);
-
-    if (block.style === "h2") {
-      if (inFAQ && currentQ) {
-        items.push({ question: currentQ, answer: currentA.trim() });
-        currentQ = "";
-        currentA = "";
-      }
-      inFAQ = text.toLowerCase().includes("faq") || text.toLowerCase().includes("question");
-      continue;
-    }
-
-    if (!inFAQ) continue;
-
-    if (block.style === "h3") {
-      if (currentQ) items.push({ question: currentQ, answer: currentA.trim() });
-      currentQ = text;
-      currentA = "";
-    } else if (block.style === "normal") {
-      currentA += (currentA ? " " : "") + text;
-    }
-  }
-
-  if (currentQ) items.push({ question: currentQ, answer: currentA.trim() });
-  return items;
-}
-
-/** Retourne uniquement les blocs AVANT le premier H2 "faq"/"question".
- *  Évite le doublon FAQ dans le corps + le composant ArticleFAQ. */
-function contentBeforeFAQ(content: PortableBlock[]): PortableBlock[] {
-  const idx = content.findIndex(
-    (b) =>
-      b._type === "block" &&
-      b.style === "h2" &&
-      (getBlockText(b).toLowerCase().includes("faq") ||
-        getBlockText(b).toLowerCase().includes("question"))
-  );
-  return idx === -1 ? content : content.slice(0, idx);
-}
-
-/** Retourne les blocs APRÈS la section FAQ (Conclusion typiquement). */
-function contentAfterFAQ(content: PortableBlock[]): PortableBlock[] {
-  const faqIdx = content.findIndex(
-    (b) =>
-      b._type === "block" &&
-      b.style === "h2" &&
-      (getBlockText(b).toLowerCase().includes("faq") ||
-        getBlockText(b).toLowerCase().includes("question"))
-  );
-  if (faqIdx === -1) return [];
-  for (let i = faqIdx + 1; i < content.length; i++) {
-    if (content[i]._type === "block" && content[i].style === "h2") {
-      return content.slice(i);
-    }
-  }
-  return [];
-}
-
-/** Split content at each H2 to enable CTA injection between sections */
-function splitBySections(content: PortableBlock[]): PortableBlock[][] {
-  const sections: PortableBlock[][] = [];
-  let current: PortableBlock[] = [];
-
-  for (const block of content) {
-    if (block.style === "h2" && current.length > 0) {
-      sections.push(current);
-      current = [block];
-    } else {
-      current.push(block);
-    }
-  }
-  if (current.length > 0) sections.push(current);
-  return sections;
-}
 
 // ── Static generation ──────────────────────────────────────────────────────────
 
@@ -189,346 +101,13 @@ export async function generateMetadata({
   };
 }
 
-// ── Inline markdown parser (fallback for raw link/bold/italic syntax) ───────────
+// ── Cover image slugs with natural ratio ──────────────────────────────────────
 
-function renderInlineMarkdown(text: string): React.ReactNode[] {
-  const regex = /\*\*([^*\n]+?)\*\*|\*([^*\n]+?)\*|\[([^\]]+)\]\(([^)]+)\)/g;
-  const result: React.ReactNode[] = [];
-  let lastIndex = 0;
-  let match: RegExpExecArray | null;
-
-  while ((match = regex.exec(text)) !== null) {
-    if (match.index > lastIndex) {
-      result.push(text.slice(lastIndex, match.index));
-    }
-    if (match[1] !== undefined) {
-      result.push(<strong key={match.index} className="font-bold text-slate-800">{match[1]}</strong>);
-    } else if (match[2] !== undefined) {
-      result.push(<em key={match.index} className="italic text-slate-700">{match[2]}</em>);
-    } else if (match[3] !== undefined && match[4] !== undefined) {
-      const href = match[4];
-      const isExternal = href.startsWith("http");
-      result.push(
-        <a
-          key={match.index}
-          href={href}
-          target={isExternal ? "_blank" : undefined}
-          rel={isExternal ? "noopener noreferrer" : undefined}
-          className="text-[#4D5FEC] underline underline-offset-2 hover:text-[#3B4FD4] transition-colors"
-        >
-          {match[3]}
-        </a>
-      );
-    }
-    lastIndex = match.index + match[0].length;
-  }
-
-  if (lastIndex < text.length) result.push(text.slice(lastIndex));
-  return result.length > 0 ? result : [text];
-}
-
-// ── Table markdown renderer ────────────────────────────────────────────────────
-
-function ArticleTable({ rows }: { rows: string[] }) {
-  const parseRow = (row: string) =>
-    row.split("|").map((c) => c.trim()).filter((c) => c !== "");
-
-  // Filter out separator rows (| :--- | --- | :---: |)
-  const dataRows = rows.filter((r) => !/^\|[\s:|-]+\|$/.test(r.replace(/\s/g, "")));
-  if (dataRows.length === 0) return null;
-
-  const headerCells = parseRow(dataRows[0]);
-  const bodyRows = dataRows.slice(1).map(parseRow);
-
-  return (
-    <div className="overflow-x-auto my-8 rounded-2xl border border-slate-200">
-      <table className="w-full text-sm text-left">
-        <thead className="bg-slate-50 border-b border-slate-200">
-          <tr>
-            {headerCells.map((cell, i) => (
-              <th key={i} className="px-4 py-3 font-semibold text-slate-700 whitespace-nowrap">
-                {cell}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-slate-100">
-          {bodyRows.map((row, ri) => (
-            <tr key={ri} className="hover:bg-slate-50/60 transition-colors">
-              {row.map((cell, ci) => (
-                <td key={ci} className="px-4 py-3 text-slate-600 align-top">
-                  {renderInlineMarkdown(cell)}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
-// ── Pre-process: group consecutive table rows into virtual table blocks ─────────
-
-type VirtualBlock =
-  | PortableBlock
-  | { _type: "table"; _key: string; rows: string[] };
-
-function groupTableBlocks(blocks: PortableBlock[]): VirtualBlock[] {
-  const result: VirtualBlock[] = [];
-  let tableRows: string[] = [];
-
-  const flushTable = () => {
-    if (tableRows.length > 0) {
-      result.push({
-        _type: "table" as const,
-        _key: Math.random().toString(36).slice(2),
-        rows: [...tableRows],
-      });
-      tableRows = [];
-    }
-  };
-
-  for (const block of blocks) {
-    const text = getBlockText(block);
-    const isTableRow = block._type === "block" && block.style === "normal" && text.trimStart().startsWith("|");
-    if (isTableRow) {
-      tableRows.push(text);
-    } else {
-      flushTable();
-      result.push(block);
-    }
-  }
-  flushTable();
-  return result;
-}
-
-// ── Portable Text components ────────────────────────────────────────────────────
-
-function makePortableComponents(headingIds: Map<string, string>) {
-  return {
-    types: {
-      image: ({
-        value,
-      }: {
-        value?: {
-          alt?: string;
-          asset?: { url?: string; metadata?: { dimensions?: { width?: number; height?: number } } };
-        };
-      }) => {
-        const src = value?.asset?.url;
-        if (!src) return null;
-        const dims = value?.asset?.metadata?.dimensions;
-        const aspectClass = dims && dims.width && dims.height
-          ? dims.width / dims.height > 1.5 ? "aspect-[16/9]" : "aspect-[4/3]"
-          : "aspect-[16/9]";
-        return (
-          <figure className="my-10 not-prose">
-            <div className={`relative w-full ${aspectClass} rounded-2xl overflow-hidden bg-slate-100`}>
-              <Image
-                src={src}
-                alt={value?.alt ?? "Illustration de l'article"}
-                fill
-                sizes="(max-width: 768px) 100vw, 65vw"
-                className="object-cover"
-                loading="lazy"
-              />
-            </div>
-            {value?.alt && (
-              <figcaption className="text-center text-xs text-slate-400 mt-2.5 italic">
-                {value.alt}
-              </figcaption>
-            )}
-          </figure>
-        );
-      },
-    },
-    block: {
-      h2: ({
-        children,
-        value,
-      }: {
-        children?: React.ReactNode;
-        value?: PortableBlock;
-      }) => {
-        const text = value ? getBlockText(value) : "";
-        const id = headingIds.get(text) ?? slugify(text);
-        return (
-          <h2
-            id={id}
-            className="text-2xl font-black text-slate-900 mt-14 mb-5 scroll-mt-24"
-          >
-            {children}
-          </h2>
-        );
-      },
-      h3: ({
-        children,
-        value,
-      }: {
-        children?: React.ReactNode;
-        value?: PortableBlock;
-      }) => {
-        const text = value ? getBlockText(value) : "";
-        const id = headingIds.get(text) ?? slugify(text);
-        return (
-          <h3
-            id={id}
-            className="text-xl font-bold text-slate-900 mt-10 mb-4 scroll-mt-24"
-          >
-            {children}
-          </h3>
-        );
-      },
-      blockquote: ({ children }: { children?: React.ReactNode }) => (
-        <blockquote className="my-8 pl-5 border-l-4 border-[#4D5FEC] bg-blue-50/50 py-4 pr-5 rounded-r-xl italic text-slate-600 text-[17px] leading-relaxed">
-          {children}
-        </blockquote>
-      ),
-      normal: ({ children, value }: { children?: React.ReactNode; value?: PortableBlock }) => {
-        const text = value ? getBlockText(value) : "";
-        const isWarning = text.startsWith("⚠️") || text.startsWith("🚫");
-        const isTip = text.startsWith("💡") || text.startsWith("✅");
-        const isInfo = text.startsWith("ℹ️") || text.startsWith("📋");
-
-        if (isWarning) {
-          return (
-            <div className="my-6 flex gap-3 p-4 bg-amber-50 border border-amber-200 rounded-xl text-[15px] text-amber-800 leading-relaxed">
-              <span className="flex-shrink-0 text-lg">⚠️</span>
-              <p>{text.replace(/^⚠️\s*|^🚫\s*/, "")}</p>
-            </div>
-          );
-        }
-        if (isTip) {
-          return (
-            <div className="my-6 flex gap-3 p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-[15px] text-emerald-800 leading-relaxed">
-              <span className="flex-shrink-0 text-lg">{text.startsWith("💡") ? "💡" : "✅"}</span>
-              <p>{text.replace(/^💡\s*|^✅\s*/, "")}</p>
-            </div>
-          );
-        }
-        if (isInfo) {
-          return (
-            <div className="my-6 flex gap-3 p-4 bg-blue-50 border border-blue-200 rounded-xl text-[15px] text-blue-800 leading-relaxed">
-              <span className="flex-shrink-0 text-lg">{text.startsWith("ℹ️") ? "ℹ️" : "📋"}</span>
-              <p>{text.replace(/^ℹ️\s*|^📋\s*/, "")}</p>
-            </div>
-          );
-        }
-
-        // Fallback: if block text contains raw markdown link syntax, render it
-        const hasRawMarkdown = text.includes("[") && text.includes("](");
-        if (hasRawMarkdown) {
-          return <p className="text-[18px] text-slate-600 leading-[1.75] mb-6">{renderInlineMarkdown(text)}</p>;
-        }
-
-        return <p className="text-[18px] text-slate-600 leading-[1.75] mb-6">{children}</p>;
-      },
-    },
-    marks: {
-      strong: ({ children }: { children?: React.ReactNode }) => (
-        <strong className="font-bold text-slate-800">{children}</strong>
-      ),
-      em: ({ children }: { children?: React.ReactNode }) => (
-        <em className="italic text-slate-700">{children}</em>
-      ),
-      link: ({
-        children,
-        value,
-      }: {
-        children?: React.ReactNode;
-        value?: { href?: string; blank?: boolean };
-      }) => (
-        <a
-          href={value?.href}
-          target={value?.blank ? "_blank" : undefined}
-          rel={value?.blank ? "noopener noreferrer" : undefined}
-          className="text-[#4D5FEC] underline underline-offset-2 hover:text-[#3B4FD4] transition-colors"
-        >
-          {children}
-        </a>
-      ),
-    },
-  };
-}
-
-// ── Render helper: handles virtual table blocks + PortableText ─────────────────
-
-function renderBlocks(
-  blocks: PortableBlock[],
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  components: any
-): React.ReactNode {
-  const virtualBlocks = groupTableBlocks(blocks);
-  return virtualBlocks.map((block, i) => {
-    if (block._type === "table") {
-      const tb = block as { _type: "table"; _key: string; rows: string[] };
-      return <ArticleTable key={tb._key || i} rows={tb.rows} />;
-    }
-    const pb = block as PortableBlock;
-    return (
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      <PortableText key={pb._key || i} value={[pb] as any} components={components} />
-    );
-  });
-}
-
-// ── CTA between sections ───────────────────────────────────────────────────────
-
-const SECTION_CTAS = [
-  {
-    label: "Louer un van pour ce road trip",
-    sub: "Disponible dès 65€/nuit — livraison Pays Basque possible",
-    href: "/location",
-    cta: "Voir les vans disponibles →",
-    accent: "bg-[#4D5FEC] hover:bg-[#3B4FD4]",
-    icon: "🚐",
-  },
-  {
-    label: "Votre propre van aménagé",
-    sub: "Accompagnement personnalisé pour trouver et aménager votre van",
-    href: "/achat",
-    cta: "Parler à Jules →",
-    accent: "bg-slate-900 hover:bg-slate-800",
-    icon: "🔑",
-  },
-] as const;
-
-function SectionCTA({ index }: { index: number }) {
-  const cta = SECTION_CTAS[index % SECTION_CTAS.length];
-  return (
-    <div className="my-10 p-6 rounded-2xl border border-slate-100 bg-gradient-to-br from-slate-50 to-blue-50/30 flex flex-col sm:flex-row items-center gap-5">
-      <span className="text-4xl flex-shrink-0">{cta.icon}</span>
-      <div className="flex-1 text-center sm:text-left">
-        <p className="font-bold text-slate-900 text-base">{cta.label}</p>
-        <p className="text-sm text-slate-500 mt-0.5">{cta.sub}</p>
-      </div>
-      <Link
-        href={cta.href}
-        className={`btn-shine flex-shrink-0 inline-flex items-center justify-center gap-2 text-white font-bold px-6 py-3 rounded-xl transition-colors text-sm relative overflow-hidden ${cta.accent}`}
-      >
-        {cta.cta}
-      </Link>
-    </div>
-  );
-}
-
-// ── Category color map ─────────────────────────────────────────────────────────
-
-const categoryColorMap: Record<string, string> = {
-  "Road Trips": "bg-blue-50 text-blue-700 ring-1 ring-blue-200/60",
-  "Aménagement Van": "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200/60",
-  "Business Van": "bg-amber-50 text-amber-700 ring-1 ring-amber-200/60",
-  "Achat Van": "bg-violet-50 text-violet-700 ring-1 ring-violet-200/60",
-};
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("fr-FR", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-}
+const NATURAL_RATIO_SLUGS = [
+  "pourquoi-la-vanlife-a-besoin-dun-label-aujourdhui-et-la-vision-derriere-label-vanlife",
+  "la-labellisation-des-lieux-vanlife-cest-quoi-concretement-et-comment-ca-marche",
+  "la-carte-membre-vanlife-comment-ca-marche-et-quels-avantages-concrets",
+];
 
 // ── Page ───────────────────────────────────────────────────────────────────────
 
@@ -537,7 +116,6 @@ export default async function ArticleDetailPage({
 }: {
   params: { slug: string };
 }) {
-  // Sequential: relatedArticles depends on article.category for same-category sorting
   const article = await sanityFetch<ArticleDoc>(getArticleBySlugQuery, { slug: params.slug });
   if (!article) notFound();
   const relatedArticles = await sanityFetch<RelatedArticle[]>(getRelatedArticlesQuery, {
@@ -556,7 +134,6 @@ export default async function ArticleDetailPage({
     (h) => h.text.toLowerCase().includes("faq") || h.text.toLowerCase().includes("question")
   );
 
-  // Map heading text → id for the portable text renderer
   const headingIds = new Map(headings.map((h) => [h.text, h.id]));
   const portableComponents = makePortableComponents(headingIds);
 
@@ -564,16 +141,10 @@ export default async function ArticleDetailPage({
     <main className="min-h-screen bg-white">
       <ReadingProgressBar />
       <ArticleCategorySync category={article.category} />
-      {/* JSON-LD: Article + BreadcrumbList + FAQPage */}
       <ArticleJsonLd article={{ ...article, updatedAt: article.updatedAt }} faqItems={faqItems} />
 
       {/* ── Hero cover image ── */}
       {article.coverImage?.url && (() => {
-        const NATURAL_RATIO_SLUGS = [
-          "pourquoi-la-vanlife-a-besoin-dun-label-aujourdhui-et-la-vision-derriere-label-vanlife",
-          "la-labellisation-des-lieux-vanlife-cest-quoi-concretement-et-comment-ca-marche",
-          "la-carte-membre-vanlife-comment-ca-marche-et-quels-avantages-concrets",
-        ];
         const useNaturalRatio = NATURAL_RATIO_SLUGS.includes(article.slug);
         const { width, height } = article.coverImage;
 
@@ -659,19 +230,19 @@ export default async function ArticleDetailPage({
             {article.title}
           </h1>
 
-          {/* PAS intro — Problème / Agitation / Solution */}
+          {/* PAS intro */}
           <div className="relative pl-5 border-l-4 border-[#4D5FEC] bg-blue-50/40 py-5 pr-5 rounded-r-2xl mb-10">
             <p className="text-[17px] text-slate-700 leading-[1.75] font-[450]">
               {article.excerpt}
             </p>
           </div>
 
-          {/* Inline TOC — visible after intro on all screens */}
-          {headings.filter(h => h.level === 2).length > 1 && (
+          {/* Inline TOC */}
+          {headings.filter((h: TOCHeading) => h.level === 2).length > 1 && (
             <nav aria-label="Sommaire" className="my-8 p-5 rounded-2xl border border-slate-100 bg-slate-50/60">
               <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">📋 Dans cet article</p>
               <ol className="space-y-2">
-                {headings.filter(h => h.level === 2).map((h, i) => (
+                {headings.filter((h: TOCHeading) => h.level === 2).map((h: TOCHeading, i: number) => (
                   <li key={h.id} className="flex items-start gap-3">
                     <span className="text-xs font-bold text-[#4D5FEC]/60 mt-0.5 flex-shrink-0 w-5">{i + 1}.</span>
                     <a href={`#${h.id}`} className="text-sm text-slate-600 hover:text-[#4D5FEC] transition-colors leading-snug">
@@ -689,7 +260,6 @@ export default async function ArticleDetailPage({
               {sections.map((section, i) => (
                 <div key={i}>
                   {renderBlocks(section, portableComponents)}
-                  {/* Inject CTA after every 2nd section, skip last 2 sections */}
                   {i % 2 === 1 && i < sections.length - 2 && (
                     <SectionCTA index={Math.floor(i / 2)} />
                   )}
@@ -700,7 +270,7 @@ export default async function ArticleDetailPage({
             <p className="text-slate-400 italic">Contenu de l&apos;article à venir.</p>
           )}
 
-          {/* ── FAQ accordion — ancre pour TOC ── */}
+          {/* ── FAQ accordion ── */}
           {faqHeading && (
             <div id={faqHeading.id} className="scroll-mt-24" />
           )}
@@ -708,9 +278,7 @@ export default async function ArticleDetailPage({
 
           {/* ── Conclusion (contenu après FAQ) ── */}
           {conclusionContent.length > 0 && (
-            <div>
-              {renderBlocks(conclusionContent, portableComponents)}
-            </div>
+            <div>{renderBlocks(conclusionContent, portableComponents)}</div>
           )}
 
           {/* ── Auteurs ── */}
