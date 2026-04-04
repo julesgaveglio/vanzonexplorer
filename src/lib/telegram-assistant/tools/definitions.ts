@@ -209,6 +209,25 @@ export const TOOL_DEFINITIONS: Groq.Chat.Completions.ChatCompletionTool[] = [
   {
     type: "function",
     function: {
+      name: "get_strategic_context",
+      description:
+        "Récupère le contexte stratégique complet du projet Vanzon : état actuel, objectifs, revenus, blocages, initiatives. " +
+        "Utilise quand Jules pose une question stratégique, demande les priorités, ou veut un avis sur une décision business.",
+      parameters: {
+        type: "object",
+        properties: {
+          focus: {
+            type: "string",
+            description: "Domaine spécifique (marketplace, seo, formation, flotte, revenus) ou vide pour tout",
+          },
+        },
+        required: [],
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
       name: "search_memory",
       description:
         "Recherche dans la mémoire interne Vanzon. " +

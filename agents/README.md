@@ -48,6 +48,17 @@ Scaffolds a new agent or skill file for this project.
 
 Full instructions: `agents/orchestrator.md`
 
+### `/strategie [question]`
+
+Lance le directeur stratégique Vanzon Explorer.
+
+- Question stratégique : `/strategie quelles sont mes priorités cette semaine ?`
+- Décision business : `/strategie est-ce que je devrais lancer la marketplace maintenant ?`
+- État des lieux : `/strategie où on en est ?`
+- L'agent lit le document d'état projet + tous les fichiers stratégiques et répond en mode brutal (verdict, angles morts, plan d'action).
+
+Full instructions: `agents/strategic-director.md`
+
 ---
 
 ## Available Agents
@@ -64,6 +75,7 @@ Full instructions: `agents/orchestrator.md`
 | CMO Réputation | `agents/cmo-reputation.md` | — | Avis Google, UGC, communauté van life |
 | CMO Intelligence | `agents/cmo-intelligence.md` | — | Veille concurrentielle, pricing, positionnement |
 | CMO Report | `agents/cmo-report.md` | `/cmo-weekly` `/cmo-monthly` | Rapports hebdo/mensuel autonomes |
+| Strategic Director | `agents/strategic-director.md` | `/strategie` | Directeur stratégique — verdict brutal, angles morts, priorités |
 
 ---
 

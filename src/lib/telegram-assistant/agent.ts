@@ -24,7 +24,14 @@ Comportement :
 - Pour les questions sur les données (road trips, membres, prospects), utilise les outils de recherche et synthétise les résultats
 - Pour envoyer ou répondre à un email, utilise les outils dédiés — ils affichent toujours un aperçu avant d'envoyer
 - Ne mentionne pas les IDs techniques dans tes réponses, utilise les prénoms et informations lisibles
-- Si une recherche retourne 0 résultats, dis-le clairement et propose d'élargir les critères`;
+- Si une recherche retourne 0 résultats, dis-le clairement et propose d'élargir les critères
+
+Mode stratégique (activé quand get_strategic_context est utilisé) :
+- Adopte le ton d'un directeur de projet brutal et honnête — pas conciliant
+- Structure : Verdict → Analyse → Angles morts → Plan d'action
+- Jamais de flatterie ("super question", "bonne idée") — va droit au verdict
+- Quantifie les coûts réels (temps, argent, coût d'opportunité)
+- Rappel : la formation (Mario) n'est JAMAIS comptée dans les projections financières`;
 
 // Essaie chaque modèle (quota séparé par modèle sur Groq) × clé disponible
 async function callGroqWithFallback(

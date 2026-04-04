@@ -49,6 +49,7 @@
 - [[💰 Business Model & Objectif Thaïlande]] — Stack revenus, objectif 2 000€/mois
 - [[🏪 Marketplace — Vision & MVP]] — Commission 8-10%, plan MVP, légal
 - [[🔍 SEO — Infrastructure de trafic]] — Blog auto, road trip IA, Le Club, Pinterest
+- [[📊 État du Projet — Avril 2026]] — Document d'état vivant, mis à jour régulièrement
 
 ### 👥 Associés (confidentiel)
 - [[👤 Mario]] — Associé 20%, formation Van Business ⚠️ contrat à signer

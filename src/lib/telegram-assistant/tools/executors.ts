@@ -7,6 +7,7 @@ import { listRecentEmails, getEmailById, getThreadMessages } from "./gmail-reade
 import { fetchGmailSignature } from "@/lib/gmail";
 import { getEmailExamples, formatExamplesForPrompt } from "../email-memory";
 import { searchVanzonMemory } from "@/lib/vanzon-memory/search";
+import { readStrategicContext } from "./strategic-context";
 import { groqWithFallback } from "@/lib/groq-with-fallback";
 
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN!;
@@ -39,6 +40,7 @@ export async function executeTool(
       case "list_recent_emails":         return await listRecentEmailsTool(args);
       case "smart_reply_to_email":       return await smartReplyToEmail(args, chatId);
       case "reply_to_email":             return await replyToEmailTool(args, chatId);
+      case "get_strategic_context": return getStrategicContextTool(args);
       case "search_memory": return await searchMemoryTool(args);
       default: return JSON.stringify({ error: `Outil inconnu: ${name}` });
     }
@@ -458,6 +460,13 @@ async function replyToEmailTool(
     to:      original.from,
     subject: draft.subject,
   });
+}
+
+// ── get_strategic_context ─────────────────────────────────────────────────────
+function getStrategicContextTool(args: Record<string, unknown>): string {
+  const focus = args.focus as string | undefined;
+  const context = readStrategicContext(focus);
+  return JSON.stringify({ context });
 }
 
 // ── search_memory ─────────────────────────────────────────────────────────────

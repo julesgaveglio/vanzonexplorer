@@ -374,6 +374,23 @@
     "pipeline": "Standalone — suite de pinterest-research"
   },
   {
+    "id": "strategic-director",
+    "name": "Agent Strategic Director",
+    "emoji": "🎯",
+    "status": "active",
+    "description": "Directeur stratégique Vanzon Explorer. Lit l'état du projet (objectifs, revenus, blocages, initiatives) et conseille brutalement sur les priorités, décisions et arbitrages. Accessible via /strategie (Claude Code) et via Telegram (tool get_strategic_context).",
+    "trigger": "manual",
+    "schedule": "Manuel (via /strategie ou Telegram)",
+    "cronExpression": null,
+    "file": "agents/strategic-director.md",
+    "workflow": null,
+    "apis": [],
+    "output": "Conseil stratégique structuré (verdict, angles morts, plan d'action)",
+    "manualCommand": "/strategie [question]",
+    "tags": ["Stratégie", "Conseil", "Manuel"],
+    "pipeline": "Standalone — lit Vanzon Memory Database/🔒 INTERNE/strategie/"
+  },
+  {
     "id": "backlinks-weekly-agent",
     "name": "Agent Backlinks Discovery Hebdomadaire",
     "emoji": "🔗",
