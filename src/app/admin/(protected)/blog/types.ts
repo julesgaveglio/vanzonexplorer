@@ -1,29 +1,6 @@
-export type ArticleStatus = "pending" | "writing" | "published" | "needs-improvement";
-
-export interface ArticleQueueItem {
-  id: string;
-  slug: string;
-  title: string;
-  excerpt: string;
-  category: "Pays Basque" | "Aménagement Van" | "Business Van" | "Achat Van" | "Club Privé" | "Vie en van" | "Réglementation";
-  tag: string | null;
-  readTime: string;
-  targetKeyword: string;
-  secondaryKeywords: string[];
-  targetWordCount?: number;
-  wordCountNote?: string;
-  status: ArticleStatus;
-  priority: number;
-  sanityId: string | null;
-  publishedAt: string | null;
-  lastSeoCheck: string | null;
-  seoPosition: number | null;
-  // New SEO fields from keyword researcher
-  searchVolume?: number;
-  competitionLevel?: string;
-  seoScore?: number;
-  createdAt?: string;
-}
+// Re-export du type canonique depuis la source unique de vérité
+import type { ArticleStatus } from "@/types/article-queue";
+export type { ArticleStatus, ArticleQueueItem } from "@/types/article-queue";
 
 export interface GscMetrics {
   position?: number;

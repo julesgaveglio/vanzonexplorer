@@ -10,39 +10,10 @@
  */
 
 import { getSupabaseClient } from "./supabase";
+import type { ArticleQueueItem, ArticleStatus } from "../../src/types/article-queue";
 
-// ── Types ─────────────────────────────────────────────────────────────────────
-
-export type ArticleStatus = "pending" | "writing" | "published" | "needs-improvement";
-
-export interface ArticleQueueItem {
-  id: string;
-  slug: string;
-  title: string;
-  excerpt: string;
-  category: string;
-  tag: string | null;
-  readTime: string;
-  targetKeyword: string;
-  secondaryKeywords: string[];
-  targetWordCount?: number;
-  wordCountNote?: string;
-  status: ArticleStatus;
-  priority: number;
-  sanityId: string | null;
-  publishedAt: string | null;
-  lastSeoCheck: string | null;
-  seoPosition: number | null;
-  searchVolume?: number;
-  competitionLevel?: string;
-  seoScore?: number;
-  addedBy?: string;
-  lastOptimizedAt?: string | null;
-  lastLinkCheck?: string | null;
-  pillarSlug?: string;
-  clusterTopic?: string;
-  createdAt?: string;
-}
+// Re-export for consumers that import from this module
+export type { ArticleQueueItem, ArticleStatus } from "../../src/types/article-queue";
 
 // ── Row mappers (snake_case DB ↔ camelCase TS) ────────────────────────────────
 
