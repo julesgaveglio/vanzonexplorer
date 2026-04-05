@@ -334,18 +334,6 @@ export default function StepVehicle() {
                           : "bg-white border-slate-200 text-slate-600 hover:border-blue-200 hover:bg-blue-50/30"
                       }`}
                     >
-                      {/* Checkbox */}
-                      <span
-                        className={`w-4 h-4 rounded-md flex items-center justify-center flex-shrink-0 transition-all ${
-                          checked ? "bg-blue-500" : "border-2 border-slate-300"
-                        }`}
-                      >
-                        {checked && (
-                          <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 12 12" stroke="currentColor" strokeWidth={2.5}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M2 6l3 3 5-5" />
-                          </svg>
-                        )}
-                      </span>
                       {/* Icon */}
                       <Icon className={`w-4 h-4 flex-shrink-0 transition-colors ${checked ? "text-blue-500" : "text-slate-400"}`} />
                       {/* Label */}
