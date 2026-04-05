@@ -254,9 +254,7 @@ function AuthForm() {
     <div className="space-y-4">
       {/* Social buttons */}
       <div className="space-y-2.5">
-        <SocialBtn icon={<GoogleIcon />}   label="Continuer avec Google"   onClick={() => handleOAuth("oauth_google")}   loading={oauthLoading === "oauth_google"}   disabled={!clerkReady || oauthLoading !== null} />
-        <SocialBtn icon={<AppleIcon />}    label="Continuer avec Apple"    onClick={() => handleOAuth("oauth_apple")}    loading={oauthLoading === "oauth_apple"}    disabled={!clerkReady || oauthLoading !== null} />
-        <SocialBtn icon={<FacebookIcon />} label="Continuer avec Facebook" onClick={() => handleOAuth("oauth_facebook")} loading={oauthLoading === "oauth_facebook"} disabled={!clerkReady || oauthLoading !== null} />
+        <SocialBtn icon={<GoogleIcon />} label="Continuer avec Google" onClick={() => handleOAuth("oauth_google")} loading={oauthLoading === "oauth_google"} disabled={!clerkReady || oauthLoading !== null} />
       </div>
       {error && oauthLoading === null && (
         <p className="text-red-500 text-[13px] text-center leading-snug">{error}</p>
