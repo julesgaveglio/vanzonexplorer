@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { Percent, Shield, Zap, Users, ArrowRight } from "lucide-react";
-import VanOwnerForm from "./_components/VanOwnerForm";
+import VanOnboardingWizard from "./_components/VanOnboardingWizard";
 
 export const metadata: Metadata = {
   title: "Proposer votre van à la location | Vanzon Explorer",
@@ -238,41 +238,21 @@ export default function ProposerVotreVanPage() {
 
       {/* ── FORMULAIRE ───────────────────────────────────────────── */}
       <section id="formulaire" className="py-20 bg-white scroll-mt-20">
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="grid lg:grid-cols-2 gap-12 items-start">
-            <div>
-              <span className="badge-glass !px-4 !py-1.5 text-sm font-semibold mb-5 inline-block" style={{ color: "#4D5FEC" }}>
-                Rejoindre Vanzon
-              </span>
-              <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-5 leading-tight">
-                On en discute ?
-              </h2>
-              <p className="text-slate-500 text-lg leading-relaxed mb-8">
-                Laissez-nous vos coordonnées, on vous rappelle pour parler de votre van
-                et voir si Vanzon peut compléter vos canaux actuels. Aucun engagement.
-              </p>
-
-              <div className="space-y-4">
-                {[
-                  { icon: "✓", text: "Inscription gratuite, pas de CB demandée" },
-                  { icon: "✓", text: "Gardez vos autres plateformes en parallèle" },
-                  { icon: "✓", text: "0% de commission pendant le lancement" },
-                  { icon: "✓", text: "Vos prix, vos disponibilités, vos règles" },
-                ].map((item) => (
-                  <div key={item.text} className="flex items-center gap-3">
-                    <span className="flex-shrink-0 w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-xs font-bold">
-                      {item.icon}
-                    </span>
-                    <span className="text-slate-700 text-sm font-medium">{item.text}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <VanOwnerForm />
-            </div>
+        <div className="max-w-2xl mx-auto px-6">
+          <div className="text-center mb-10">
+            <span className="badge-glass !px-4 !py-1.5 text-sm font-semibold mb-5 inline-block" style={{ color: "#4D5FEC" }}>
+              Créer votre fiche
+            </span>
+            <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-3 leading-tight">
+              Ajoutez votre van en quelques minutes.
+            </h2>
+            <p className="text-slate-500 text-lg leading-relaxed">
+              Remplissez les informations, ajoutez vos photos — on s&apos;occupe du reste.
+              Aucun engagement, 0% de commission pendant le lancement.
+            </p>
           </div>
+
+          <VanOnboardingWizard />
         </div>
       </section>
 
