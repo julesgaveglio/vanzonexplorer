@@ -80,13 +80,13 @@ export default function PhoneInput({ name }: Props) {
 
   return (
     <div>
-      <div className={`flex rounded-xl overflow-hidden border transition-all focus-within:ring-2 focus-within:ring-blue-400/50 focus-within:border-blue-400 ${error ? "border-red-300" : "border-slate-200"}`}>
+      <div className={`flex rounded-xl border transition-all focus-within:ring-2 focus-within:ring-blue-400/50 focus-within:border-blue-400 ${error ? "border-red-300" : "border-slate-200"}`}>
         {/* Dial code trigger */}
         <div ref={dropdownRef} className="relative flex-shrink-0">
           <button
             type="button"
             onClick={() => setOpen((o) => !o)}
-            className="h-full flex items-center gap-1.5 px-3 py-3 bg-white/75 border-r border-slate-200 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+            className="h-full flex items-center gap-1.5 px-3 py-3 bg-white/75 border-r border-slate-200 rounded-l-xl text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
           >
             <span className="text-lg leading-none">{selected.flag}</span>
             <span className="text-slate-500 text-xs tabular-nums">{selected.dial}</span>
@@ -127,7 +127,7 @@ export default function PhoneInput({ name }: Props) {
           onChange={handleLocal}
           onBlur={field.onBlur}
           placeholder="6 12 34 56 78"
-          className="flex-1 min-w-0 bg-white/75 px-4 py-3 text-text-primary placeholder:text-slate-400 focus:outline-none text-sm"
+          className="flex-1 min-w-0 bg-white/75 rounded-r-xl px-4 py-3 text-text-primary placeholder:text-slate-400 focus:outline-none text-sm"
         />
       </div>
 
