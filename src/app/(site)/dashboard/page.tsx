@@ -84,20 +84,6 @@ function NoListing({ firstName }: { firstName: string }) {
         </Link>
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
-        {[
-          { emoji: "🔓", label: "0% de commission", sub: "pendant le lancement" },
-          { emoji: "⚡", label: "Page en ligne", sub: "sous 72h" },
-          { emoji: "📈", label: "Trafic qualifié", sub: "via Google" },
-        ].map((b) => (
-          <div key={b.label} className="bg-white rounded-xl border border-slate-100 p-4 text-center shadow-sm">
-            <div className="text-2xl mb-1.5">{b.emoji}</div>
-            <p className="text-xs font-bold text-slate-800 leading-tight">{b.label}</p>
-            <p className="text-[11px] text-slate-400 mt-0.5">{b.sub}</p>
-          </div>
-        ))}
-      </div>
-
       <p className="text-center text-xs text-slate-400">
         Vous avez des questions ?{" "}
         <Link href="/proposer-votre-van" className="text-blue-500 hover:underline">
@@ -235,7 +221,14 @@ export default async function DashboardPage() {
               <p className="text-sm font-bold text-slate-900 leading-none">{firstName || fullName}</p>
             </div>
           </div>
-          <UserButton afterSignOutUrl="/" />
+          <UserButton
+            afterSignOutUrl="/"
+            appearance={{
+              elements: {
+                userButtonPopoverFooter: "hidden",
+              },
+            }}
+          />
         </div>
       </header>
 
