@@ -15,6 +15,7 @@ export default function StepPricing() {
         <p className="text-sm text-slate-500 mb-5">Dernière étape ! Indiquez votre tarif et où se trouve votre van.</p>
       </div>
 
+      {/* Tarif */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label htmlFor="price_per_day" className="block text-sm font-medium text-text-secondary mb-1.5">
@@ -56,42 +57,74 @@ export default function StepPricing() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label htmlFor="deposit" className="block text-sm font-medium text-text-secondary mb-1.5">
-            Caution <span className="text-slate-400 font-normal">(optionnel)</span>
-          </label>
-          <div className="relative">
-            <input
-              id="deposit"
-              type="number"
-              placeholder="500"
-              min={0}
-              max={5000}
-              className={inputCls + " pr-8"}
-              {...register("deposit")}
-            />
-            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-slate-400 font-medium">€</span>
-          </div>
-        </div>
-
-        <div>
-          <label htmlFor="location_city" className="block text-sm font-medium text-text-secondary mb-1.5">
-            Ville du van
-          </label>
+      <div>
+        <label htmlFor="deposit" className="block text-sm font-medium text-text-secondary mb-1.5">
+          Caution <span className="text-slate-400 font-normal">(optionnel)</span>
+        </label>
+        <div className="relative max-w-[200px]">
           <input
-            id="location_city"
-            type="text"
-            placeholder="Ex : Bayonne, Bordeaux..."
-            className={inputCls}
-            {...register("location_city")}
+            id="deposit"
+            type="number"
+            placeholder="500"
+            min={0}
+            max={5000}
+            className={inputCls + " pr-8"}
+            {...register("deposit")}
           />
-          {errors.location_city && (
-            <p className="text-red-500 text-sm mt-1">{errors.location_city.message as string}</p>
-          )}
+          <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-slate-400 font-medium">€</span>
         </div>
       </div>
 
+      {/* Localisation */}
+      <div className="pt-1">
+        <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Adresse de départ du van</p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="sm:col-span-2">
+            <label htmlFor="location_address" className="block text-sm font-medium text-text-secondary mb-1.5">
+              Adresse <span className="text-slate-400 font-normal">(optionnel)</span>
+            </label>
+            <input
+              id="location_address"
+              type="text"
+              placeholder="Ex : 12 rue des Pyrénées"
+              className={inputCls}
+              {...register("location_address")}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="location_city" className="block text-sm font-medium text-text-secondary mb-1.5">
+              Ville
+            </label>
+            <input
+              id="location_city"
+              type="text"
+              placeholder="Ex : Bayonne, Bordeaux..."
+              className={inputCls}
+              {...register("location_city")}
+            />
+            {errors.location_city && (
+              <p className="text-red-500 text-sm mt-1">{errors.location_city.message as string}</p>
+            )}
+          </div>
+
+          <div>
+            <label htmlFor="location_postal_code" className="block text-sm font-medium text-text-secondary mb-1.5">
+              Code postal <span className="text-slate-400 font-normal">(optionnel)</span>
+            </label>
+            <input
+              id="location_postal_code"
+              type="text"
+              placeholder="64100"
+              className={inputCls}
+              {...register("location_postal_code")}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Lien annonce */}
       <div>
         <label htmlFor="booking_url" className="block text-sm font-medium text-text-secondary mb-1.5">
           Lien vers votre annonce

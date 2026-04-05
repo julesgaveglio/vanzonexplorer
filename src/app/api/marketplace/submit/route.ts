@@ -22,6 +22,8 @@ const schema = z.object({
   price_per_day: z.coerce.number().min(20).max(500),
   min_days: z.coerce.number().min(1).max(30).default(2),
   deposit: z.coerce.number().min(0).max(5000).optional(),
+  location_address: z.string().optional(),
+  location_postal_code: z.string().optional(),
   location_city: z.string().min(2, "Ville requise"),
   booking_url: z.string().url("Lien invalide").or(z.literal("")).optional(),
 });
@@ -52,6 +54,8 @@ export async function POST(req: Request) {
       price_per_day: data.price_per_day,
       min_days: data.min_days,
       deposit: data.deposit ?? null,
+      location_address: data.location_address ?? null,
+      location_postal_code: data.location_postal_code ?? null,
       location_city: data.location_city,
       booking_url: data.booking_url || null,
     });

@@ -1,6 +1,7 @@
 "use client";
 
 import { useFormContext } from "react-hook-form";
+import PhoneInput from "../PhoneInput";
 
 const inputCls =
   "w-full bg-white/75 border border-slate-200 rounded-xl px-4 py-3 text-text-primary placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-blue-400 transition-all";
@@ -66,19 +67,10 @@ export default function StepOwner() {
       </div>
 
       <div>
-        <label htmlFor="owner_phone" className="block text-sm font-medium text-text-secondary mb-1.5">
+        <label className="block text-sm font-medium text-text-secondary mb-1.5">
           Téléphone
         </label>
-        <input
-          id="owner_phone"
-          type="tel"
-          placeholder="06 12 34 56 78"
-          className={inputCls}
-          {...register("owner_phone")}
-        />
-        {errors.owner_phone && (
-          <p className="text-red-500 text-sm mt-1">{errors.owner_phone.message as string}</p>
-        )}
+        <PhoneInput name="owner_phone" />
       </div>
     </div>
   );

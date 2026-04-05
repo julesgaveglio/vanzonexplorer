@@ -46,6 +46,8 @@ export const wizardSchema = z.object({
   price_per_day: z.coerce.number().min(20, "Minimum 20€/jour").max(500),
   min_days: z.coerce.number().min(1).max(30),
   deposit: z.string().optional(),
+  location_address: z.string().optional(),
+  location_postal_code: z.string().optional(),
   location_city: z.string().min(2, "Ville requise"),
   booking_url: z.string().url("Lien invalide").or(z.literal("")),
 });
@@ -169,6 +171,8 @@ export default function VanOnboardingWizard() {
         price_per_day: data.price_per_day,
         min_days: data.min_days,
         deposit: data.deposit ? Number(data.deposit) : undefined,
+        location_address: data.location_address || undefined,
+        location_postal_code: data.location_postal_code || undefined,
         location_city: data.location_city,
         booking_url: data.booking_url || "",
       };
