@@ -4,7 +4,7 @@ import Link from "next/link";
 import Script from "next/script";
 
 export const metadata: Metadata = {
-  title: "Road Trip Pays Basque en Van — Itinéraire 7 Jours | Vanzon Explorer",
+  title: "Road Trip Pays Basque en Van — Itinéraire 7 Jours",
   description:
     "Découvrez notre itinéraire road trip Pays Basque en van aménagé : Biarritz, Hossegor, Saint-Jean-de-Luz, Espelette. Spots vanlife, budget et conseils pratiques.",
   alternates: {

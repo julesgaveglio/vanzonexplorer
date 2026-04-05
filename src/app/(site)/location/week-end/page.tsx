@@ -10,7 +10,7 @@ import PracticalInfoSection from "@/components/location/PracticalInfoSection";
 export const revalidate = 86400;
 
 export const metadata: Metadata = {
-  title: "Location Van Week-end Pays Basque — dès 65€/nuit | Vanzon Explorer",
+  title: "Location Van Week-end Pays Basque — dès 65€/nuit",
   description:
     "Louez un van aménagé pour votre week-end au Pays Basque. 4 idées d'itinéraires testées : surf, gastronomie, montagne, côte+intérieur.",
   alternates: {

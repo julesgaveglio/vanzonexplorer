@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Politique de confidentialité | Vanzon Explorer",
+  title: "Politique de confidentialité",
   description: "Politique de confidentialité et protection des données personnelles — Vanzon Explorer.",
   robots: { index: false, follow: false },
 };

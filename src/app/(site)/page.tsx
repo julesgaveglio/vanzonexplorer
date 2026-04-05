@@ -13,7 +13,7 @@ import LiquidButton from "@/components/ui/LiquidButton";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Vanzon Explorer — Location, Achat & Formation Van Aménagé | Pays Basque",
+  title: { absolute: "Vanzon Explorer — Location, Achat & Formation Van Aménagé | Pays Basque" },
   description:
     "Location de vans aménagés dès 65€/nuit, achat de fourgons aménagés et formation vanlife au Pays Basque. Biarritz, Bayonne, Hossegor — vivez le Pays Basque en liberté avec Vanzon Explorer.",
   alternates: {

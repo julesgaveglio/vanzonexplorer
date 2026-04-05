@@ -4,7 +4,7 @@ import { VanProductJsonLd } from "@/components/seo/JsonLd";
 import { VANS } from "@/lib/data/vans";
 
 export const metadata: Metadata = {
-  title: "Xalbat — Renault Trafic aménagé 2025 à vendre | Vanzon Explorer",
+  title: "Xalbat — Renault Trafic aménagé 2025 à vendre",
   description:
     "Xalbat, Renault Trafic III aménagé par nos soins en 2025. 54 000 km, le van le plus récent de notre flotte. Lit fixe, cuisine coulissante, panneau solaire. 25 000 €. Cambo-les-Bains.",
   keywords: [

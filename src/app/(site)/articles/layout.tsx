@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Articles & Guides Vanlife Pays Basque | Vanzon Explorer",
+  title: "Articles & Guides Vanlife Pays Basque",
   description:
     "Road trips Pays Basque, aménagement van et business van — guides pratiques, conseils techniques et stratégies pour louer ou vivre en van au Pays Basque.",
   openGraph: {

@@ -10,7 +10,7 @@ import PracticalInfoSection from "@/components/location/PracticalInfoSection";
 export const revalidate = 86400;
 
 export const metadata: Metadata = {
-  title: "Location Van Aménagé Hossegor — Surf & Vanlife | Vanzon Explorer",
+  title: "Location Van Aménagé Hossegor — Surf & Vanlife",
   description:
     "Louez un van aménagé à Hossegor dès 65€/nuit. La Gravière, les Estagnots, forêt landaise — temple du surf européen à 45 min de Cambo-les-Bains. Assurance incluse.",
   alternates: {

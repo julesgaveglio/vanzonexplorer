@@ -3,7 +3,7 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'Désabonnement | Vanzon Explorer',
+  title: 'Désabonnement',
   robots: { index: false, follow: false },
 }
 

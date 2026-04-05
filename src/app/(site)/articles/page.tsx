@@ -5,7 +5,7 @@ import { getAllArticlesQuery } from "@/lib/sanity/queries";
 import type { SanityArticle } from "./types";
 
 export const metadata: Metadata = {
-  title: "Guides & Articles Vanlife Pays Basque | Vanzon Explorer",
+  title: "Guides & Articles Vanlife Pays Basque",
   description:
     "Itinéraires van, spots bivouac, aménagement fourgon, business de location — tous les guides vanlife du Pays Basque par Vanzon Explorer. Road trips, surf, montagne.",
   keywords: [

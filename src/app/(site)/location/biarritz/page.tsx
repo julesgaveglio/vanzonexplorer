@@ -10,7 +10,7 @@ import PracticalInfoSection from "@/components/location/PracticalInfoSection";
 export const revalidate = 86400;
 
 export const metadata: Metadata = {
-  title: "Location Van Aménagé Biarritz — dès 65€/nuit | Vanzon Explorer",
+  title: "Location Van Aménagé Biarritz — dès 65€/nuit",
   description:
     "Louez un van aménagé à Biarritz dès 65€/nuit. Surf à la Côte des Basques, plage de Milady, Grande Plage — explorez Biarritz en van avec Vanzon Explorer.",
   alternates: {

@@ -24,7 +24,7 @@ const REGION_NAMES: Record<string, string> = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const regionName = REGION_NAMES[params.regionSlug] || params.regionSlug;
   return {
-    title: `Road Trip en Van ${regionName} — Itinéraires | Vanzon Explorer`,
+    title: `Road Trip en Van ${regionName} — Itinéraires`,
     description: `Découvrez nos itinéraires de road trip en van aménagé en ${regionName}. Spots GPS, campings, restaurants et conseils pratiques.`,
     alternates: { canonical: `https://vanzonexplorer.com/road-trip/${params.regionSlug}` },
   };

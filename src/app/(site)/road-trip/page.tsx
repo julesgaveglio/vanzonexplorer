@@ -5,7 +5,7 @@ import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import RoadTripCatalogClient from "./_components/RoadTripCatalogClient";
 
 export const metadata: Metadata = {
-  title: "Road Trips en Van en France — Itinéraires par Région | Vanzon Explorer",
+  title: "Road Trips en Van en France — Itinéraires par Région",
   description: "Découvrez nos road trips en van aménagé à travers la France : Pays Basque, Bretagne, Provence, Corse... Itinéraires détaillés avec spots, campings et cartes GPS.",
   openGraph: {
     title: "Road Trips en Van en France",

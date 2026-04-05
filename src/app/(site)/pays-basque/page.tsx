@@ -6,7 +6,7 @@ import LiquidButton from "@/components/ui/LiquidButton";
 import OtherServices from "@/components/ui/OtherServices";
 
 export const metadata: Metadata = {
-  title: "Pays Basque en van — Spots, Bivouacs & Itinéraires | Vanzon Explorer",
+  title: "Pays Basque en van — Spots, Bivouacs & Itinéraires",
   description:
     "Guide complet pour explorer le Pays Basque en van aménagé : meilleurs spots, bivouacs légaux, itinéraires par saison et conseils pratiques. Départ Cambo-les-Bains.",
   alternates: {

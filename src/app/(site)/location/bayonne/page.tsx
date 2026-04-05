@@ -10,7 +10,7 @@ import PracticalInfoSection from "@/components/location/PracticalInfoSection";
 export const revalidate = 86400;
 
 export const metadata: Metadata = {
-  title: "Location Van Aménagé Bayonne — dès 65€/nuit | Vanzon Explorer",
+  title: "Location Van Aménagé Bayonne — dès 65€/nuit",
   description:
     "Louez un van aménagé à Bayonne dès 65€/nuit. Ville de départ idéale pour explorer le Pays Basque en van — Biarritz à 20 min, Saint-Jean-de-Luz à 25 min, les Pyrénées à 1h.",
   alternates: {

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Page introuvable — Vanzon Explorer",
+  title: { absolute: "Page introuvable — Vanzon Explorer" },
   robots: { index: false, follow: false },
 };
 

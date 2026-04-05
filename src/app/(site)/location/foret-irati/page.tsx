@@ -10,7 +10,7 @@ import PracticalInfoSection from "@/components/location/PracticalInfoSection";
 export const revalidate = 86400;
 
 export const metadata: Metadata = {
-  title: "Location Van Aménagé — Forêt d'Irati | Pays Basque | Vanzon Explorer",
+  title: "Location Van Aménagé — Forêt d'Irati | Pays Basque",
   description:
     "Partez explorer la Forêt d'Irati en van aménagé. Hêtraie millénaire, bivouac en altitude, faune sauvage — le Pays Basque profond à 1h de Cambo-les-Bains.",
   alternates: {

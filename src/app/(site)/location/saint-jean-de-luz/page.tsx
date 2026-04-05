@@ -10,7 +10,7 @@ import PracticalInfoSection from "@/components/location/PracticalInfoSection";
 export const revalidate = 86400;
 
 export const metadata: Metadata = {
-  title: "Location Van Aménagé Saint-Jean-de-Luz — dès 65€/nuit | Vanzon Explorer",
+  title: "Location Van Aménagé Saint-Jean-de-Luz — dès 65€/nuit",
   description:
     "Louez un van aménagé à Saint-Jean-de-Luz dès 65€/nuit. Port de pêche basque, plage protégée, marché animé — explorez le joyau du Golfe de Gascogne en van avec Vanzon Explorer.",
   alternates: {

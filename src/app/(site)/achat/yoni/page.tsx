@@ -4,7 +4,7 @@ import { VanProductJsonLd } from "@/components/seo/JsonLd";
 import { VANS } from "@/lib/data/vans";
 
 export const metadata: Metadata = {
-  title: "Yoni — Renault Trafic aménagé 2024 à vendre | Vanzon Explorer",
+  title: "Yoni — Renault Trafic aménagé 2024 à vendre",
   description:
     "Yoni, Renault Trafic III aménagé par nos soins en 2024. 68 000 km, lit fixe, cuisine coulissante, panneau solaire. Historique complet, 25 000 €. Remise à Cambo-les-Bains.",
   keywords: [

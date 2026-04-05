@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Contact | Vanzon Explorer",
+  title: "Contact",
   description:
     "Contactez Jules de Vanzon Explorer pour toute question sur la location de van, la formation vanlife ou l'achat accompagne. Reponse rapide par email ou WhatsApp.",
   alternates: {

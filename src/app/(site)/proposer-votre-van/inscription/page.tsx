@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import VanOnboardingWizard from "../_components/VanOnboardingWizard";
 
 export const metadata: Metadata = {
-  title: "Inscription propriétaire | Vanzon Explorer",
+  title: "Inscription propriétaire",
   description:
     "Créez votre fiche van en quelques minutes. 0% de commission pendant le lancement, trafic organique qualifié, aucune exclusivité.",
   alternates: { canonical: "https://vanzonexplorer.com/proposer-votre-van/inscription" },

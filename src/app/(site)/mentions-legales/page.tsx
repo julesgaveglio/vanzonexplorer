@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Mentions légales | Vanzon Explorer",
+  title: "Mentions légales",
   description: "Mentions légales du site Vanzon Explorer.",
   robots: { index: false, follow: false },
 };

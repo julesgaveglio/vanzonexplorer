@@ -82,7 +82,7 @@ export async function generateMetadata({
   const siteUrl = "https://vanzonexplorer.com";
   const hasContent = Array.isArray(article.content) && article.content.length > 0;
   return {
-    title: article.seoTitle ?? `${article.title} | Vanzon Explorer`,
+    title: article.seoTitle ?? article.title,
     description: article.seoDescription ?? article.excerpt,
     ...(!hasContent && { robots: { index: false, follow: false } }),
     alternates: {

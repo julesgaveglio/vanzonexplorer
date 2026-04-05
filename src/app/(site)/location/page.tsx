@@ -12,7 +12,7 @@ import RoadTripCTA from "@/components/ui/RoadTripCTA";
 const BASE_URL = "https://vanzonexplorer.com";
 
 export const metadata: Metadata = {
-  title: "Louer un Van Aménagé au Pays Basque — dès 65€/nuit | Vanzon Explorer",
+  title: "Louer un Van Aménagé au Pays Basque — dès 65€/nuit",
   description:
     "Louez un van aménagé tout équipé au Pays Basque dès 65€/nuit. Départ Bayonne, assurance tous risques incluse. Surf, montagne, road trip — explorez librement avec Vanzon Explorer.",
   alternates: {
