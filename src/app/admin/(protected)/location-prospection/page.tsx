@@ -91,7 +91,7 @@ export default function LocationProspectionPage() {
       <div>
         <h1 className="text-2xl font-bold text-slate-900">Prospection Location</h1>
         <p className="text-sm text-slate-500 mt-1">
-          Poster dans les groupes Facebook pour optimiser le taux d'occupation
+          Poster dans les groupes Facebook pour optimiser le taux d&apos;occupation
         </p>
       </div>
 
