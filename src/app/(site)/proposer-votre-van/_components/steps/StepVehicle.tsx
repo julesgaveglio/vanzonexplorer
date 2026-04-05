@@ -67,7 +67,7 @@ export default function StepVehicle() {
         <p className="text-sm text-slate-500 mb-5">Les informations de base sur votre véhicule.</p>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label htmlFor="van_type" className="block text-sm font-medium text-text-secondary mb-1.5">
             Type de véhicule
@@ -97,7 +97,7 @@ export default function StepVehicle() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label htmlFor="van_model" className="block text-sm font-medium text-text-secondary mb-1.5">
             Modèle
@@ -129,7 +129,7 @@ export default function StepVehicle() {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div>
           <label htmlFor="seats" className="block text-sm font-medium text-text-secondary mb-1.5">
             Places <span className="text-slate-400 font-normal">(opt.)</span>

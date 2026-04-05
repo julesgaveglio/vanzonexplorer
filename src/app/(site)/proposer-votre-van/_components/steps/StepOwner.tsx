@@ -15,7 +15,7 @@ export default function StepOwner() {
         <p className="text-sm text-slate-500 mb-5">Pour que nous puissions vous recontacter et créer votre profil.</p>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label htmlFor="owner_first_name" className="block text-sm font-medium text-text-secondary mb-1.5">
             Prénom

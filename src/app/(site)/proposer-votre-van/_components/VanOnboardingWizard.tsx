@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -49,6 +49,7 @@ export default function VanOnboardingWizard() {
   const [step, setStep] = useState(0);
   const [submitted, setSubmitted] = useState(false);
   const [serverError, setServerError] = useState("");
+  const formRef = useRef<HTMLDivElement>(null);
 
   const methods = useForm<WizardFormData>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -94,13 +95,13 @@ export default function VanOnboardingWizard() {
     if (!valid) return;
     saveDraft();
     setStep((s) => Math.min(s + 1, 3));
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   function goBack() {
     saveDraft();
     setStep((s) => Math.max(s - 1, 0));
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   async function onSubmit(data: WizardFormData) {
@@ -127,7 +128,7 @@ export default function VanOnboardingWizard() {
 
       localStorage.removeItem(STORAGE_KEY);
       setSubmitted(true);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     } catch {
       setServerError("Erreur de connexion. Réessayez.");
     }
@@ -150,7 +151,7 @@ export default function VanOnboardingWizard() {
 
   return (
     <FormProvider {...methods}>
-      <div className="glass-card p-6 sm:p-8">
+      <div ref={formRef} className="glass-card p-5 sm:p-8 scroll-mt-24">
         <WizardProgressBar currentStep={step} />
 
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -163,12 +164,12 @@ export default function VanOnboardingWizard() {
             <p className="text-red-500 text-sm text-center mt-4">{serverError}</p>
           )}
 
-          <div className="flex gap-3 mt-8">
+          <div className="flex gap-3 mt-6">
             {step > 0 && (
               <button
                 type="button"
                 onClick={goBack}
-                className="flex-1 py-3 px-4 rounded-xl border border-slate-200 text-slate-600 font-medium hover:bg-slate-50 transition-colors"
+                className="flex-1 py-2.5 px-4 rounded-xl border border-slate-200 text-slate-600 text-sm font-medium hover:bg-slate-50 transition-colors"
               >
                 Retour
               </button>
@@ -178,7 +179,7 @@ export default function VanOnboardingWizard() {
               <LiquidButton
                 type="button"
                 variant="blue"
-                size="lg"
+                size="md"
                 fullWidth
                 onClick={goNext}
               >
@@ -188,7 +189,7 @@ export default function VanOnboardingWizard() {
               <LiquidButton
                 type="submit"
                 variant="blue"
-                size="lg"
+                size="md"
                 fullWidth
                 disabled={isSubmitting}
               >

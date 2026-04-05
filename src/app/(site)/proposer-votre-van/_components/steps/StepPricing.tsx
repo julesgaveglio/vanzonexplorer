@@ -15,7 +15,7 @@ export default function StepPricing() {
         <p className="text-sm text-slate-500 mb-5">Dernière étape ! Indiquez votre tarif et où se trouve votre van.</p>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label htmlFor="price_per_day" className="block text-sm font-medium text-text-secondary mb-1.5">
             Prix par jour
@@ -56,7 +56,7 @@ export default function StepPricing() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label htmlFor="deposit" className="block text-sm font-medium text-text-secondary mb-1.5">
             Caution <span className="text-slate-400 font-normal">(optionnel)</span>
