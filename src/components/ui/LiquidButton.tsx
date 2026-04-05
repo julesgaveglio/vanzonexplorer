@@ -109,7 +109,7 @@ export default function LiquidButton({
 
   const palette = VARIANTS[variant];
   const sizeClass = SIZE_CLASSES[size];
-  const scale = pressed ? 0.94 : hovered ? 1.07 : 1;
+  const scale = pressed ? 0.97 : hovered && !fullWidth ? 1.07 : 1;
   // fullWidth (cartes fond blanc) : pas de glow externe → pas de contour fantôme
   const currentGlow = pressed ? "none" : (fullWidth ? "none" : palette.glow);
   const glowPulseClass = !pressed && !hovered && !fullWidth ? "liquid-cta-glow-pulse" : "";
