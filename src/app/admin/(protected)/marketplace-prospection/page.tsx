@@ -14,116 +14,81 @@ interface MessageTemplate {
 }
 
 const TEMPLATES: MessageTemplate[] = [
-  // ── Ton direct / professionnel ──
+  // ── Axe principal : "Trafic → vos vans" (3 variantes) ──
   {
-    id: "direct-1",
-    label: "Pitch direct",
-    tone: "Pro & direct",
-    toneColor: "bg-blue-100 text-blue-700",
-    target: "Propriétaires actifs sur Yescapa/Wikicampers",
-    message: `Salut ! Je vois que tu loues ton van sur [plateforme] — est-ce que tu serais intéressé par un canal de visibilité supplémentaire ?
+    id: "main-v1",
+    label: "V1 — Originale améliorée",
+    tone: "Axe principal",
+    toneColor: "bg-indigo-100 text-indigo-700",
+    target: "Groupes vanlife / location van",
+    message: `Salut a tous,
 
-On a lancé Vanzon Explorer, un site spécialisé location de vans au Pays Basque / Sud-Ouest, déjà référencé sur Google.
+Enchanté, je m'appelle Jules. Je loue deux fourgons aménagés au Pays Basque depuis un moment et j'ai monté Vanzon Explorer, un site vanlife qui génère 15 000 visites/mois de passionnés qui cherchent un van pour leur prochain road trip.
 
-Pendant le lancement c'est 100% gratuit : on crée une page dédiée pour ton van sur notre site, avec redirection vers ton annonce existante. 0 commission, 0 engagement.
+Aujourd'hui je lance la partie location entre particuliers. L'idée est simple : rediriger ce trafic qualifié vers VOS vans, plutôt que vous payiez 15-20% de commission ailleurs.
 
-Si ça t'intéresse, 2 min pour s'inscrire : https://vanzonexplorer.com/proposer-votre-van
+L'offre pour les premiers inscrits :
+- 0% de commission pendant 6 mois
+- Zéro exclusivité — vous gardez tous vos autres canaux
+- Votre van a sa propre page référencée sur Google
 
-Hésite pas si t'as des questions !`,
+Je cherche 10-15 proprios motivés pour lancer l'aventure avec moi.
+
+Si ça vous parle : https://vanzonexplorer.com/proposer-votre-van (30 sec, aucun engagement)
+
+Dispo en commentaire ou en MP si vous avez des questions.
+
+Jules`,
   },
   {
-    id: "direct-2",
-    label: "Proposition de valeur chiffrée",
-    tone: "Pro & direct",
-    toneColor: "bg-blue-100 text-blue-700",
-    target: "Propriétaires qui cherchent plus de réservations",
-    message: `Hello ! Tu loues ton van et tu aimerais plus de réservations ?
+    id: "main-v2",
+    label: "V2 — Angle frustration commissions",
+    tone: "Axe principal",
+    toneColor: "bg-indigo-100 text-indigo-700",
+    target: "Groupes location van / proprios Yescapa",
+    message: `Salut a tous,
 
-On a créé Vanzon Explorer — un site qui attire chaque mois des centaines de personnes qui cherchent un van à louer via Google. Pendant le lancement, on référence ton van gratuitement (0% de commission).
+Petite question : ça vous fait quoi de lâcher 15-20% de commission à chaque réservation ?
 
-Concrètement : on crée ta page van, les visiteurs te trouvent via Google, et on les redirige vers ta plateforme de réservation. Toi tu ne fais rien.
+Moi ça m'a motivé à créer autre chose. Je loue deux fourgons au Pays Basque et j'ai monté Vanzon Explorer — un site vanlife qui fait 15 000 visites/mois sur Google. Des gens qui cherchent un van, prêts à réserver.
 
-Inscription rapide ici : https://vanzonexplorer.com/proposer-votre-van`,
-  },
-  // ── Ton décontracté / communautaire ──
-  {
-    id: "cool-1",
-    label: "Entre vanlifers",
-    tone: "Décontracté",
-    toneColor: "bg-green-100 text-green-700",
-    target: "Groupes vanlife / communautés",
-    message: `Hey la commu !
+Aujourd'hui j'ouvre ce trafic aux autres proprios. Le deal est simple :
+- 0% de commission pendant 6 mois
+- On crée votre page van, les visiteurs arrivent via Google
+- Vous gardez vos autres canaux, c'est un bonus pas un remplacement
 
-On est Jules et Elio, on loue nos deux vans aménagés au Pays Basque et on a monté un petit site (Vanzon Explorer) pour aider les gens à trouver des vans à louer dans le coin.
+Je prends les 10-15 premiers proprios qui veulent tester.
 
-On cherche d'autres proprios de vans qui voudraient apparaître sur notre site gratuitement. L'idée c'est simple : on vous fait une page sur notre site, les gens vous trouvent via Google, et on les renvoie vers votre annonce. C'est gratuit, y'a aucune commission pendant le lancement.
+Inscription en 30 sec : https://vanzonexplorer.com/proposer-votre-van
 
-Si ça vous parle : https://vanzonexplorer.com/proposer-votre-van
+Des questions ? Je suis là en commentaire.
 
-Et si vous avez des questions, balancez en commentaire ou en MP !`,
+Jules`,
   },
   {
-    id: "cool-2",
-    label: "Story personnelle",
-    tone: "Décontracté",
-    toneColor: "bg-green-100 text-green-700",
-    target: "Groupes aménagement / DIY van",
-    message: `Salut tout le monde !
+    id: "main-v3",
+    label: "V3 — Angle communauté & transparence",
+    tone: "Axe principal",
+    toneColor: "bg-indigo-100 text-indigo-700",
+    target: "Groupes vanlife / entraide / aménagement",
+    message: `Salut a tous,
 
-Petit retour d'expérience : on loue nos vans aménagés depuis le Pays Basque et on s'est rendu compte que les grosses plateformes prennent pas mal de commission (15-16%...). Du coup on a créé notre propre site, Vanzon Explorer, pour avoir un canal de réservation en plus.
+Je vais être transparent : je cherche des proprios de vans pour un projet qui me tient à coeur.
 
-Aujourd'hui on ouvre le site aux autres proprios. Pendant le lancement c'est 0% de commission — on crée votre page van gratuitement et on redirige les visiteurs vers votre annonce. L'objectif c'est de construire un réseau de vans dans le Sud-Ouest / Pays Basque.
+Je m'appelle Jules, je loue deux fourgons au Pays Basque. A côté, j'ai créé Vanzon Explorer — un site vanlife avec des articles, des guides, des itinéraires. Résultat : 15 000 visites/mois de gens qui veulent louer un van.
 
-2 min pour s'inscrire si ça vous tente : https://vanzonexplorer.com/proposer-votre-van`,
-  },
-  // ── Ton curieux / question ──
-  {
-    id: "question-1",
-    label: "Question ouverte",
-    tone: "Curieux / question",
-    toneColor: "bg-amber-100 text-amber-700",
-    target: "Groupes location van / entraide",
-    message: `Question aux proprios de vans qui louent leur véhicule : vous utilisez quoi comme plateforme ? Vous êtes satisfaits du taux de remplissage ?
+Le problème ? J'ai le trafic, mais pas assez de vans à proposer. Du coup je lance un truc simple : vous inscrivez votre van, on vous crée une page sur notre site, et les visiteurs sont redirigés vers votre annonce. Vous ne changez rien à votre fonctionnement actuel.
 
-Nous on a monté un site (Vanzon Explorer) spécialisé location de vans au Pays Basque. On commence à avoir du trafic Google et on cherche des proprios pour étoffer notre catalogue.
+Pendant le lancement :
+- 0% de commission pendant 6 mois
+- Aucune exclusivité
+- 30 secondes pour s'inscrire
 
-C'est gratuit pendant le lancement — on crée votre page, on redirige vers votre annonce existante. 0 commission.
+Je cherche une quinzaine de proprios pour démarrer : https://vanzonexplorer.com/proposer-votre-van
 
-Curieux d'avoir vos retours ! Et si ça vous intéresse : https://vanzonexplorer.com/proposer-votre-van`,
-  },
-  {
-    id: "question-2",
-    label: "Sondage engagement",
-    tone: "Curieux / question",
-    toneColor: "bg-amber-100 text-amber-700",
-    target: "Tout groupe vanlife",
-    message: `Petit sondage pour les proprios de vans aménagés :
+Si vous hésitez, posez vos questions ici, je réponds à tout.
 
-Si un site vous proposait de référencer votre van gratuitement sur Google (avec votre propre page et une redirection vers votre annonce), ça vous intéresserait ?
-
-C'est exactement ce qu'on fait avec Vanzon Explorer. Pendant le lancement, c'est 0% de commission. On veut juste aider les proprios à avoir plus de visibilité.
-
-Dites-moi en commentaire si c'est le genre de truc qui vous parlerait !
-
-Pour ceux qui veulent tester : https://vanzonexplorer.com/proposer-votre-van`,
-  },
-  // ── Ton urgence / exclusivité ──
-  {
-    id: "exclu-1",
-    label: "Premiers inscrits",
-    tone: "Exclusivité",
-    toneColor: "bg-purple-100 text-purple-700",
-    target: "Proprios motivés / early adopters",
-    message: `Appel aux propriétaires de vans aménagés dans le Sud-Ouest !
-
-On lance Vanzon Explorer et on cherche nos premiers partenaires. Les premiers inscrits auront :
-- Une page van dédiée sur notre site (référencé Google)
-- 0% de commission pendant toute la phase de lancement
-- Un traitement prioritaire quand on passera à la réservation directe
-
-On loue nous-mêmes 2 vans au Pays Basque, on connaît le métier. L'objectif : construire LE réseau de vans aménagés dans la région.
-
-Inscription (2 min) : https://vanzonexplorer.com/proposer-votre-van`,
+Jules`,
   },
   // ── Ton ultra-court ──
   {
@@ -132,32 +97,28 @@ Inscription (2 min) : https://vanzonexplorer.com/proposer-votre-van`,
     tone: "Ultra-court",
     toneColor: "bg-red-100 text-red-700",
     target: "Groupes avec règles anti-promo strictes",
-    message: `Proprio de van aménagé ? On référence votre van gratuitement sur Google pendant le lancement de notre site (0% commission). 2 min : https://vanzonexplorer.com/proposer-votre-van`,
+    message: `Proprio de van aménagé ? Je loue 2 fourgons au Pays Basque et mon site fait 15K visites/mois. Je cherche 10-15 proprios pour leur rediriger ce trafic gratuitement (0% commission 6 mois). 30 sec : https://vanzonexplorer.com/proposer-votre-van`,
   },
   {
     id: "short-2",
     label: "MP direct",
     tone: "Ultra-court",
     toneColor: "bg-red-100 text-red-700",
-    target: "Message privé direct",
-    message: `Salut ! J'ai vu que tu loues ton van — ça t'intéresserait d'avoir une page dédiée sur notre site pour plus de visibilité ? C'est gratuit pendant le lancement (0% commission). Voilà le lien si jamais : https://vanzonexplorer.com/proposer-votre-van`,
+    target: "Message privé à un proprio",
+    message: `Salut ! J'ai vu que tu loues ton van — je loue aussi 2 fourgons au Pays Basque et j'ai un site vanlife qui fait 15K visites/mois. Je lance la location entre particuliers, 0% de commission pendant 6 mois. Si ça t'intéresse : https://vanzonexplorer.com/proposer-votre-van`,
   },
-  // ── Ton entraide / valeur ajoutée ──
+  // ── Ton question / engagement ──
   {
-    id: "value-1",
-    label: "Partage d'expérience",
-    tone: "Entraide",
-    toneColor: "bg-teal-100 text-teal-700",
-    target: "Groupes entraide vanlife / business",
-    message: `Retour d'expérience pour ceux qui louent leur van :
+    id: "question-1",
+    label: "Question ouverte",
+    tone: "Question",
+    toneColor: "bg-amber-100 text-amber-700",
+    target: "Groupes location van / entraide",
+    message: `Question aux proprios de vans qui louent leur véhicule : vous êtes satisfaits de votre taux de remplissage ? Vous aimeriez un canal supplémentaire sans commission ?
 
-Avec mon associé, on loue 2 vans au Pays Basque depuis un moment. On s'est vite rendu compte que le référencement Google, c'est ce qui fait la différence pour remplir un planning (et pas juste dépendre des algorithmes de Yescapa).
+Je loue 2 fourgons au Pays Basque et j'ai monté un site (Vanzon Explorer, 15K visites/mois) que j'ouvre maintenant aux autres proprios. 0% de commission pendant 6 mois, aucune exclusivité, on redirige nos visiteurs vers votre annonce.
 
-Du coup on a monté Vanzon Explorer — un site avec du vrai contenu vanlife qui attire du trafic organique. Aujourd'hui on ouvre aux autres proprios : on vous crée une page van sur notre site, gratuitement, avec un lien vers votre annonce. C'est un canal supplémentaire, pas un remplacement.
-
-Si ça vous intéresse : https://vanzonexplorer.com/proposer-votre-van
-
-Happy à répondre à vos questions sur la location ou le référencement !`,
+Curieux d'avoir vos retours : https://vanzonexplorer.com/proposer-votre-van`,
   },
 ];
 
