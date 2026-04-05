@@ -99,12 +99,22 @@ export default function ProposerVotreVanPage() {
       {/* ── HERO ─────────────────────────────────────────────────────────── */}
       <section className="relative -mt-16 min-h-[580px] lg:min-h-[680px] flex items-end overflow-hidden">
         <div className="absolute inset-0">
+          {/* Mobile */}
+          <Image
+            src="https://cdn.sanity.io/images/lewexa74/production/5f9b15ad64282b02abed9e8ea36951c1365a27f8-617x836.webp?auto=format&fit=max&q=82"
+            alt="Van aménagé au Pays Basque"
+            fill
+            sizes="100vw"
+            className="object-cover object-center sm:hidden"
+            priority
+          />
+          {/* Desktop */}
           <Image
             src="https://cdn.sanity.io/images/lewexa74/production/d445397965472d300e3dc13d6b1c37503fe8ba25-1920x1080.png?auto=format&q=82"
             alt="Van aménagé au bord de l'océan au Pays Basque"
             fill
             sizes="100vw"
-            className="object-cover object-[10%_70%] sm:object-[30%_70%] lg:object-[25%_70%]"
+            className="object-cover object-[30%_70%] lg:object-[25%_70%] hidden sm:block"
             priority
           />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-900/50 to-slate-900/10" />
