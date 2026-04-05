@@ -11,13 +11,16 @@ import StepPhotos from "./steps/StepPhotos";
 import StepPricing from "./steps/StepPricing";
 import { ArrowRight } from "lucide-react";
 
-const STORAGE_KEY = "vanzon-wizard-draft";
+const STORAGE_KEY = "vanzon-wizard-v2";
 
 export const wizardSchema = z.object({
+  // Étape 1 — Propriétaire
   owner_first_name: z.string().min(2, "Prénom requis"),
   owner_last_name: z.string().min(2, "Nom requis"),
   owner_email: z.string().email("Email invalide"),
   owner_phone: z.string().min(8, "Téléphone requis"),
+
+  // Étape 2 — Véhicule
   van_type: z.enum(["fourgon", "van", "combi", "camping-car", "autre"]),
   van_brand: z.string().min(1, "Marque requise"),
   van_model: z.string().min(1, "Modèle requis"),
@@ -26,9 +29,20 @@ export const wizardSchema = z.object({
   sleeps: z.coerce.number().min(1, "Couchages requis").max(10),
   transmission: z.enum(["manuelle", "automatique"]),
   equipments: z.array(z.string()),
+
+  // Étape 3 — Photos & description
   title: z.string().min(5, "Titre trop court (min 5 caractères)").max(100),
   description: z.string().min(50, "Description trop courte (min 50 caractères)").max(2000),
-  photos: z.array(z.string().url()).min(3, "Minimum 3 photos"),
+  // Slots photos dédiés — 3 obligatoires
+  photo_exterior_front: z.string().url("Photo extérieur avant requise"),
+  photo_exterior_side: z.string().url().or(z.literal("")).optional(),
+  photo_interior: z.string().url("Photo intérieur requise"),
+  photo_sleeping: z.string().url("Photo couchage requise"),
+  photo_kitchen: z.string().url().or(z.literal("")).optional(),
+  photo_bathroom: z.string().url().or(z.literal("")).optional(),
+  photo_detail: z.string().url().or(z.literal("")).optional(),
+
+  // Étape 4 — Tarif & localisation
   price_per_day: z.coerce.number().min(20, "Minimum 20€/jour").max(500),
   min_days: z.coerce.number().min(1).max(30),
   deposit: z.string().optional(),
@@ -41,7 +55,7 @@ export type WizardFormData = z.infer<typeof wizardSchema>;
 const STEP_FIELDS: (keyof WizardFormData)[][] = [
   ["owner_first_name", "owner_last_name", "owner_email", "owner_phone"],
   ["van_type", "van_brand", "van_model", "sleeps", "transmission", "equipments"],
-  ["title", "description", "photos"],
+  ["title", "description", "photo_exterior_front", "photo_interior", "photo_sleeping"],
   ["price_per_day", "min_days", "location_city"],
 ];
 
@@ -58,7 +72,13 @@ export default function VanOnboardingWizard() {
       van_type: "fourgon",
       transmission: "manuelle",
       equipments: [],
-      photos: [],
+      photo_exterior_front: "",
+      photo_exterior_side: "",
+      photo_interior: "",
+      photo_sleeping: "",
+      photo_kitchen: "",
+      photo_bathroom: "",
+      photo_detail: "",
       min_days: 2,
       booking_url: "",
     },
@@ -107,11 +127,50 @@ export default function VanOnboardingWizard() {
   async function onSubmit(data: WizardFormData) {
     setServerError("");
     try {
+      // Construire le tableau de photos ordonné (principale en premier)
+      const photos = [
+        data.photo_exterior_front,
+        data.photo_interior,
+        data.photo_sleeping,
+        data.photo_exterior_side,
+        data.photo_kitchen,
+        data.photo_bathroom,
+        data.photo_detail,
+      ].filter((url): url is string => Boolean(url));
+
+      // Objet structuré pour le contrôle d'affichage futur
+      const photo_slots = {
+        exterior_front: data.photo_exterior_front,
+        exterior_side: data.photo_exterior_side || null,
+        interior: data.photo_interior,
+        sleeping: data.photo_sleeping,
+        kitchen: data.photo_kitchen || null,
+        bathroom: data.photo_bathroom || null,
+        detail: data.photo_detail || null,
+      };
+
       const payload = {
-        ...data,
+        owner_first_name: data.owner_first_name,
+        owner_last_name: data.owner_last_name,
+        owner_email: data.owner_email,
+        owner_phone: data.owner_phone,
+        van_type: data.van_type,
+        van_brand: data.van_brand,
+        van_model: data.van_model,
         van_year: data.van_year ? Number(data.van_year) : undefined,
         seats: data.seats ? Number(data.seats) : undefined,
+        sleeps: data.sleeps,
+        transmission: data.transmission,
+        equipments: data.equipments,
+        title: data.title,
+        description: data.description,
+        photos,
+        photo_slots,
+        price_per_day: data.price_per_day,
+        min_days: data.min_days,
         deposit: data.deposit ? Number(data.deposit) : undefined,
+        location_city: data.location_city,
+        booking_url: data.booking_url || "",
       };
 
       const res = await fetch("/api/marketplace/submit", {
