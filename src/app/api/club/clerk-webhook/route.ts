@@ -45,6 +45,9 @@ export async function POST(req: Request) {
       last_name: last_name || null,
       subscription_status: "free",
     }, { onConflict: "clerk_id" });
+
+    // Notification Telegram
+    notifyNewUser({ id, email, first_name, last_name }).catch(() => {});
   }
 
   if (evt.type === "user.updated") {
@@ -65,4 +68,36 @@ export async function POST(req: Request) {
   }
 
   return NextResponse.json({ success: true });
+}
+
+async function notifyNewUser({
+  id,
+  email,
+  first_name,
+  last_name,
+}: {
+  id: string;
+  email: string | null;
+  first_name: string | null | undefined;
+  last_name: string | null | undefined;
+}) {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_CHAT_ID;
+  if (!token || !chatId) return;
+
+  const name = [first_name, last_name].filter(Boolean).join(" ") || "—";
+  const text =
+    `👤 <b>Nouvel inscrit sur Vanzon !</b>\n` +
+    `─────────────────────\n` +
+    `<b>Nom :</b> ${name}\n` +
+    `<b>Email :</b> ${email ?? "—"}\n` +
+    `<b>ID Clerk :</b> <code>${id}</code>\n` +
+    `─────────────────────\n` +
+    `<a href="https://vanzonexplorer.com/admin/marketplace">👉 Admin marketplace</a>`;
+
+  await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ chat_id: chatId, text, parse_mode: "HTML" }),
+  });
 }

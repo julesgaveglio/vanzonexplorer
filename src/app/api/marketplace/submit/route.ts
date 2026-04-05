@@ -86,20 +86,18 @@ async function notifyTelegram(data: z.infer<typeof schema>) {
     : data.photos.length;
 
   const text =
-    `🚐 <b>Nouvelle fiche van marketplace !</b>\n` +
+    `🚐 <b>Nouvelle annonce van !</b>\n` +
     `─────────────────────\n` +
     `<b>Proprio :</b> ${data.owner_first_name} ${data.owner_last_name}\n` +
-    `<b>Tél :</b> ${data.owner_phone}\n` +
     `<b>Email :</b> ${data.owner_email}\n` +
+    `<b>Tél :</b> ${data.owner_phone}\n` +
     `<b>Van :</b> ${data.van_brand} ${data.van_model} (${data.van_type})\n` +
     `<b>Titre :</b> ${data.title}\n` +
-    `<b>Prix :</b> ${data.price_per_day}€/jour\n` +
-    `<b>Couchages :</b> ${data.sleeps}\n` +
+    `<b>Prix :</b> ${data.price_per_day}€/jour · ${data.sleeps} couchages\n` +
     `<b>Ville :</b> ${data.location_city}\n` +
-    `<b>Photos :</b> ${slotCount} (${data.photos.length} au total)\n` +
-    (data.booking_url ? `<b>Lien :</b> ${data.booking_url}\n` : "") +
+    `<b>Photos :</b> ${slotCount}\n` +
     `─────────────────────\n` +
-    `→ Vérifier dans /admin/marketplace`;
+    `<a href="https://vanzonexplorer.com/admin/marketplace">👉 Voir dans l'admin</a>`;
 
   await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
     method: "POST",
