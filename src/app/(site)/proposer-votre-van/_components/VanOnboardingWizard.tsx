@@ -9,7 +9,7 @@ import StepOwner from "./steps/StepOwner";
 import StepVehicle from "./steps/StepVehicle";
 import StepPhotos from "./steps/StepPhotos";
 import StepPricing from "./steps/StepPricing";
-import LiquidButton from "@/components/ui/LiquidButton";
+import { ArrowRight } from "lucide-react";
 
 const STORAGE_KEY = "vanzon-wizard-draft";
 
@@ -176,25 +176,21 @@ export default function VanOnboardingWizard() {
             )}
 
             {step < 3 ? (
-              <LiquidButton
+              <button
                 type="button"
-                variant="blue"
-                size="md"
-                fullWidth
                 onClick={goNext}
+                className="flex-1 inline-flex items-center justify-center gap-2 py-2.5 px-5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-blue-500 to-sky-400 hover:from-blue-600 hover:to-sky-500 transition-all shadow-sm"
               >
-                Continuer
-              </LiquidButton>
+                Continuer <ArrowRight className="w-4 h-4" />
+              </button>
             ) : (
-              <LiquidButton
+              <button
                 type="submit"
-                variant="blue"
-                size="md"
-                fullWidth
                 disabled={isSubmitting}
+                className="flex-1 inline-flex items-center justify-center gap-2 py-2.5 px-5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-blue-500 to-sky-400 hover:from-blue-600 hover:to-sky-500 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? "Envoi en cours..." : "Soumettre mon van"}
-              </LiquidButton>
+              </button>
             )}
           </div>
         </form>

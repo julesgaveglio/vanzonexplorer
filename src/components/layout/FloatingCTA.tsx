@@ -54,7 +54,7 @@ const ARTICLE_CATEGORY_CTA: Record<string, CTAConfig> = {
   "Club Privé": { btnLabel: "Rejoindre le Club", href: "/club", ...PALETTE.purple },
 };
 
-function getCTAConfig(pathname: string): CTAConfig {
+function getCTAConfig(pathname: string): CTAConfig | null {
   // Formation — doré
   if (pathname.startsWith("/formation")) {
     return {
@@ -179,6 +179,11 @@ function getCTAConfig(pathname: string): CTAConfig {
       href: "/",
       ...PALETTE.blue,
     };
+  }
+
+  // Marketplace — pas de floating CTA
+  if (pathname.startsWith("/proposer-votre-van")) {
+    return null;
   }
 
   // Auth pages
@@ -390,6 +395,8 @@ export default function FloatingCTA() {
     isArticlePage && category && ARTICLE_CATEGORY_CTA[category]
       ? ARTICLE_CATEGORY_CTA[category]
       : getCTAConfig(pathname);
+
+  if (!config) return null;
 
   return (
     <div
