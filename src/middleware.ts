@@ -9,6 +9,9 @@ const isDevOnlyRoute = createRouteMatcher([
   "/api/admin/pixel-agents(.*)",
 ]);
 
+const isMarketplaceInscription = createRouteMatcher(["/proposer-votre-van/inscription(.*)"]);
+const isMarketplaceConnexion = createRouteMatcher(["/proposer-votre-van/connexion(.*)"]);
+
 const isProtectedRoute = createRouteMatcher([
   "/dashboard(.*)",
   "/user(.*)",
@@ -33,6 +36,24 @@ export default clerkMiddleware(async (auth, req) => {
     if (!userId) {
       const loginUrl = new URL("/admin/login", req.url);
       return NextResponse.redirect(loginUrl);
+    }
+    return NextResponse.next();
+  }
+
+  // Marketplace — already signed in → skip connexion page
+  if (isMarketplaceConnexion(req)) {
+    const { userId } = await auth();
+    if (userId) {
+      return NextResponse.redirect(new URL("/proposer-votre-van/inscription", req.url));
+    }
+    return NextResponse.next();
+  }
+
+  // Marketplace — inscription requires auth → redirect to connexion
+  if (isMarketplaceInscription(req)) {
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.redirect(new URL("/proposer-votre-van/connexion", req.url));
     }
     return NextResponse.next();
   }

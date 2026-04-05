@@ -142,7 +142,7 @@ export default function ProposerVotreVanPage() {
               href="/proposer-votre-van/inscription"
               className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-sky-400 text-white font-semibold px-7 py-3.5 rounded-full hover:from-blue-600 hover:to-sky-500 transition-all shadow-lg shadow-blue-500/25"
             >
-              Je suis propriétaire <ArrowRight className="w-4 h-4" />
+              Déposer une annonce <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
 
