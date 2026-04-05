@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
@@ -26,7 +27,7 @@ export const metadata: Metadata = {
   },
 };
 
-const BENEFITS = [
+const BENEFITS: { emoji: string; title: string; body: React.ReactNode }[] = [
   {
     emoji: "🔓",
     title: "0% de commission pendant le lancement",
@@ -40,7 +41,18 @@ const BENEFITS = [
   {
     emoji: "📈",
     title: "Un trafic qualifié, pas un trafic de prix",
-    body: "Notre blog vanlife attire des visiteurs qui planifient activement un road trip via Google. Pas des chasseurs de bons plans — des gens en phase de décision qui cherchent le bon van. Plusieurs centaines de visiteurs organiques par mois, en croissance chaque semaine. Objectif : 10 000 visiteurs/mois fin 2026.",
+    body: (
+      <>
+        Notre{" "}
+        <a
+          href="https://vanzonexplorer.com/articles"
+          className="text-blue-600 underline underline-offset-2 hover:text-blue-700 transition-colors"
+        >
+          blog vanlife
+        </a>{" "}
+        attire des visiteurs qui planifient activement un road trip via Google. Pas des chasseurs de bons plans — des gens en phase de décision qui cherchent le bon van. Plusieurs centaines de visiteurs organiques par mois, en croissance chaque semaine.
+      </>
+    ),
   },
   {
     emoji: "🚐",
@@ -92,7 +104,7 @@ export default function ProposerVotreVanPage() {
             alt="Van aménagé au bord de l'océan au Pays Basque"
             fill
             sizes="100vw"
-            className="object-cover object-[30%_70%] lg:object-[25%_70%]"
+            className="object-cover object-[10%_70%] sm:object-[30%_70%] lg:object-[25%_70%]"
             priority
           />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-900/50 to-slate-900/10" />
@@ -123,7 +135,7 @@ export default function ProposerVotreVanPage() {
               href={CTA_HREF}
               className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-sky-400 text-white font-semibold px-7 py-3.5 rounded-full hover:from-blue-600 hover:to-sky-500 transition-all shadow-lg shadow-blue-500/30 mb-4"
             >
-              Ajouter mon van gratuitement, 2 minutes <ArrowRight className="w-4 h-4 flex-shrink-0" />
+              Ajouter mon van gratuitement<span className="hidden sm:inline">, 2 minutes</span> <ArrowRight className="w-4 h-4 flex-shrink-0" />
             </Link>
 
             {/* Sous-CTA */}
@@ -177,7 +189,7 @@ export default function ProposerVotreVanPage() {
 
           <div className="grid sm:grid-cols-2 gap-5">
             {BENEFITS.map((b) => (
-              <div key={b.title} className="glass-card-hover p-6 sm:p-7">
+              <div key={b.title} className="glass-card-hover rounded-2xl p-6 sm:p-7">
                 <div className="text-3xl mb-4">{b.emoji}</div>
                 <h3 className="font-bold text-slate-900 text-base mb-2">{b.title}</h3>
                 <p className="text-slate-500 text-sm leading-relaxed">{b.body}</p>
