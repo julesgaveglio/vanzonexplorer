@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { Percent, Shield, Zap, Users, ArrowRight } from "lucide-react";
-import VanOnboardingWizard from "./_components/VanOnboardingWizard";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Proposer votre van à la location | Vanzon Explorer",
@@ -123,19 +123,27 @@ export default function ProposerVotreVanPage() {
               <span className="text-white/90 text-sm font-medium">Inscription gratuite — aucune exclusivité</span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-[1.08] mb-6">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-[1.08] mb-4">
               Vous louez déjà votre van ?
-              <br />
-              <span className="bg-gradient-to-r from-blue-400 to-sky-300 bg-clip-text text-transparent">
-                On vous offre de la visibilité.
-              </span>
             </h1>
-
-            <p className="text-lg sm:text-xl text-white/70 leading-relaxed max-w-xl">
-              Vanzon Explorer référence votre van gratuitement sur Google.
-              0% de commission pendant le lancement.
-              Gardez vos canaux actuels, ajoutez le nôtre.
+            <p className="text-base sm:text-lg text-white/70 leading-relaxed max-w-xl mb-8">
+              On vous{" "}
+              <span className="bg-gradient-to-r from-blue-400 to-sky-300 bg-clip-text text-transparent font-semibold">
+                offre
+              </span>{" "}
+              de la{" "}
+              <span className="bg-gradient-to-r from-blue-400 to-sky-300 bg-clip-text text-transparent font-semibold">
+                visibilité
+              </span>{" "}
+              gratuitement via notre référencement Google.
             </p>
+
+            <Link
+              href="/proposer-votre-van/inscription"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-sky-400 text-white font-semibold px-7 py-3.5 rounded-full hover:from-blue-600 hover:to-sky-500 transition-all shadow-lg shadow-blue-500/25"
+            >
+              Je suis propriétaire <ArrowRight className="w-4 h-4" />
+            </Link>
           </div>
 
           <div className="hidden lg:flex gap-4 absolute bottom-20 right-6">
@@ -148,30 +156,6 @@ export default function ProposerVotreVanPage() {
                 <div className="text-xs text-white/60 font-medium mb-0.5">{stat.sub}</div>
                 <div className="text-2xl font-black text-white">{stat.value}</div>
                 <div className="text-xs text-white/70 font-medium">{stat.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <a href="#avantages" className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 text-white/50 hover:text-white/80 transition-colors animate-bounce">
-          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-          </svg>
-        </a>
-      </section>
-
-      {/* ── TRUST BAR ────────────────────────────────────────────── */}
-      <section className="bg-slate-950 py-5 border-t border-white/5">
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="flex flex-wrap justify-center md:justify-between items-center gap-y-4 gap-x-8 text-white/60 text-sm font-medium">
-            {[
-              { icon: "🚐", text: "On loue nos propres vans au Pays Basque" },
-              { icon: "🎁", text: "0% de commission pendant le lancement" },
-              { icon: "🤝", text: "Compatible avec tous vos canaux actuels" },
-            ].map((item) => (
-              <div key={item.text} className="flex items-center gap-2">
-                <span>{item.icon}</span>
-                <span>{item.text}</span>
               </div>
             ))}
           </div>
@@ -236,26 +220,6 @@ export default function ProposerVotreVanPage() {
         </div>
       </section>
 
-      {/* ── FORMULAIRE ───────────────────────────────────────────── */}
-      <section id="formulaire" className="py-20 bg-white scroll-mt-20">
-        <div className="max-w-2xl mx-auto px-6">
-          <div className="text-center mb-10">
-            <span className="badge-glass !px-4 !py-1.5 text-sm font-semibold mb-5 inline-block" style={{ color: "#4D5FEC" }}>
-              Créer votre fiche
-            </span>
-            <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-3 leading-tight">
-              Ajoutez votre van en quelques minutes.
-            </h2>
-            <p className="text-slate-500 text-lg leading-relaxed">
-              Remplissez les informations, ajoutez vos photos — on s&apos;occupe du reste.
-              Aucun engagement, 0% de commission pendant le lancement.
-            </p>
-          </div>
-
-          <VanOnboardingWizard />
-        </div>
-      </section>
-
       {/* ── CTA FINAL ────────────────────────────────────────────── */}
       <section className="relative py-28 overflow-hidden">
         <div className="absolute inset-0">
@@ -278,12 +242,12 @@ export default function ProposerVotreVanPage() {
           <p className="text-white/70 text-xl mb-10 leading-relaxed">
             2 minutes pour s&apos;inscrire. On crée votre page van gratuitement.
           </p>
-          <a
-            href="#formulaire"
+          <Link
+            href="/proposer-votre-van/inscription"
             className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/30 text-white font-semibold px-8 py-4 rounded-full hover:bg-white/20 transition-colors"
           >
             Proposer mon van <ArrowRight className="w-4 h-4" />
-          </a>
+          </Link>
         </div>
       </section>
     </>
