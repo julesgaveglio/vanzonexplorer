@@ -48,18 +48,25 @@ function SocialBtn({
   icon,
   label,
   onClick,
+  loading = false,
+  disabled = false,
 }: {
   icon: React.ReactNode;
   label: string;
   onClick: () => void;
+  loading?: boolean;
+  disabled?: boolean;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="w-full flex items-center justify-center gap-2.5 bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:border-slate-300 active:scale-[.98] transition-all"
+      disabled={loading || disabled}
+      className="w-full flex items-center justify-center gap-2.5 bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:border-slate-300 active:scale-[.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
     >
-      {icon}
+      {loading ? (
+        <span className="w-4 h-4 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin flex-shrink-0" />
+      ) : icon}
       {label}
     </button>
   );
@@ -142,27 +149,36 @@ function AuthForm() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName]   = useState("");
   const [code, setCode]           = useState("");
-  const [error, setError]         = useState("");
-  const [loading, setLoading]     = useState(false);
+  const [error, setError]           = useState("");
+  const [loading, setLoading]       = useState(false);
+  const [oauthLoading, setOAuthLoading] = useState<string | null>(null);
 
-  const { signUp, setActive: setActiveSU } = useSignUp();
-  const { signIn, setActive: setActiveSI } = useSignIn();
+  const { isLoaded: suLoaded, signUp, setActive: setActiveSU } = useSignUp();
+  const { isLoaded: siLoaded, signIn, setActive: setActiveSI } = useSignIn();
+  const clerkReady = suLoaded && siLoaded;
   const router = useRouter();
 
   const reset = () => { setError(""); };
 
-  /* OAuth */
+  /* OAuth — utilise signIn qui gère aussi bien les nouveaux que les existants */
   async function handleOAuth(strategy: "oauth_google" | "oauth_apple" | "oauth_facebook") {
+    if (!clerkReady || !signIn) return;
     reset();
+    setOAuthLoading(strategy);
     try {
-      await signUp?.authenticateWithRedirect({
+      await signIn.authenticateWithRedirect({
         strategy,
         redirectUrl: SSO_CALLBACK_URL,
         redirectUrlComplete: REDIRECT_AFTER_AUTH,
       });
     } catch (err: unknown) {
-      const e = err as { errors?: { longMessage?: string }[] };
-      setError(e.errors?.[0]?.longMessage ?? "Erreur lors de la connexion.");
+      const e = err as { errors?: { longMessage?: string; message?: string }[] };
+      setError(
+        e.errors?.[0]?.longMessage ||
+        e.errors?.[0]?.message ||
+        "Connexion impossible. Vérifiez la configuration dans le Clerk Dashboard."
+      );
+      setOAuthLoading(null);
     }
   }
 
@@ -238,10 +254,13 @@ function AuthForm() {
     <div className="space-y-4">
       {/* Social buttons */}
       <div className="space-y-2.5">
-        <SocialBtn icon={<GoogleIcon />}   label="Continuer avec Google"   onClick={() => handleOAuth("oauth_google")} />
-        <SocialBtn icon={<AppleIcon />}    label="Continuer avec Apple"    onClick={() => handleOAuth("oauth_apple")} />
-        <SocialBtn icon={<FacebookIcon />} label="Continuer avec Facebook" onClick={() => handleOAuth("oauth_facebook")} />
+        <SocialBtn icon={<GoogleIcon />}   label="Continuer avec Google"   onClick={() => handleOAuth("oauth_google")}   loading={oauthLoading === "oauth_google"}   disabled={!clerkReady || oauthLoading !== null} />
+        <SocialBtn icon={<AppleIcon />}    label="Continuer avec Apple"    onClick={() => handleOAuth("oauth_apple")}    loading={oauthLoading === "oauth_apple"}    disabled={!clerkReady || oauthLoading !== null} />
+        <SocialBtn icon={<FacebookIcon />} label="Continuer avec Facebook" onClick={() => handleOAuth("oauth_facebook")} loading={oauthLoading === "oauth_facebook"} disabled={!clerkReady || oauthLoading !== null} />
       </div>
+      {error && oauthLoading === null && (
+        <p className="text-red-500 text-[13px] text-center leading-snug">{error}</p>
+      )}
 
       {/* Divider */}
       <div className="flex items-center gap-3">
