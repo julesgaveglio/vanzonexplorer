@@ -9,8 +9,12 @@ import LiquidButton from "@/components/ui/LiquidButton";
 const schema = z.object({
   first_name: z.string().min(2, "Prénom requis"),
   email: z.string().email("Email invalide"),
+  phone: z.string().min(8, "Numéro de téléphone requis"),
+  van_model: z.string().min(2, "Marque et modèle requis"),
   van_type: z.enum(["fourgon", "minibus", "autre"]),
+  sleeps: z.string().min(1, "Nombre de couchages requis"),
   location: z.string().min(2, "Localisation requise"),
+  platform_url: z.string().url("Lien invalide").or(z.literal("")),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -70,20 +74,38 @@ export default function VanOwnerForm() {
       onSubmit={handleSubmit(onSubmit)}
       className="glass-card p-6 sm:p-8 space-y-5"
     >
-      <div>
-        <label htmlFor="first_name" className="block text-sm font-medium text-text-secondary mb-1.5">
-          Prénom
-        </label>
-        <input
-          id="first_name"
-          type="text"
-          placeholder="Votre prénom"
-          className={inputCls}
-          {...register("first_name")}
-        />
-        {errors.first_name && (
-          <p className="text-red-500 text-sm mt-1">{errors.first_name.message}</p>
-        )}
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label htmlFor="first_name" className="block text-sm font-medium text-text-secondary mb-1.5">
+            Prénom
+          </label>
+          <input
+            id="first_name"
+            type="text"
+            placeholder="Votre prénom"
+            className={inputCls}
+            {...register("first_name")}
+          />
+          {errors.first_name && (
+            <p className="text-red-500 text-sm mt-1">{errors.first_name.message}</p>
+          )}
+        </div>
+
+        <div>
+          <label htmlFor="phone" className="block text-sm font-medium text-text-secondary mb-1.5">
+            Téléphone
+          </label>
+          <input
+            id="phone"
+            type="tel"
+            placeholder="06 12 34 56 78"
+            className={inputCls}
+            {...register("phone")}
+          />
+          {errors.phone && (
+            <p className="text-red-500 text-sm mt-1">{errors.phone.message}</p>
+          )}
+        </div>
       </div>
 
       <div>
@@ -102,35 +124,90 @@ export default function VanOwnerForm() {
         )}
       </div>
 
-      <div>
-        <label htmlFor="van_type" className="block text-sm font-medium text-text-secondary mb-1.5">
-          Type de véhicule
-        </label>
-        <select
-          id="van_type"
-          className={inputCls}
-          {...register("van_type")}
-        >
-          <option value="fourgon">Fourgon aménagé</option>
-          <option value="minibus">Minibus / Combi</option>
-          <option value="autre">Autre</option>
-        </select>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label htmlFor="van_model" className="block text-sm font-medium text-text-secondary mb-1.5">
+            Marque et modèle
+          </label>
+          <input
+            id="van_model"
+            type="text"
+            placeholder="Ex : Renault Trafic L2H1"
+            className={inputCls}
+            {...register("van_model")}
+          />
+          {errors.van_model && (
+            <p className="text-red-500 text-sm mt-1">{errors.van_model.message}</p>
+          )}
+        </div>
+
+        <div>
+          <label htmlFor="van_type" className="block text-sm font-medium text-text-secondary mb-1.5">
+            Type de véhicule
+          </label>
+          <select
+            id="van_type"
+            className={inputCls}
+            {...register("van_type")}
+          >
+            <option value="fourgon">Fourgon aménagé</option>
+            <option value="minibus">Minibus / Combi</option>
+            <option value="autre">Autre</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label htmlFor="sleeps" className="block text-sm font-medium text-text-secondary mb-1.5">
+            Nombre de couchages
+          </label>
+          <input
+            id="sleeps"
+            type="number"
+            min={1}
+            max={10}
+            placeholder="2"
+            className={inputCls}
+            {...register("sleeps")}
+          />
+          {errors.sleeps && (
+            <p className="text-red-500 text-sm mt-1">{errors.sleeps.message}</p>
+          )}
+        </div>
+
+        <div>
+          <label htmlFor="location" className="block text-sm font-medium text-text-secondary mb-1.5">
+            Localisation du van
+          </label>
+          <input
+            id="location"
+            type="text"
+            placeholder="Ville ou département"
+            className={inputCls}
+            {...register("location")}
+          />
+          {errors.location && (
+            <p className="text-red-500 text-sm mt-1">{errors.location.message}</p>
+          )}
+        </div>
       </div>
 
       <div>
-        <label htmlFor="location" className="block text-sm font-medium text-text-secondary mb-1.5">
-          Localisation du van
+        <label htmlFor="platform_url" className="block text-sm font-medium text-text-secondary mb-1.5">
+          Lien de votre annonce (Yescapa, Wikicampers...)
         </label>
         <input
-          id="location"
-          type="text"
-          placeholder="Ville ou département"
+          id="platform_url"
+          type="url"
+          placeholder="https://www.yescapa.fr/camping-car/..."
           className={inputCls}
-          {...register("location")}
+          {...register("platform_url")}
         />
-        {errors.location && (
-          <p className="text-red-500 text-sm mt-1">{errors.location.message}</p>
+        {errors.platform_url && (
+          <p className="text-red-500 text-sm mt-1">{errors.platform_url.message}</p>
         )}
+        <p className="text-xs text-slate-400 mt-1">Facultatif — on redirigera les visiteurs vers votre annonce</p>
       </div>
 
       {serverError && (

@@ -6,12 +6,12 @@ import VanOwnerForm from "./_components/VanOwnerForm";
 export const metadata: Metadata = {
   title: "Proposer votre van à la location | Vanzon Explorer",
   description:
-    "Vous louez déjà votre van ? Ajoutez Vanzon Explorer comme canal de location supplémentaire. Commission réduite, trafic organique qualifié, aucune exclusivité.",
+    "Vous louez déjà votre van ? Ajoutez Vanzon Explorer comme canal de visibilité gratuit. 0% de commission pendant le lancement, trafic organique qualifié, aucune exclusivité.",
   alternates: { canonical: "https://vanzonexplorer.com/proposer-votre-van" },
   openGraph: {
     title: "Proposer votre van à la location | Vanzon Explorer",
     description:
-      "Un canal de location supplémentaire pour votre van aménagé. Commission réduite, trafic organique qualifié, zéro exclusivité.",
+      "Un canal de visibilité gratuit pour votre van aménagé. 0% de commission pendant le lancement, trafic organique qualifié, zéro exclusivité.",
     type: "website",
     url: "https://vanzonexplorer.com/proposer-votre-van",
     images: [
@@ -28,9 +28,9 @@ export const metadata: Metadata = {
 const BENEFITS = [
   {
     icon: Percent,
-    title: "5% de commission au lancement",
+    title: "0% de commission pendant le lancement",
     description:
-      "La plupart des plateformes prennent 15% ou plus. Vanzon : 5% les 6 premiers mois, puis 8%. Sur une semaine à 95€/nuit, la différence est réelle.",
+      "Les plateformes prennent 15% ou plus. Vanzon pendant le lancement : 0%. On vous offre de la visibilité gratuite via notre référencement Google.",
     color: "bg-blue-50 text-blue-600",
   },
   {
@@ -59,18 +59,18 @@ const BENEFITS = [
 const STEPS = [
   {
     number: "01",
-    title: "Laissez-nous vos coordonnées",
-    description: "4 champs, 30 secondes. Ni CB, ni contrat, ni engagement.",
+    title: "Remplissez le formulaire",
+    description: "2 minutes, aucun engagement. On a juste besoin des infos de base sur votre van.",
   },
   {
     number: "02",
-    title: "On échange par téléphone",
-    description: "On discute de votre van, de vos attentes et de comment Vanzon peut compléter vos canaux actuels.",
+    title: "On crée votre page van",
+    description: "Votre van obtient sa propre page référencée sur Google, avec un lien vers votre annonce existante.",
   },
   {
     number: "03",
-    title: "Votre van a sa page dédiée",
-    description: "On crée ensemble la page de votre van, visible par notre audience de passionnés vanlife.",
+    title: "Vous gagnez en visibilité",
+    description: "Les visiteurs de Vanzon Explorer découvrent votre van et sont redirigés vers votre plateforme de location.",
   },
 ];
 
@@ -127,20 +127,20 @@ export default function ProposerVotreVanPage() {
               Vous louez déjà votre van ?
               <br />
               <span className="bg-gradient-to-r from-blue-400 to-sky-300 bg-clip-text text-transparent">
-                Ajoutez un canal. Payez moins.
+                On vous offre de la visibilité.
               </span>
             </h1>
 
             <p className="text-lg sm:text-xl text-white/70 leading-relaxed max-w-xl">
-              Vanzon Explorer est une plateforme de location de vans aménagés
-              avec une commission à 5% au lancement.
+              Vanzon Explorer référence votre van gratuitement sur Google.
+              0% de commission pendant le lancement.
               Gardez vos canaux actuels, ajoutez le nôtre.
             </p>
           </div>
 
           <div className="hidden lg:flex gap-4 absolute bottom-20 right-6">
             {[
-              { value: "5%", label: "commission", sub: "6 premiers mois" },
+              { value: "0%", label: "commission", sub: "pendant le lancement" },
               { value: "0€", label: "inscription", sub: "gratuite" },
               { value: "0", label: "exclusivité", sub: "requise" },
             ].map((stat) => (
@@ -166,7 +166,7 @@ export default function ProposerVotreVanPage() {
           <div className="flex flex-wrap justify-center md:justify-between items-center gap-y-4 gap-x-8 text-white/60 text-sm font-medium">
             {[
               { icon: "🚐", text: "On loue nos propres vans au Pays Basque" },
-              { icon: "📉", text: "5% de commission au lancement, puis 8%" },
+              { icon: "🎁", text: "0% de commission pendant le lancement" },
               { icon: "🤝", text: "Compatible avec tous vos canaux actuels" },
             ].map((item) => (
               <div key={item.text} className="flex items-center gap-2">
@@ -186,7 +186,7 @@ export default function ProposerVotreVanPage() {
               Pourquoi ajouter Vanzon
             </span>
             <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-3">
-              Un canal de location en plus, une commission en moins.
+              Un canal de visibilité en plus, gratuitement.
             </h2>
             <p className="text-slate-500 text-lg max-w-2xl mx-auto">
               Vous connaissez déjà la location de van. Nous aussi — on loue deux fourgons
@@ -256,7 +256,7 @@ export default function ProposerVotreVanPage() {
                 {[
                   { icon: "✓", text: "Inscription gratuite, pas de CB demandée" },
                   { icon: "✓", text: "Gardez vos autres plateformes en parallèle" },
-                  { icon: "✓", text: "5% de commission les 6 premiers mois, puis 8%" },
+                  { icon: "✓", text: "0% de commission pendant le lancement" },
                   { icon: "✓", text: "Vos prix, vos disponibilités, vos règles" },
                 ].map((item) => (
                   <div key={item.text} className="flex items-center gap-3">
@@ -291,12 +291,12 @@ export default function ProposerVotreVanPage() {
 
         <div className="relative z-10 max-w-3xl mx-auto px-6 text-center">
           <h2 className="text-4xl md:text-5xl font-black text-white mb-5 leading-tight">
-            Même van, même effort,
+            Même van, zéro effort,
             <br />
-            meilleure commission.
+            visibilité en plus.
           </h2>
           <p className="text-white/70 text-xl mb-10 leading-relaxed">
-            30 secondes pour s&apos;inscrire. On vous rappelle pour en discuter.
+            2 minutes pour s&apos;inscrire. On crée votre page van gratuitement.
           </p>
           <a
             href="#formulaire"

@@ -5,8 +5,12 @@ import { createSupabaseAdmin } from "@/lib/supabase/server";
 const schema = z.object({
   first_name: z.string().min(2, "Prénom requis"),
   email: z.string().email("Email invalide"),
+  phone: z.string().min(8, "Numéro de téléphone requis"),
+  van_model: z.string().min(2, "Marque et modèle requis"),
   van_type: z.enum(["fourgon", "minibus", "autre"]),
+  sleeps: z.coerce.number().min(1).max(10),
   location: z.string().min(2, "Localisation requise"),
+  platform_url: z.string().url().or(z.literal("")),
 });
 
 export async function POST(req: Request) {
@@ -15,7 +19,10 @@ export async function POST(req: Request) {
     const data = schema.parse(body);
 
     const supabase = createSupabaseAdmin();
-    const { error } = await supabase.from("van_owner_leads").insert(data);
+    const { error } = await supabase.from("van_owner_leads").insert({
+      ...data,
+      platform_url: data.platform_url || null,
+    });
 
     if (error) {
       console.error("[van-owner/submit] Supabase error:", error);
@@ -53,9 +60,12 @@ async function notifyTelegram(data: z.infer<typeof schema>) {
     `🚐 <b>Nouveau propriétaire intéressé !</b>\n` +
     `─────────────────────\n` +
     `<b>Prénom :</b> ${data.first_name}\n` +
+    `<b>Tél :</b> ${data.phone}\n` +
     `<b>Email :</b> ${data.email}\n` +
-    `<b>Type :</b> ${data.van_type}\n` +
+    `<b>Van :</b> ${data.van_model} (${data.van_type})\n` +
+    `<b>Couchages :</b> ${data.sleeps}\n` +
     `<b>Localisation :</b> ${data.location}\n` +
+    (data.platform_url ? `<b>Annonce :</b> ${data.platform_url}\n` : "") +
     `─────────────────────\n` +
     `→ Contacter rapidement !`;
 
