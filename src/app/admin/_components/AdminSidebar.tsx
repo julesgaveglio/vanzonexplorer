@@ -236,6 +236,15 @@ const navGroups = [
         ),
       },
       {
+        label: "Messages Marketplace",
+        href: "/admin/marketplace-prospection",
+        icon: (
+          <svg className="w-[18px] h-[18px] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+          </svg>
+        ),
+      },
+      {
         label: "Prospection",
         href: "/admin/club/prospection",
         icon: (
