@@ -1,10 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { sanityFetch } from "@/lib/sanity/client";
-import { getAllLocationVansQuery } from "@/lib/sanity/queries";
-import type { VanCard as VanCardType } from "@/lib/sanity/types";
-import VanCard from "@/components/van/VanCard";
 import { getGooglePlaceStats } from "@/lib/google-places";
 import OtherServices from "@/components/ui/OtherServices";
 import MarketplaceVansSection from "@/components/marketplace/MarketplaceVansSection";
@@ -89,10 +85,7 @@ function getSeasonLabel(): string {
 }
 
 export default async function HomePage() {
-  const [vans, placeStats] = await Promise.all([
-    sanityFetch<VanCardType[]>(getAllLocationVansQuery),
-    getGooglePlaceStats(),
-  ]);
+  const placeStats = await getGooglePlaceStats();
 
   return (
     <>
@@ -159,7 +152,7 @@ export default async function HomePage() {
           </div>
         </div>
 
-        <a href="#nos-vans" className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 text-white/50 hover:text-white/80 transition-colors animate-bounce">
+        <a href="#location" className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 text-white/50 hover:text-white/80 transition-colors animate-bounce">
           <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
             <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
           </svg>
@@ -183,31 +176,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section id="nos-vans" className="py-20 bg-white scroll-mt-20">
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="text-center mb-12">
-            <span className="badge-glass !px-4 !py-1.5 text-sm font-semibold mb-4 inline-block text-blue-500">
-              🚐 Nos vans
-            </span>
-            <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-3">
-              Une liberté totale
-            </h2>
-            <p className="text-slate-500 text-lg">
-              Choisissez votre compagnon de route pour explorer le Pays Basque.
-            </p>
-          </div>
-
-          {vans && vans.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-              {vans.map((van) => (
-                <VanCard key={van._id} van={van} mode="location" />
-              ))}
-            </div>
-          ) : (
-            <p className="text-center text-slate-400">Vans bientôt disponibles.</p>
-          )}
-        </div>
-      </section>
 
       <section className="py-10 bg-white">
         <div className="max-w-3xl mx-auto px-6">

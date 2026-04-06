@@ -1,6 +1,10 @@
 import { createSupabaseAnon } from "@/lib/supabase/server";
+import { sanityFetch } from "@/lib/sanity/client";
+import { getAllLocationVansQuery } from "@/lib/sanity/queries";
+import type { VanCard as VanCardType } from "@/lib/sanity/types";
 import { slugify } from "@/lib/slugify";
 import Link from "next/link";
+import VanCard from "@/components/van/VanCard";
 import MarketplaceVanCard from "./MarketplaceVanCard";
 
 interface MarketplaceVan {
@@ -16,27 +20,32 @@ interface MarketplaceVan {
 }
 
 export default async function MarketplaceVansSection() {
-  const supabase = createSupabaseAnon();
-  const { data: vans } = await supabase
-    .from("marketplace_vans")
-    .select("id, title, van_brand, van_model, location_city, price_per_day, sleeps, seats, photos")
-    .eq("status", "approved")
-    .order("created_at", { ascending: false })
-    .limit(12);
+  const [supabaseResult, sanityVans] = await Promise.all([
+    createSupabaseAnon()
+      .from("marketplace_vans")
+      .select("id, title, van_brand, van_model, location_city, price_per_day, sleeps, seats, photos")
+      .eq("status", "approved")
+      .order("created_at", { ascending: false })
+      .limit(12),
+    sanityFetch<VanCardType[]>(getAllLocationVansQuery).catch(() => []),
+  ]);
 
-  const items = (vans ?? []) as MarketplaceVan[];
-  if (items.length === 0) return null;
+  const marketplaceVans = (supabaseResult.data ?? []) as MarketplaceVan[];
+  const officialVans = (sanityVans ?? []) as VanCardType[];
+
+  const totalCount = officialVans.length + marketplaceVans.length;
+  if (totalCount === 0) return null;
 
   return (
     <section className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex items-end justify-between mb-10">
           <div>
-<h2 className="text-3xl md:text-4xl font-black text-slate-900">
+            <h2 className="text-3xl md:text-4xl font-black text-slate-900">
               Vans disponibles en France
             </h2>
             <p className="text-slate-500 mt-2">
-              {items.length} van{items.length > 1 ? "s" : ""} sélectionné{items.length > 1 ? "s" : ""} par Vanzon Explorer
+              {totalCount} van{totalCount > 1 ? "s" : ""} sélectionné{totalCount > 1 ? "s" : ""} par Vanzon Explorer
             </p>
           </div>
           <Link
@@ -52,7 +61,13 @@ export default async function MarketplaceVansSection() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-          {items.map((van) => (
+          {/* Vans Vanzon Explorer en premier */}
+          {officialVans.map((van) => (
+            <VanCard key={van._id} van={van} mode="location" />
+          ))}
+
+          {/* Vans marketplace ensuite */}
+          {marketplaceVans.map((van) => (
             <MarketplaceVanCard
               key={van.id}
               {...van}
