@@ -5,6 +5,8 @@ import { createSupabaseAnon } from "@/lib/supabase/server";
 import { slugify } from "@/lib/slugify";
 import Badge from "@/components/ui/Badge";
 import PriceDisplay from "@/components/van/PriceDisplay";
+import BookingButton from "@/components/van/BookingButton";
+import YescapaReassurance from "@/components/van/YescapaReassurance";
 import MarketplaceVanGallery from "@/components/marketplace/MarketplaceVanGallery";
 
 export const revalidate = 3600;
@@ -222,45 +224,22 @@ export default async function MarketplaceVanPage({ params }: Props) {
 
               {/* Bouton réservation */}
               {van.booking_url ? (
-                <a
-                  href={van.booking_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-bold text-white text-base transition-all hover:opacity-90 active:scale-95"
-                  style={{ background: "linear-gradient(135deg, #3B82F6 0%, #0EA5E9 100%)", boxShadow: "0 4px 14px rgba(59,130,246,0.4)" }}
-                >
-                  Voir les disponibilités
-                  <svg className="w-4 h-4 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-                  </svg>
-                </a>
+                <BookingButton
+                  url={van.booking_url}
+                  platform={van.booking_url.includes("yescapa") ? "Yescapa" : van.booking_url.includes("wikicampers") ? "Wikicampers" : "la plateforme"}
+                  insuranceIncluded={van.booking_url.includes("yescapa")}
+                />
               ) : (
                 <a
                   href="/contact"
                   className="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-bold text-slate-700 text-base bg-slate-100 hover:bg-slate-200 transition-colors"
                 >
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                  </svg>
                   Contacter le propriétaire
                 </a>
               )}
 
-              {/* Reassurance */}
-              <div className="bg-slate-50 rounded-xl p-3 space-y-1.5 text-xs text-slate-500">
-                <div className="flex items-center gap-2">
-                  <span>🔒</span>
-                  <span>Propriétaire vérifié par Vanzon Explorer</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span>📍</span>
-                  <span>Remise en main propre à {van.location_city}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span>💬</span>
-                  <span>Questions ? <Link href="/contact" className="underline decoration-dotted">Contactez-nous</Link></span>
-                </div>
-              </div>
+              {/* Reassurance Yescapa si applicable */}
+              {van.booking_url?.includes("yescapa") && <YescapaReassurance />}
             </div>
           </div>
         </div>
