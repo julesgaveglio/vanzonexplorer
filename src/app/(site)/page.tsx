@@ -177,30 +177,7 @@ export default async function HomePage() {
       </section>
 
 
-      <section className="py-10 bg-white">
-        <div className="max-w-3xl mx-auto px-6">
-          <div className="glass-card p-6 flex items-start gap-5">
-            <div className="flex-shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center text-2xl" style={{ background: "rgba(232,67,108,0.10)" }}>
-              🛡️
-            </div>
-            <div>
-              <h3 className="font-bold text-slate-900 text-base mb-1">Assurance tous risques</h3>
-              <p className="text-slate-500 text-sm leading-relaxed">
-                Vous êtes couverts dès la réservation avec l&apos;
-                <a
-                  href="https://www.yescapa.fr/aide/assurance-et-assistance-24-7-locataire/comment-fonctionne-lassurance/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-accent-blue underline decoration-dotted underline-offset-2 hover:opacity-80 transition-opacity"
-                >
-                  assurance de la plateforme Yescapa
-                </a>
-                {" "}— assurance tous risques incluse pour rouler l&apos;esprit tranquille, sans frais cachés.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <MarketplaceVansSection />
 
       <section className="py-20 bg-white overflow-hidden">
         <div className="max-w-7xl mx-auto px-6">
@@ -390,8 +367,6 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
-
-      <MarketplaceVansSection />
 
       {/* ════════════════════════════════════════════════
           VAN BUSINESS ACADEMY
