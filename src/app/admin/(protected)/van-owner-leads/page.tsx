@@ -68,7 +68,7 @@ export default async function VanOwnerLeadsPage() {
           Leads Propriétaires
         </h1>
         <p className="text-slate-500 text-sm mt-1">
-          Propriétaires de vans inscrits via le formulaire /proposer-votre-van
+          Propriétaires de vans inscrits via le formulaire /proprietaire
         </p>
       </div>
 
@@ -99,7 +99,7 @@ export default async function VanOwnerLeadsPage() {
           <div className="text-4xl mb-3">🚐</div>
           <p className="font-medium">Aucun lead pour le moment</p>
           <p className="text-sm mt-1">
-            Les inscriptions via /proposer-votre-van apparaîtront ici.
+            Les inscriptions via /proprietaire apparaîtront ici.
           </p>
         </div>
       ) : (

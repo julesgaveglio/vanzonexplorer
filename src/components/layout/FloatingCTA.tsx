@@ -182,7 +182,7 @@ function getCTAConfig(pathname: string): CTAConfig | null {
   }
 
   // Marketplace — pas de floating CTA
-  if (pathname.startsWith("/proposer-votre-van")) {
+  if (pathname.startsWith("/proprietaire")) {
     return null;
   }
 

@@ -49,4 +49,4 @@ Chaque article doit servir un objectif de revenu précis. Applique ces règles s
 
 **Marketplace (articles sur "location entre particuliers", "louer son van")** → Double objectif
 • Pour le locataire : lien vers /location
-• Pour le proprio : lien vers /proposer-votre-van avec ancre "proposer votre van sur Vanzon Explorer" ou "référencer votre van gratuitement"
+• Pour le proprio : lien vers /proprietaire avec ancre "proposer votre van sur Vanzon Explorer" ou "référencer votre van gratuitement"

@@ -9,9 +9,9 @@ const isDevOnlyRoute = createRouteMatcher([
   "/api/admin/pixel-agents(.*)",
 ]);
 
-const isMarketplaceInscription = createRouteMatcher(["/proposer-votre-van/inscription(.*)"]);
-const isMarketplaceConnexion = createRouteMatcher(["/proposer-votre-van/connexion(.*)"]);
-const isMarketplaceDashboard = createRouteMatcher(["/proposer-votre-van/dashboard(.*)"]);
+const isMarketplaceInscription = createRouteMatcher(["/proprietaire/inscription(.*)"]);
+const isMarketplaceConnexion = createRouteMatcher(["/proprietaire/connexion(.*)"]);
+const isMarketplaceDashboard = createRouteMatcher(["/proprietaire/dashboard(.*)"]);
 
 const isProtectedRoute = createRouteMatcher([
   "/dashboard(.*)",
@@ -45,7 +45,7 @@ export default clerkMiddleware(async (auth, req) => {
   if (isMarketplaceConnexion(req)) {
     const { userId } = await auth();
     if (userId) {
-      return NextResponse.redirect(new URL("/proposer-votre-van/dashboard", req.url));
+      return NextResponse.redirect(new URL("/proprietaire/dashboard", req.url));
     }
     return NextResponse.next();
   }
@@ -54,7 +54,7 @@ export default clerkMiddleware(async (auth, req) => {
   if (isMarketplaceDashboard(req)) {
     const { userId } = await auth();
     if (!userId) {
-      return NextResponse.redirect(new URL("/proposer-votre-van/connexion", req.url));
+      return NextResponse.redirect(new URL("/proprietaire/connexion", req.url));
     }
     return NextResponse.next();
   }
@@ -63,7 +63,7 @@ export default clerkMiddleware(async (auth, req) => {
   if (isMarketplaceInscription(req)) {
     const { userId } = await auth();
     if (!userId) {
-      return NextResponse.redirect(new URL("/proposer-votre-van/connexion", req.url));
+      return NextResponse.redirect(new URL("/proprietaire/connexion", req.url));
     }
     return NextResponse.next();
   }

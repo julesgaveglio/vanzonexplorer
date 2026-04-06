@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "Inscription propriétaire",
   description:
     "Créez votre fiche van en quelques minutes. 0% de commission pendant le lancement, trafic organique qualifié, aucune exclusivité.",
-  alternates: { canonical: "https://vanzonexplorer.com/proposer-votre-van/inscription" },
+  alternates: { canonical: "https://vanzonexplorer.com/proprietaire/inscription" },
 };
 
 export default function InscriptionPage() {

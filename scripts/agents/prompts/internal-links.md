@@ -70,7 +70,7 @@
 **Ancres naturelles** : "codes promo équipement van", "réductions vanlife", "le Club Privé Vanzon", "deals équipement van"
 **À utiliser quand** : on parle d'équipement van, d'acheter du matériel, de réduire ses coûts d'aménagement
 
-### /proposer-votre-van — Référencer son van sur la marketplace Vanzon
+### /proprietaire — Référencer son van sur la marketplace Vanzon
 **Objectif** : Recruter des propriétaires de vans pour la plateforme nationale
 **Ancres naturelles** : "proposer votre van sur Vanzon Explorer", "référencer votre van gratuitement", "mettre votre van en ligne sur Vanzon", "rejoindre la plateforme Vanzon"
 **À utiliser quand** : on parle de louer son propre van, de revenus location, d'être propriétaire, de plateformes alternatives à Yescapa — **lien crucial pour les articles Business Van et Marketplace**
@@ -167,7 +167,7 @@ Utilise cette matrice pour choisir le bon lien selon le sujet traité :
 | "parking à Biarritz" | `/articles/parking-van-biarritz` (si publié) |
 | "surf à Biarritz en van" | `/location/biarritz` |
 | "équipement van" | `/club` |
-| "louer son van entre particuliers", "mettre son van en location" | `/proposer-votre-van` |
+| "louer son van entre particuliers", "mettre son van en location" | `/proprietaire` |
 | "formation pour rentabiliser son van", "Van Business Academy" | `/formation` |
 | "location van entre particuliers France" | `/location` (ancre "location de van entre particuliers") |
 

@@ -9,13 +9,13 @@ export const metadata: Metadata = {
   title: "Proposer votre van à la location",
   description:
     "Votre van mérite d'être vu par plus de monde. Vanzon Explorer vous offre une page dédiée, référencée sur Google, sans commission et sans exclusivité.",
-  alternates: { canonical: "https://vanzonexplorer.com/proposer-votre-van" },
+  alternates: { canonical: "https://vanzonexplorer.com/proprietaire" },
   openGraph: {
     title: "Proposer votre van à la location",
     description:
       "Une page dédiée, référencée sur Google, sans commission et sans exclusivité. Un canal de visibilité en plus, sans rien changer à votre organisation.",
     type: "website",
-    url: "https://vanzonexplorer.com/proposer-votre-van",
+    url: "https://vanzonexplorer.com/proprietaire",
     images: [
       {
         url: "https://cdn.sanity.io/images/lewexa74/production/d445397965472d300e3dc13d6b1c37503fe8ba25-1920x1080.png?auto=format&q=82",
@@ -79,7 +79,7 @@ const STEPS = [
   },
 ];
 
-const CTA_HREF = "/proposer-votre-van/inscription";
+const CTA_HREF = "/proprietaire/inscription";
 const SUB_CTA = "Sans engagement · Sans exclusivité · 0% de commission pendant le lancement";
 
 export default function ProposerVotreVanPage() {
@@ -88,7 +88,7 @@ export default function ProposerVotreVanPage() {
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Accueil", item: "https://vanzonexplorer.com" },
-      { "@type": "ListItem", position: 2, name: "Proposer votre van", item: "https://vanzonexplorer.com/proposer-votre-van" },
+      { "@type": "ListItem", position: 2, name: "Proposer votre van", item: "https://vanzonexplorer.com/proprietaire" },
     ],
   };
 

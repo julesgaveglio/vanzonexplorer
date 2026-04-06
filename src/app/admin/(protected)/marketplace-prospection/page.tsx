@@ -38,7 +38,7 @@ L'offre pour les premiers inscrits :
 
 Je cherche 10-15 proprios motivés pour lancer l'aventure avec moi.
 
-Si ça vous parle : https://vanzonexplorer.com/proposer-votre-van (30 sec, aucun engagement)
+Si ça vous parle : https://vanzonexplorer.com/proprietaire (30 sec, aucun engagement)
 
 Dispo en commentaire ou en MP si vous avez des questions.
 
@@ -64,7 +64,7 @@ Aujourd'hui j'ouvre ce trafic aux autres proprios. Le deal est simple :
 
 Je prends les 10-15 premiers proprios qui veulent tester.
 
-Inscription en 30 sec : https://vanzonexplorer.com/proposer-votre-van
+Inscription en 30 sec : https://vanzonexplorer.com/proprietaire
 
 Des questions ? Je suis là en commentaire.
 
@@ -90,7 +90,7 @@ Pendant le lancement :
 ✅ Aucune exclusivité
 ✅ 30 secondes pour s'inscrire
 
-Je cherche une quinzaine de proprios pour démarrer : https://vanzonexplorer.com/proposer-votre-van
+Je cherche une quinzaine de proprios pour démarrer : https://vanzonexplorer.com/proprietaire
 
 Si vous hésitez, posez vos questions ici, je réponds à tout.
 
@@ -103,7 +103,7 @@ Jules`,
     tone_icon: "⚡",
     target: "Groupes avec règles anti-promo strictes",
     sort_order: 4,
-    message: `Proprio de van aménagé ? Je loue 2 fourgons au Pays Basque et mon site fait 15K visites/mois. Je cherche 10-15 proprios pour leur rediriger ce trafic gratuitement (0% commission pendant 6 mois). 30 sec pour s'inscrire : https://vanzonexplorer.com/proposer-votre-van`,
+    message: `Proprio de van aménagé ? Je loue 2 fourgons au Pays Basque et mon site fait 15K visites/mois. Je cherche 10-15 proprios pour leur rediriger ce trafic gratuitement (0% commission pendant 6 mois). 30 sec pour s'inscrire : https://vanzonexplorer.com/proprietaire`,
   },
   {
     label: "MP direct",
@@ -112,7 +112,7 @@ Jules`,
     tone_icon: "⚡",
     target: "Message privé a un proprio",
     sort_order: 5,
-    message: `Salut ! J'ai vu que tu loues ton van — je loue aussi 2 fourgons au Pays Basque et j'ai un site vanlife qui fait 15K visites/mois. Je lance la location entre particuliers, 0% de commission pendant 6 mois. Si ça t'intéresse : https://vanzonexplorer.com/proposer-votre-van`,
+    message: `Salut ! J'ai vu que tu loues ton van — je loue aussi 2 fourgons au Pays Basque et j'ai un site vanlife qui fait 15K visites/mois. Je lance la location entre particuliers, 0% de commission pendant 6 mois. Si ça t'intéresse : https://vanzonexplorer.com/proprietaire`,
   },
   {
     label: "Question ouverte",
@@ -125,7 +125,7 @@ Jules`,
 
 Je loue 2 fourgons au Pays Basque et j'ai monté un site (Vanzon Explorer, 15K visites/mois) que j'ouvre maintenant aux autres proprios. 0% de commission pendant 6 mois, aucune exclusivité, on redirige nos visiteurs vers votre annonce.
 
-Curieux d'avoir vos retours : https://vanzonexplorer.com/proposer-votre-van`,
+Curieux d'avoir vos retours : https://vanzonexplorer.com/proprietaire`,
   },
 ];
 
@@ -350,7 +350,7 @@ export default function MarketplaceProspectionPage() {
         <span className="text-lg">🔗</span>
         <span className="text-sm text-slate-500">Lien a partager :</span>
         <code className="text-sm font-semibold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-lg">
-          vanzonexplorer.com/proposer-votre-van
+          vanzonexplorer.com/proprietaire
         </code>
       </div>
 

@@ -117,7 +117,7 @@ Sections: Dashboard, SEO Analytics, Mots-Clés, Performance (PSI), Blog, Vans, M
 
 **Backlinks SEO** (`/admin/backlinks`) — Kanban board for backlink prospect management. Columns: découvert → contacté → relancé → obtenu / rejeté. Features: AI-powered prospect discovery (SSE), email generation + sending via Gmail API, drag & drop status. Tables: `backlink_prospects`, `backlink_outreach`, `backlink_scrape_sessions`. Automated by `backlinks-daily-outreach.ts` (5 emails/day + follow-ups + reply detection) and `backlinks-weekly-agent.ts` (prospect discovery).
 
-**Marketplace MVP-0** (`/proposer-votre-van`) — Landing page for van owner pre-registration. Simple form → Supabase `marketplace_leads` table. Goal: validate interest from 5 van owners before building the full marketplace.
+**Marketplace MVP-0** (`/proprietaire`) — Landing page for van owner pre-registration. Simple form → Supabase `marketplace_leads` table. Goal: validate interest from 5 van owners before building the full marketplace.
 
 **Road Trip Personnalisé** (`/road-trip-personnalise`) — AI-powered itinerary generator. Wizard collects region/duration/interests/profile → Tavily search + Groq (llama-3.3-70b) → Resend email. Stores requests in Supabase `road_trip_requests` table. Rate limited (3 req/IP/hour). Admin at `/admin/road-trips`.
 

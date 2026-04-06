@@ -7,8 +7,8 @@ import { useRouter, usePathname } from "next/navigation";
 
 /* ─── Constants ──────────────────────────────────────────────────────────── */
 
-const REDIRECT_AFTER_AUTH = "/proposer-votre-van/inscription";
-const SSO_CALLBACK_URL    = "/proposer-votre-van/connexion/sso-callback";
+const REDIRECT_AFTER_AUTH = "/proprietaire/inscription";
+const SSO_CALLBACK_URL    = "/proprietaire/connexion/sso-callback";
 
 const inputCls =
   "w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-400/40 focus:border-blue-400 focus:bg-white transition-all";

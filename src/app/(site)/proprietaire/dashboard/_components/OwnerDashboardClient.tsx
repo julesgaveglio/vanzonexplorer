@@ -90,7 +90,7 @@ export default function OwnerDashboardClient() {
           </div>
           <div className="flex items-center gap-3">
             <Link
-              href="/proposer-votre-van/inscription"
+              href="/proprietaire/inscription"
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all"
               style={{ background: "linear-gradient(135deg, #4D5FEC 0%, #3B82F6 100%)" }}
             >
@@ -148,7 +148,7 @@ function EmptyState() {
       <h2 className="text-xl font-bold text-slate-900 mb-2">Aucune annonce pour le moment</h2>
       <p className="text-slate-500 mb-6">Déposez votre première annonce et rejoignez la plateforme Vanzon.</p>
       <Link
-        href="/proposer-votre-van/inscription"
+        href="/proprietaire/inscription"
         className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold text-white transition-all"
         style={{ background: "linear-gradient(135deg, #4D5FEC 0%, #3B82F6 100%)" }}
       >

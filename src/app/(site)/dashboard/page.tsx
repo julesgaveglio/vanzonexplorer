@@ -77,7 +77,7 @@ function NoListing({ firstName }: { firstName: string }) {
           sans commission et sans exclusivité.
         </p>
         <Link
-          href="/proposer-votre-van/inscription"
+          href="/proprietaire/inscription"
           className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-sky-400 text-white font-semibold px-7 py-3.5 rounded-full hover:from-blue-600 hover:to-sky-500 transition-all shadow-lg shadow-blue-500/20"
         >
           Déposer mon annonce <ArrowRight className="w-4 h-4" />
@@ -86,7 +86,7 @@ function NoListing({ firstName }: { firstName: string }) {
 
       <p className="text-center text-xs text-slate-400">
         Vous avez des questions ?{" "}
-        <Link href="/proposer-votre-van" className="text-blue-500 hover:underline">
+        <Link href="/proprietaire" className="text-blue-500 hover:underline">
           En savoir plus
         </Link>
       </p>
@@ -168,7 +168,7 @@ function ListingCard({ listing }: { listing: any }) {
       {/* Resubmit CTA if rejected */}
       {status === "rejected" && (
         <Link
-          href="/proposer-votre-van/inscription"
+          href="/proprietaire/inscription"
           className="w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500 to-sky-400 text-white font-semibold px-7 py-3.5 rounded-full hover:from-blue-600 hover:to-sky-500 transition-all shadow-lg shadow-blue-500/20"
         >
           Soumettre une nouvelle annonce <ArrowRight className="w-4 h-4" />
