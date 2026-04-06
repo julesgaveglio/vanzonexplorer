@@ -12,7 +12,7 @@
     "publish-article": "npx tsx scripts/publish-article.ts"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.78.0",
+    "@anthropic-ai/sdk": "^0.82.0",
     "@clerk/localizations": "^3.37.2",
     "@clerk/nextjs": "^6.39.0",
     "@dagrejs/dagre": "^3.0.0",

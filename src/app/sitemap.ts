@@ -2,6 +2,8 @@ import type { MetadataRoute } from "next";
 import { sanityFetch } from "@/lib/sanity/client";
 import { getAllVanSlugsQuery, getAllArticleSlugsQuery, getAllRoadTripArticleSlugsQuery } from "@/lib/sanity/queries";
 import { VANS } from "@/lib/data/vans";
+import { createSupabaseAnon } from "@/lib/supabase/server";
+import { slugify } from "@/lib/slugify";
 
 const BASE_URL = "https://vanzonexplorer.com";
 
@@ -65,5 +67,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  return [...staticPages, ...vanPages, ...articlePages, ...roadTripIndexPage, ...roadTripRegionPages, ...roadTripArticlePages];
+  const { data: marketplaceVans } = await createSupabaseAnon()
+    .from("marketplace_vans")
+    .select("id, location_city, updated_at")
+    .eq("status", "approved");
+
+  const marketplaceVanPages: MetadataRoute.Sitemap = (marketplaceVans ?? []).map((van) => ({
+    url: `${BASE_URL}/location/${slugify(van.location_city)}/${van.id}`,
+    lastModified: van.updated_at ? new Date(van.updated_at) : new Date(),
+    changeFrequency: "weekly" as const,
+    priority: 0.8,
+  }));
+
+  return [...staticPages, ...vanPages, ...articlePages, ...roadTripIndexPage, ...roadTripRegionPages, ...roadTripArticlePages, ...marketplaceVanPages];
 }

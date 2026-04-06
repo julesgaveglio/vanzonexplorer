@@ -1,5 +1,5 @@
 # 📊 État du Projet — Avril 2026
-> Dernière mise à jour : 2026-04-04
+> Dernière mise à jour : 2026-04-05
 
 ## 🎯 Objectif
 2 000€/mois net → expatriation Thaïlande fin 2027
@@ -13,16 +13,17 @@
 ## 🚀 Initiatives actives
 
 ### Marketplace (priorité #1)
-- **Statut :** 🟡 Concept validé, MVP-0 non commencé
-- **Prochaine étape :** Landing page "Proposer votre van" + formulaire Supabase
-- **Objectif MVP-0 :** 5 propriétaires intéressés
-- **Bloqueurs :** Temps dev (Jules seul), Stripe Connect à configurer, CGU à rédiger (~500-1000€ avocat)
-- **Schéma Supabase :** validé (7 tables), pas encore créé en prod
+- **Statut :** 🟢 MVP-1 live — wizard 4 étapes, auth Clerk (Google OAuth), dashboard van owner, table `marketplace_vans` + `photo_slots`
+- **Leads chauds :** 3 personnes en DM Facebook (2026-04-05), discussions en cours, inscriptions pas encore faites
+- **Objectif MVP-0 :** 5 propriétaires inscrits (0/5 à date)
+- **Prochaine étape :** Convertir les 3 leads Facebook en premières vraies annonces
+- **Schéma Supabase :** `marketplace_vans` avec photo_slots, location_address, location_postal_code
 
 ### SEO / Blog (moteur de fond)
 - **Statut :** 🟢 Automatisé, 3 articles/semaine
 - **Articles publiés :** vérifier Sanity pour le compte exact
 - **Pipeline :** blog-writer (lun/mer/ven 7h UTC) + queue-builder mensuel + link-optimizer + cluster-updater
+- **Backlinks :** 🟢 Automatisé (2026-04-04) — agent daily Mar-Ven 9h30 Paris, 5 emails/jour, reply detection + follow-up J+4. 72 prospects en DB (53 découverts, 17 contactés, 2 obtenus). 10 axes diversifiés (surf/outdoor, annuaires, presse, éco-tourisme, road trip, camping, institutionnels, gîtes, mariage, nomad).
 - **Trafic organique :** à vérifier via GSC
 - **Road Trip IA :** actif, pipeline seed → publisher → feedback automatisé
 - **Pinterest :** recherche faite, poster inactif (compte Trial)
@@ -56,12 +57,25 @@
 - [2026-03] Club Privé 100% gratuit (abandon 9,99€/mois + Stripe)
 - [2026-03] Schéma Supabase marketplace validé (7 tables)
 - [2026-04] CTTE confirmé pour Yoni et Xalbat (PAS VASP)
+- [2026-04-04] MVP-0 marketplace live (/proposer-votre-van) + prospection Facebook groupes vanlife
+- [2026-04-04] Système backlinks automatisé déployé (72 prospects, 10 axes, agent daily + weekly)
+- [2026-04-04] 8 emails OT + campings envoyés manuellement, 2 réponses positives (cosyvans.fr, labelvanlife.com)
+- [2026-04-05] MVP-1 marketplace déployé — wizard complet, auth Clerk Google, dashboard van owner, photo slots structurés
+- [2026-04-05] 3 leads chauds Facebook en DM — discussions en cours pour inscription
+- [2026-04-05] Demandes Apple Maps Business envoyées, Pages Jaunes actif, WikiCampers en cours (Yoni + Xalbat)
+- [2026-04-05] Notifications Telegram : nouvel inscrit + nouvelle annonce van avec lien admin
 
 ## 📅 Prochains jalons
-- [ ] Lancer MVP-0 marketplace (landing + formulaire)
+- [x] ~~Lancer MVP-0 marketplace (landing + formulaire)~~ ✅ 2026-04-04
+- [x] ~~Système backlinks automatisé~~ ✅ 2026-04-04
+- [ ] Convertir les 3 leads Facebook en premières inscriptions (priorité absolue)
+- [ ] Obtenir 5 propriétaires inscrits sur la marketplace (0/5 à date)
+- [ ] Finaliser WikiCampers — Yoni + Xalbat en ligne
+- [ ] Vérifier validation Apple Maps Business
+- [ ] Inscriptions annuaires manuels restants (en-pays-basque.fr, tourisme64, france-voyage, CCI)
 - [ ] Signer le contrat SAS avec Mario
 - [ ] Atteindre 100 articles indexés
-- [ ] Upgrade Pinterest compte Standard
+- [ ] Optimiser fiches Yescapa pour haute saison (15/04)
 - [ ] Première réservation directe (hors Yescapa)
 
 ## 📊 KPIs à suivre

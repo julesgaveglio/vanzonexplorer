@@ -7,6 +7,7 @@ import type { VanCard as VanCardType } from "@/lib/sanity/types";
 import VanCard from "@/components/van/VanCard";
 import { getGooglePlaceStats } from "@/lib/google-places";
 import OtherServices from "@/components/ui/OtherServices";
+import MarketplaceVansSection from "@/components/marketplace/MarketplaceVansSection";
 import RoadTripCTA from "@/components/ui/RoadTripCTA";
 import LiquidButton from "@/components/ui/LiquidButton";
 
@@ -421,6 +422,8 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      <MarketplaceVansSection />
 
       {/* ════════════════════════════════════════════════
           VAN BUSINESS ACADEMY
