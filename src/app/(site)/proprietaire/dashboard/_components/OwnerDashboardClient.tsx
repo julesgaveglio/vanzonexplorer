@@ -122,7 +122,15 @@ export default function OwnerDashboardClient() {
         ) : (
           <>
             {vans.length === 0 ? (
-              <EmptyState />
+              <EmptyState onClaimed={(count) => {
+                if (count > 0) {
+                  setLoading(true);
+                  fetch("/api/marketplace/owner")
+                    .then((r) => r.json())
+                    .then((d) => setVans(d.vans ?? []))
+                    .finally(() => setLoading(false));
+                }
+              }} />
             ) : (
               <div className="space-y-4">
                 <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider">
@@ -142,19 +150,99 @@ export default function OwnerDashboardClient() {
 
 /* ─── Empty State ───────────────────────────────────────────────────────── */
 
-function EmptyState() {
+function EmptyState({ onClaimed }: { onClaimed: (count: number) => void }) {
+  const [showClaim, setShowClaim] = useState(false);
+  const [claimEmail, setClaimEmail] = useState("");
+  const [claimLoading, setClaimLoading] = useState(false);
+  const [claimError, setClaimError] = useState("");
+  const [claimSuccess, setClaimSuccess] = useState(false);
+
+  async function handleClaim(e: React.FormEvent) {
+    e.preventDefault();
+    setClaimLoading(true);
+    setClaimError("");
+    try {
+      const res = await fetch("/api/marketplace/owner/claim", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ submissionEmail: claimEmail }),
+      });
+      const d = await res.json();
+      if (!res.ok) throw new Error(d.error || "Erreur");
+      setClaimSuccess(true);
+      setTimeout(() => onClaimed(d.claimed), 1000);
+    } catch (err) {
+      setClaimError(err instanceof Error ? err.message : "Erreur inconnue");
+    } finally {
+      setClaimLoading(false);
+    }
+  }
+
   return (
-    <div className="text-center py-20">
-      <div className="text-5xl mb-4">🚐</div>
-      <h2 className="text-xl font-bold text-slate-900 mb-2">Aucune annonce pour le moment</h2>
-      <p className="text-slate-500 mb-6">Déposez votre première annonce et rejoignez la plateforme Vanzon.</p>
-      <Link
-        href="/proprietaire/inscription"
-        className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold text-white transition-all"
-        style={{ background: "linear-gradient(135deg, #4D5FEC 0%, #3B82F6 100%)" }}
-      >
-        Déposer mon van
-      </Link>
+    <div className="space-y-6">
+      <div className="bg-white rounded-2xl border border-slate-100 p-10 text-center">
+        <div className="text-5xl mb-4">🚐</div>
+        <h2 className="text-xl font-bold text-slate-900 mb-2">Aucune annonce trouvée</h2>
+        <p className="text-slate-500 mb-6 max-w-sm mx-auto">
+          Déposez votre première annonce et rejoignez la plateforme Vanzon.
+        </p>
+        <Link
+          href="/proprietaire/inscription"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold text-white transition-all"
+          style={{ background: "linear-gradient(135deg, #4D5FEC 0%, #3B82F6 100%)" }}
+        >
+          Déposer mon van
+        </Link>
+      </div>
+
+      {/* Claim section */}
+      <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5">
+        <p className="text-sm font-semibold text-amber-800 mb-1">
+          Vous avez déjà soumis une annonce ?
+        </p>
+        <p className="text-xs text-amber-700 mb-3">
+          Si vous avez utilisé un email différent lors de l&apos;inscription, liez votre annonce à ce compte.
+        </p>
+
+        {!showClaim && !claimSuccess && (
+          <button
+            onClick={() => setShowClaim(true)}
+            className="text-sm font-semibold text-amber-700 underline underline-offset-2 hover:text-amber-900"
+          >
+            Récupérer mon annonce →
+          </button>
+        )}
+
+        {showClaim && !claimSuccess && (
+          <form onSubmit={handleClaim} className="flex gap-2 mt-1">
+            <input
+              type="email"
+              value={claimEmail}
+              onChange={(e) => setClaimEmail(e.target.value)}
+              placeholder="Email utilisé lors de la soumission"
+              className="flex-1 bg-white border border-amber-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400/40"
+              required
+            />
+            <button
+              type="submit"
+              disabled={claimLoading}
+              className="px-4 py-2 rounded-xl text-sm font-semibold text-white bg-amber-500 hover:bg-amber-600 disabled:opacity-50 transition-colors flex-shrink-0"
+            >
+              {claimLoading ? "..." : "Lier"}
+            </button>
+          </form>
+        )}
+
+        {claimError && <p className="text-red-600 text-xs mt-2">{claimError}</p>}
+        {claimSuccess && (
+          <p className="text-emerald-700 text-sm font-medium flex items-center gap-1.5 mt-1">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+            </svg>
+            Annonce récupérée ! Chargement...
+          </p>
+        )}
+      </div>
     </div>
   );
 }

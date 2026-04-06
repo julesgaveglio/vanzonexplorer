@@ -6,7 +6,7 @@ const footerLinks = {
     { label: "Location de vans", href: "/location" },
     { label: "Achat de vans", href: "/achat" },
     { label: "Formation vanlife", href: "/formation" },
-    { label: "Club Privé", href: "/club" },
+    { label: "Club", href: "/club" },
     { label: "Proposer votre van", href: "/proprietaire" },
   ],
   decouvrir: [

@@ -10,7 +10,7 @@ import { getBrands } from "@/lib/club/data";
 export const metadata: Metadata = {
   title: "À propos — Vanzon Explorer | Écosystème Vanlife Pays Basque",
   description:
-    "Vanzon Explorer : l'écosystème vanlife 360° qui rend la liberté accessible à tous. Location, achat, formation et Club Privé au Pays Basque et partout en France. Fondé en 2024 par Jules et Elio.",
+    "Vanzon Explorer : l'écosystème vanlife 360° qui rend la liberté accessible à tous. Location, achat, formation et Club au Pays Basque et partout en France. Fondé en 2024 par Jules et Elio.",
   alternates: {
     canonical: "https://vanzonexplorer.com/a-propos",
   },
@@ -54,7 +54,7 @@ const SERVICES = [
   },
   {
     icon: "🔒",
-    label: "Club Privé",
+    label: "Club",
     title: "Deals & marques partenaires",
     desc: "Codes promo exclusifs chez nos marques partenaires validées. Parce que la liberté ne devrait pas coûter cher.",
     zone: "Toute la France",
@@ -83,7 +83,7 @@ const VALUES = [
   {
     icon: "✨",
     title: "Qualité",
-    desc: "Chaque van de notre flotte, chaque marque du Club Privé passe par un processus de sélection rigoureux. Votre confiance se mérite.",
+    desc: "Chaque van de notre flotte, chaque marque du Club passe par un processus de sélection rigoureux. Votre confiance se mérite.",
   },
 ];
 
@@ -145,7 +145,7 @@ export default async function AProposPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {[
               { value: fleetCount, label: "vans en location", sub: "Pays Basque" },
-              { value: brandCount, label: "marques partenaires", sub: "Club Privé" },
+              { value: brandCount, label: "marques partenaires", sub: "Club" },
               { value: "20+", label: "locations réalisées", sub: "et ça grandit" },
               { value: "2024", label: "année de création", sub: "Cambo-les-Bains, Pays Basque" },
             ].map((s) => (
@@ -405,7 +405,7 @@ export default async function AProposPage() {
             url: "https://vanzonexplorer.com",
             logo: "https://cdn.sanity.io/images/lewexa74/production/1f483103ef15ee3549eab14ba2801d11b32a9055-313x313.png?auto=format&q=82",
             description:
-              "Écosystème vanlife 360° — location, achat, formation et Club Privé au Pays Basque. Fondé en 2024 par Jules Gaveglio et Elio.",
+              "Écosystème vanlife 360° — location, achat, formation et Club au Pays Basque. Fondé en 2024 par Jules Gaveglio et Elio.",
             foundingDate: "2024",
             foundingLocation: { "@type": "Place", name: "Cambo-les-Bains, Pays Basque, France" },
             areaServed: "FR",

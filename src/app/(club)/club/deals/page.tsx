@@ -3,7 +3,7 @@ import { getProducts, getCategories, getBrands } from "@/lib/club/data";
 import ProductsClient from "@/components/club/products/ProductsClient";
 
 export const metadata: Metadata = {
-  title: "Deals Vanlife — Club Privé Vanzon",
+  title: "Deals Vanlife — Club Vanzon",
   description: "Tous les codes promo, réductions et bons plans exclusifs pour l'aménagement de votre van.",
   robots: { index: false, follow: false },
 };

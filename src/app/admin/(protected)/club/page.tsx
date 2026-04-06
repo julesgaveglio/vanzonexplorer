@@ -25,7 +25,7 @@ export default async function AdminClubPage() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <p className="text-slate-400 text-sm font-medium mb-1">Administration</p>
-          <h1 className="text-3xl font-black text-slate-900">Club Privé</h1>
+          <h1 className="text-3xl font-black text-slate-900">Club</h1>
           <p className="text-slate-500 mt-1">Gérer les marques et deals exclusifs</p>
         </div>
         <div className="flex gap-3">

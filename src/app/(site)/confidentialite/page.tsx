@@ -42,7 +42,7 @@ export default function ConfidentialitePage() {
                 </li>
                 <li className="flex gap-3">
                   <span className="text-accent-blue font-bold mt-0.5">—</span>
-                  <span><strong>Profil Club Privé (Supabase) :</strong> le Club Privé est gratuit et ne nécessite aucun paiement. Seul votre statut d&apos;inscription est conservé pour vous donner accès aux deals et codes promo.</span>
+                  <span><strong>Profil Club (Supabase) :</strong> le Club est gratuit et ne nécessite aucun paiement. Seul votre statut d&apos;inscription est conservé pour vous donner accès aux deals et codes promo.</span>
                 </li>
                 <li className="flex gap-3">
                   <span className="text-accent-blue font-bold mt-0.5">—</span>
@@ -64,7 +64,7 @@ export default function ConfidentialitePage() {
               <h2 className="text-lg font-bold text-slate-900 mb-3">3. Finalités du traitement</h2>
               <ul className="text-slate-600 space-y-2 list-none pl-0">
                 <li className="flex gap-3"><span className="text-accent-blue font-bold mt-0.5">—</span><span>Gestion des comptes utilisateurs et authentification</span></li>
-                <li className="flex gap-3"><span className="text-accent-blue font-bold mt-0.5">—</span><span>Gestion des accès gratuits au Club Privé</span></li>
+                <li className="flex gap-3"><span className="text-accent-blue font-bold mt-0.5">—</span><span>Gestion des accès gratuits au Club</span></li>
                 <li className="flex gap-3"><span className="text-accent-blue font-bold mt-0.5">—</span><span>Traitement des demandes de contact et devis formation</span></li>
                 <li className="flex gap-3"><span className="text-accent-blue font-bold mt-0.5">—</span><span>Distribution automatique du contenu éditorial sur Pinterest</span></li>
                 <li className="flex gap-3"><span className="text-accent-blue font-bold mt-0.5">—</span><span>Amélioration de l&apos;expérience utilisateur</span></li>

@@ -16,7 +16,7 @@ const PAGES = [
   { label: "Location Week-end", path: "/location/week-end", category: "Location" },
   { label: "Formation", path: "/formation", category: "Principal" },
   { label: "Achat", path: "/achat", category: "Principal" },
-  { label: "Club Privé", path: "/club", category: "Principal" },
+  { label: "Club", path: "/club", category: "Principal" },
   { label: "Pays Basque", path: "/pays-basque", category: "Principal" },
   { label: "À propos", path: "/a-propos", category: "Principal" },
 ];

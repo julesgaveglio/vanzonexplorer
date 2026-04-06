@@ -44,7 +44,7 @@ const SERVICES: Record<ServiceKey, {
   },
   club: {
     emoji: "✨",
-    label: "Club Privé",
+    label: "Club",
     title: "Deals & codes promo vanlife",
     desc: "Accédez gratuitement aux meilleures réductions sur l'équipement van : literie, énergie, cuisine, sécurité… 100% gratuit.",
     zone: "Toute la France",

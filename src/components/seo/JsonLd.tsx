@@ -58,7 +58,7 @@ const schema = {
   "@context": "https://schema.org",
   "@type": ["LocalBusiness", "CarRental"],
   name: "Vanzon Explorer",
-  description: "Location de vans aménagés tout équipés au Pays Basque. Assurance incluse, départ Cambo-les-Bains. Achat, formation vanlife et Club Privé.",
+  description: "Location de vans aménagés tout équipés au Pays Basque. Assurance incluse, départ Cambo-les-Bains. Achat, formation vanlife et Club.",
   url: BASE_URL,
   telephone: "+33618476378",
   email: "contact@vanzonexplorer.com",

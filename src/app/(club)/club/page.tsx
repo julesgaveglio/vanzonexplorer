@@ -4,7 +4,7 @@ import ClubLandingPage from "./_components/ClubLandingPage";
 import type { Product } from "@/lib/club/types";
 
 export const metadata: Metadata = {
-  title: "Club Privé Vanzon — Deals & Codes Promo Vanlife",
+  title: "Club Vanzon — Deals & Codes Promo Vanlife",
   description: "Accédez gratuitement aux meilleurs deals, codes promo et réductions exclusives pour l'aménagement de votre van. 100% gratuit.",
   alternates: {
     canonical: "https://vanzonexplorer.com/club",

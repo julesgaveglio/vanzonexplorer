@@ -10,7 +10,7 @@ export default async function AdminProduitsPage() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <p className="text-slate-400 text-sm font-medium mb-1">
-            <Link href="/admin/club" className="hover:text-slate-600">Club Privé</Link> / Produits
+            <Link href="/admin/club" className="hover:text-slate-600">Club</Link> / Produits
           </p>
           <h1 className="text-3xl font-black text-slate-900">Produits</h1>
           <p className="text-slate-500 mt-1">{products.length} produit{products.length > 1 ? "s" : ""}</p>

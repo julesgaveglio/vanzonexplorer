@@ -260,12 +260,12 @@ const navGroups = [
       },
     ],
   },
-  // ── Club Privé ───────────────────────────────────────────────────────────────
+  // ── Club ───────────────────────────────────────────────────────────────
   {
-    label: "Club Privé",
+    label: "Club",
     items: [
       {
-        label: "Club Privé",
+        label: "Club",
         href: "/admin/club",
         exact: true,
         icon: (

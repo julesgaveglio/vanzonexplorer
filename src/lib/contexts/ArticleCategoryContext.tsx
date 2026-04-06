@@ -8,7 +8,7 @@ type ArticleCategory =
   | "Aménagement Van"
   | "Business Van"
   | "Achat Van"
-  | "Club Privé"
+  | "Club"
   | null;
 
 type ContextValue = {

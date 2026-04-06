@@ -27,7 +27,7 @@ const PALETTE = {
     gradient: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
     glow: "0 4px 18px rgba(185, 148, 95, 0.55), 0 1px 4px rgba(228, 211, 152, 0.30)",
   },
-  // Violet — Club Privé
+  // Violet — Club
   purple: {
     gradient: "linear-gradient(135deg, #883AE2 0%, #8A80E9 100%)",
     glow: "0 4px 18px rgba(136, 58, 226, 0.50), 0 1px 4px rgba(138, 128, 233, 0.30)",
@@ -51,7 +51,7 @@ const ARTICLE_CATEGORY_CTA: Record<string, CTAConfig> = {
   "Aménagement Van": { btnLabel: "Trouver mon van", href: "/achat", ...PALETTE.slate },
   "Achat Van": { btnLabel: "Trouver mon van", href: "/achat", ...PALETTE.slate },
   "Business Van": { btnLabel: "Découvrir la formation", href: "/formation", ...PALETTE.gold },
-  "Club Privé": { btnLabel: "Rejoindre le Club", href: "/club", ...PALETTE.purple },
+  "Club": { btnLabel: "Rejoindre le Club", href: "/club", ...PALETTE.purple },
 };
 
 function getCTAConfig(pathname: string): CTAConfig | null {
@@ -65,7 +65,7 @@ function getCTAConfig(pathname: string): CTAConfig | null {
     };
   }
 
-  // Club Privé — violet
+  // Club — violet
   if (pathname.startsWith("/club")) {
     return {
       btnLabel: "Rejoindre le Club",

@@ -11,7 +11,7 @@ const navLinks = [
   { label: "Location", href: "/location", desc: "Louer un van aménagé", emoji: "🚐" },
   { label: "Achat", href: "/achat", desc: "Acheter un fourgon", emoji: "🔑" },
   { label: "Formation", href: "/formation", desc: "Van Business Academy", emoji: "🎓" },
-  { label: "Club Privé", href: "/club", desc: "Réductions exclusives", emoji: "🔮" },
+  { label: "Club", href: "/club", desc: "Réductions exclusives", emoji: "🔮" },
   { label: "Pays Basque", href: "/pays-basque", desc: "Vantrips & spots", emoji: "🏄" },
   { label: "Road Trips", href: "/road-trip", desc: "Itinéraires van en France", emoji: "🗺️" },
   { label: "Articles", href: "/articles", desc: "Guides vanlife", emoji: "📖" },

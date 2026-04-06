@@ -16,12 +16,6 @@ const isMarketplaceDashboard = createRouteMatcher(["/proprietaire/dashboard(.*)"
 const isProtectedRoute = createRouteMatcher([
   "/dashboard(.*)",
   "/user(.*)",
-  // Club Privé — toutes les pages membres (sauf la landing /club)
-  "/club/deals(.*)",
-  "/club/marques(.*)",
-  "/club/categories(.*)",
-  "/club/dashboard(.*)",
-  "/club/onboarding(.*)",
 ]);
 
 export default clerkMiddleware(async (auth, req) => {

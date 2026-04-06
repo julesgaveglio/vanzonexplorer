@@ -3,7 +3,7 @@ import { getCategories } from "@/lib/club/data";
 import CategoriesClient from "@/components/club/categories/CategoriesClient";
 
 export const metadata: Metadata = {
-  title: "Catégories — Club Privé Vanzon",
+  title: "Catégories — Club Vanzon",
   description: "Retrouve tous les bons plans classés par catégorie d'équipement pour ton aménagement van.",
 };
 

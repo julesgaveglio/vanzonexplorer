@@ -9,7 +9,7 @@ export default async function AdminMarquesPage() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <p className="text-slate-400 text-sm font-medium mb-1">
-            <Link href="/admin/club" className="hover:text-slate-600">Club Privé</Link> / Marques
+            <Link href="/admin/club" className="hover:text-slate-600">Club</Link> / Marques
           </p>
           <h1 className="text-3xl font-black text-slate-900">Marques partenaires</h1>
           <p className="text-slate-500 mt-1">{brands.length} marque{brands.length > 1 ? "s" : ""}</p>
