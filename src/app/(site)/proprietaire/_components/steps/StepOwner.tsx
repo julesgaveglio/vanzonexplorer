@@ -1,13 +1,33 @@
 "use client";
 
+import { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
+import { useUser } from "@clerk/nextjs";
 import PhoneInput from "../PhoneInput";
 
 const inputCls =
   "w-full bg-white/75 border border-slate-200 rounded-xl px-4 py-3 text-text-primary placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-blue-400 transition-all";
 
 export default function StepOwner() {
-  const { register, formState: { errors } } = useFormContext();
+  const { register, setValue, getValues, formState: { errors } } = useFormContext();
+  const { user, isLoaded } = useUser();
+
+  // Pre-fill from Clerk if fields are empty
+  useEffect(() => {
+    if (!isLoaded || !user) return;
+    const email = user.emailAddresses?.[0]?.emailAddress ?? "";
+    if (email && !getValues("owner_email")) {
+      setValue("owner_email", email, { shouldValidate: false });
+    }
+    if (user.firstName && !getValues("owner_first_name")) {
+      setValue("owner_first_name", user.firstName, { shouldValidate: false });
+    }
+    if (user.lastName && !getValues("owner_last_name")) {
+      setValue("owner_last_name", user.lastName, { shouldValidate: false });
+    }
+  }, [isLoaded, user, setValue, getValues]);
+
+  const clerkEmail = isLoaded ? (user?.emailAddresses?.[0]?.emailAddress ?? "") : "";
 
   return (
     <div className="space-y-5">
@@ -58,9 +78,18 @@ export default function StepOwner() {
           id="owner_email"
           type="email"
           placeholder="votre@email.com"
-          className={inputCls}
+          className={clerkEmail ? inputCls + " bg-slate-50 text-slate-500 cursor-not-allowed" : inputCls}
+          readOnly={!!clerkEmail}
           {...register("owner_email")}
         />
+        {clerkEmail && (
+          <p className="text-xs text-slate-400 mt-1 flex items-center gap-1">
+            <svg className="w-3 h-3 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+            </svg>
+            Récupéré depuis votre compte Vanzon
+          </p>
+        )}
         {errors.owner_email && (
           <p className="text-red-500 text-sm mt-1">{errors.owner_email.message as string}</p>
         )}

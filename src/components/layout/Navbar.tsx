@@ -215,7 +215,7 @@ export default function Navbar() {
                 <div className="flex items-center gap-3 px-4 py-3">
                   <UserButton />
                   <Link
-                    href="/dashboard"
+                    href="/proprietaire/dashboard"
                     onClick={() => setDesktopOpen(false)}
                     className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
                   >
@@ -277,7 +277,7 @@ export default function Navbar() {
             <div className="hidden lg:flex items-center gap-3">
               {isSignedIn && (
                 <Link
-                  href="/dashboard"
+                  href="/proprietaire/dashboard"
                   className="text-sm font-medium text-text-muted hover:text-text-primary transition-colors px-3 py-2 rounded-lg hover:bg-slate-50"
                 >
                   Mon espace
@@ -378,7 +378,7 @@ export default function Navbar() {
                 <div className="px-2 pb-2 pt-1 border-t border-slate-100">
                   {isSignedIn ? (
                     <Link
-                      href="/dashboard"
+                      href="/proprietaire/dashboard"
                       onClick={() => setMobileOpen(false)}
                       className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-slate-600 rounded-xl hover:bg-slate-50 active:bg-slate-100 transition-colors"
                     >
