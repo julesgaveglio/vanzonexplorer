@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { data: van } = await supabase
     .from("marketplace_vans")
     .select("title, location_city, price_per_day, description, photos")
-    .ilike("id", `${params.vanId}%`)
+    .filter("id::text", "ilike", `${params.vanId}%`)
     .eq("status", "approved")
     .single();
 
@@ -60,7 +60,7 @@ export default async function MarketplaceVanPage({ params }: Props) {
   const { data: van } = await supabase
     .from("marketplace_vans")
     .select("*")
-    .ilike("id", `${params.vanId}%`)
+    .filter("id::text", "ilike", `${params.vanId}%`)
     .eq("status", "approved")
     .single();
 
