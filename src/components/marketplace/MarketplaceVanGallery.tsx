@@ -79,7 +79,7 @@ export default function MarketplaceVanGallery({ photos, title }: MarketplaceVanG
   return (
     <>
       {/* ── Desktop : 63/37 grid + thumbnails ── */}
-      <div className="hidden lg:grid grid-cols-[63fr_37fr] gap-3 rounded-3xl overflow-hidden h-[500px]">
+      <div className="hidden lg:grid grid-cols-[63fr_37fr] grid-rows-[500px] gap-3 rounded-3xl overflow-hidden">
         {/* Image principale */}
         <button
           onClick={() => openLightbox(desktopActive)}
@@ -101,11 +101,11 @@ export default function MarketplaceVanGallery({ photos, title }: MarketplaceVanG
           </div>
         </button>
 
-        {/* Colonne droite : 2 images exactement à 50% chacune */}
-        <div className="grid grid-rows-2 gap-3 h-full">
+        {/* Colonne droite : 2 images égales */}
+        <div className="flex flex-col gap-3">
           <button
             onClick={() => openLightbox(1 % photos.length)}
-            className="relative overflow-hidden group"
+            className="relative flex-1 overflow-hidden group"
             aria-label="Photo 2"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -115,7 +115,7 @@ export default function MarketplaceVanGallery({ photos, title }: MarketplaceVanG
 
           <button
             onClick={() => openLightbox(2 % photos.length)}
-            className="relative overflow-hidden group"
+            className="relative flex-1 overflow-hidden group"
             aria-label="Voir toutes les photos"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
