@@ -6,12 +6,12 @@ import { ArrowRight } from "lucide-react";
 import FAQSection from "./_components/FAQSection";
 
 export const metadata: Metadata = {
-  title: "Proposer votre van à la location",
+  title: "Votre van mérite d'être vu",
   description:
     "Votre van mérite d'être vu par plus de monde. Vanzon Explorer vous offre une page dédiée, référencée sur Google, sans commission et sans exclusivité.",
   alternates: { canonical: "https://vanzonexplorer.com/proprietaire" },
   openGraph: {
-    title: "Proposer votre van à la location",
+    title: "Votre van mérite d'être vu",
     description:
       "Une page dédiée, référencée sur Google, sans commission et sans exclusivité. Un canal de visibilité en plus, sans rien changer à votre organisation.",
     type: "website",
