@@ -1,0 +1,31 @@
+export const EQUIPMENT_LABELS: Record<string, string> = {
+  "frigo": "Réfrigérateur",
+  "plaque-cuisson": "Plaque de cuisson",
+  "evier": "Évier",
+  "vaisselle": "Vaisselle",
+  "douche": "Douche",
+  "wc": "WC",
+  "eau-chaude": "Eau chaude",
+  "chauffage": "Chauffage",
+  "climatisation": "Climatisation",
+  "moustiquaire": "Moustiquaire",
+  "panneau-solaire": "Panneau solaire",
+  "220v": "Prise 220V",
+  "prise-usb": "Prise USB",
+  "prise-typec": "Prise Type-C",
+  "batterie-auxiliaire": "Batterie auxiliaire",
+  "store": "Store / Auvent",
+  "porte-velo": "Porte-vélo",
+  "galerie": "Galerie de toit",
+  "gps": "GPS",
+  "camera-recul": "Caméra de recul",
+  "regulateur": "Régulateur de vitesse",
+};
+
+export const VAN_TYPE_LABELS: Record<string, string> = {
+  fourgon: "Fourgon aménagé",
+  van: "Van",
+  combi: "Combi",
+  "camping-car": "Camping-car",
+  autre: "Autre",
+};

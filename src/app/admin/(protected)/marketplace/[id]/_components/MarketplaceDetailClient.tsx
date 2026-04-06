@@ -9,14 +9,7 @@ const STATUS_CONFIG = {
   rejected: { label: "Rejeté", bg: "bg-red-100", text: "text-red-700" },
 };
 
-const EQUIPMENT_LABELS: Record<string, string> = {
-  "frigo": "Réfrigérateur", "plaque-cuisson": "Plaque de cuisson", "evier": "Évier",
-  "vaisselle": "Vaisselle", "douche": "Douche", "wc": "WC", "eau-chaude": "Eau chaude",
-  "chauffage": "Chauffage", "climatisation": "Climatisation", "moustiquaire": "Moustiquaire",
-  "panneau-solaire": "Panneau solaire", "220v": "Prise 220V", "batterie-auxiliaire": "Batterie aux.",
-  "store": "Store/Auvent", "porte-velo": "Porte-vélo", "galerie": "Galerie de toit",
-  "gps": "GPS", "camera-recul": "Caméra de recul", "regulateur": "Régulateur",
-};
+import { EQUIPMENT_LABELS } from "@/lib/equipment-labels";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function MarketplaceDetailClient({ van }: { van: any }) {

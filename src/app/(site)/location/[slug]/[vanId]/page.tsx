@@ -15,22 +15,7 @@ interface Props {
   params: { slug: string; vanId: string };
 }
 
-const EQUIPMENT_LABELS: Record<string, string> = {
-  "frigo": "Réfrigérateur", "plaque-cuisson": "Plaque de cuisson",
-  "evier": "Évier", "vaisselle": "Vaisselle", "douche": "Douche",
-  "wc": "WC", "eau-chaude": "Eau chaude", "chauffage": "Chauffage",
-  "climatisation": "Climatisation", "moustiquaire": "Moustiquaire",
-  "panneau-solaire": "Panneau solaire", "220v": "Prise 220V",
-  "batterie-auxiliaire": "Batterie aux.", "store": "Store/Auvent",
-  "porte-velo": "Porte-vélo", "galerie": "Galerie de toit",
-  "gps": "GPS", "camera-recul": "Caméra de recul",
-  "regulateur": "Régulateur de vitesse",
-};
-
-const VAN_TYPE_LABELS: Record<string, string> = {
-  fourgon: "Fourgon aménagé", van: "Van", combi: "Combi",
-  "camping-car": "Camping-car", autre: "Autre",
-};
+import { EQUIPMENT_LABELS, VAN_TYPE_LABELS } from "@/lib/equipment-labels";
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const supabase = createSupabaseAnon();

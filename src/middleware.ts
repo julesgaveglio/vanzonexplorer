@@ -11,6 +11,7 @@ const isDevOnlyRoute = createRouteMatcher([
 
 const isMarketplaceInscription = createRouteMatcher(["/proposer-votre-van/inscription(.*)"]);
 const isMarketplaceConnexion = createRouteMatcher(["/proposer-votre-van/connexion(.*)"]);
+const isMarketplaceDashboard = createRouteMatcher(["/proposer-votre-van/dashboard(.*)"]);
 
 const isProtectedRoute = createRouteMatcher([
   "/dashboard(.*)",
@@ -40,11 +41,20 @@ export default clerkMiddleware(async (auth, req) => {
     return NextResponse.next();
   }
 
-  // Marketplace — already signed in → skip connexion page
+  // Marketplace — already signed in → skip connexion page → go to dashboard
   if (isMarketplaceConnexion(req)) {
     const { userId } = await auth();
     if (userId) {
-      return NextResponse.redirect(new URL("/proposer-votre-van/inscription", req.url));
+      return NextResponse.redirect(new URL("/proposer-votre-van/dashboard", req.url));
+    }
+    return NextResponse.next();
+  }
+
+  // Marketplace — dashboard requires auth → redirect to connexion
+  if (isMarketplaceDashboard(req)) {
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.redirect(new URL("/proposer-votre-van/connexion", req.url));
     }
     return NextResponse.next();
   }
