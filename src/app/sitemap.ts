@@ -51,7 +51,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/road-trip`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
   ];
 
-  const roadTripRegionPages: MetadataRoute.Sitemap = ROAD_TRIP_REGIONS.map((regionSlug) => ({
+  // Only include region pages that actually have articles
+  const regionsWithArticles = Array.from(new Set(roadTripSlugs.map((s) => s.regionSlug)));
+  const roadTripRegionPages: MetadataRoute.Sitemap = regionsWithArticles.map((regionSlug) => ({
     url: `${BASE_URL}/road-trip/${regionSlug}`,
     lastModified: new Date(),
     changeFrequency: "weekly" as const,
