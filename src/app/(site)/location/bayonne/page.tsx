@@ -393,7 +393,7 @@ export default async function LocationBayonnePage() {
         rows={[
           {
             label: "Récupération",
-            value: "Cambo-les-Bains (15 min de Bayonne) ou livraison sur demande",
+            value: "Cambo-les-Bains (15 min de Bayonne)",
           },
           {
             label: "Distance Biarritz",

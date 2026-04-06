@@ -278,7 +278,7 @@ export default async function LocationBiarritzPage() {
                 icon: "⭐",
                 text: `${placeStats.ratingDisplay}/5 sur ${placeStats.reviewCount} avis Google`,
               },
-              { icon: "🔑", text: "Livraison Biarritz sur demande" },
+              { icon: "🔑", text: "Départ depuis Cambo-les-Bains" },
             ].map((item) => (
               <div key={item.text} className="flex items-center gap-2">
                 <span>{item.icon}</span>
@@ -393,7 +393,7 @@ export default async function LocationBiarritzPage() {
         rows={[
           {
             label: "Récupération",
-            value: "Cambo-les-Bains (25 min) ou livraison Biarritz sur demande",
+            value: "Cambo-les-Bains (25 min de Biarritz)",
           },
           {
             label: "Durée recommandée",

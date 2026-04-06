@@ -405,7 +405,7 @@ export default async function LocationWeekEndPage() {
         rows={[
           {
             label: "Récupération",
-            value: "Vendredi 17h–20h à Cambo-les-Bains (ou livraison sur demande)",
+            value: "Vendredi 17h–20h à Cambo-les-Bains",
           },
           {
             label: "Retour",

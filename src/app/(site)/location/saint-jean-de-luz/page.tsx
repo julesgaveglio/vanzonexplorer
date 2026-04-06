@@ -275,7 +275,7 @@ export default async function LocationSaintJeanDeLuzPage() {
                 icon: "⭐",
                 text: `${placeStats.ratingDisplay}/5 sur ${placeStats.reviewCount} avis Google`,
               },
-              { icon: "🔑", text: "Livraison Saint-Jean sur demande" },
+              { icon: "📍", text: "Départ depuis Cambo-les-Bains" },
             ].map((item) => (
               <div key={item.text} className="flex items-center gap-2">
                 <span>{item.icon}</span>
@@ -390,7 +390,7 @@ export default async function LocationSaintJeanDeLuzPage() {
         rows={[
           {
             label: "Récupération",
-            value: "Cambo-les-Bains (35 min) ou livraison Saint-Jean sur demande",
+            value: "Cambo-les-Bains (35 min de Saint-Jean-de-Luz)",
           },
           {
             label: "Aire camping-car",

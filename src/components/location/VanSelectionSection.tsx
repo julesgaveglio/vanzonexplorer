@@ -43,7 +43,7 @@ export default async function VanSelectionSection({ destination }: VanSelectionS
           <div className="flex flex-wrap justify-center sm:justify-start items-center gap-x-6 gap-y-2 text-sm text-slate-500">
             <span className="flex items-center gap-1.5">✅ Annulation flexible</span>
             <span className="flex items-center gap-1.5">🛡️ Assurance tous risques</span>
-            <span className="flex items-center gap-1.5">📍 Livraison {destination} sur demande</span>
+            <span className="flex items-center gap-1.5">📍 Départ depuis Cambo-les-Bains</span>
           </div>
           <Link
             href="/location"

@@ -49,7 +49,7 @@ const faqItems = [
   },
   {
     q: "Où récupère-t-on le van ?",
-    a: "Le van se récupère à Bayonne (Pays Basque). La livraison sur Biarritz, Anglet ou Hossegor est possible sur demande, selon disponibilités.",
+    a: "Le van se récupère à Cambo-les-Bains (64250), à 25 min de Biarritz et 15 min de Bayonne. L'adresse exacte est communiquée après confirmation de la réservation.",
   },
 ];
 
@@ -254,7 +254,7 @@ export default async function LocationPage() {
               { icon: "🛡️", text: "Assurance tous risques incluse" },
               { icon: "💰", text: "Dès 65€/nuit" },
               { icon: "⭐", text: `${placeStats.ratingDisplay}/5 sur ${placeStats.reviewCount} avis Google` },
-              { icon: "🔑", text: "Livraison possible à Biarritz" },
+              { icon: "📍", text: "Départ depuis Cambo-les-Bains" },
             ].map((item) => (
               <div key={item.text} className="flex items-center gap-2">
                 <span>{item.icon}</span>
@@ -376,7 +376,7 @@ export default async function LocationPage() {
             </h2>
             <p className="text-slate-500 text-lg max-w-xl mx-auto">
               Remise des clés à <strong>Cambo-les-Bains</strong> (64250) — à 15 min de Bayonne,
-              25 min de Biarritz. Livraison possible sur demande.
+              25 min de Biarritz.
             </p>
           </div>
           <div className="rounded-3xl overflow-hidden shadow-lg border border-slate-100">

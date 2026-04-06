@@ -393,7 +393,7 @@ export default async function LocationHossegorPage() {
         rows={[
           {
             label: "Récupération",
-            value: "Cambo-les-Bains (45 min) ou livraison Hossegor sur demande",
+            value: "Cambo-les-Bains (45 min de Hossegor)",
           },
           {
             label: "Bivouac",
