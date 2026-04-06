@@ -145,7 +145,7 @@ export default function ProposerVotreVanPage() {
               href={CTA_HREF}
               className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-sky-400 text-white font-semibold px-7 py-3.5 rounded-full hover:from-blue-600 hover:to-sky-500 transition-all shadow-lg shadow-blue-500/30 mb-4"
             >
-              Ajouter mon van gratuitement<span className="hidden sm:inline">, 2 minutes</span> <ArrowRight className="w-4 h-4 flex-shrink-0" />
+              Ajouter mon van gratuitement <ArrowRight className="w-4 h-4 flex-shrink-0" />
             </Link>
 
             {/* Sous-CTA */}
