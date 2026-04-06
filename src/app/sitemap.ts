@@ -73,7 +73,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .eq("status", "approved");
 
   const marketplaceVanPages: MetadataRoute.Sitemap = (marketplaceVans ?? []).map((van) => ({
-    url: `${BASE_URL}/location/${slugify(van.location_city)}/${van.id}`,
+    url: `${BASE_URL}/location/${slugify(van.location_city)}/${van.id.slice(0, 8)}`,
     lastModified: van.updated_at ? new Date(van.updated_at) : new Date(),
     changeFrequency: "weekly" as const,
     priority: 0.8,

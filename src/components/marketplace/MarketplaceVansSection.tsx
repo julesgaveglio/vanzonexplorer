@@ -55,7 +55,7 @@ export default async function MarketplaceVansSection() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
           {items.map((van) => {
             const citySlug = slugify(van.location_city);
-            const href = `/location/${citySlug}/${van.id}`;
+            const href = `/location/${citySlug}/${van.id.slice(0, 8)}`;
             return (
               <Link
                 key={van.id}

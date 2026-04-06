@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createSupabaseAnon } from "@/lib/supabase/server";
 import { slugify } from "@/lib/slugify";
+import Badge from "@/components/ui/Badge";
+import PriceDisplay from "@/components/van/PriceDisplay";
+import MarketplaceVanGallery from "@/components/marketplace/MarketplaceVanGallery";
 
 export const revalidate = 3600;
 
@@ -21,12 +25,17 @@ const EQUIPMENT_LABELS: Record<string, string> = {
   "regulateur": "Régulateur de vitesse",
 };
 
+const VAN_TYPE_LABELS: Record<string, string> = {
+  fourgon: "Fourgon aménagé", van: "Van", combi: "Combi",
+  "camping-car": "Camping-car", autre: "Autre",
+};
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const supabase = createSupabaseAnon();
   const { data: van } = await supabase
     .from("marketplace_vans")
     .select("title, location_city, price_per_day, description, photos")
-    .eq("id", params.vanId)
+    .ilike("id", `${params.vanId}%`)
     .eq("status", "approved")
     .single();
 
@@ -51,7 +60,7 @@ export default async function MarketplaceVanPage({ params }: Props) {
   const { data: van } = await supabase
     .from("marketplace_vans")
     .select("*")
-    .eq("id", params.vanId)
+    .ilike("id", `${params.vanId}%`)
     .eq("status", "approved")
     .single();
 
@@ -61,70 +70,163 @@ export default async function MarketplaceVanPage({ params }: Props) {
   const equipments: string[] = van.equipments ?? [];
 
   return (
-    <main className="min-h-screen bg-bg-primary">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-
-        {/* Breadcrumb */}
-        <nav className="text-sm text-slate-400 mb-6 flex items-center gap-2">
-          <a href="/" className="hover:text-blue-500 transition-colors">Accueil</a>
+    <>
+      {/* ── Breadcrumb ── */}
+      <div className="max-w-7xl mx-auto px-6 py-4">
+        <nav className="flex items-center gap-2 text-sm text-slate-400">
+          <Link href="/" className="hover:text-slate-600 transition-colors">Accueil</Link>
           <span>/</span>
-          <a href="/location" className="hover:text-blue-500 transition-colors">Location</a>
+          <Link href="/location" className="hover:text-slate-600 transition-colors">Location</Link>
           <span>/</span>
-          <span className="text-slate-600">{van.location_city}</span>
+          <span className="text-slate-600 font-medium">{van.location_city}</span>
+          <span>/</span>
+          <span className="text-slate-600 font-medium">{van.title}</span>
         </nav>
+      </div>
 
-        {/* Hero */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+      {/* ── Galerie ── */}
+      <div className="max-w-7xl mx-auto px-6 mb-8">
+        <MarketplaceVanGallery photos={photos} title={van.title} />
+      </div>
 
-          {/* Galerie */}
-          <div className="space-y-3">
-            {photos[0] && (
-              <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-slate-100">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={photos[0]} alt={van.title} className="w-full h-full object-cover" />
+      {/* ── Contenu 2 colonnes ── */}
+      <div className="max-w-7xl mx-auto px-6 pb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+
+          {/* ── GAUCHE (2/3) ── */}
+          <div className="lg:col-span-2 space-y-10">
+
+            {/* Titre + badges */}
+            <div>
+              <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-2">
+                {van.title}
+              </h1>
+              <p className="text-slate-500 text-lg mb-4">
+                {van.van_brand} {van.van_model}{van.van_year ? ` · ${van.van_year}` : ""}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {van.van_type && (
+                  <Badge variant="blue">{VAN_TYPE_LABELS[van.van_type] ?? van.van_type}</Badge>
+                )}
+                {van.van_brand && van.van_model && (
+                  <Badge>{van.van_brand} {van.van_model}</Badge>
+                )}
+                {van.van_year && <Badge>{van.van_year}</Badge>}
+                {van.sleeps && <Badge>🛏 {van.sleeps} couchage{van.sleeps > 1 ? "s" : ""}</Badge>}
+                {van.seats && <Badge>👤 {van.seats} places</Badge>}
+                {van.transmission && (
+                  <Badge>{van.transmission === "automatique" ? "⚙️ Automatique" : "⚙️ Manuelle"}</Badge>
+                )}
+                <Badge>
+                  <svg className="w-3.5 h-3.5 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  </svg>
+                  {van.location_city}{van.location_postal_code ? ` (${van.location_postal_code})` : ""}
+                </Badge>
+              </div>
+            </div>
+
+            {/* Description */}
+            {van.description && (
+              <div>
+                <h2 className="text-xl font-semibold text-slate-900 mb-4">Description</h2>
+                <div className="prose prose-slate max-w-none text-slate-600 leading-relaxed">
+                  {van.description.split("\n").map((line: string, i: number) =>
+                    line.trim() ? <p key={i}>{line}</p> : null
+                  )}
+                </div>
               </div>
             )}
-            {photos.length > 1 && (
-              <div className="grid grid-cols-3 gap-2">
-                {photos.slice(1, 4).map((url: string, i: number) => (
-                  <div key={i} className="aspect-[4/3] rounded-xl overflow-hidden bg-slate-100">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={url} alt={`Photo ${i + 2}`} className="w-full h-full object-cover" />
-                  </div>
-                ))}
+
+            {/* Équipements */}
+            {equipments.length > 0 && (
+              <div>
+                <h2 className="text-xl font-semibold text-slate-900 mb-4">Équipements</h2>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {equipments.map((eq: string) => (
+                    <div key={eq} className="flex items-center gap-2.5 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                      <span className="text-emerald-500 flex-shrink-0">✓</span>
+                      <span className="text-slate-700 text-sm font-medium">
+                        {EQUIPMENT_LABELS[eq] ?? eq}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
+
+            {/* Conditions */}
+            <div>
+              <h2 className="text-xl font-semibold text-slate-900 mb-4">Conditions</h2>
+              <ul className="space-y-2">
+                <li className="flex items-center gap-2 text-slate-600 text-sm">
+                  <span className="text-slate-400">•</span>
+                  Durée minimum : <span className="font-medium">{van.min_days} nuit{van.min_days > 1 ? "s" : ""}</span>
+                </li>
+                {van.deposit && (
+                  <li className="flex items-center gap-2 text-slate-600 text-sm">
+                    <span className="text-slate-400">•</span>
+                    Caution : <span className="font-medium">{van.deposit}€</span>
+                  </li>
+                )}
+                <li className="flex items-center gap-2 text-slate-600 text-sm">
+                  <span className="text-slate-400">•</span>
+                  Départ depuis : <span className="font-medium">{van.location_city}</span>
+                </li>
+              </ul>
+            </div>
           </div>
 
-          {/* Infos + CTA */}
-          <div className="flex flex-col">
-            <h1 className="text-3xl font-black text-slate-900 mb-2">{van.title}</h1>
-            <p className="text-slate-500 mb-1">
-              {van.van_brand} {van.van_model}{van.van_year ? ` · ${van.van_year}` : ""}
-            </p>
-            <p className="flex items-center gap-1.5 text-slate-500 mb-6">
-              <svg className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              {van.location_city}{van.location_postal_code ? ` (${van.location_postal_code})` : ""}
-            </p>
+          {/* ── DROITE (1/3) — Sticky sidebar ── */}
+          <div className="lg:col-span-1" id="reserver">
+            <div
+              className="glass-card p-6 sticky top-24 space-y-5"
+              style={{ boxShadow: "0 4px 24px rgba(0,0,0,0.08)" }}
+            >
+              {/* Prix */}
+              <PriceDisplay
+                startingPrice={van.price_per_day}
+                platform={van.booking_url ? new URL(van.booking_url).hostname.replace("www.", "") : "la plateforme"}
+                size="lg"
+              />
 
-            <div className="glass-card p-5 rounded-2xl mb-6">
-              <div className="flex items-end gap-2 mb-1">
-                <span className="text-4xl font-black text-slate-900">{van.price_per_day}€</span>
-                <span className="text-slate-400 mb-1">/jour</span>
+              {/* Infos rapides */}
+              <div className="space-y-2 text-sm text-slate-600 border-t border-border-default pt-4">
+                {van.van_type && (
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Type</span>
+                    <span className="font-medium">{VAN_TYPE_LABELS[van.van_type] ?? van.van_type}</span>
+                  </div>
+                )}
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Couchages</span>
+                  <span className="font-medium">{van.sleeps}</span>
+                </div>
+                {van.seats && (
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Places</span>
+                    <span className="font-medium">{van.seats}</span>
+                  </div>
+                )}
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Durée min.</span>
+                  <span className="font-medium">{van.min_days} nuit{van.min_days > 1 ? "s" : ""}</span>
+                </div>
+                {van.deposit && (
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Caution</span>
+                    <span className="font-medium">{van.deposit}€</span>
+                  </div>
+                )}
               </div>
-              <p className="text-sm text-slate-400 mb-4">
-                Durée minimum : {van.min_days} nuit{van.min_days > 1 ? "s" : ""}
-                {van.deposit ? ` · Caution : ${van.deposit}€` : ""}
-              </p>
+
+              {/* Bouton réservation */}
               {van.booking_url ? (
                 <a
                   href={van.booking_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="btn-primary w-full inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold text-white"
+                  className="btn-primary w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-bold text-white text-base"
                 >
                   Voir les disponibilités
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -132,65 +234,30 @@ export default async function MarketplaceVanPage({ params }: Props) {
                   </svg>
                 </a>
               ) : (
-                <p className="text-sm text-slate-400 text-center">Contactez le propriétaire pour réserver</p>
+                <p className="text-center text-sm text-slate-400 py-2">
+                  Contactez le propriétaire pour réserver
+                </p>
               )}
-            </div>
 
-            <div className="grid grid-cols-3 gap-3 text-sm">
-              <div className="glass-card p-3 rounded-xl text-center">
-                <div className="font-bold text-slate-900 text-lg">{van.sleeps}</div>
-                <div className="text-slate-400 text-xs">Couchages</div>
-              </div>
-              {van.seats && (
-                <div className="glass-card p-3 rounded-xl text-center">
-                  <div className="font-bold text-slate-900 text-lg">{van.seats}</div>
-                  <div className="text-slate-400 text-xs">Places</div>
+              {/* Reassurance */}
+              <div className="bg-slate-50 rounded-xl p-3 space-y-1.5 text-xs text-slate-500">
+                <div className="flex items-center gap-2">
+                  <span>🔒</span>
+                  <span>Propriétaire vérifié par Vanzon Explorer</span>
                 </div>
-              )}
-              <div className="glass-card p-3 rounded-xl text-center">
-                <div className="font-bold text-slate-900 text-lg capitalize">{(van.transmission ?? "man").slice(0, 3)}</div>
-                <div className="text-slate-400 text-xs">Boîte</div>
+                <div className="flex items-center gap-2">
+                  <span>📍</span>
+                  <span>Remise en main propre à {van.location_city}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span>💬</span>
+                  <span>Questions ? <Link href="/contact" className="underline decoration-dotted">Contactez-nous</Link></span>
+                </div>
               </div>
             </div>
           </div>
         </div>
-
-        {/* Description */}
-        {van.description && (
-          <section className="glass-card rounded-2xl p-6 mb-6">
-            <h2 className="font-bold text-slate-900 text-lg mb-3">Description</h2>
-            <p className="text-slate-600 leading-relaxed whitespace-pre-wrap">{van.description}</p>
-          </section>
-        )}
-
-        {/* Équipements */}
-        {equipments.length > 0 && (
-          <section className="glass-card rounded-2xl p-6 mb-6">
-            <h2 className="font-bold text-slate-900 text-lg mb-4">Équipements</h2>
-            <div className="flex flex-wrap gap-2">
-              {equipments.map((eq: string) => (
-                <span key={eq} className="px-3 py-1.5 bg-slate-100 text-slate-700 rounded-xl text-sm font-medium">
-                  {EQUIPMENT_LABELS[eq] ?? eq}
-                </span>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* CTA bas de page */}
-        {van.booking_url && (
-          <div className="text-center py-8">
-            <a
-              href={van.booking_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-primary inline-flex items-center gap-2 px-8 py-4 rounded-2xl font-bold text-white text-lg"
-            >
-              Réserver ce van
-            </a>
-          </div>
-        )}
       </div>
-    </main>
+    </>
   );
 }
