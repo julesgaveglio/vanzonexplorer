@@ -72,7 +72,11 @@ export default function MarketplaceDetailClient({ van }: { van: any }) {
             </span>
           </div>
           <p className="text-slate-500">
-            {van.van_brand} {van.van_model} {van.van_year ? `(${van.van_year})` : ""} · Soumis le{" "}
+            {van.van_brand} {van.van_model} {van.van_year ? `(${van.van_year})` : ""}
+            {van.location_city ? (
+              <> · <span className="font-medium text-slate-700">📍 {van.location_city}{van.location_postal_code ? ` (${van.location_postal_code})` : ""}</span></>
+            ) : null}
+            {" · "}Soumis le{" "}
             {new Date(van.created_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
           </p>
         </div>
