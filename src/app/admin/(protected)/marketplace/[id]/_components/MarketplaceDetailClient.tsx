@@ -148,6 +148,21 @@ export default function MarketplaceDetailClient({ van }: { van: any }) {
                 <a href={`tel:${van.owner_phone}`} className="text-blue-600 hover:underline">{van.owner_phone}</a>
               </p>
             </div>
+            <div className="col-span-2">
+              <span className="text-slate-400">Lien de réservation (plateforme du proprio)</span>
+              {van.booking_url ? (
+                <p className="font-medium mt-0.5">
+                  <a href={van.booking_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all flex items-center gap-1.5">
+                    <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                    </svg>
+                    {van.booking_url}
+                  </a>
+                </p>
+              ) : (
+                <p className="text-amber-600 text-sm font-medium mt-0.5">⚠️ Non renseigné — relancer le propriétaire</p>
+              )}
+            </div>
           </div>
         </section>
 
