@@ -101,11 +101,11 @@ export default function MarketplaceVanGallery({ photos, title }: MarketplaceVanG
           </div>
         </button>
 
-        {/* Colonne droite : 2 images empilées */}
-        <div className="flex flex-col gap-3">
+        {/* Colonne droite : 2 images exactement à 50% chacune */}
+        <div className="grid grid-rows-2 gap-3 h-full">
           <button
             onClick={() => openLightbox(1 % photos.length)}
-            className="relative flex-1 overflow-hidden group"
+            className="relative overflow-hidden group"
             aria-label="Photo 2"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -115,7 +115,7 @@ export default function MarketplaceVanGallery({ photos, title }: MarketplaceVanG
 
           <button
             onClick={() => openLightbox(2 % photos.length)}
-            className="relative flex-1 overflow-hidden group"
+            className="relative overflow-hidden group"
             aria-label="Voir toutes les photos"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
