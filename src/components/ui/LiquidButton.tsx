@@ -36,6 +36,12 @@ const VARIANTS = {
     glow: "0 2px 12px rgba(0,0,0,0.08)",
     textColor: "text-slate-900",
   },
+  // Wikicampers orange
+  orange: {
+    gradient: "linear-gradient(135deg, #F97316 0%, #FB923C 100%)",
+    glow: "0 4px 18px rgba(249, 115, 22, 0.50), 0 1px 4px rgba(251, 146, 60, 0.30)",
+    textColor: "text-white",
+  },
   // backwards-compat alias
   primary: {
     gradient: "linear-gradient(135deg, #3B82F6 0%, #0EA5E9 100%)",
@@ -109,7 +115,7 @@ export default function LiquidButton({
 
   const palette = VARIANTS[variant];
   const sizeClass = SIZE_CLASSES[size];
-  const scale = pressed ? 0.97 : hovered && !fullWidth ? 1.07 : 1;
+  const scale = pressed ? 0.97 : hovered ? 1.03 : 1;
   // fullWidth (cartes fond blanc) : pas de glow externe → pas de contour fantôme
   const currentGlow = pressed ? "none" : (fullWidth ? "none" : palette.glow);
   const glowPulseClass = !pressed && !hovered && !fullWidth ? "liquid-cta-glow-pulse" : "";

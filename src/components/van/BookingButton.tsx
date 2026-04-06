@@ -17,7 +17,7 @@ export default function BookingButton({
     <div className="flex flex-col gap-3">
       {/* Bouton Yescapa — rose officiel */}
       <LiquidButton
-        variant="rose"
+        variant={platform.toLowerCase().includes("wikicampers") ? "orange" : "rose"}
         size="md"
         href={url}
         external
