@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { parseBookingUrls, detectPlatform } from "@/lib/booking-urls";
 
 const STATUS_CONFIG = {
   pending: { label: "En attente", bg: "bg-amber-100", text: "text-amber-700" },
@@ -142,19 +143,27 @@ export default function MarketplaceDetailClient({ van }: { van: any }) {
               </p>
             </div>
             <div className="col-span-2">
-              <span className="text-slate-400">Lien de réservation (plateforme du proprio)</span>
-              {van.booking_url ? (
-                <p className="font-medium mt-0.5">
-                  <a href={van.booking_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all flex items-center gap-1.5">
-                    <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-                    </svg>
-                    {van.booking_url}
-                  </a>
-                </p>
-              ) : (
-                <p className="text-amber-600 text-sm font-medium mt-0.5">⚠️ Non renseigné — relancer le propriétaire</p>
-              )}
+              <span className="text-slate-400">Liens de réservation (plateformes du proprio)</span>
+              {(() => {
+                const urls = parseBookingUrls(van.booking_url);
+                if (urls.length === 0) {
+                  return <p className="text-amber-600 text-sm font-medium mt-0.5">⚠️ Non renseigné — relancer le propriétaire</p>;
+                }
+                return (
+                  <div className="space-y-1.5 mt-0.5">
+                    {urls.map((url) => (
+                      <p key={url} className="font-medium">
+                        <a href={url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all flex items-center gap-1.5">
+                          <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                          </svg>
+                          <span className="text-slate-400 text-xs">[{detectPlatform(url)}]</span> {url}
+                        </a>
+                      </p>
+                    ))}
+                  </div>
+                );
+              })()}
             </div>
           </div>
         </section>
@@ -261,16 +270,24 @@ export default function MarketplaceDetailClient({ van }: { van: any }) {
               <p className="font-medium text-slate-800">{van.location_city}</p>
             </div>
           </div>
-          {van.booking_url && (
-            <div className="mt-4 pt-4 border-t border-slate-100">
-              <span className="text-slate-400 text-sm">Lien de réservation</span>
-              <p>
-                <a href={van.booking_url} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline break-all">
-                  {van.booking_url}
-                </a>
-              </p>
-            </div>
-          )}
+          {(() => {
+            const urls = parseBookingUrls(van.booking_url);
+            if (urls.length === 0) return null;
+            return (
+              <div className="mt-4 pt-4 border-t border-slate-100">
+                <span className="text-slate-400 text-sm">Liens de réservation</span>
+                <div className="space-y-1 mt-1">
+                  {urls.map((url) => (
+                    <p key={url}>
+                      <a href={url} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline break-all">
+                        [{detectPlatform(url)}] {url}
+                      </a>
+                    </p>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
         </section>
 
         {/* Notes admin */}

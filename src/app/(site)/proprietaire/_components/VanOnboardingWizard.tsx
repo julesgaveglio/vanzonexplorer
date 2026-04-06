@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { serializeBookingUrls } from "@/lib/booking-urls";
 import WizardProgressBar from "./WizardProgressBar";
 import StepOwner from "./steps/StepOwner";
 import StepVehicle from "./steps/StepVehicle";
@@ -49,7 +50,11 @@ export const wizardSchema = z.object({
   location_address: z.string().optional(),
   location_postal_code: z.string().optional(),
   location_city: z.string().min(2, "Ville requise"),
-  booking_url: z.string().url("Lien invalide").or(z.literal("")),
+  booking_urls: z
+    .array(z.object({ url: z.string().url("Lien invalide").or(z.literal("")) }))
+    .refine((urls) => urls.some((u) => u.url.trim() !== ""), {
+      message: "Au moins un lien de réservation est requis",
+    }),
 });
 
 export type WizardFormData = z.infer<typeof wizardSchema>;
@@ -58,7 +63,7 @@ const STEP_FIELDS: (keyof WizardFormData)[][] = [
   ["owner_first_name", "owner_last_name", "owner_email", "owner_phone"],
   ["van_type", "van_brand", "van_model", "sleeps", "transmission", "equipments"],
   ["title", "description", "photo_exterior_front", "photo_interior", "photo_sleeping"],
-  ["price_per_day", "min_days", "location_city"],
+  ["price_per_day", "min_days", "location_city", "booking_urls"],
 ];
 
 export default function VanOnboardingWizard() {
@@ -82,7 +87,7 @@ export default function VanOnboardingWizard() {
       photo_bathroom: "",
       photo_detail: "",
       min_days: 2,
-      booking_url: "",
+      booking_urls: [{ url: "" }],
     },
     mode: "onTouched",
   });
@@ -174,7 +179,7 @@ export default function VanOnboardingWizard() {
         location_address: data.location_address || undefined,
         location_postal_code: data.location_postal_code || undefined,
         location_city: data.location_city,
-        booking_url: data.booking_url || "",
+        booking_url: serializeBookingUrls(data.booking_urls.map((u) => u.url)) ?? "",
       };
 
       const res = await fetch("/api/marketplace/submit", {

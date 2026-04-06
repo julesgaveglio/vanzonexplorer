@@ -8,6 +8,7 @@ import PriceDisplay from "@/components/van/PriceDisplay";
 import BookingButton from "@/components/van/BookingButton";
 import YescapaReassurance from "@/components/van/YescapaReassurance";
 import MarketplaceVanGallery from "@/components/marketplace/MarketplaceVanGallery";
+import { parseBookingUrls, detectPlatform } from "@/lib/booking-urls";
 
 export const revalidate = 3600;
 
@@ -171,60 +172,76 @@ export default async function MarketplaceVanPage({ params }: Props) {
               style={{ boxShadow: "0 4px 24px rgba(0,0,0,0.08)" }}
             >
               {/* Prix */}
-              <PriceDisplay
-                startingPrice={van.price_per_day}
-                platform={van.booking_url ? (() => { try { return new URL(van.booking_url).hostname.replace("www.", ""); } catch { return "la plateforme"; } })() : "la plateforme"}
-                size="lg"
-              />
+              {(() => {
+                const bookingUrls = parseBookingUrls(van.booking_url);
+                const primaryUrl = bookingUrls[0];
+                const primaryPlatform = primaryUrl ? detectPlatform(primaryUrl) : "la plateforme";
+                const hasYescapa = bookingUrls.some((u) => u.includes("yescapa"));
 
-              {/* Infos rapides */}
-              <div className="space-y-2 text-sm text-slate-600 border-t border-border-default pt-4">
-                {van.van_type && (
-                  <div className="flex justify-between">
-                    <span className="text-slate-400">Type</span>
-                    <span className="font-medium">{VAN_TYPE_LABELS[van.van_type] ?? van.van_type}</span>
-                  </div>
-                )}
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Couchages</span>
-                  <span className="font-medium">{van.sleeps}</span>
-                </div>
-                {van.seats && (
-                  <div className="flex justify-between">
-                    <span className="text-slate-400">Places</span>
-                    <span className="font-medium">{van.seats}</span>
-                  </div>
-                )}
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Durée min.</span>
-                  <span className="font-medium">{van.min_days} nuit{van.min_days > 1 ? "s" : ""}</span>
-                </div>
-                {van.deposit && (
-                  <div className="flex justify-between">
-                    <span className="text-slate-400">Caution</span>
-                    <span className="font-medium">{van.deposit}€</span>
-                  </div>
-                )}
-              </div>
+                return (
+                  <>
+                    <PriceDisplay
+                      startingPrice={van.price_per_day}
+                      platform={primaryPlatform}
+                      size="lg"
+                    />
 
-              {/* Bouton réservation */}
-              {van.booking_url ? (
-                <BookingButton
-                  url={van.booking_url}
-                  platform={van.booking_url.includes("yescapa") ? "Yescapa" : van.booking_url.includes("wikicampers") ? "Wikicampers" : "la plateforme"}
-                  insuranceIncluded={van.booking_url.includes("yescapa")}
-                />
-              ) : (
-                <a
-                  href="/contact"
-                  className="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-bold text-slate-700 text-base bg-slate-100 hover:bg-slate-200 transition-colors"
-                >
-                  Contacter le propriétaire
-                </a>
-              )}
+                    {/* Infos rapides */}
+                    <div className="space-y-2 text-sm text-slate-600 border-t border-border-default pt-4">
+                      {van.van_type && (
+                        <div className="flex justify-between">
+                          <span className="text-slate-400">Type</span>
+                          <span className="font-medium">{VAN_TYPE_LABELS[van.van_type] ?? van.van_type}</span>
+                        </div>
+                      )}
+                      <div className="flex justify-between">
+                        <span className="text-slate-400">Couchages</span>
+                        <span className="font-medium">{van.sleeps}</span>
+                      </div>
+                      {van.seats && (
+                        <div className="flex justify-between">
+                          <span className="text-slate-400">Places</span>
+                          <span className="font-medium">{van.seats}</span>
+                        </div>
+                      )}
+                      <div className="flex justify-between">
+                        <span className="text-slate-400">Durée min.</span>
+                        <span className="font-medium">{van.min_days} nuit{van.min_days > 1 ? "s" : ""}</span>
+                      </div>
+                      {van.deposit && (
+                        <div className="flex justify-between">
+                          <span className="text-slate-400">Caution</span>
+                          <span className="font-medium">{van.deposit}€</span>
+                        </div>
+                      )}
+                    </div>
 
-              {/* Reassurance Yescapa si applicable */}
-              {van.booking_url?.includes("yescapa") && <YescapaReassurance />}
+                    {/* Boutons réservation — un par plateforme */}
+                    {bookingUrls.length > 0 ? (
+                      <div className="space-y-2.5">
+                        {bookingUrls.map((url) => (
+                          <BookingButton
+                            key={url}
+                            url={url}
+                            platform={detectPlatform(url)}
+                            insuranceIncluded={url.includes("yescapa")}
+                          />
+                        ))}
+                      </div>
+                    ) : (
+                      <a
+                        href="/contact"
+                        className="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-bold text-slate-700 text-base bg-slate-100 hover:bg-slate-200 transition-colors"
+                      >
+                        Contacter le propriétaire
+                      </a>
+                    )}
+
+                    {/* Reassurance Yescapa si applicable */}
+                    {hasYescapa && <YescapaReassurance />}
+                  </>
+                );
+              })()}
             </div>
           </div>
         </div>

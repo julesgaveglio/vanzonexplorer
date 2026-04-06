@@ -5,6 +5,7 @@ import { useUser, SignOutButton } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
 import { EQUIPMENT_LABELS } from "@/lib/equipment-labels";
+import { parseBookingUrls, serializeBookingUrls } from "@/lib/booking-urls";
 
 /* ─── Types ─────────────────────────────────────────────────────────────── */
 
@@ -228,7 +229,10 @@ function VanEditForm({
   const [pricePerDay, setPricePerDay] = useState(van.price_per_day);
   const [minDays, setMinDays] = useState(van.min_days);
   const [deposit, setDeposit] = useState(van.deposit ?? 0);
-  const [bookingUrl, setBookingUrl] = useState(van.booking_url ?? "");
+  const [bookingUrls, setBookingUrls] = useState<string[]>(() => {
+    const parsed = parseBookingUrls(van.booking_url);
+    return parsed.length > 0 ? parsed : [""];
+  });
   const [locationCity, setLocationCity] = useState(van.location_city);
   const [locationPostalCode, setLocationPostalCode] = useState(van.location_postal_code ?? "");
 
@@ -268,7 +272,7 @@ function VanEditForm({
           price_per_day: pricePerDay,
           min_days: minDays,
           deposit: deposit || null,
-          booking_url: bookingUrl || null,
+          booking_url: serializeBookingUrls(bookingUrls),
           location_city: locationCity,
           location_postal_code: locationPostalCode || null,
         }),
@@ -289,7 +293,7 @@ function VanEditForm({
           price_per_day: pricePerDay,
           min_days: minDays,
           deposit: deposit || null,
-          booking_url: bookingUrl || null,
+          booking_url: serializeBookingUrls(bookingUrls),
           location_city: locationCity,
           location_postal_code: locationPostalCode || null,
         });
@@ -487,22 +491,54 @@ function VanEditForm({
           </div>
         </section>
 
-        {/* Lien de réservation */}
+        {/* Liens de réservation */}
         <section className="bg-white rounded-2xl border border-slate-100 p-6">
           <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-purple-500" />
-            Lien de réservation
+            Liens de réservation
+            <span className="text-red-500 text-sm">*</span>
           </h3>
           <p className="text-sm text-slate-500 mb-3">
-            Lien vers votre plateforme de réservation (Yescapa, Wikicampers, site personnel, etc.)
+            Ajoutez tous vos canaux de location (Yescapa, Wikicampers, Leboncoin, site personnel, etc.)
           </p>
-          <input
-            type="url"
-            value={bookingUrl}
-            onChange={(e) => setBookingUrl(e.target.value)}
-            placeholder="https://www.yescapa.fr/campers/..."
-            className={inputCls}
-          />
+          <div className="space-y-2.5">
+            {bookingUrls.map((url, index) => (
+              <div key={index} className="flex gap-2">
+                <input
+                  type="url"
+                  value={url}
+                  onChange={(e) => {
+                    const updated = [...bookingUrls];
+                    updated[index] = e.target.value;
+                    setBookingUrls(updated);
+                  }}
+                  placeholder={index === 0 ? "https://www.yescapa.fr/campers/..." : "https://www.leboncoin.fr/... ou autre"}
+                  className={inputCls + " flex-1"}
+                />
+                {bookingUrls.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => setBookingUrls((prev) => prev.filter((_, i) => i !== index))}
+                    className="flex-shrink-0 w-10 h-[46px] rounded-xl border border-slate-200 flex items-center justify-center text-slate-400 hover:text-red-500 hover:border-red-200 hover:bg-red-50 transition-colors"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={() => setBookingUrls((prev) => [...prev, ""])}
+            className="mt-2.5 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold text-[#4D5FEC] bg-blue-50 hover:bg-blue-100 transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            Ajouter un autre lien
+          </button>
         </section>
 
         {/* Localisation */}

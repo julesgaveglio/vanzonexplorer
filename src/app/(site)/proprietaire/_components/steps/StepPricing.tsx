@@ -1,12 +1,17 @@
 "use client";
 
-import { useFormContext } from "react-hook-form";
+import { useFormContext, useFieldArray } from "react-hook-form";
 
 const inputCls =
   "w-full bg-white/75 border border-slate-200 rounded-xl px-4 py-3 text-text-primary placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-blue-400 transition-all";
 
 export default function StepPricing() {
-  const { register, formState: { errors } } = useFormContext();
+  const { register, formState: { errors }, control } = useFormContext();
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "booking_urls",
+  });
 
   return (
     <div className="space-y-5">
@@ -124,24 +129,79 @@ export default function StepPricing() {
         </div>
       </div>
 
-      {/* Lien annonce */}
-      <div>
-        <label htmlFor="booking_url" className="block text-sm font-medium text-text-secondary mb-1.5">
-          Lien vers votre annonce
-        </label>
-        <input
-          id="booking_url"
-          type="url"
-          placeholder="https://www.yescapa.fr/... ou leboncoin.fr/... ou tout autre lien"
-          className={inputCls}
-          {...register("booking_url")}
-        />
-        {errors.booking_url && (
-          <p className="text-red-500 text-sm mt-1">{errors.booking_url.message as string}</p>
-        )}
-        <p className="text-xs text-slate-400 mt-1">
-          Facultatif — les visiteurs seront redirigés vers ce lien pour réserver votre van
+      {/* Liens d'annonces — multi */}
+      <div className="pt-1">
+        <div className="flex items-center gap-2 mb-1">
+          <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
+            Liens vers vos annonces
+          </p>
+          <span className="text-red-500 text-sm font-bold">*</span>
+        </div>
+        <p className="text-xs text-slate-400 mb-3">
+          Minimum 1 lien requis — ajoutez tous vos canaux de location (Yescapa, Wikicampers, Leboncoin, etc.)
         </p>
+
+        <div className="space-y-2.5">
+          {fields.map((field, index) => (
+            <div key={field.id} className="flex gap-2">
+              <div className="flex-1">
+                <input
+                  type="url"
+                  placeholder={
+                    index === 0
+                      ? "https://www.yescapa.fr/campers/..."
+                      : "https://www.leboncoin.fr/... ou autre plateforme"
+                  }
+                  className={inputCls}
+                  {...register(`booking_urls.${index}.url`)}
+                />
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                {(errors.booking_urls as any)?.[index]?.url && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                    {(errors.booking_urls as any)[index].url.message as string}
+                  </p>
+                )}
+              </div>
+              {fields.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => remove(index)}
+                  className="flex-shrink-0 w-10 h-[46px] rounded-xl border border-slate-200 flex items-center justify-center text-slate-400 hover:text-red-500 hover:border-red-200 hover:bg-red-50 transition-colors"
+                  aria-label="Supprimer ce lien"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+        {(errors.booking_urls as any)?.root?.message && (
+          <p className="text-red-500 text-sm mt-1">
+            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+            {(errors.booking_urls as any).root.message as string}
+          </p>
+        )}
+        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+        {typeof (errors.booking_urls as any)?.message === "string" && (
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          <p className="text-red-500 text-sm mt-1">{(errors.booking_urls as any).message as string}</p>
+        )}
+
+        <button
+          type="button"
+          onClick={() => append({ url: "" })}
+          className="mt-2.5 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold text-[#4D5FEC] bg-blue-50 hover:bg-blue-100 transition-colors"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          </svg>
+          Ajouter un autre lien
+        </button>
       </div>
     </div>
   );
