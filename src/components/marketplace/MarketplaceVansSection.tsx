@@ -32,10 +32,7 @@ export default async function MarketplaceVansSection() {
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex items-end justify-between mb-10">
           <div>
-            <span className="badge-glass !px-4 !py-1.5 text-sm font-semibold mb-4 inline-block text-accent-blue">
-              🚐 Plateforme nationale
-            </span>
-            <h2 className="text-3xl md:text-4xl font-black text-slate-900">
+<h2 className="text-3xl md:text-4xl font-black text-slate-900">
               Vans disponibles en France
             </h2>
             <p className="text-slate-500 mt-2">
