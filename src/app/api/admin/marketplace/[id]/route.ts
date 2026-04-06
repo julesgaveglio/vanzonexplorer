@@ -43,7 +43,7 @@ export async function PATCH(
     // Revalider la page van individuelle si on connaît la ville
     if (van?.location_city) {
       const citySlug = slugify(van.location_city);
-      revalidatePath(`/location/${citySlug}/${id.slice(0, 8)}`);
+      revalidatePath(`/location/${citySlug}/${id}`);
     }
   }
 
