@@ -3,8 +3,6 @@ import { sanityFetch } from "@/lib/sanity/client";
 import { getAllVanSlugsQuery, getAllArticleSlugsQuery, getAllRoadTripArticleSlugsQuery } from "@/lib/sanity/queries";
 import { VANS } from "@/lib/data/vans";
 
-const ROAD_TRIP_REGIONS = ["pays-basque", "bretagne", "provence", "camargue", "alsace", "dordogne", "corse", "normandie", "ardeche", "pyrenees", "loire", "jura", "vercors", "cotentin", "landes"];
-
 const BASE_URL = "https://vanzonexplorer.com";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
