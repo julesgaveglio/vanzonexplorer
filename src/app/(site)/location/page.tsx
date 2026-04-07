@@ -254,7 +254,6 @@ export default async function LocationPage() {
               { icon: "🛡️", text: "Assurance tous risques incluse" },
               { icon: "💰", text: "Dès 65€/nuit" },
               { icon: "⭐", text: `${placeStats.ratingDisplay}/5 sur ${placeStats.reviewCount} avis Google` },
-              { icon: "📍", text: "Départ depuis Cambo-les-Bains" },
             ].map((item) => (
               <div key={item.text} className="flex items-center gap-2">
                 <span>{item.icon}</span>
