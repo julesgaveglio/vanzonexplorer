@@ -45,14 +45,19 @@ Raisonnement : "Acheter un van" concerne une minorité de visiteurs et sera acce
 
 ### 2. MarketplaceVansSection — filtre région + badge
 
-**Titre de section :** Passer à `"Vans disponibles partout en France"` (ou similaire).
+**Titre de section :** `"Vans disponibles en France"` (déjà présent dans le composant — aucun changement).
 
-**Filtre région :** Ajouter des pills de filtre au-dessus de la grille :
-- `Tous | Pays Basque | Bretagne | Provence | ...`
-- Les régions disponibles sont générées dynamiquement selon les vans présents en base
-- Si aucun van dans une région, la pill n'apparaît pas
+**Filtre région :** Ajouter des pills de filtre au-dessus de la grille. Le composant charge deux sources :
+- **Vans officiels Vanzon** (Sanity, `getAllLocationVansQuery`) → toujours Pays Basque
+- **Vans marketplace** (Supabase `marketplace_vans`, champ `location_city`) → source pour les autres régions
 
-**Badge vans Vanzon :** Les vans de Jules (Yoni, Xalbat) reçoivent un badge `★ Van Vanzon` pour se distinguer visuellement des vans de propriétaires externes.
+Les pills sont générées dynamiquement depuis les valeurs uniques de `location_city` dans Supabase + "Pays Basque" fixe pour les vans Sanity. Format : `Tous | Pays Basque | [autres villes/régions]`. Si une région n'a qu'un van en `status = "approved"`, la pill apparaît quand même.
+
+Le filtre est côté client (state React) — `MarketplaceVansSection` devra devenir un Client Component ou être découpé en un wrapper client + données serveur passées en props.
+
+**Badge vans Vanzon :** Tout van provenant de `officialVans` (Sanity) reçoit le badge `★ Van Vanzon`. La séparation est déjà propre dans le code (deux tableaux distincts). Aucune logique d'identification par nom — si c'est dans Sanity, c'est un van Vanzon.
+
+**Mobile :** Le filtre en pills passe en scroll horizontal sur mobile (`overflow-x-auto`, une ligne).
 
 ---
 
@@ -65,7 +70,7 @@ Raisonnement : "Acheter un van" concerne une minorité de visiteurs et sera acce
 - Sous-titre : "Votre van, une page dédiée, visible par des milliers de voyageurs. 0% de commission pendant la phase de lancement."
 - CTA : "Référencer mon van →" → `/proprietaire`
 
-**Design :** Section courte, sobre (pas de fond plein, intégrée dans le flow). Pas d'image obligatoire — du texte et un bouton suffisent.
+**Design :** Section courte, sobre (pas de fond plein, intégrée dans le flow). Pas d'image obligatoire — du texte et un bouton suffisent. Sur mobile : layout full-width, texte centré, bouton full-width.
 
 ---
 
