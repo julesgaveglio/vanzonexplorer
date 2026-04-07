@@ -9,10 +9,11 @@ export interface TerminalLine {
 }
 
 export function RoadTripTerminal({ lines }: { lines: TerminalLine[] }) {
-  const bottomRef = useRef<HTMLDivElement>(null)
+  const bodyRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+    const el = bodyRef.current
+    if (el) el.scrollTop = el.scrollHeight
   }, [lines])
 
   return (
@@ -36,7 +37,7 @@ export function RoadTripTerminal({ lines }: { lines: TerminalLine[] }) {
       </div>
 
       {/* Body */}
-      <div className="px-5 py-5 space-y-2.5" style={{ maxHeight: 320, overflowY: 'auto' }}>
+      <div ref={bodyRef} className="px-5 py-5 space-y-2.5" style={{ maxHeight: 320, overflowY: 'auto' }}>
         <div className="text-xs mb-4 text-slate-600">
           $ vanzon generate --personalized
         </div>
@@ -54,7 +55,6 @@ export function RoadTripTerminal({ lines }: { lines: TerminalLine[] }) {
             <ActiveLine key={line.id} text={line.text} />
           )
         )}
-        <div ref={bottomRef} />
       </div>
     </div>
   )
