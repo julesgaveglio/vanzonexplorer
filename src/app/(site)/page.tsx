@@ -4,6 +4,7 @@ import Link from "next/link";
 import { getGooglePlaceStats } from "@/lib/google-places";
 import OtherServices from "@/components/ui/OtherServices";
 import MarketplaceVansSection from "@/components/marketplace/MarketplaceVansSection";
+import ProprietaireCTA from "@/components/homepage/ProprietaireCTA";
 import RoadTripCTA from "@/components/ui/RoadTripCTA";
 import LiquidButton from "@/components/ui/LiquidButton";
 
@@ -120,7 +121,7 @@ export default async function HomePage() {
             </h1>
 
             <p className="text-lg sm:text-xl text-white/75 leading-relaxed mb-10 max-w-xl">
-              Location, achat de vans aménagés au Pays Basque, et formation Van Business Academy partout en France.
+              Louez un van aménagé partout en France. Dès 65€/nuit, assurance incluse.
             </p>
 
             <div className="flex flex-col sm:flex-row sm:items-center gap-3">
@@ -130,8 +131,8 @@ export default async function HomePage() {
                 </LiquidButton>
               </div>
               <div className="flex w-full sm:w-auto">
-                <LiquidButton href="/achat" variant="slate" size="responsive" shineDelay={1.9} fullWidth>
-                  Acheter un van →
+                <LiquidButton href="/proprietaire" variant="slate" size="responsive" shineDelay={1.9} fullWidth>
+                  Proposer mon van →
                 </LiquidButton>
               </div>
             </div>
@@ -178,6 +179,7 @@ export default async function HomePage() {
 
 
       <MarketplaceVansSection />
+      <ProprietaireCTA />
 
       <section className="py-20 bg-white overflow-hidden">
         <div className="max-w-7xl mx-auto px-6">
