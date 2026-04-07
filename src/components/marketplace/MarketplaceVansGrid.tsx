@@ -89,12 +89,7 @@ export default function MarketplaceVansGrid({
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
         {filteredOfficial.map((van) => (
-          <div key={van._id} className="relative">
-            <VanCard van={van} mode="location" />
-            <span className="absolute top-3 left-3 z-10 bg-slate-900/80 backdrop-blur-sm text-white text-xs font-bold px-2.5 py-1 rounded-full pointer-events-none">
-              ★ Van Vanzon
-            </span>
-          </div>
+          <VanCard key={van._id} van={van} mode="location" />
         ))}
         {filteredMarketplace.map((van) => (
           <MarketplaceVanCard
