@@ -499,12 +499,12 @@ export default async function LocationSaintJeanDeLuzPage() {
               Réserver Yoni — Yescapa
             </a>
             <a
-              href="https://www.yescapa.fr/campers/98869"
+              href="https://www.wikicampers.com/rental/fourgon/cambo-les-bains/renault-vanzon-explorer-trafic-iii/380874"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-md border border-white/30 text-white font-bold px-10 py-5 rounded-2xl hover:bg-white/20 transition-colors text-lg"
             >
-              Réserver Xalbat — Yescapa
+              Réserver Xalbat — Wikicampers
             </a>
           </div>
           <p className="text-white/40 text-sm mt-6">
