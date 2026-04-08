@@ -20,7 +20,7 @@
     "id": "backlinks-daily-outreach",
     "name": "Agent Backlinks Daily Outreach",
     "emoji": "🎯",
-    "status": "active",
+    "status": "paused",
     "description": "Mar-Ven à 9h30 Paris : 4 phases automatiques. (1) Détecte les réponses Gmail et analyse le sentiment via Groq (positif→obtenu, négatif→rejeté). (2) Relance automatique J+4 dans le même thread Gmail. (3) Contacte 5 nouveaux prospects/jour (discovery email Jina+Hunter+ZeroBounce, email personnalisé Groq, envoi Gmail API). (4) Applique le label BACKLINKS sur chaque email envoyé. Notification Telegram récap.",
     "trigger": "cron",
     "schedule": "Mardi-Vendredi à 9h30 Paris (7h30 UTC)",

@@ -1,8 +1,8 @@
 name: Backlinks Daily Outreach
 
 on:
-  schedule:
-    - cron: '30 7 * * 2-5'  # Mardi-Vendredi à 9h30 Paris (7h30 UTC)
+  # schedule:
+  #   - cron: '30 7 * * 2-5'  # Mardi-Vendredi à 9h30 Paris (7h30 UTC) — DÉSACTIVÉ TEMPORAIREMENT
   workflow_dispatch:
 
 jobs:
