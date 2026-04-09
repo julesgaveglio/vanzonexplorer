@@ -4,6 +4,7 @@ import CostKpiBar from "./_components/CostKpiBar";
 import CostChart from "./_components/CostChart";
 import UnifiedCostTable, { type UnifiedEntry, type ToolCost } from "./_components/UnifiedCostTable";
 import DfsCallsTable, { type DfsLogRow } from "./_components/DfsCallsTable";
+import { AdminPageHeader } from "@/app/admin/_components/ui";
 
 export const metadata: Metadata = {
   title: "Coûts — Vanzon Admin",
@@ -280,13 +281,11 @@ export default async function AdminCostsPage() {
   const timeSeriesMonthly = data?.timeSeriesMonthly ?? [];
 
   return (
-    <div className="p-4 md:p-8">
-      {/* Header */}
-      <div className="mb-6 md:mb-8">
-        <p className="text-slate-400 text-sm font-medium mb-1">Administration</p>
-        <h1 className="text-2xl md:text-3xl font-black text-slate-900">Coûts</h1>
-        <p className="text-slate-500 mt-1">Suivi des dépenses par outil — agents, road trips, APIs</p>
-      </div>
+    <div className="p-4 md:p-6 lg:p-8">
+      <AdminPageHeader
+        title="Coûts"
+        subtitle="Suivi des dépenses par outil — agents, road trips, APIs"
+      />
 
       {/* KPIs */}
       <CostKpiBar kpis={kpis} />
