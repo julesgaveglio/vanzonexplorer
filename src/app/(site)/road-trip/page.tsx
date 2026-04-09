@@ -7,6 +7,13 @@ import RoadTripCatalogClient from "./_components/RoadTripCatalogClient";
 export const metadata: Metadata = {
   title: "Road Trips en Van en France — Itinéraires par Région",
   description: "Découvrez nos road trips en van aménagé à travers la France : Pays Basque, Bretagne, Provence, Corse... Itinéraires détaillés avec spots, campings et cartes GPS.",
+  alternates: {
+    canonical: "https://vanzonexplorer.com/road-trip",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
   openGraph: {
     title: "Road Trips en Van en France",
     description: "Itinéraires van life par région : Pays Basque, Bretagne, Provence et plus. Spots GPS, campings, restaurants.",
