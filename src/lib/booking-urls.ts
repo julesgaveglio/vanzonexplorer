@@ -29,6 +29,7 @@ export function serializeBookingUrls(urls: string[]): string | null {
 export function detectPlatform(url: string): string {
   if (url.includes("yescapa")) return "Yescapa";
   if (url.includes("wikicampers")) return "Wikicampers";
+  if (url.includes("wa.me")) return "WhatsApp";
   if (url.includes("leboncoin")) return "Leboncoin";
   if (url.includes("naturacamper")) return "NaturaCamper";
   if (url.includes("goboony")) return "Goboony";
