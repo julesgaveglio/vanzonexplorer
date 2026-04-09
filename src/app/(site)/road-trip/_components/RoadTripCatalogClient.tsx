@@ -1,12 +1,9 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import dynamic from "next/dynamic";
 import SearchBar, { type SearchSuggestion } from "./SearchBar";
 import RoadTripCard from "./RoadTripCard";
 import { REGION_CENTROIDS, haversineKm } from "./regionData";
-
-const CatalogMap = dynamic(() => import("./CatalogMap"), { ssr: false });
 
 const PROXIMITY_KM = 300;
 
@@ -30,18 +27,6 @@ interface Props {
 
 export default function RoadTripCatalogClient({ articles }: Props) {
   const [active, setActive] = useState<SearchSuggestion | null>(null);
-
-  const mapArticles = articles.map(a => ({
-    id: a._id,
-    title: a.title,
-    regionSlug: a.regionSlug,
-    articleSlug: a.slug,
-    regionName: a.regionName,
-    duree: a.duree,
-    style: a.style,
-  }));
-
-  const flyTo = active ? { coords: active.coords, zoom: active.zoom } : null;
 
   const filtered = useMemo(() => {
     if (!active) return articles;
@@ -81,11 +66,6 @@ export default function RoadTripCatalogClient({ articles }: Props) {
               : `Aucun itinéraire dans cette zone pour l'instant`}
           </p>
         )}
-      </div>
-
-      {/* Carte */}
-      <div className="mb-12">
-        <CatalogMap articles={mapArticles} flyTo={flyTo} />
       </div>
 
       {/* Grille d'itinéraires */}
