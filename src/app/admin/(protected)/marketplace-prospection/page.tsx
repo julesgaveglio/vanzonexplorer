@@ -318,7 +318,7 @@ export default function MarketplaceProspectionPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 py-2">
+    <div className="max-w-4xl mx-auto space-y-8 px-4 py-4 md:py-6">
       {/* Toast */}
       {toast && (
         <div className="fixed top-6 right-6 z-50 bg-green-600 text-white text-sm font-semibold px-5 py-3 rounded-xl shadow-xl shadow-green-600/30 animate-[slideIn_0.3s_ease-out]">

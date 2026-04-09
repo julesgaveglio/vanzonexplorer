@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
-import { AdminPageHeader } from "@/app/admin/_components/ui";
+import { AdminPageHeader, AdminTableWrapper } from "@/app/admin/_components/ui";
 
 export const metadata: Metadata = {
   title: "Leads Propriétaires — Vanzon Admin",
@@ -100,7 +100,7 @@ export default async function VanOwnerLeadsPage() {
           </p>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-slate-200">
+        <AdminTableWrapper>
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-slate-50 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
@@ -144,7 +144,7 @@ export default async function VanOwnerLeadsPage() {
               ))}
             </tbody>
           </table>
-        </div>
+        </AdminTableWrapper>
       )}
     </div>
   );

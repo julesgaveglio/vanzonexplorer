@@ -53,9 +53,9 @@ export default function KeywordsClient() {
   }
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-6 lg:p-8">
       {/* Header */}
-      <div className="mb-8 flex items-start justify-between">
+      <div className="mb-8 flex flex-col sm:flex-row sm:items-start justify-between gap-4">
         <div>
           <p className="text-slate-400 text-sm font-medium mb-1">Stratégie SEO</p>
           <h1 className="text-3xl font-black text-slate-900">Recherche de Mots-Clés</h1>

@@ -243,7 +243,7 @@ export default async function ArticlesPubliesPage() {
       </div>
 
       {/* KPIs GSC */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
         {[
           { label: "Articles en ligne", value: articles.length, icon: "📄", color: "text-slate-900" },
           { label: "Top 10 Google", value: topPositions, icon: "🏆", color: "text-emerald-600" },

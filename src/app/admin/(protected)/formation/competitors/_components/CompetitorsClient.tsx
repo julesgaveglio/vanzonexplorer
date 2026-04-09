@@ -93,9 +93,9 @@ export default function CompetitorsClient() {
   const withStrengths = competitors.filter(c => c.strengths).length;
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-6 lg:p-8">
       {/* Header */}
-      <div className="mb-8 flex items-start justify-between">
+      <div className="mb-8 flex flex-col sm:flex-row sm:items-start justify-between gap-4">
         <div>
           <p className="text-slate-400 text-sm font-medium mb-1">Van Business Academy</p>
           <h1 className="text-3xl font-black text-slate-900">Veille Concurrents</h1>
@@ -126,7 +126,7 @@ export default function CompetitorsClient() {
       </div>
 
       {/* KPIs */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {[
           { label: "Concurrents", value: competitors.length, icon: "👥" },
           { label: "Autorité moy.", value: avgAuthority, icon: "⚡" },
