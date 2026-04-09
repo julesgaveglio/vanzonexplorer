@@ -2,7 +2,7 @@ import { adminReadClient } from "@/lib/sanity/adminClient";
 import { groq } from "next-sanity";
 import VanStatusSelect from "./_components/VanStatusSelect";
 import FeaturedToggle from "./_components/FeaturedToggle";
-import { AdminPageHeader } from "@/app/admin/_components/ui";
+import { AdminPageHeader, AdminSection, AdminTableWrapper } from "@/app/admin/_components/ui";
 
 const allVansQuery = groq`
   *[_type == "van"] | order(sortOrder asc, _updatedAt desc) {
@@ -76,7 +76,7 @@ export default async function AdminVansPage() {
 
 function VanTable({ title, vans, accent }: { title: string; vans: Van[]; accent: string }) {
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+    <AdminSection noPadding>
       <div className="px-6 py-4 border-b border-slate-50 flex items-center gap-3">
         <span className="w-2.5 h-2.5 rounded-full" style={{ background: accent }} />
         <h2 className="font-bold text-slate-900">{title}</h2>
@@ -91,7 +91,7 @@ function VanTable({ title, vans, accent }: { title: string; vans: Van[]; accent:
           </a>
         </p>
       ) : (
-        <div className="overflow-x-auto">
+        <AdminTableWrapper>
           <table className="w-full">
             <thead>
               <tr className="border-b border-slate-50">
@@ -168,8 +168,8 @@ function VanTable({ title, vans, accent }: { title: string; vans: Van[]; accent:
               ))}
             </tbody>
           </table>
-        </div>
+        </AdminTableWrapper>
       )}
-    </div>
+    </AdminSection>
   );
 }
