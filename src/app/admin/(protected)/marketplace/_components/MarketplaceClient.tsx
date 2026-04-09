@@ -36,7 +36,7 @@ export default function MarketplaceClient({ vans }: { vans: MarketplaceVan[] }) 
   }
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-6 lg:p-8">
       {/* Header */}
       <div className="mb-8">
         <p className="text-slate-400 text-sm font-medium mb-1">Administration</p>
@@ -47,7 +47,7 @@ export default function MarketplaceClient({ vans }: { vans: MarketplaceVan[] }) 
       </div>
 
       {/* Filter tabs */}
-      <div className="flex gap-2 mb-6">
+      <div className="flex flex-wrap gap-2 mb-6">
         {(["all", "pending", "approved", "rejected"] as FilterStatus[]).map((status) => {
           const labels = { all: "Tous", pending: "En attente", approved: "Approuvés", rejected: "Rejetés" };
           const isActive = filter === status;
@@ -77,7 +77,7 @@ export default function MarketplaceClient({ vans }: { vans: MarketplaceVan[] }) 
             Aucune fiche dans cette catégorie.
           </p>
         ) : (
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto min-w-0">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-slate-50">
