@@ -236,7 +236,7 @@ export default async function AdminBlogPage() {
   const pendingCount = articles.filter((a) => a.status === "pending" || a.status === "writing").length;
 
   return (
-    <div className="p-4 md:p-8">
+    <div className="p-4 md:p-6 lg:p-8">
       {/* Header */}
       <div className="flex items-start sm:items-center justify-between mb-6 md:mb-8 gap-4">
         <div>
