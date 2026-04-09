@@ -210,7 +210,7 @@ export function ArchitectureClient() {
             onNodeClick={handleNodeClick}
             nodeTypes={nodeTypes}
             fitView
-            style={{ background: '#0f1117' }}
+            style={{ background: '#0f1117', touchAction: 'pan-x pan-y' }}
           >
             <Background color="#1e2235" gap={24} size={1} />
             <Controls style={{ background: '#1a1d27', border: '1px solid #2d3148' }} />
