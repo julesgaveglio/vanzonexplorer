@@ -492,7 +492,7 @@ export default function AdminSidebar({
                         className={`
                           relative flex items-center rounded-lg text-sm font-medium
                           transition-all duration-150
-                          ${collapsed ? "justify-center px-0 py-2.5" : "gap-2.5 px-3 py-2"}
+                          ${collapsed ? "justify-center px-0 py-2.5 min-h-[44px] min-w-[44px]" : "gap-2.5 px-3 py-2 min-h-[44px]"}
                           ${active
                             ? "bg-blue-50 text-blue-700"
                             : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
@@ -547,7 +547,7 @@ export default function AdminSidebar({
                     className={`
                       flex items-center rounded-lg text-sm font-medium text-slate-400
                       hover:text-slate-600 hover:bg-slate-100 transition-all
-                      ${collapsed ? "justify-center px-0 py-2.5" : "gap-2.5 px-3 py-2"}
+                      ${collapsed ? "justify-center px-0 py-2.5 min-h-[44px] min-w-[44px]" : "gap-2.5 px-3 py-2 min-h-[44px]"}
                     `}
                   >
                     <span>{link.icon}</span>
