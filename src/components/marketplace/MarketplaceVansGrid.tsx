@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import VanCard from "@/components/van/VanCard";
 import MarketplaceVanCard from "./MarketplaceVanCard";
 import { slugify } from "@/lib/slugify";
@@ -30,7 +29,8 @@ export default function MarketplaceVansGrid({
 }: MarketplaceVansGridProps) {
   const [activeRegion, setActiveRegion] = useState("Tous");
 
-  const cities = Array.from(new Set(marketplaceVans.map((v) => v.location_city))).sort();
+  const normalize = (s: string) => s.trim().replace(/\b\w/g, (c) => c.toUpperCase());
+  const cities = Array.from(new Set(marketplaceVans.map((v) => normalize(v.location_city)))).sort();
   const regions = ["Tous", ...(officialVans.length > 0 ? ["Pays Basque"] : []), ...cities];
 
   const filteredOfficial =
@@ -40,32 +40,20 @@ export default function MarketplaceVansGrid({
       ? marketplaceVans
       : activeRegion === "Pays Basque"
       ? []
-      : marketplaceVans.filter((v) => v.location_city === activeRegion);
+      : marketplaceVans.filter((v) => normalize(v.location_city) === activeRegion);
 
   const totalCount = officialVans.length + marketplaceVans.length;
 
   return (
     <>
       <div className="flex flex-col gap-4 mb-10">
-        <div className="flex items-end justify-between">
-          <div>
-            <h2 className="text-3xl md:text-4xl font-black text-slate-900">
-              Vans disponibles en France
-            </h2>
-            <p className="text-slate-500 mt-2">
-              {totalCount} van{totalCount > 1 ? "s" : ""} sélectionné{totalCount > 1 ? "s" : ""} par Vanzon Explorer
-            </p>
-          </div>
-          <Link
-            href="/location"
-            className="hidden sm:flex items-center gap-1.5 text-sm font-semibold hover:underline"
-            style={{ color: "#4D5FEC" }}
-          >
-            Voir tous
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-            </svg>
-          </Link>
+        <div>
+          <h2 className="text-3xl md:text-4xl font-black text-slate-900">
+            Vans disponibles en France
+          </h2>
+          <p className="text-slate-500 mt-2">
+            {totalCount} van{totalCount > 1 ? "s" : ""} sélectionné{totalCount > 1 ? "s" : ""} par Vanzon Explorer
+          </p>
         </div>
 
         {regions.length > 1 && (
@@ -100,11 +88,6 @@ export default function MarketplaceVansGrid({
         ))}
       </div>
 
-      <div className="sm:hidden mt-6 text-center">
-        <Link href="/location" className="btn-ghost px-6 py-3 rounded-xl font-semibold text-sm inline-flex">
-          Voir tous les vans →
-        </Link>
-      </div>
     </>
   );
 }
