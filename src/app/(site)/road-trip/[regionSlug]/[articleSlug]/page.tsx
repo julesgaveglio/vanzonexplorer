@@ -68,8 +68,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     alternates: {
       canonical: `https://vanzonexplorer.com/road-trip/${params.regionSlug}/${params.articleSlug}`,
     },
-    other: {
-      "robots": "max-snippet:-1, max-image-preview:large",
+    robots: {
+      index: true,
+      follow: true,
+      "max-snippet": -1,
+      "max-image-preview": "large",
     },
   };
 }

@@ -17,6 +17,10 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://vanzonexplorer.com/",
   },
+  robots: {
+    index: true,
+    follow: true,
+  },
   openGraph: {
     title: "Vanzon Explorer — Location, Achat & Formation Van Aménagé | Pays Basque",
     description: "Location de vans aménagés dès 65€/nuit, achat et formation vanlife au Pays Basque. Assurance incluse.",
