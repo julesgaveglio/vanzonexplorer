@@ -33,7 +33,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
 
       {/* Zone principale — s'adapte à la largeur de la sidebar */}
       <div
-        className={`flex flex-col min-h-screen lg:transition-[padding] lg:duration-300 ease-in-out ${
+        className={`flex flex-col min-h-screen lg:transition-[padding] lg:duration-300 lg:ease-in-out ${
           collapsed ? 'lg:pl-[60px]' : 'lg:pl-[260px]'
         }`}
       >
