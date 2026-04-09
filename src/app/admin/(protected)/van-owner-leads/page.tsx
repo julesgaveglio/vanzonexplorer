@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
+import { AdminPageHeader } from "@/app/admin/_components/ui";
 
 export const metadata: Metadata = {
   title: "Leads Propriétaires — Vanzon Admin",
@@ -62,15 +63,11 @@ export default async function VanOwnerLeadsPage() {
   };
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900">
-          Leads Propriétaires
-        </h1>
-        <p className="text-slate-500 text-sm mt-1">
-          Propriétaires de vans inscrits via le formulaire /proprietaire
-        </p>
-      </div>
+    <div className="p-4 md:p-6 lg:p-8 space-y-8">
+      <AdminPageHeader
+        title="Leads Propriétaires"
+        subtitle="Propriétaires de vans inscrits via le formulaire /proprietaire"
+      />
 
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">

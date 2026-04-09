@@ -179,7 +179,7 @@ export default async function RoadTripsAdminPage({
   const exportUrl = `/api/admin/road-trips/export?status=${currentStatus !== "all" ? currentStatus : "sent"}`;
 
   return (
-    <div className="p-4 md:p-8">
+    <div className="p-4 md:p-6 lg:p-8">
       {/* Header */}
       <div className="flex items-start sm:items-center justify-between mb-6 md:mb-8 gap-4">
         <div>

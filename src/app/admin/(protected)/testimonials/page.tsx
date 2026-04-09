@@ -1,6 +1,7 @@
 import { adminReadClient } from "@/lib/sanity/adminClient";
 import { groq } from "next-sanity";
 import TestimonialFeaturedToggle from "./_components/TestimonialFeaturedToggle";
+import { AdminPageHeader } from "@/app/admin/_components/ui";
 
 const allTestimonialsQuery = groq`
   *[_type == "testimonial"] | order(_createdAt desc) {
@@ -32,29 +33,25 @@ export default async function AdminTestimonialsPage() {
   const total = testimonials?.length ?? 0;
 
   return (
-    <div className="p-8">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <p className="text-slate-400 text-sm font-medium mb-1">Administration</p>
-          <h1 className="text-3xl font-black text-slate-900">Temoignages</h1>
-          <p className="text-slate-500 mt-1">
-            {total} temoignage{total > 1 ? "s" : ""} · {featured.length} mis en avant
-          </p>
-        </div>
-        <a
-          href="/studio/structure/testimonial;new"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 font-semibold text-white text-sm px-5 py-2.5 rounded-xl transition-all"
-          style={{ background: "linear-gradient(135deg, #0EA5E9 0%, #10B981 100%)", boxShadow: "0 4px 14px rgba(14,165,233,0.35)" }}
-        >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-          </svg>
-          Ajouter un temoignage
-        </a>
-      </div>
+    <div className="p-4 md:p-6 lg:p-8">
+      <AdminPageHeader
+        title="Temoignages"
+        subtitle={`${total} temoignage${total > 1 ? "s" : ""} · ${featured.length} mis en avant`}
+        action={
+          <a
+            href="/studio/structure/testimonial;new"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 font-semibold text-white text-sm px-5 py-2.5 rounded-xl transition-all"
+            style={{ background: "linear-gradient(135deg, #0EA5E9 0%, #10B981 100%)", boxShadow: "0 4px 14px rgba(14,165,233,0.35)" }}
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+            Ajouter un temoignage
+          </a>
+        }
+      />
 
       {/* Grid */}
       {total === 0 ? (

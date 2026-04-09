@@ -1,6 +1,7 @@
 import { adminReadClient } from "@/lib/sanity/adminClient";
 import { groq } from "next-sanity";
 import Link from "next/link";
+import { AdminPageHeader } from "@/app/admin/_components/ui";
 
 const settingsQuery = groq`
   *[_type == "siteSettings"][0] {
@@ -46,12 +47,11 @@ export default async function AdminSettingsPage() {
   ];
 
   return (
-    <div className="p-8">
-      <div className="mb-8">
-        <p className="text-slate-400 text-sm font-medium mb-1">Administration</p>
-        <h1 className="text-3xl font-black text-slate-900">Parametres</h1>
-        <p className="text-slate-500 mt-1">Configuration du site et variables d&apos;environnement.</p>
-      </div>
+    <div className="p-4 md:p-6 lg:p-8">
+      <AdminPageHeader
+        title="Parametres"
+        subtitle="Configuration du site et variables d'environnement."
+      />
 
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Contenu Sanity */}

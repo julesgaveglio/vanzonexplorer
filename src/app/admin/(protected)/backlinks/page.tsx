@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
 import BacklinksClient from "./_components/BacklinksClient";
+import { AdminPageHeader } from "@/app/admin/_components/ui";
 
 export const metadata: Metadata = {
   title: "Backlinks SEO — Admin Vanzon",
@@ -36,12 +37,11 @@ export default async function BacklinksPage() {
   const data = await getBacklinksData();
 
   return (
-    <div className="p-8">
-      <div className="mb-8">
-        <p className="text-slate-400 text-sm font-medium mb-1">Système / SEO</p>
-        <h1 className="text-3xl font-black text-slate-900">Backlinks SEO</h1>
-        <p className="text-slate-500 mt-1">Discovery, outreach et suivi des backlinks obtenus</p>
-      </div>
+    <div className="p-4 md:p-6 lg:p-8">
+      <AdminPageHeader
+        title="Backlinks SEO"
+        subtitle="Discovery, outreach et suivi des backlinks obtenus"
+      />
       <BacklinksClient initialData={data} />
     </div>
   );

@@ -1,4 +1,5 @@
 import CardsManagerClient from "./_components/CardsManagerClient";
+import { AdminPageHeader } from "@/app/admin/_components/ui";
 
 export type AdminCard = {
   _id: string;
@@ -10,14 +11,11 @@ export type AdminCard = {
 
 export default function FormationCartesPage() {
   return (
-    <div className="p-8">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <p className="text-slate-400 text-sm font-medium mb-1">Van Business Academy</p>
-          <h1 className="text-3xl font-black text-slate-900">Cartes Formation</h1>
-        </div>
-      </div>
-
+    <div className="p-4 md:p-6 lg:p-8">
+      <AdminPageHeader
+        title="Cartes Formation"
+        subtitle="Van Business Academy"
+      />
       <CardsManagerClient />
     </div>
   );

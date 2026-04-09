@@ -1,30 +1,28 @@
 import Link from "next/link";
 import { getBrandsAdmin } from "../actions";
+import { AdminPageHeader } from "@/app/admin/_components/ui";
 
 export default async function AdminMarquesPage() {
   const brands = await getBrandsAdmin().catch(() => []);
 
   return (
-    <div className="p-8">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <p className="text-slate-400 text-sm font-medium mb-1">
-            <Link href="/admin/club" className="hover:text-slate-600">Club</Link> / Marques
-          </p>
-          <h1 className="text-3xl font-black text-slate-900">Marques partenaires</h1>
-          <p className="text-slate-500 mt-1">{brands.length} marque{brands.length > 1 ? "s" : ""}</p>
-        </div>
-        <Link
-          href="/admin/club/marques/nouveau"
-          className="inline-flex items-center gap-2 font-semibold text-white text-sm px-5 py-2.5 rounded-xl transition-all"
-          style={{ background: "linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)", boxShadow: "0 4px 14px rgba(139,92,246,0.35)" }}
-        >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-          </svg>
-          Nouvelle marque
-        </Link>
-      </div>
+    <div className="p-4 md:p-6 lg:p-8">
+      <AdminPageHeader
+        title="Marques partenaires"
+        subtitle={`${brands.length} marque${brands.length > 1 ? "s" : ""}`}
+        action={
+          <Link
+            href="/admin/club/marques/nouveau"
+            className="inline-flex items-center gap-2 font-semibold text-white text-sm px-5 py-2.5 rounded-xl transition-all"
+            style={{ background: "linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)", boxShadow: "0 4px 14px rgba(139,92,246,0.35)" }}
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+            Nouvelle marque
+          </Link>
+        }
+      />
 
       <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
         {brands.length === 0 ? (

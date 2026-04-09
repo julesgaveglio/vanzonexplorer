@@ -1,5 +1,6 @@
 import { adminReadClient } from "@/lib/sanity/adminClient";
 import { groq } from "next-sanity";
+import { AdminPageHeader } from "@/app/admin/_components/ui";
 
 const spotsQuery = groq`
   *[_type == "spotPaysBasque"] | order(name asc) {
@@ -35,26 +36,25 @@ export default async function AdminSpotsPage() {
   const total = spots?.length ?? 0;
 
   return (
-    <div className="p-8">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <p className="text-slate-400 text-sm font-medium mb-1">Administration</p>
-          <h1 className="text-3xl font-black text-slate-900">Spots Pays Basque</h1>
-          <p className="text-slate-500 mt-1">{total} spot{total > 1 ? "s" : ""} references</p>
-        </div>
-        <a
-          href="/studio/structure/spotPaysBasque;new"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 font-semibold text-white text-sm px-5 py-2.5 rounded-xl transition-all"
-          style={{ background: "linear-gradient(135deg, #8B5CF6 0%, #A855F7 100%)", boxShadow: "0 4px 14px rgba(139,92,246,0.35)" }}
-        >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-          </svg>
-          Ajouter un spot
-        </a>
-      </div>
+    <div className="p-4 md:p-6 lg:p-8">
+      <AdminPageHeader
+        title="Spots Pays Basque"
+        subtitle={`${total} spot${total > 1 ? "s" : ""} references`}
+        action={
+          <a
+            href="/studio/structure/spotPaysBasque;new"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 font-semibold text-white text-sm px-5 py-2.5 rounded-xl transition-all"
+            style={{ background: "linear-gradient(135deg, #8B5CF6 0%, #A855F7 100%)", boxShadow: "0 4px 14px rgba(139,92,246,0.35)" }}
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+            Ajouter un spot
+          </a>
+        }
+      />
 
       {total === 0 ? (
         <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-16 text-center">
