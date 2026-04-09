@@ -42,6 +42,12 @@ const VARIANTS = {
     glow: "0 4px 18px rgba(249, 115, 22, 0.50), 0 1px 4px rgba(251, 146, 60, 0.30)",
     textColor: "text-white",
   },
+  // WhatsApp green
+  green: {
+    gradient: "linear-gradient(135deg, #25D366 0%, #128C7E 100%)",
+    glow: "0 4px 18px rgba(37, 211, 102, 0.50), 0 1px 4px rgba(18, 140, 126, 0.30)",
+    textColor: "text-white",
+  },
   // backwards-compat alias
   primary: {
     gradient: "linear-gradient(135deg, #3B82F6 0%, #0EA5E9 100%)",
