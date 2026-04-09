@@ -361,12 +361,12 @@ export default function BacklinksClient({ initialData }: { initialData: InitialD
 
       {/* ── KANBAN ─────────────────────────────────────────────────────────── */}
       {tab === "kanban" && (
-        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+        <div className="flex flex-col lg:flex-row gap-4 overflow-x-auto pb-2">
           {STATUTS.map(({ key, label, color, bg }) => {
             const col = prospects.filter((p) => p.statut === key);
             return (
               <div key={key} onDragOver={handleDragOver} onDrop={(e) => handleDrop(e, key)}
-                className="min-h-[200px] rounded-xl bg-slate-50 border border-slate-200">
+                className="min-w-[280px] lg:min-w-0 lg:flex-1 min-h-[200px] rounded-xl bg-slate-50 border border-slate-200">
                 <div className={`px-3 py-2.5 rounded-t-xl border-b border-slate-200 ${bg}`}>
                   <div className="flex items-center justify-between">
                     <span className={`text-sm font-bold ${color}`}>{label}</span>
