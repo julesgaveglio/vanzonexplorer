@@ -3,6 +3,7 @@ import { createSupabaseAdmin } from "@/lib/supabase/server";
 import PinterestResearchButton from "./_components/PinterestResearchButton";
 import ContentQueueTable from "./_components/ContentQueueTable";
 import PinterestCharts from "./_components/PinterestCharts";
+import { AdminPageHeader } from "@/app/admin/_components/ui";
 
 export const metadata: Metadata = {
   title: "Pinterest — Vanzon Admin",
@@ -46,24 +47,19 @@ export default async function PinterestPage() {
   };
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div className="flex items-start justify-between">
-        <div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-slate-900">Pinterest Strategy</h1>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-700 border border-amber-200">
-              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-              </svg>
-              Trial — Lecture seule
-            </span>
-          </div>
-          <p className="mt-1 text-sm text-slate-500">
-            Analyse des opportunités Pinterest pour Vanzon Explorer. Posting activé après upgrade Standard.
-          </p>
-        </div>
-      </div>
+    <div className="p-4 md:p-6 lg:p-8 space-y-8">
+      <AdminPageHeader
+        title="Pinterest Strategy"
+        subtitle="Analyse des opportunités Pinterest pour Vanzon Explorer. Posting activé après upgrade Standard."
+        badge={
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-700 border border-amber-200">
+            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+            </svg>
+            Trial — Lecture seule
+          </span>
+        }
+      />
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
