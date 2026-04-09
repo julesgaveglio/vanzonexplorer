@@ -22,8 +22,6 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
     localStorage.setItem("admin-sidebar-collapsed", String(next));
   }
 
-  const sidebarWidth = collapsed ? 60 : 260;
-
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
       <AdminSidebar
@@ -35,8 +33,9 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
 
       {/* Zone principale — s'adapte à la largeur de la sidebar */}
       <div
-        className="flex flex-col min-h-screen transition-[padding] duration-300 ease-in-out"
-        style={{ paddingLeft: `${sidebarWidth}px` }}
+        className={`flex flex-col min-h-screen lg:transition-[padding] lg:duration-300 ease-in-out ${
+          collapsed ? 'lg:pl-[60px]' : 'lg:pl-[260px]'
+        }`}
       >
         {/* Top bar mobile */}
         <header className="lg:hidden sticky top-0 z-20 bg-white border-b border-slate-200 px-4 py-3 flex items-center gap-3 shadow-sm">
