@@ -60,6 +60,7 @@ const RoadTripV2Schema = z.object({
   email: z.string().email(),
   groupType: z.enum(['solo', 'couple', 'amis', 'famille']),
   vanStatus: z.enum(['proprietaire', 'locataire']),
+  scope: z.enum(['france', 'france_espagne']),
   duration: z.enum(['1j', '2-3j', '4-5j', '1sem']),
   interests: z
     .array(z.enum(['sport', 'nature', 'gastronomie', 'culture', 'plages', 'soirees']))
@@ -142,6 +143,15 @@ const OVERNIGHT_LABELS: Record<OvernightPreference, string> = {
   mix: 'mix des options selon les étapes',
 }
 
+const SCOPE_INSTRUCTIONS: Record<'france' | 'france_espagne', string> = {
+  france: `Périmètre : Pays Basque FRANÇAIS uniquement (Labourd, Basse-Navarre, Soule).
+Villes/spots autorisés : Biarritz, Bayonne, Anglet, Saint-Jean-de-Luz, Hendaye, Espelette, Ainhoa, Saint-Jean-Pied-de-Port, Itxassou, Sare, La Rhune, Iraty, Gorges de Kakuetta, Larrau, Bidarray, Cambo-les-Bains, etc. N'inclus PAS de spots espagnols.`,
+  france_espagne: `Périmètre : Pays Basque FRANÇAIS + ESPAGNOL. L'utilisateur est ouvert à traverser la frontière.
+Côté français : Biarritz, Bayonne, Anglet, Saint-Jean-de-Luz, Hendaye, Espelette, Ainhoa, Saint-Jean-Pied-de-Port, Itxassou, Sare, La Rhune, Iraty, etc.
+Côté espagnol (Euskadi) : Hondarribia / Fontarrabie, Pasaia, San Sebastián / Donostia, Getaria, Zarautz, Bilbao, Guernica, Bermeo, Lekeitio, Mundaka, etc.
+Inclus au moins 1 étape côté espagnol si la durée ≥ 2 jours. Précise la monnaie (€), signale le passage de frontière et rappelle l'assurance van valable en Espagne dans les tips.`,
+}
+
 // ─── Groq itinerary generation ───────────────────────────────────────────────
 async function generateItineraryV2(
   input: RoadTripV2Input,
@@ -152,6 +162,7 @@ async function generateItineraryV2(
   const groupLabel = GROUP_LABELS[input.groupType]
   const budgetLabel = BUDGET_LABELS[input.budgetLevel]
   const overnightLabel = OVERNIGHT_LABELS[input.overnightPreference]
+  const scopeInstruction = SCOPE_INSTRUCTIONS[input.scope]
 
   // POIs/overnight passés au modèle — version réduite pour économiser les tokens
   const poiSummary = pois.slice(0, 30).map((p) => ({
@@ -190,6 +201,8 @@ Réponds UNIQUEMENT avec du JSON valide. Aucun texte avant ou après. Aucun back
 - Centres d'intérêt : ${input.interests.join(', ')}
 - Budget activités/repas : ${budgetLabel}
 - Préférence nuit en van : ${overnightLabel}
+
+${scopeInstruction}
 
 POIs activités disponibles (utilise en priorité, avec leurs URLs exactes) :
 ${JSON.stringify(poiSummary)}

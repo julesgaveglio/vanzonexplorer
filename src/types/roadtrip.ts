@@ -7,6 +7,7 @@ export type GroupType = 'solo' | 'couple' | 'amis' | 'famille'
 export type DurationKey = '1j' | '2-3j' | '4-5j' | '1sem'
 export type BudgetLevel = 'faible' | 'moyen' | 'eleve'
 export type OvernightPreference = 'gratuit' | 'aires_officielles' | 'camping' | 'mix'
+export type RoadTripScope = 'france' | 'france_espagne'
 
 export type InterestKey =
   | 'sport'
@@ -21,6 +22,7 @@ export interface RoadTripFormData {
   email: string
   groupType: GroupType
   vanStatus: VanStatus
+  scope: RoadTripScope
   duration: DurationKey
   interests: InterestKey[]
   budgetLevel: BudgetLevel

@@ -13,6 +13,7 @@ import type {
   InterestKey,
   BudgetLevel,
   OvernightPreference,
+  RoadTripScope,
 } from '@/types/roadtrip'
 
 // ─── Options wizard ─────────────────────────────────────────────────────────
@@ -26,20 +27,37 @@ const GROUP_OPTIONS: { value: GroupType; label: string; emoji: string }[] = [
 const VAN_STATUS_OPTIONS: {
   value: VanStatus
   title: string
-  subtitle: string
   emoji: string
 }[] = [
   {
     value: 'proprietaire',
     title: 'Je suis propriétaire d\u2019un van',
-    subtitle: 'Itinéraire adapté à votre véhicule',
     emoji: '🔑',
   },
   {
     value: 'locataire',
-    title: 'Je souhaite louer un van',
-    subtitle: 'On vous propose nos vans Vanzon en plus',
+    title: 'Je suis locataire',
     emoji: '🚐',
+  },
+]
+
+const SCOPE_OPTIONS: {
+  value: RoadTripScope
+  label: string
+  desc: string
+  emoji: string
+}[] = [
+  {
+    value: 'france',
+    label: 'Pays Basque français',
+    desc: 'Biarritz, Bayonne, Espelette, Iraty...',
+    emoji: '🇫🇷',
+  },
+  {
+    value: 'france_espagne',
+    label: 'Français + espagnol',
+    desc: 'On inclut San Sebastián, Bilbao, Hondarribia...',
+    emoji: '🇪🇸',
   },
 ]
 
@@ -103,6 +121,7 @@ const schema = z.object({
   email: z.string().email({ message: 'Email invalide' }),
   groupType: z.enum(['solo', 'couple', 'amis', 'famille']),
   vanStatus: z.enum(['proprietaire', 'locataire']),
+  scope: z.enum(['france', 'france_espagne']),
   duration: z.enum(['1j', '2-3j', '4-5j', '1sem']),
   interests: z
     .array(z.enum(['sport', 'nature', 'gastronomie', 'culture', 'plages', 'soirees']))
@@ -118,7 +137,7 @@ type FormData = z.infer<typeof schema>
 const STEP_FIELDS: Record<number, (keyof FormData)[]> = {
   1: ['firstname', 'email', 'groupType'],
   2: ['vanStatus'],
-  3: ['duration', 'interests'],
+  3: ['scope', 'duration', 'interests'],
   4: ['budgetLevel', 'overnightPreference'],
 }
 
@@ -164,6 +183,7 @@ export default function RoadTripWizard() {
       email: '',
       groupType: 'couple',
       vanStatus: 'locataire',
+      scope: 'france',
       duration: '2-3j',
       interests: [],
       budgetLevel: 'moyen',
@@ -324,6 +344,7 @@ export default function RoadTripWizard() {
   const selectedInterests = (watch('interests') ?? []) as InterestKey[]
   const selectedGroup = watch('groupType')
   const selectedVan = watch('vanStatus')
+  const selectedScope = watch('scope')
   const selectedDuration = watch('duration')
   const selectedBudget = watch('budgetLevel')
   const selectedOvernight = watch('overnightPreference')
@@ -440,7 +461,6 @@ export default function RoadTripWizard() {
                   >
                     <span className="text-5xl">{opt.emoji}</span>
                     <span className="text-base font-bold text-slate-900">{opt.title}</span>
-                    <span className="text-xs text-slate-500">{opt.subtitle}</span>
                   </button>
                 ))}
               </div>
@@ -459,6 +479,29 @@ export default function RoadTripWizard() {
             >
               <h2 className="text-xl font-bold text-slate-900 mb-6">Vos envies au Pays Basque</h2>
               <div className="space-y-6">
+                <div>
+                  <label className={labelClass}>Périmètre du voyage</label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
+                    {SCOPE_OPTIONS.map((opt) => (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        aria-pressed={selectedScope === opt.value}
+                        onClick={() => setValue('scope', opt.value)}
+                        className={radioCardClass(selectedScope === opt.value)}
+                      >
+                        <div className="flex items-start gap-3">
+                          <span className="text-2xl flex-shrink-0">{opt.emoji}</span>
+                          <div>
+                            <p className="text-sm font-semibold text-slate-900">{opt.label}</p>
+                            <p className="text-xs text-slate-500 mt-0.5">{opt.desc}</p>
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
                 <div>
                   <label className={labelClass}>Durée du voyage</label>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-2">
@@ -593,8 +636,12 @@ export default function RoadTripWizard() {
                 <RecapCard
                   label="Situation van"
                   value={
-                    values.vanStatus === 'proprietaire' ? 'Propriétaire' : 'Futur locataire'
+                    values.vanStatus === 'proprietaire' ? 'Propriétaire' : 'Locataire'
                   }
+                />
+                <RecapCard
+                  label="Périmètre"
+                  value={SCOPE_OPTIONS.find((o) => o.value === values.scope)?.label ?? values.scope}
                 />
                 <RecapCard
                   label="Durée"
