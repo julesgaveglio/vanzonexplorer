@@ -1,26 +1,46 @@
 // src/app/api/road-trip/generate/route.ts
+// v2 — Road Trip Personnalisé Pays Basque (lead magnet)
+// Flow : form → cache POI → (fallback Tavily) → Groq itinéraire → Resend email → save lead
+// SSE streaming pour progress UX + rate limit IP conservés.
+
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import Groq from 'groq-sdk'
 import { Resend } from 'resend'
 import { createSupabaseAdmin } from '@/lib/supabase/server'
-import { buildRoadTripEmail } from '@/emails/road-trip'
+import { groqWithFallback } from '@/lib/groq-with-fallback'
+import { buildRoadTripEmailV2 } from '@/emails/road-trip-v2'
 import {
-  INTERETS_OPTIONS,
-  MOIS_OPTIONS,
-} from '@/lib/road-trip/constants'
+  getPOIsFromCache,
+  scrapePOIsViaTavily,
+  scrapeOvernightSpotsViaTavily,
+  upsertPOIs,
+} from '@/lib/road-trip/poi-cache'
+import {
+  DURATION_TO_DAYS,
+  BUDGET_LEVEL_TO_LEGACY,
+  INTEREST_TO_LEGACY,
+} from '@/types/roadtrip'
+import type {
+  GeneratedItineraryV2,
+  POIRow,
+  InterestKey,
+  OvernightPreference,
+  DurationKey,
+  BudgetLevel,
+  GroupType,
+  VanStatus,
+} from '@/types/roadtrip'
 import {
   notifySuccess,
   notifyError as telegramNotifyError,
-  notifyFallback,
 } from '@/lib/road-trip/telegram'
 
 export const maxDuration = 60
 
-// ── Rate limiting (in-memory, best-effort) ───────────────────────────────────
+// ─── Rate limiting (in-memory, best-effort) ──────────────────────────────────
 const ipRequestMap = new Map<string, { count: number; resetAt: number }>()
 const RATE_LIMIT = 3
-const RATE_WINDOW_MS = 60 * 60 * 1000
+const RATE_WINDOW_MS = 60 * 60 * 1000 // 1h
 
 function checkRateLimit(ip: string): boolean {
   const now = Date.now()
@@ -34,545 +54,24 @@ function checkRateLimit(ip: string): boolean {
   return true
 }
 
-// ── Zod schema ────────────────────────────────────────────────────────────────
-const InteretEnum = z.enum(
-  INTERETS_OPTIONS.map((o) => o.value) as [string, ...string[]]
-)
-
-const RoadTripSchema = z.object({
-  prenom: z.string().min(2).max(50),
+// ─── Zod schema (form v2) ────────────────────────────────────────────────────
+const RoadTripV2Schema = z.object({
+  firstname: z.string().min(2).max(50),
   email: z.string().email(),
-  region: z.string().min(2).max(100),
-  duree: z.coerce.number().int().min(1).max(14),
-  interets: z.array(InteretEnum).min(1).max(7),
-  style_voyage: z.enum(['lent', 'explorer', 'aventure']),
-  periode: z.enum(MOIS_OPTIONS),
-  profil_voyageur: z.enum(['solo', 'couple', 'famille', 'amis']),
-  budget: z.enum(['economique', 'confort', 'premium']),
-  experience_van: z.boolean(),
+  groupType: z.enum(['solo', 'couple', 'amis', 'famille']),
+  vanStatus: z.enum(['proprietaire', 'locataire']),
+  duration: z.enum(['1j', '2-3j', '4-5j', '1sem']),
+  interests: z
+    .array(z.enum(['sport', 'nature', 'gastronomie', 'culture', 'plages', 'soirees']))
+    .min(1)
+    .max(6),
+  budgetLevel: z.enum(['faible', 'moyen', 'eleve']),
+  overnightPreference: z.enum(['gratuit', 'aires_officielles', 'camping', 'mix']),
 })
 
-type RoadTripInput = z.infer<typeof RoadTripSchema>
+type RoadTripV2Input = z.infer<typeof RoadTripV2Schema>
 
-// ── Types ─────────────────────────────────────────────────────────────────────
-interface SpotBase {
-  nom: string
-  description: string
-  type: string
-  search_query?: string
-}
-
-interface SpotEnriched extends SpotBase {
-  mapsUrl: string
-  photo?: { url: string; photographer: string; photoUrl: string; source?: string }
-  wiki?: { extract: string; url: string; thumbnail?: string }
-}
-
-interface CampingOption {
-  name: string
-  mapsUrl: string
-  fee?: string        // 'yes' | 'no'
-  motorhome?: string  // 'yes' | 'designated'
-  website?: string
-  lat?: number
-  lon?: number
-}
-
-interface RestaurantInfo {
-  nom: string
-  type: string
-  specialite: string
-  description: string
-}
-
-interface JourItineraire {
-  numero: number
-  titre: string
-  spots: SpotBase[] | SpotEnriched[]
-  camping: string
-  campingMapsUrl?: string
-  campingOptions?: CampingOption[]
-  restaurant?: RestaurantInfo
-  tips: string
-}
-
-interface ItineraireData {
-  intro: string
-  jours: JourItineraire[]
-  conseils_pratiques: string[]
-}
-
-// ── Geocoding (Nominatim) ─────────────────────────────────────────────────────
-interface GeoResult {
-  mapsUrl: string
-  lat?: number
-  lon?: number
-}
-
-async function geocodeSpot(name: string, region: string): Promise<GeoResult> {
-  try {
-    const query = region ? `${name}, ${region}, France` : `${name}, France`
-    const res = await fetch(
-      `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1&countrycodes=fr`,
-      { headers: { 'User-Agent': 'VanzonExplorer/1.0 (contact@vanzonexplorer.com)' } }
-    )
-    if (!res.ok) throw new Error('nominatim error')
-    const data = (await res.json()) as Array<{ lat?: string; lon?: string }>
-    if (data[0]?.lat && data[0]?.lon) {
-      return {
-        mapsUrl: `https://www.google.com/maps?q=${data[0].lat},${data[0].lon}`,
-        lat: parseFloat(data[0].lat),
-        lon: parseFloat(data[0].lon),
-      }
-    }
-  } catch {
-    // fall through
-  }
-  return {
-    mapsUrl: `https://maps.google.com/?q=${encodeURIComponent(name + (region ? ' ' + region : '') + ' France')}`,
-  }
-}
-
-// ── Pexels photo ──────────────────────────────────────────────────────────────
-async function fetchPexelsPhoto(
-  query: string
-): Promise<{ url: string; photographer: string; photoUrl: string } | null> {
-  try {
-    if (!process.env.PEXELS_API_KEY) return null
-    const res = await fetch(
-      `https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=1&orientation=landscape`,
-      { headers: { Authorization: process.env.PEXELS_API_KEY } }
-    )
-    if (!res.ok) return null
-    const data = (await res.json()) as {
-      photos?: Array<{ src: { large: string }; photographer: string; url: string }>
-    }
-    const photo = data.photos?.[0]
-    if (!photo) return null
-    return { url: photo.src.large, photographer: photo.photographer, photoUrl: photo.url }
-  } catch {
-    return null
-  }
-}
-
-// ── Best photo (specific + generic Pexels in parallel → Wikipedia thumbnail) ──
-async function fetchBestPhoto(
-  spot: SpotBase,
-  region: string,
-  wikiThumbnail?: string
-): Promise<{ url: string; photographer: string; photoUrl: string; source: string } | null> {
-  const specificQuery = spot.search_query || `${spot.nom} ${region} France`
-  const genericQuery = `${spot.type} ${region} France`
-
-  // Run both Pexels queries in parallel to save time
-  const [specific, generic] = await Promise.all([
-    fetchPexelsPhoto(specificQuery),
-    fetchPexelsPhoto(genericQuery),
-  ])
-
-  if (specific) return { ...specific, source: 'pexels' }
-  if (generic) return { ...generic, source: 'pexels-generic' }
-
-  // Wikipedia thumbnail as last resort (no extra API cost — already fetched)
-  if (wikiThumbnail) {
-    return { url: wikiThumbnail, photographer: 'Wikipedia', photoUrl: '', source: 'wikipedia' }
-  }
-
-  return null
-}
-
-// ── Wikipedia ─────────────────────────────────────────────────────────────────
-async function fetchWikipedia(
-  spotName: string
-): Promise<{ extract: string; url: string; thumbnail?: string } | null> {
-  try {
-    const res = await fetch(
-      `https://fr.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(spotName)}`,
-      { headers: { 'User-Agent': 'VanzonExplorer/1.0' } }
-    )
-    if (!res.ok) return null
-    const data = (await res.json()) as {
-      type?: string
-      extract?: string
-      content_urls?: { desktop?: { page?: string } }
-      thumbnail?: { source?: string }
-    }
-    if (data.type === 'disambiguation') return null
-    return {
-      extract: data.extract?.slice(0, 200) ?? '',
-      url: data.content_urls?.desktop?.page ?? '',
-      thumbnail: data.thumbnail?.source,
-    }
-  } catch {
-    return null
-  }
-}
-
-// ── Overpass campings ─────────────────────────────────────────────────────────
-async function fetchOverpassCampings(
-  lat: number,
-  lon: number,
-  radiusMeters = 40000
-): Promise<CampingOption[]> {
-  try {
-    const query = `
-[out:json][timeout:12];
-(
-  node["tourism"="camp_site"](around:${radiusMeters},${lat},${lon});
-  node["tourism"="caravan_site"](around:${radiusMeters},${lat},${lon});
-);
-out body 20;
-    `.trim()
-
-    const res = await fetch('https://overpass-api.de/api/interpreter', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: `data=${encodeURIComponent(query)}`,
-      signal: AbortSignal.timeout(14000),
-    })
-
-    if (!res.ok) return []
-
-    const data = (await res.json()) as {
-      elements?: Array<{
-        lat?: number
-        lon?: number
-        tags?: Record<string, string>
-      }>
-    }
-
-    return (data.elements ?? [])
-      .filter((el) => el.tags?.name && el.lat && el.lon)
-      .slice(0, 12)
-      .map((el) => ({
-        name: el.tags!.name!,
-        lat: el.lat,
-        lon: el.lon,
-        mapsUrl: `https://www.google.com/maps?q=${el.lat},${el.lon}`,
-        fee: el.tags?.fee,
-        motorhome: el.tags?.motorhome ?? el.tags?.motorcar,
-        website: el.tags?.website,
-      }))
-  } catch {
-    return []
-  }
-}
-
-// ── Nearest campings (Euclidean distance) ────────────────────────────────────
-function nearestCampings(
-  campings: CampingOption[],
-  lat: number,
-  lon: number,
-  count = 3
-): CampingOption[] {
-  return [...campings]
-    .map((c) => ({
-      ...c,
-      _dist: Math.sqrt(((c.lat ?? lat) - lat) ** 2 + ((c.lon ?? lon) - lon) ** 2),
-    }))
-    .sort((a, b) => a._dist - b._dist)
-    .slice(0, count)
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    .map(({ _dist, ...rest }) => rest)
-}
-
-// ── Tavily search ─────────────────────────────────────────────────────────────
-async function searchTavily(input: RoadTripInput): Promise<string> {
-  try {
-    const interetsLabels = input.interets
-      .map((v) => INTERETS_OPTIONS.find((o) => o.value === v)?.label ?? v)
-      .join(' ')
-
-    const query = `road trip van ${input.region} France spots activités ${interetsLabels} ${input.periode}`
-
-    const res = await fetch('https://api.tavily.com/search', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        api_key: process.env.TAVILY_API_KEY,
-        query,
-        max_results: 6,
-        include_answer: false,
-      }),
-    })
-
-    if (!res.ok) return ''
-
-    const data = (await res.json()) as {
-      results?: Array<{ title?: string; content?: string }>
-    }
-
-    return (data.results ?? [])
-      .slice(0, 6)
-      .map((r) => `${r.title ?? ''}: ${r.content ?? ''}`)
-      .join('\n\n')
-      .slice(0, 3000)
-  } catch {
-    return ''
-  }
-}
-
-// ── Rate limit detection ───────────────────────────────────────────────────────
-function isRateLimitError(err: unknown): boolean {
-  const msg = (err as Error).message ?? ''
-  const status = (err as { status?: number }).status
-  return (
-    msg.includes('rate_limit_exceeded') ||
-    msg.includes('Rate limit') ||
-    msg.includes('429') ||
-    status === 429
-  )
-}
-
-// ── Groq itinerary generation (multi-model, multi-key cascade) ────────────────
-interface GenerationMeta {
-  data: ItineraireData
-  modelUsed: string
-  fallbackUsed: boolean
-  triedModels: string[]
-}
-
-async function generateItineraire(
-  input: RoadTripInput,
-  tavilyContext: string
-): Promise<GenerationMeta> {
-  if (!process.env.GROQ_API_KEY) throw new Error('[road-trip] GROQ_API_KEY is not set')
-
-  const hasGastronomie = input.interets.includes('gastronomie')
-
-  const interetsLabels = input.interets
-    .map((v) => INTERETS_OPTIONS.find((o) => o.value === v)?.label ?? v)
-    .join(', ')
-
-  const styleDesc = {
-    lent: 'rythme lent avec 2-3 stops maximum, immersion profonde dans chaque lieu',
-    explorer: 'maximum de spots et de découvertes, rythme soutenu',
-    aventure: 'nature sauvage, off-road, bivouacs isolés',
-  }[input.style_voyage]
-
-  const budgetDesc = {
-    economique: 'camping gratuit, bivouac, aires naturelles',
-    confort: 'aires de camping-cars payantes avec équipements, campings 2-3 étoiles',
-    premium: 'glamping, campings premium, spots exclusifs',
-  }[input.budget]
-
-  const profilDesc = {
-    solo: 'voyageur solo',
-    couple: 'couple',
-    famille: 'famille avec enfants (adapter avec activités kids-friendly)',
-    amis: "groupe d'amis",
-  }[input.profil_voyageur]
-
-  const restaurantSchemaDesc = hasGastronomie
-    ? `      "restaurant": {
-        "nom": "string (nom précis et réel du restaurant ou lieu de restauration)",
-        "type": "string (Restaurant, Marché, Boulangerie artisanale, Cave à vins, Fromagerie…)",
-        "specialite": "string (spécialité locale ou plat typique)",
-        "description": "string (1-2 phrases évocatrices qui donnent envie)"
-      },`
-    : ''
-
-  const restaurantInstruction = hasGastronomie
-    ? `- Ajoute un champ "restaurant" à chaque jour : un vrai restaurant ou lieu gastronomique de la région, bien connu et réputé, avec son nom précis, son type, sa spécialité locale et une courte description évocatrice.`
-    : ''
-
-  const systemPrompt = `Tu es un expert du voyage en van en France. Tu génères des itinéraires road trip détaillés, authentiques et pratiques.
-Réponds UNIQUEMENT avec du JSON valide, sans texte avant ou après. Le JSON doit respecter exactement ce schéma :
-{
-  "intro": "string (2-3 phrases d'intro poétiques et évocatrices sur la région et le voyage)",
-  "jours": [
-    {
-      "numero": 1,
-      "titre": "string (titre évocateur du jour)",
-      "spots": [
-        {
-          "nom": "string (nom précis du lieu, tel qu'on le trouverait sur Wikipedia ou Google Maps)",
-          "description": "string (2-3 phrases riches et évocatrices, imagées, qui donnent envie de s'y rendre)",
-          "type": "string (Village, Plage, Montagne, Forêt, Cascade, Lac, Gorges, Col, Cap, Abbaye, Marché, etc.)",
-          "search_query": "string (requête en anglais optimisée pour chercher une belle photo, ex: 'Étretat cliffs Normandy France sunset')"
-        }
-      ],
-${restaurantSchemaDesc}
-      "camping": "string (lieu précis où dormir ce soir, avec le nom du camping ou du spot bivouac)",
-      "tips": "string (astuce pratique van pour ce jour)"
-    }
-  ],
-  "conseils_pratiques": ["string", "string", "string"]
-}`
-
-  const userPrompt = `Génère un road trip en van de ${input.duree} jours en ${input.region}, France.
-Profil : ${profilDesc}
-Intérêts : ${interetsLabels}
-Style : ${styleDesc}
-Budget hébergement : ${budgetDesc}
-Période : ${input.periode}
-Expérience van : ${input.experience_van ? 'habitué' : 'première fois'}
-
-Informations trouvées sur la région :
-${tavilyContext || 'Pas de contexte supplémentaire — utilise tes connaissances générales.'}
-
-Important :
-- Génère exactement ${input.duree} jours. Chaque jour = 2-3 spots.
-- Spots réels, précis et connus (pas inventés).
-- Descriptions en 2-3 phrases imagées et poétiques.
-- search_query en anglais, précise et optimisée pour trouver une belle photo (inclure pays/région/saison).
-${restaurantInstruction}`
-
-  function extractJson(raw: string): ItineraireData {
-    // Strategy 1: try to parse the full response directly
-    try {
-      return JSON.parse(raw.trim()) as ItineraireData
-    } catch { /* fall through */ }
-
-    // Strategy 2: strip markdown code fences
-    const stripped = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim()
-    try {
-      return JSON.parse(stripped) as ItineraireData
-    } catch { /* fall through */ }
-
-    // Strategy 3: extract first {...} block (handles "Here is the JSON: {...}")
-    const match = raw.match(/\{[\s\S]*\}/)
-    if (match) return JSON.parse(match[0]) as ItineraireData
-
-    throw new Error('No valid JSON found in Groq response')
-  }
-
-  async function callGroq(apiKey: string, temperature: number, model: string): Promise<ItineraireData> {
-    const client = new Groq({ apiKey })
-    const completion = await client.chat.completions.create({
-      model,
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userPrompt },
-      ],
-      temperature,
-      max_tokens: 4000,
-      response_format: { type: 'json_object' },
-    })
-    const raw = completion.choices[0]?.message?.content ?? ''
-    return extractJson(raw)
-  }
-
-  // ── Multi-key, multi-model cascade ──────────────────────────────────────────
-  // Build ordered list of (key, model) attempts
-  const availableKeys = [
-    process.env.GROQ_API_KEY,
-    process.env.GROQ_API_KEY_2,
-    process.env.GROQ_API_KEY_3,
-  ].filter(Boolean) as string[]
-
-  // Models per key ordered by preference (quality → speed → ultra-fast)
-  const modelsPerKey = [
-    { model: 'llama-3.3-70b-versatile', temperature: 0.7 },
-    { model: 'llama-3.1-8b-instant', temperature: 0.5 },
-    { model: 'gemma2-9b-it', temperature: 0.5 },
-  ]
-
-  const attempts = availableKeys.flatMap((key, keyIndex) =>
-    modelsPerKey.map(({ model, temperature }) => ({ key, model, temperature, keyIndex }))
-  )
-
-  const triedModels: string[] = []
-  let lastError: Error = new Error('No Groq API keys configured')
-
-  const tgCtx = { prenom: input.prenom, email: input.email, region: input.region, duree: input.duree }
-
-  for (let i = 0; i < attempts.length; i++) {
-    const { key, model, temperature, keyIndex } = attempts[i]
-    const attemptLabel = `${model}@KEY${keyIndex + 1}`
-    triedModels.push(attemptLabel)
-
-    try {
-      const data = await callGroq(key, temperature, model)
-      return {
-        data,
-        modelUsed: attemptLabel,
-        fallbackUsed: i > 0,
-        triedModels,
-      }
-    } catch (err) {
-      lastError = err as Error
-      console.error(`[road-trip] ${attemptLabel} failed:`, lastError.message)
-
-      // If there's a next attempt, send Telegram fallback notification
-      if (i < attempts.length - 1) {
-        const nextAttempt = attempts[i + 1]
-        const nextLabel = `${nextAttempt.model}@KEY${nextAttempt.keyIndex + 1}`
-        void notifyFallback(tgCtx, attemptLabel, nextLabel, lastError.message.slice(0, 80))
-      }
-    }
-  }
-
-  throw lastError
-}
-
-// ── Enrich itineraire ─────────────────────────────────────────────────────────
-async function enrichItineraire(
-  itineraire: ItineraireData,
-  region: string,
-  allCampings: CampingOption[]
-): Promise<ItineraireData> {
-  const enrichedJours = await Promise.all(
-    itineraire.jours.map(async (jour) => {
-      // Enrich each spot: geocode + wikipedia + photos all in parallel
-      const enrichedSpots = await Promise.all(
-        jour.spots.map(async (spot) => {
-          try {
-            const [geoResult, wikiResult] = await Promise.allSettled([
-              geocodeSpot(spot.nom, region),
-              fetchWikipedia(spot.nom),
-            ])
-
-            const geo = geoResult.status === 'fulfilled' ? geoResult.value : null
-            const wiki = wikiResult.status === 'fulfilled' ? wikiResult.value : null
-
-            const photo = await fetchBestPhoto(spot, region, wiki?.thumbnail ?? undefined)
-
-            return {
-              ...spot,
-              mapsUrl:
-                geo?.mapsUrl ??
-                `https://maps.google.com/?q=${encodeURIComponent(spot.nom + ' France')}`,
-              photo: photo ?? undefined,
-              wiki: wiki ?? undefined,
-              _lat: geo?.lat,
-              _lon: geo?.lon,
-            } as SpotEnriched & { _lat?: number; _lon?: number }
-          } catch {
-            // If enrichment of a spot fails, return it with a fallback Maps URL
-            return {
-              ...spot,
-              mapsUrl: `https://maps.google.com/?q=${encodeURIComponent(spot.nom + ' France')}`,
-              _lat: undefined,
-              _lon: undefined,
-            } as SpotEnriched & { _lat?: number; _lon?: number }
-          }
-        })
-      )
-
-      // Pick nearest campings for this day (using first spot's coordinates)
-      const firstSpot = (enrichedSpots[0] ?? null) as (SpotEnriched & { _lat?: number; _lon?: number }) | null
-      let campingOptions: CampingOption[] = []
-      if (firstSpot?._lat && firstSpot?._lon && allCampings.length > 0) {
-        campingOptions = nearestCampings(allCampings, firstSpot._lat, firstSpot._lon, 3)
-      }
-
-      // Strip internal _lat/_lon from final spots
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const cleanSpots = enrichedSpots.map(({ _lat, _lon, ...rest }: SpotEnriched & { _lat?: number; _lon?: number }) => rest as SpotEnriched)
-
-      const campingMapsUrl = `https://maps.google.com/?q=${encodeURIComponent(
-        jour.camping + ' ' + region + ' France camping'
-      )}`
-
-      return { ...jour, spots: cleanSpots, campingMapsUrl, campingOptions }
-    })
-  )
-
-  return { ...itineraire, jours: enrichedJours }
-}
-
-// ── SSE emitter helper ────────────────────────────────────────────────────────
+// ─── SSE emitter ─────────────────────────────────────────────────────────────
 type EmitFn = (type: string, payload?: Record<string, unknown>) => Promise<void>
 
 function createEmitter(writer: WritableStreamDefaultWriter<Uint8Array>): EmitFn {
@@ -583,18 +82,252 @@ function createEmitter(writer: WritableStreamDefaultWriter<Uint8Array>): EmitFn 
         encoder.encode(`data: ${JSON.stringify({ type, ...payload })}\n\n`)
       )
     } catch {
-      // client disconnected — ignore
+      /* client disconnected */
     }
   }
 }
 
-// ── Main handler ──────────────────────────────────────────────────────────────
+// ─── Fetch POIs (cache-first) ────────────────────────────────────────────────
+async function fetchPOIsForProfile(
+  interests: InterestKey[],
+  budgetLevel: BudgetLevel,
+  overnightPreference: OvernightPreference
+): Promise<{ pois: POIRow[]; overnightSpots: POIRow[] }> {
+  const { pois, overnightSpots } = await getPOIsFromCache(interests, overnightPreference)
+
+  let finalPOIs = pois
+  let finalOvernight = overnightSpots
+
+  if (pois.length < 10) {
+    console.log(`[road-trip/generate] POI cache insufficient (${pois.length}) — scraping Tavily`)
+    const scraped = await scrapePOIsViaTavily(interests, budgetLevel)
+    if (scraped.length > 0) {
+      await upsertPOIs(scraped)
+      finalPOIs = [...pois, ...(scraped as unknown as POIRow[])]
+    }
+  }
+
+  if (overnightSpots.length < 3) {
+    console.log(
+      `[road-trip/generate] Overnight cache insufficient (${overnightSpots.length}) — scraping Tavily`
+    )
+    const scraped = await scrapeOvernightSpotsViaTavily(overnightPreference)
+    if (scraped.length > 0) {
+      await upsertPOIs(scraped)
+      finalOvernight = [...overnightSpots, ...(scraped as unknown as POIRow[])]
+    }
+  }
+
+  return { pois: finalPOIs, overnightSpots: finalOvernight }
+}
+
+// ─── Prompt descriptors ──────────────────────────────────────────────────────
+const GROUP_LABELS: Record<GroupType, string> = {
+  solo: 'voyageur solo',
+  couple: 'couple',
+  amis: "groupe d'amis",
+  famille: 'famille avec enfants',
+}
+
+const BUDGET_LABELS: Record<BudgetLevel, string> = {
+  faible: 'budget serré (< 30€/pers/jour)',
+  moyen: 'budget confort (30-80€/pers/jour)',
+  eleve: 'budget premium (80€+/pers/jour)',
+}
+
+const OVERNIGHT_LABELS: Record<OvernightPreference, string> = {
+  gratuit: 'parkings gratuits & spots sauvages tolérés',
+  aires_officielles: 'aires camping-car officielles (gratuit ou < 15€/nuit)',
+  camping: 'campings van-friendly (15-30€/nuit)',
+  mix: 'mix des options selon les étapes',
+}
+
+// ─── Groq itinerary generation ───────────────────────────────────────────────
+async function generateItineraryV2(
+  input: RoadTripV2Input,
+  pois: POIRow[],
+  overnightSpots: POIRow[]
+): Promise<GeneratedItineraryV2> {
+  const durationDays = DURATION_TO_DAYS[input.duration]
+  const groupLabel = GROUP_LABELS[input.groupType]
+  const budgetLabel = BUDGET_LABELS[input.budgetLevel]
+  const overnightLabel = OVERNIGHT_LABELS[input.overnightPreference]
+
+  // POIs/overnight passés au modèle — version réduite pour économiser les tokens
+  const poiSummary = pois.slice(0, 30).map((p) => ({
+    name: p.name,
+    category: p.category,
+    subcategory: p.subcategory,
+    city: p.location_city,
+    address: p.address,
+    description: p.description,
+    url: p.external_url || p.google_maps_url,
+    tags: p.tags,
+    budget: p.budget_level,
+  }))
+
+  const overnightSummary = overnightSpots.slice(0, 15).map((o) => ({
+    name: o.name,
+    type: o.overnight_type,
+    price: o.overnight_price_per_night,
+    city: o.location_city,
+    address: o.address,
+    coordinates: o.overnight_coordinates,
+    maps_url: o.google_maps_url,
+    amenities: o.overnight_amenities,
+    restrictions: o.overnight_restrictions,
+    description: o.description,
+    capacity: o.overnight_capacity,
+  }))
+
+  const systemPrompt = `Tu es un expert du Pays Basque et un vanlifer expérimenté. Tu crées des itinéraires van pratiques, locaux et authentiques. Tu connais les spots de nuit discrets, les parkings adaptés aux grands véhicules, et les meilleures adresses selon les profils. Chaque journée se termine OBLIGATOIREMENT par un spot de nuit concret (parking, aire, camping) avec les informations pratiques pour garer et dormir dans le van.
+
+Réponds UNIQUEMENT avec du JSON valide. Aucun texte avant ou après. Aucun backtick markdown.`
+
+  const userPrompt = `Crée un road trip van au Pays Basque pour ce profil :
+- Voyageur : ${groupLabel} (${input.firstname})
+- Durée : ${durationDays} jour${durationDays > 1 ? 's' : ''}
+- Centres d'intérêt : ${input.interests.join(', ')}
+- Budget activités/repas : ${budgetLabel}
+- Préférence nuit en van : ${overnightLabel}
+
+POIs activités disponibles (utilise en priorité, avec leurs URLs exactes) :
+${JSON.stringify(poiSummary)}
+
+Spots de nuit disponibles (OBLIGATOIRE : 1 spot par nuit, utilise ceux-ci en priorité) :
+${JSON.stringify(overnightSummary)}
+
+Contraintes :
+- Exactement ${durationDays} journée${durationDays > 1 ? 's' : ''}.
+- Chaque journée = 3 à 5 étapes ("stops") dans l'ordre chronologique (matin → soir).
+- Chaque journée termine par un champ "overnight" concret (jamais inventé, piocher dans la liste ci-dessus en priorité).
+- Budgets indicatifs réalistes pour chaque stop.
+- Les URLs viennent des POI réels fournis, pas d'invention.
+
+Retourne STRICTEMENT ce JSON (aucun texte avant/après, aucun backtick) :
+{
+  "title": "Titre accrocheur du road trip",
+  "intro": "2-3 phrases d'introduction personnalisée à ${input.firstname}",
+  "days": [
+    {
+      "day": 1,
+      "theme": "Thème évocateur de la journée",
+      "stops": [
+        {
+          "time": "9h00",
+          "name": "Nom du lieu",
+          "type": "activite|restaurant|culture|nature|plage|soiree",
+          "description": "2-3 phrases pratiques et évocatrices",
+          "address": "adresse complète",
+          "url": "lien externe (site officiel ou Google Maps)",
+          "budget_indicatif": "gratuit | 5-15€ | 20-50€"
+        }
+      ],
+      "overnight": {
+        "name": "Nom du spot de nuit",
+        "type": "parking_gratuit|aire_camping_car|camping_van|spot_sauvage",
+        "price": "gratuit | 8€/nuit | 22€/nuit",
+        "address": "adresse",
+        "coordinates": "lat,lng",
+        "google_maps_url": "url",
+        "amenities": ["eau potable", "vidange"],
+        "restrictions": "ex: 72h max, interdit en août",
+        "tip": "astuce pratique pour ce spot (heure d'arrivée conseillée, discrétion, etc.)"
+      }
+    }
+  ],
+  "tips_van": [
+    "conseil pratique spécifique van 1",
+    "conseil 2",
+    "conseil 3"
+  ],
+  "cta": "phrase d'appel à l'action pour louer un van Vanzon"
+}`
+
+  const { content, modelUsed, fallbackUsed } = await groqWithFallback({
+    messages: [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: userPrompt },
+    ],
+    model: 'llama-3.3-70b-versatile',
+    temperature: 0.6,
+    response_format: { type: 'json_object' },
+    max_tokens: 5000,
+  })
+
+  const parsed = extractItineraryJson(content)
+  return { ...parsed, version: 'v2', _modelMeta: { modelUsed, fallbackUsed } } as GeneratedItineraryV2 & {
+    _modelMeta: { modelUsed: string; fallbackUsed: boolean }
+  }
+}
+
+function extractItineraryJson(raw: string): Omit<GeneratedItineraryV2, 'version'> {
+  const tryParse = (s: string) => JSON.parse(s) as Omit<GeneratedItineraryV2, 'version'>
+  try {
+    return tryParse(raw.trim())
+  } catch {
+    /* fallthrough */
+  }
+  const stripped = raw
+    .replace(/^```(?:json)?\s*/i, '')
+    .replace(/\s*```\s*$/, '')
+    .trim()
+  try {
+    return tryParse(stripped)
+  } catch {
+    /* fallthrough */
+  }
+  const match = raw.match(/\{[\s\S]*\}/)
+  if (match) {
+    try {
+      return tryParse(match[0])
+    } catch {
+      /* fallthrough */
+    }
+  }
+  throw new Error('[road-trip/generate v2] invalid JSON in Groq response')
+}
+
+// ─── Legacy field mapping for road_trip_requests NOT NULL constraints ────────
+function buildLegacyFields(input: RoadTripV2Input) {
+  const currentMonth = [
+    'janvier', 'fevrier', 'mars', 'avril', 'mai', 'juin',
+    'juillet', 'aout', 'septembre', 'octobre', 'novembre', 'decembre',
+  ][new Date().getMonth()]
+
+  return {
+    prenom: input.firstname,
+    email: input.email,
+    region: 'Pays Basque',
+    region_slug: 'pays-basque',
+    duree: DURATION_TO_DAYS[input.duration],
+    interets: input.interests.map((i) => INTEREST_TO_LEGACY[i]),
+    style_voyage: 'explorer',
+    periode: currentMonth,
+    profil_voyageur: input.groupType,
+    budget: BUDGET_LEVEL_TO_LEGACY[input.budgetLevel],
+    experience_van: input.vanStatus === 'proprietaire',
+  }
+}
+
+// ─── Rate limit error detection ──────────────────────────────────────────────
+function isRateLimitError(err: unknown): boolean {
+  const msg = (err as Error)?.message ?? ''
+  const status = (err as { status?: number })?.status
+  return (
+    msg.includes('rate_limit_exceeded') ||
+    msg.includes('Rate limit') ||
+    msg.includes('429') ||
+    status === 429
+  )
+}
+
+// ─── Main handler ────────────────────────────────────────────────────────────
 export async function POST(req: NextRequest) {
-  // ── Pre-flight (return JSON errors before starting stream) ────────────────
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
   if (!checkRateLimit(ip)) {
     return NextResponse.json(
-      { success: false, error: 'Trop de demandes, réessaie dans une heure.' },
+      { success: false, error: 'Trop de demandes, réessayez dans une heure.' },
       { status: 429 }
     )
   }
@@ -606,7 +339,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: false, error: 'Données invalides.' }, { status: 400 })
   }
 
-  const parsed = RoadTripSchema.safeParse(body)
+  const parsed = RoadTripV2Schema.safeParse(body)
   if (!parsed.success) {
     return NextResponse.json(
       { success: false, error: 'Données invalides.', details: parsed.error.flatten() },
@@ -617,16 +350,20 @@ export async function POST(req: NextRequest) {
   const input = parsed.data
   const supabase = createSupabaseAdmin()
 
+  // Désabonnés
   const { data: unsub } = await supabase
     .from('email_unsubscribes')
     .select('id')
     .eq('email', input.email)
     .maybeSingle()
-
   if (unsub) {
-    return NextResponse.json({ success: false, error: 'Cet email est désabonné.' }, { status: 400 })
+    return NextResponse.json(
+      { success: false, error: 'Cet email est désabonné.' },
+      { status: 400 }
+    )
   }
 
+  // Anti-double envoi : 1 road trip/email/24h
   const { data: existing } = await supabase
     .from('road_trip_requests')
     .select('id')
@@ -634,101 +371,95 @@ export async function POST(req: NextRequest) {
     .eq('status', 'sent')
     .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
     .maybeSingle()
-
   if (existing) {
     return NextResponse.json(
-      { success: false, error: "Tu as déjà reçu un road trip aujourd'hui. Réessaie demain !" },
+      { success: false, error: "Vous avez déjà reçu un road trip aujourd'hui. Réessayez demain !" },
       { status: 429 }
     )
   }
 
+  // Insert initial (status pending, skip publisher via article_sanity_id sentinel)
+  const legacyFields = buildLegacyFields(input)
   const { data: record, error: insertError } = await supabase
     .from('road_trip_requests')
     .insert({
-      prenom: input.prenom,
-      email: input.email,
-      region: input.region,
-      duree: input.duree,
-      interets: input.interets,
-      style_voyage: input.style_voyage,
-      periode: input.periode,
-      profil_voyageur: input.profil_voyageur,
-      budget: input.budget,
-      experience_van: input.experience_van,
+      ...legacyFields,
+      // Nouveaux champs lead v2
+      lead_firstname: input.firstname,
+      lead_email: input.email,
+      van_status: input.vanStatus,
+      group_type: input.groupType,
+      budget_level: input.budgetLevel,
+      overnight_preference: input.overnightPreference,
+      contacted: false,
       status: 'pending',
+      // Sentinel pour bypass du road-trip-publisher-agent (il ignore les records avec article_sanity_id non NULL)
+      article_sanity_id: 'skip_v2',
     })
     .select('id')
     .single()
 
   if (insertError || !record) {
+    console.error('[road-trip/generate v2] insert error:', insertError?.message)
     return NextResponse.json(
-      { success: false, error: 'Erreur interne, réessaie dans quelques instants.' },
+      { success: false, error: 'Erreur interne, réessayez dans quelques instants.' },
       { status: 500 }
     )
   }
 
-  // ── Start SSE stream ───────────────────────────────────────────────────────
+  // ─── Start SSE stream ──────────────────────────────────────────────────────
   const { readable, writable } = new TransformStream<Uint8Array, Uint8Array>()
   const writer = writable.getWriter()
   const emit = createEmitter(writer)
 
-  // Run async work in background (not awaited — stream starts immediately)
   void (async () => {
-    let genResult: GenerationMeta | undefined
+    let modelMeta: { modelUsed: string; fallbackUsed: boolean } | undefined
     try {
-      // Step 1: Tavily search
-      await emit('progress', { message: `🗺️  On prépare ton aventure en ${input.region}...` })
-      const tavilyContext = await searchTavily(input)
+      await emit('progress', { message: '🗺️  On prépare votre aventure au Pays Basque...' })
 
-      // Step 2: Groq generation
-      await emit('progress', { message: '🔍  On explore les meilleurs spots de la région...' })
-      genResult = await generateItineraire(input, tavilyContext)
-      const itineraire = genResult.data
-      const spotCount = itineraire.jours.reduce((a, j) => a + j.spots.length, 0)
+      // Étape 1 : POI cache-first
+      await emit('progress', { message: '📍  On sélectionne les meilleurs spots pour votre profil...' })
+      const { pois, overnightSpots } = await fetchPOIsForProfile(
+        input.interests,
+        input.budgetLevel,
+        input.overnightPreference
+      )
 
-      await emit('progress', { message: `📍  On a trouvé ${spotCount} endroits qui vont te plaire...` })
-      await emit('progress', { message: '🌅  On construit ton itinéraire jour par jour...' })
-
-      // Step 3: Geocode region + fetch all Overpass campings once (non-blocking)
-      await emit('progress', { message: '🏕️  On recherche les bivouacs et campings de la région...' })
-      let allCampings: CampingOption[] = []
-      try {
-        const regionGeo = await geocodeSpot(input.region, '')
-        if (regionGeo.lat && regionGeo.lon) {
-          allCampings = await fetchOverpassCampings(regionGeo.lat, regionGeo.lon, 80000)
-        }
-      } catch {
-        // Overpass failure is non-fatal — we continue without real campings
-        console.error('[road-trip] Overpass fetch failed, continuing without camping options')
+      if (pois.length === 0) {
+        throw new Error("Aucun POI disponible — le cache est vide et le scraping a échoué")
       }
 
-      // Step 4: Enrich spots (photos, maps, wikipedia) + assign campings per day
-      await emit('progress', { message: '📸  On illustre chaque étape avec de belles photos...' })
-      let enrichedItineraire: ItineraireData
-      try {
-        enrichedItineraire = await enrichItineraire(itineraire, input.region, allCampings)
-      } catch (enrichErr) {
-        console.error('[road-trip] enrichItineraire failed, using raw itinerary:', enrichErr)
-        // Fall back to the raw LLM-generated itinerary (no photos, no maps links, no camping options)
-        enrichedItineraire = itineraire
+      // Étape 2 : Groq itinéraire
+      await emit('progress', {
+        message: `🌅  On construit votre itinéraire sur ${DURATION_TO_DAYS[input.duration]} jour(s)...`,
+      })
+      await emit('progress', { message: '🌙  On sélectionne vos spots de nuit van...' })
+      const itineraryWithMeta = (await generateItineraryV2(input, pois, overnightSpots)) as GeneratedItineraryV2 & {
+        _modelMeta?: { modelUsed: string; fallbackUsed: boolean }
+      }
+      modelMeta = itineraryWithMeta._modelMeta
+      // Strip meta before persisting
+      const itinerary: GeneratedItineraryV2 = {
+        title: itineraryWithMeta.title,
+        intro: itineraryWithMeta.intro,
+        days: itineraryWithMeta.days,
+        tips_van: itineraryWithMeta.tips_van ?? [],
+        cta: itineraryWithMeta.cta ?? 'Louez un van Vanzon Explorer au Pays Basque',
+        version: 'v2',
       }
 
-      await emit('progress', { message: '✍️  On rédige tes conseils pratiques sur mesure...' })
+      await emit('progress', { message: '📬  On finalise votre road trip et on vous envoie tout ça...' })
 
-      // Step 5: Build + send email
-      if (!process.env.RESEND_API_KEY) throw new Error('[road-trip] RESEND_API_KEY is not set')
+      // Étape 3 : Email Resend
+      if (!process.env.RESEND_API_KEY) throw new Error('RESEND_API_KEY is not set')
       const resend = new Resend(process.env.RESEND_API_KEY)
-
       const emailEncoded = encodeURIComponent(input.email)
-      const { subject, html } = buildRoadTripEmail({
-        prenom: input.prenom,
-        region: input.region,
-        duree: input.duree,
-        itineraire: enrichedItineraire,
+      const { subject, html } = buildRoadTripEmailV2({
+        firstname: input.firstname,
+        duree: DURATION_TO_DAYS[input.duration],
+        itinerary,
         emailEncoded,
       })
-
-      await emit('progress', { message: '📬  On finalise ton road trip et on t\'envoie tout ça...' })
 
       const { error: resendError } = await resend.emails.send({
         from: 'Vanzon Explorer <noreply@vanzonexplorer.com>',
@@ -736,51 +467,56 @@ export async function POST(req: NextRequest) {
         subject,
         html,
       })
-      if (resendError) throw new Error(`[road-trip] Resend error: ${JSON.stringify(resendError)}`)
+      if (resendError) throw new Error(`Resend error: ${JSON.stringify(resendError)}`)
 
-      // Step 6: Update Supabase (sent)
+      // Étape 4 : Save itinéraire + status sent
       await supabase
         .from('road_trip_requests')
         .update({
           status: 'sent',
-          itineraire_json: enrichedItineraire,
+          itineraire_json: itinerary,
           sent_at: new Date().toISOString(),
         })
         .eq('id', record.id)
 
-      // Telegram success notification (non-blocking)
-      const photosCount = enrichedItineraire.jours.reduce(
-        (acc, j) => acc + j.spots.filter((s) => (s as SpotEnriched).photo).length,
-        0
-      )
+      // Telegram success
+      const totalStops = itinerary.days.reduce((a, d) => a + (d.stops?.length ?? 0), 0)
       void notifySuccess(
-        { prenom: input.prenom, email: input.email, region: input.region, duree: input.duree },
         {
-          modelUsed: genResult?.modelUsed ?? 'unknown',
-          fallbackUsed: genResult?.fallbackUsed ?? false,
-          photosCount,
-          totalSpots: spotCount,
-          campingsFound: allCampings.length,
+          prenom: input.firstname,
+          email: input.email,
+          region: 'Pays Basque',
+          duree: DURATION_TO_DAYS[input.duration],
+        },
+        {
+          modelUsed: modelMeta?.modelUsed ?? 'unknown',
+          fallbackUsed: modelMeta?.fallbackUsed ?? false,
+          photosCount: 0,
+          totalSpots: totalStops,
+          campingsFound: overnightSpots.length,
         }
       )
 
-      await emit('progress', { message: '✅  C\'est prêt ! Vérifie ta boîte mail 🎉' })
+      await emit('progress', { message: "✅  C'est prêt ! Vérifiez votre boîte mail 🎉" })
       await emit('done', {})
     } catch (err) {
       const error = err as Error
-      const errMsg = error.message ?? ''
-      console.error('[road-trip/generate]', errMsg)
+      console.error('[road-trip/generate v2]', error.message)
 
-      // Telegram error notification (non-blocking)
       void telegramNotifyError(
-        { prenom: input.prenom, email: input.email, region: input.region, duree: input.duree },
+        {
+          prenom: input.firstname,
+          email: input.email,
+          region: 'Pays Basque',
+          duree: DURATION_TO_DAYS[input.duration],
+        },
         error,
-        genResult?.triedModels ?? []
+        modelMeta?.modelUsed ? [modelMeta.modelUsed] : []
       )
 
       const userMessage = isRateLimitError(err)
-        ? "Notre IA est momentanément surchargée 😅 Réessaie dans 2-3 minutes !"
-        : 'Erreur interne, réessaie dans quelques instants.'
+        ? 'Notre IA est momentanément surchargée 😅 Réessayez dans 2-3 minutes !'
+        : 'Erreur interne, réessayez dans quelques instants.'
 
       await emit('error', { message: userMessage })
       await supabase
@@ -791,7 +527,7 @@ export async function POST(req: NextRequest) {
       try {
         await writer.close()
       } catch {
-        // already closed (client disconnected)
+        /* already closed */
       }
     }
   })()
@@ -805,3 +541,6 @@ export async function POST(req: NextRequest) {
     },
   })
 }
+
+// Typage utilitaire — évite l'avertissement no-unused-vars sur VanStatus
+export type { VanStatus, DurationKey }

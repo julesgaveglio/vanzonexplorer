@@ -238,6 +238,23 @@
     "pipeline": "road_trip_requests (sent) → enrichissement → Sanity (review)"
   },
   {
+    "id": "seed-poi-pays-basque",
+    "name": "Seed POI Pays Basque",
+    "emoji": "📍",
+    "status": "active",
+    "description": "Script manuel de premier scraping pour pré-remplir la table poi_cache côté Pays Basque. Phase 1 : spots de nuit van (parking gratuit, aires camping-car, campings van, spots sauvages). Phase 2 : activités/restos/culture/nature/plages. Pour chaque requête : Tavily → Groq (extraction JSON strict) → upsert Supabase idempotent sur (name, location_city).",
+    "trigger": "manual",
+    "schedule": "Manuel uniquement (seed initial)",
+    "cronExpression": null,
+    "file": "scripts/agents/seed-poi-pays-basque.ts",
+    "workflow": null,
+    "apis": ["Tavily", "Groq", "Gemini", "Supabase"],
+    "output": "Table poi_cache pré-remplie (spots de nuit + POI Pays Basque)",
+    "manualCommand": "npx tsx scripts/agents/seed-poi-pays-basque.ts",
+    "tags": ["Road Trip", "Seed", "POI", "Pays Basque", "Manuel"],
+    "pipeline": "Standalone — alimente le wizard /road-trip-personnalise (cache-first)"
+  },
+  {
     "id": "road-trip-seed",
     "name": "Agent Road Trip Seed",
     "emoji": "🌱",

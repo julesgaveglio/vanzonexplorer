@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
 import { ReviewActions } from "./ReviewActions";
+import { ContactedToggle } from "./ContactedToggle";
 
 export const metadata: Metadata = {
   title: "Road Trips — Vanzon Admin",
@@ -12,6 +13,9 @@ const PAGE_SIZE = 50;
 interface SearchParams {
   status?: string;
   region?: string;
+  van_status?: string;
+  overnight?: string;
+  contacted?: string;
   page?: string;
   tab?: string;
 }
@@ -36,6 +40,50 @@ interface RoadTripRequest {
   article_slug?: string | null;
   region_slug?: string | null;
   quality_score?: number | null;
+  // v2 lead fields
+  lead_firstname?: string | null;
+  lead_email?: string | null;
+  van_status?: "proprietaire" | "locataire" | "non_precise" | null;
+  group_type?: string | null;
+  budget_level?: string | null;
+  overnight_preference?: "gratuit" | "aires_officielles" | "camping" | "mix" | null;
+  contacted?: boolean | null;
+}
+
+function VanStatusBadge({ status }: { status?: string | null }) {
+  if (!status) return <span className="text-slate-300 text-xs">—</span>;
+  const styles: Record<string, string> = {
+    proprietaire: "bg-green-100 text-green-800 border border-green-200",
+    locataire: "bg-blue-100 text-blue-800 border border-blue-200",
+    non_precise: "bg-slate-100 text-slate-600 border border-slate-200",
+  };
+  const labels: Record<string, string> = {
+    proprietaire: "Propriétaire",
+    locataire: "Locataire",
+    non_precise: "N/C",
+  };
+  return (
+    <span
+      className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${styles[status] ?? "bg-slate-100 text-slate-600"}`}
+    >
+      {labels[status] ?? status}
+    </span>
+  );
+}
+
+function OvernightBadge({ pref }: { pref?: string | null }) {
+  if (!pref) return <span className="text-slate-300 text-xs">—</span>;
+  const labels: Record<string, string> = {
+    gratuit: "🆓 Gratuit",
+    aires_officielles: "⚡ Aires",
+    camping: "🏕️ Camping",
+    mix: "🔀 Mix",
+  };
+  return (
+    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 border border-purple-200">
+      {labels[pref] ?? pref}
+    </span>
+  );
 }
 
 function StatusBadge({ status }: { status: string }) {
@@ -148,6 +196,17 @@ export default async function RoadTripsAdminPage({
     if (searchParams.region) {
       query = query.ilike("region", `%${searchParams.region}%`);
     }
+    if (searchParams.van_status && searchParams.van_status !== "all") {
+      query = query.eq("van_status", searchParams.van_status);
+    }
+    if (searchParams.overnight && searchParams.overnight !== "all") {
+      query = query.eq("overnight_preference", searchParams.overnight);
+    }
+    if (searchParams.contacted === "true") {
+      query = query.eq("contacted", true);
+    } else if (searchParams.contacted === "false") {
+      query = query.eq("contacted", false);
+    }
 
     const result = await query;
     rows = result.data as RoadTripRequest[] | null;
@@ -158,9 +217,12 @@ export default async function RoadTripsAdminPage({
   // Build filter URL helpers
   function buildUrl(overrides: Record<string, string | undefined>) {
     const params = new URLSearchParams();
-    const merged = {
+    const merged: Record<string, string | undefined> = {
       status: searchParams.status ?? "all",
       region: searchParams.region ?? "",
+      van_status: searchParams.van_status ?? "all",
+      overnight: searchParams.overnight ?? "all",
+      contacted: searchParams.contacted ?? "",
       page: String(page),
       tab: currentTab,
       ...overrides,
@@ -169,6 +231,11 @@ export default async function RoadTripsAdminPage({
     if (merged.status && merged.status !== "all")
       params.set("status", merged.status);
     if (merged.region) params.set("region", merged.region);
+    if (merged.van_status && merged.van_status !== "all")
+      params.set("van_status", merged.van_status);
+    if (merged.overnight && merged.overnight !== "all")
+      params.set("overnight", merged.overnight);
+    if (merged.contacted) params.set("contacted", merged.contacted);
     if (merged.page && merged.page !== "1") params.set("page", merged.page);
     const qs = params.toString();
     return `/admin/road-trips${qs ? `?${qs}` : ""}`;
@@ -176,7 +243,14 @@ export default async function RoadTripsAdminPage({
 
   const currentStatus = searchParams.status ?? "all";
   const currentRegion = searchParams.region ?? "";
-  const exportUrl = `/api/admin/road-trips/export?status=${currentStatus !== "all" ? currentStatus : "sent"}`;
+  const currentVanStatus = searchParams.van_status ?? "all";
+  const currentOvernight = searchParams.overnight ?? "all";
+  const currentContacted = searchParams.contacted ?? "";
+  const exportParams = new URLSearchParams();
+  if (currentStatus !== "all") exportParams.set("status", currentStatus);
+  if (currentVanStatus !== "all") exportParams.set("van_status", currentVanStatus);
+  if (currentContacted) exportParams.set("contacted", currentContacted);
+  const exportUrl = `/api/admin/road-trips/export${exportParams.toString() ? `?${exportParams.toString()}` : ""}`;
 
   return (
     <div className="p-4 md:p-6 lg:p-8">
@@ -422,6 +496,77 @@ export default async function RoadTripsAdminPage({
                 </a>
               )}
             </form>
+
+            {/* Van status filter */}
+            <div className="flex items-center gap-1 bg-slate-100 rounded-xl p-1">
+              {(
+                [
+                  { v: "all", l: "Tous vans" },
+                  { v: "proprietaire", l: "🔑 Propriétaires" },
+                  { v: "locataire", l: "🚐 Locataires" },
+                ] as const
+              ).map((opt) => (
+                <a
+                  key={opt.v}
+                  href={buildUrl({ van_status: opt.v, page: "1" })}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                    currentVanStatus === opt.v
+                      ? "bg-white text-slate-900 shadow-sm"
+                      : "text-slate-500 hover:text-slate-700"
+                  }`}
+                >
+                  {opt.l}
+                </a>
+              ))}
+            </div>
+
+            {/* Overnight pref filter */}
+            <div className="flex items-center gap-1 bg-slate-100 rounded-xl p-1">
+              {(
+                [
+                  { v: "all", l: "Toutes nuits" },
+                  { v: "gratuit", l: "🆓" },
+                  { v: "aires_officielles", l: "⚡" },
+                  { v: "camping", l: "🏕️" },
+                  { v: "mix", l: "🔀" },
+                ] as const
+              ).map((opt) => (
+                <a
+                  key={opt.v}
+                  href={buildUrl({ overnight: opt.v, page: "1" })}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                    currentOvernight === opt.v
+                      ? "bg-white text-slate-900 shadow-sm"
+                      : "text-slate-500 hover:text-slate-700"
+                  }`}
+                >
+                  {opt.l}
+                </a>
+              ))}
+            </div>
+
+            {/* Contacted filter */}
+            <div className="flex items-center gap-1 bg-slate-100 rounded-xl p-1">
+              {(
+                [
+                  { v: "", l: "Tous contacts" },
+                  { v: "false", l: "À contacter" },
+                  { v: "true", l: "Contactés" },
+                ] as const
+              ).map((opt) => (
+                <a
+                  key={opt.v || "all"}
+                  href={buildUrl({ contacted: opt.v || undefined, page: "1" })}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                    currentContacted === opt.v
+                      ? "bg-white text-slate-900 shadow-sm"
+                      : "text-slate-500 hover:text-slate-700"
+                  }`}
+                >
+                  {opt.l}
+                </a>
+              ))}
+            </div>
           </div>
 
           {/* Table */}
@@ -443,10 +588,19 @@ export default async function RoadTripsAdminPage({
                       Durée
                     </th>
                     <th className="text-left px-4 py-3 font-semibold text-slate-500 text-xs uppercase tracking-wider">
+                      Statut Van
+                    </th>
+                    <th className="text-left px-4 py-3 font-semibold text-slate-500 text-xs uppercase tracking-wider">
+                      Nuit
+                    </th>
+                    <th className="text-left px-4 py-3 font-semibold text-slate-500 text-xs uppercase tracking-wider">
                       Profil
                     </th>
                     <th className="text-left px-4 py-3 font-semibold text-slate-500 text-xs uppercase tracking-wider">
                       Budget
+                    </th>
+                    <th className="text-left px-4 py-3 font-semibold text-slate-500 text-xs uppercase tracking-wider">
+                      Contacté
                     </th>
                     <th className="text-left px-4 py-3 font-semibold text-slate-500 text-xs uppercase tracking-wider">
                       Statut
@@ -463,7 +617,7 @@ export default async function RoadTripsAdminPage({
                   {(rows as RoadTripRequest[] | null)?.length === 0 && (
                     <tr>
                       <td
-                        colSpan={9}
+                        colSpan={12}
                         className="text-center py-12 text-slate-400 text-sm"
                       >
                         Aucune demande trouvée
@@ -477,25 +631,41 @@ export default async function RoadTripsAdminPage({
                     const jsonFull = row.itineraire_json
                       ? JSON.stringify(row.itineraire_json, null, 2)
                       : null;
+                    const displayFirstname = row.lead_firstname ?? row.prenom;
+                    const displayEmail = row.lead_email ?? row.email;
+                    const displayProfil = row.group_type ?? row.profil_voyageur;
+                    const displayBudget = row.budget_level ?? row.budget;
                     return (
                       <tr
                         key={row.id}
                         className="border-b border-white/10 hover:bg-slate-50/50 transition-colors"
                       >
                         <td className="px-4 py-3 font-medium text-slate-900">
-                          {row.prenom}
+                          {displayFirstname}
                         </td>
                         <td className="px-4 py-3 text-slate-600 font-mono text-xs">
-                          {row.email}
+                          {displayEmail}
                         </td>
                         <td className="px-4 py-3 text-slate-700">{row.region}</td>
                         <td className="px-4 py-3 text-slate-700">
                           {row.duree}j
                         </td>
-                        <td className="px-4 py-3 text-slate-600 capitalize">
-                          {row.profil_voyageur}
+                        <td className="px-4 py-3">
+                          <VanStatusBadge status={row.van_status} />
                         </td>
-                        <td className="px-4 py-3 text-slate-600">{row.budget}</td>
+                        <td className="px-4 py-3">
+                          <OvernightBadge pref={row.overnight_preference} />
+                        </td>
+                        <td className="px-4 py-3 text-slate-600 capitalize">
+                          {displayProfil}
+                        </td>
+                        <td className="px-4 py-3 text-slate-600">{displayBudget}</td>
+                        <td className="px-4 py-3">
+                          <ContactedToggle
+                            id={row.id}
+                            initial={Boolean(row.contacted)}
+                          />
+                        </td>
                         <td className="px-4 py-3">
                           <StatusBadge status={row.status} />
                         </td>

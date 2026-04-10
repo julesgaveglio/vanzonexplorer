@@ -5,45 +5,124 @@ import { useForm, type SubmitHandler } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { motion, AnimatePresence } from 'framer-motion'
-import {
-  INTERETS_OPTIONS,
-  MOIS_OPTIONS,
-  STYLE_VOYAGE_OPTIONS,
-  PROFIL_VOYAGEUR_OPTIONS,
-  BUDGET_OPTIONS,
-  DUREE_OPTIONS,
-} from '@/lib/road-trip/constants'
-import type { InteretValue } from '@/lib/road-trip/constants'
 import { RoadTripTerminal, type TerminalLine } from './RoadTripTerminal'
+import type {
+  GroupType,
+  VanStatus,
+  DurationKey,
+  InterestKey,
+  BudgetLevel,
+  OvernightPreference,
+} from '@/types/roadtrip'
 
-// ── Zod schema ──────────────────────────────────────────────────────────────────
-const InteretEnum = z.enum(
-  INTERETS_OPTIONS.map((o) => o.value) as [string, ...string[]]
-)
+// ─── Options wizard ─────────────────────────────────────────────────────────
+const GROUP_OPTIONS: { value: GroupType; label: string; emoji: string }[] = [
+  { value: 'solo', label: 'Solo', emoji: '🧍' },
+  { value: 'couple', label: 'En couple', emoji: '💑' },
+  { value: 'amis', label: 'Entre amis', emoji: '👥' },
+  { value: 'famille', label: 'En famille', emoji: '👨\u200d👩\u200d👧' },
+]
 
+const VAN_STATUS_OPTIONS: {
+  value: VanStatus
+  title: string
+  subtitle: string
+  emoji: string
+}[] = [
+  {
+    value: 'proprietaire',
+    title: 'Je suis propriétaire d\u2019un van',
+    subtitle: 'Itinéraire adapté à votre véhicule',
+    emoji: '🔑',
+  },
+  {
+    value: 'locataire',
+    title: 'Je souhaite louer un van',
+    subtitle: 'On vous propose nos vans Vanzon en plus',
+    emoji: '🚐',
+  },
+]
+
+const DURATION_OPTIONS: { value: DurationKey; label: string }[] = [
+  { value: '1j', label: '1 jour' },
+  { value: '2-3j', label: '2-3 jours' },
+  { value: '4-5j', label: '4-5 jours' },
+  { value: '1sem', label: '1 semaine' },
+]
+
+const INTEREST_OPTIONS: { value: InterestKey; label: string; emoji: string; desc: string }[] = [
+  { value: 'sport', label: 'Sport & Aventure', emoji: '🏄', desc: 'surf, rafting, escalade, VTT' },
+  { value: 'nature', label: 'Nature & Randonnée', emoji: '🥾', desc: 'Rhune, Iraty, GR10' },
+  { value: 'gastronomie', label: 'Gastronomie Basque', emoji: '🍽️', desc: 'pintxos, restaurants, marchés' },
+  { value: 'culture', label: 'Culture & Patrimoine', emoji: '🏛️', desc: 'Espelette, musées, villages' },
+  { value: 'plages', label: 'Plages & Détente', emoji: '🏖️', desc: 'Biarritz, Hendaye, Guéthary' },
+  { value: 'soirees', label: 'Soirées & Vie Locale', emoji: '🌙', desc: 'bars, fêtes basques' },
+]
+
+const BUDGET_OPTIONS: { value: BudgetLevel; label: string; desc: string }[] = [
+  { value: 'faible', label: 'Économique', desc: '< 30€/pers/jour' },
+  { value: 'moyen', label: 'Confort', desc: '30-80€/pers/jour' },
+  { value: 'eleve', label: 'Premium', desc: '80€+/pers/jour' },
+]
+
+const OVERNIGHT_OPTIONS: {
+  value: OvernightPreference
+  label: string
+  desc: string
+  emoji: string
+}[] = [
+  {
+    value: 'gratuit',
+    label: 'Parkings gratuits & spots sauvages',
+    desc: 'Nuit en van tolérée, 0€',
+    emoji: '🆓',
+  },
+  {
+    value: 'aires_officielles',
+    label: 'Aires camping-car officielles',
+    desc: 'Gratuit ou < 15€/nuit, services',
+    emoji: '⚡',
+  },
+  {
+    value: 'camping',
+    label: 'Campings van-friendly',
+    desc: '15-30€/nuit, confort',
+    emoji: '🏕️',
+  },
+  {
+    value: 'mix',
+    label: 'Mix selon les étapes',
+    desc: 'On alterne selon le trajet',
+    emoji: '🔀',
+  },
+]
+
+// ─── Zod schema ─────────────────────────────────────────────────────────────
 const schema = z.object({
-  prenom: z.string().min(2, { message: 'Minimum 2 caractères' }).max(50),
+  firstname: z.string().min(2, { message: 'Minimum 2 caractères' }).max(50),
   email: z.string().email({ message: 'Email invalide' }),
-  region: z.string().min(2, { message: 'Minimum 2 caractères' }).max(100),
-  duree: z.number().int().min(1).max(14),
-  interets: z
-    .array(InteretEnum)
-    .min(1, { message: 'Choisissez au moins un intérêt' })
-    .max(7),
-  style_voyage: z.enum(['lent', 'explorer', 'aventure']),
-  periode: z.enum(MOIS_OPTIONS),
-  profil_voyageur: z.enum(['solo', 'couple', 'famille', 'amis']),
-  budget: z.enum(['economique', 'confort', 'premium']),
-  experience_van: z.boolean(),
+  groupType: z.enum(['solo', 'couple', 'amis', 'famille']),
+  vanStatus: z.enum(['proprietaire', 'locataire']),
+  duration: z.enum(['1j', '2-3j', '4-5j', '1sem']),
+  interests: z
+    .array(z.enum(['sport', 'nature', 'gastronomie', 'culture', 'plages', 'soirees']))
+    .min(1, { message: 'Choisissez au moins un centre d\u2019intérêt' })
+    .max(6),
+  budgetLevel: z.enum(['faible', 'moyen', 'eleve']),
+  overnightPreference: z.enum(['gratuit', 'aires_officielles', 'camping', 'mix']),
 })
 
 type FormData = z.infer<typeof schema>
 
+// ─── Step validation map ─────────────────────────────────────────────────────
 const STEP_FIELDS: Record<number, (keyof FormData)[]> = {
-  1: ['prenom', 'email', 'region', 'duree'],
-  2: ['interets', 'style_voyage', 'periode'],
-  3: ['profil_voyageur', 'budget', 'experience_van'],
+  1: ['firstname', 'email', 'groupType'],
+  2: ['vanStatus'],
+  3: ['duration', 'interests'],
+  4: ['budgetLevel', 'overnightPreference'],
 }
+
+const TOTAL_STEPS = 5
 
 const variants = {
   enter: { x: 50, opacity: 0 },
@@ -53,32 +132,16 @@ const variants = {
 
 const inputClass =
   'bg-white border border-slate-200 focus:ring-blue-200 focus:border-blue-400 rounded-xl px-4 py-3 w-full focus:outline-none focus:ring-2 transition-colors placeholder:text-slate-400 text-slate-900 text-sm'
-
 const labelClass = 'text-sm font-semibold text-slate-900'
 const errorClass = 'text-rose-500 text-sm mt-1'
 
 function radioCardClass(selected: boolean) {
   return [
-    'cursor-pointer border rounded-xl p-4 transition-all duration-200 text-left',
+    'cursor-pointer border rounded-xl p-4 transition-all duration-200 text-left w-full min-h-[44px]',
     selected
       ? 'border-blue-400 bg-blue-50 shadow-sm'
       : 'border-slate-200 bg-white hover:bg-slate-50 hover:border-blue-300',
   ].join(' ')
-}
-
-const MOIS_LABELS: Record<string, string> = {
-  janvier: 'Janvier',
-  fevrier: 'Février',
-  mars: 'Mars',
-  avril: 'Avril',
-  mai: 'Mai',
-  juin: 'Juin',
-  juillet: 'Juillet',
-  aout: 'Août',
-  septembre: 'Septembre',
-  octobre: 'Octobre',
-  novembre: 'Novembre',
-  decembre: 'Décembre',
 }
 
 export default function RoadTripWizard() {
@@ -97,32 +160,34 @@ export default function RoadTripWizard() {
   } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
-      prenom: '',
+      firstname: '',
       email: '',
-      region: '',
-      duree: 7,
-      interets: [],
-      style_voyage: 'explorer',
-      periode: 'juillet',
-      profil_voyageur: 'couple',
-      budget: 'confort',
-      experience_van: false,
+      groupType: 'couple',
+      vanStatus: 'locataire',
+      duration: '2-3j',
+      interests: [],
+      budgetLevel: 'moyen',
+      overnightPreference: 'mix',
     },
   })
 
   const handleNext = async () => {
-    const valid = await trigger(STEP_FIELDS[step] as (keyof FormData)[])
-    if (valid) setStep((s) => s + 1)
+    const fields = STEP_FIELDS[step]
+    if (fields) {
+      const valid = await trigger(fields)
+      if (!valid) return
+    }
+    setStep((s) => Math.min(s + 1, TOTAL_STEPS))
   }
+  const handleBack = () => setStep((s) => Math.max(s - 1, 1))
 
-  const handleBack = () => setStep((s) => s - 1)
-
-  const toggleInteret = (value: InteretValue) => {
-    const current = watch('interets') as InteretValue[]
+  const toggleInterest = (value: InterestKey) => {
+    const current = (watch('interests') ?? []) as InterestKey[]
     const exists = current.includes(value)
     setValue(
-      'interets',
-      exists ? current.filter((v) => v !== value) : [...current, value]
+      'interests',
+      exists ? current.filter((v) => v !== value) : [...current, value],
+      { shouldValidate: true }
     )
   }
 
@@ -130,9 +195,9 @@ export default function RoadTripWizard() {
     setStatus('streaming')
     setTerminalLines([])
 
-    let lineCounter = 0
+    let counter = 0
     const addLine = (text: string) => {
-      const id = String(++lineCounter)
+      const id = String(++counter)
       setTerminalLines((prev) => [
         ...prev.map((l) => ({ ...l, done: true })),
         { id, text, done: false },
@@ -149,7 +214,7 @@ export default function RoadTripWizard() {
       })
 
       if (!res.ok) {
-        const json = await res.json().catch(() => ({})) as { error?: string }
+        const json = (await res.json().catch(() => ({}))) as { error?: string }
         setErrorMessage(json.error ?? 'Une erreur est survenue, réessayez dans quelques instants.')
         setStatus('error')
         return
@@ -168,11 +233,9 @@ export default function RoadTripWizard() {
       while (true) {
         const { done, value } = await reader.read()
         if (done) break
-
         buffer += decoder.decode(value, { stream: true })
         const parts = buffer.split('\n\n')
         buffer = parts.pop() ?? ''
-
         for (const part of parts) {
           for (const raw of part.split('\n')) {
             if (!raw.startsWith('data: ')) continue
@@ -181,22 +244,20 @@ export default function RoadTripWizard() {
                 type: string
                 message?: string
               }
-
-              if (event.type === 'progress' && event.message) {
-                addLine(event.message)
-              } else if (event.type === 'done') {
+              if (event.type === 'progress' && event.message) addLine(event.message)
+              else if (event.type === 'done') {
                 receivedTerminalEvent = true
                 setTerminalLines((prev) => prev.map((l) => ({ ...l, done: true })))
                 setTimeout(() => setStatus('success'), 1000)
                 return
               } else if (event.type === 'error') {
                 receivedTerminalEvent = true
-                setErrorMessage(event.message ?? 'Erreur interne, réessayez dans quelques instants.')
+                setErrorMessage(event.message ?? 'Erreur interne.')
                 setStatus('error')
                 return
               }
             } catch {
-              // ignore malformed SSE lines
+              /* ignore */
             }
           }
         }
@@ -214,21 +275,21 @@ export default function RoadTripWizard() {
     }
   }
 
-  const progressPercent = (step / 4) * 100
+  const progressPercent = (step / TOTAL_STEPS) * 100
 
-  // ── Streaming state ──────────────────────────────────────────────────────────
+  // ─── Streaming state ─────────────────────────────────────────────────────
   if (status === 'streaming') {
     return (
       <div className="py-2">
         <p className="text-sm text-center mb-5 font-medium text-slate-500">
-          Construction de votre road trip sur mesure...
+          Construction de votre road trip au Pays Basque...
         </p>
         <RoadTripTerminal lines={terminalLines} />
       </div>
     )
   }
 
-  // ── Success state ────────────────────────────────────────────────────────────
+  // ─── Success state ───────────────────────────────────────────────────────
   if (status === 'success') {
     return (
       <motion.div
@@ -241,11 +302,10 @@ export default function RoadTripWizard() {
           🚐
         </div>
         <div>
-          <h3 className="text-2xl font-bold text-slate-900 mb-2">
-            C&apos;est parti !
-          </h3>
+          <h3 className="text-2xl font-bold text-slate-900 mb-2">C&apos;est parti !</h3>
           <p className="text-slate-500 max-w-sm mx-auto">
-            Votre road trip arrive dans votre boîte mail !<br />
+            Votre road trip au Pays Basque arrive dans votre boîte mail !
+            <br />
             Vérifiez aussi vos spams si besoin.
           </p>
         </div>
@@ -259,13 +319,14 @@ export default function RoadTripWizard() {
     )
   }
 
-  // ── Main form ────────────────────────────────────────────────────────────────
+  // ─── Main form ───────────────────────────────────────────────────────────
   const values = watch()
-  const selectedInterets = watch('interets') as InteretValue[]
-  const selectedStyle = watch('style_voyage')
-  const selectedProfil = watch('profil_voyageur')
-  const selectedBudget = watch('budget')
-  const selectedExperience = watch('experience_van')
+  const selectedInterests = (watch('interests') ?? []) as InterestKey[]
+  const selectedGroup = watch('groupType')
+  const selectedVan = watch('vanStatus')
+  const selectedDuration = watch('duration')
+  const selectedBudget = watch('budgetLevel')
+  const selectedOvernight = watch('overnightPreference')
 
   return (
     <div>
@@ -273,7 +334,7 @@ export default function RoadTripWizard() {
       <div className="mb-8">
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm font-medium text-slate-500">
-            Étape {step} sur 4
+            Étape {step} sur {TOTAL_STEPS}
           </span>
           <span className="text-sm font-medium text-accent-blue">
             {Math.round(progressPercent)}%
@@ -289,10 +350,9 @@ export default function RoadTripWizard() {
         </div>
       </div>
 
-      {/* Steps */}
       <form onSubmit={handleSubmit(onSubmit)}>
         <AnimatePresence mode="wait">
-          {/* ── Step 1 ── */}
+          {/* ─ Step 1 : Profil voyageur ─ */}
           {step === 1 && (
             <motion.div
               key={1}
@@ -302,21 +362,18 @@ export default function RoadTripWizard() {
               exit="exit"
               transition={{ duration: 0.3, ease: 'easeInOut' }}
             >
-              <h2 className="text-xl font-bold text-slate-900 mb-6">
-                Votre van trip
-              </h2>
-
+              <h2 className="text-xl font-bold text-slate-900 mb-6">Votre profil voyageur</h2>
               <div className="space-y-5">
                 <div>
-                  <label htmlFor="field-prenom" className={labelClass}>Votre prénom</label>
+                  <label htmlFor="field-firstname" className={labelClass}>Votre prénom</label>
                   <input
-                    {...register('prenom')}
-                    id="field-prenom"
+                    {...register('firstname')}
+                    id="field-firstname"
                     type="text"
                     placeholder="Ex : Marie"
                     className={`${inputClass} mt-1.5`}
                   />
-                  {errors.prenom && <p className={errorClass}>{errors.prenom.message}</p>}
+                  {errors.firstname && <p className={errorClass}>{errors.firstname.message}</p>}
                 </div>
 
                 <div>
@@ -332,33 +389,30 @@ export default function RoadTripWizard() {
                 </div>
 
                 <div>
-                  <label htmlFor="field-region" className={labelClass}>Région souhaitée</label>
-                  <input
-                    {...register('region')}
-                    id="field-region"
-                    type="text"
-                    placeholder="Ex : Pays Basque, Bretagne, Provence..."
-                    className={`${inputClass} mt-1.5`}
-                  />
-                  {errors.region && <p className={errorClass}>{errors.region.message}</p>}
-                </div>
-
-                <div>
-                  <label htmlFor="field-duree" className={labelClass}>Durée du voyage</label>
-                  <select {...register('duree', { valueAsNumber: true })} id="field-duree" className={`${inputClass} mt-1.5`}>
-                    {DUREE_OPTIONS.map((n) => (
-                      <option key={n} value={n}>
-                        {n} jour{n > 1 ? 's' : ''}
-                      </option>
+                  <label className={labelClass}>Vous voyagez...</label>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-2">
+                    {GROUP_OPTIONS.map((opt) => (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        aria-pressed={selectedGroup === opt.value}
+                        onClick={() => setValue('groupType', opt.value)}
+                        className={[
+                          radioCardClass(selectedGroup === opt.value),
+                          'text-center items-center flex flex-col gap-1',
+                        ].join(' ')}
+                      >
+                        <span className="text-2xl">{opt.emoji}</span>
+                        <span className="text-sm font-semibold text-slate-900">{opt.label}</span>
+                      </button>
                     ))}
-                  </select>
-                  {errors.duree && <p className={errorClass}>{errors.duree.message}</p>}
+                  </div>
                 </div>
               </div>
             </motion.div>
           )}
 
-          {/* ── Step 2 ── */}
+          {/* ─ Step 2 : Situation van ─ */}
           {step === 2 && (
             <motion.div
               key={2}
@@ -368,75 +422,32 @@ export default function RoadTripWizard() {
               exit="exit"
               transition={{ duration: 0.3, ease: 'easeInOut' }}
             >
-              <h2 className="text-xl font-bold text-slate-900 mb-6">
-                Vos envies
-              </h2>
-
-              <div className="space-y-6">
-                <div>
-                  <label className={labelClass}>
-                    Vos centres d&apos;intérêt{' '}
-                    <span className="font-normal text-slate-400">(plusieurs choix possibles)</span>
-                  </label>
-                  <div className="grid grid-cols-2 gap-2 mt-2">
-                    {INTERETS_OPTIONS.map((opt) => {
-                      const selected = selectedInterets.includes(opt.value as InteretValue)
-                      return (
-                        <button
-                          key={opt.value}
-                          type="button"
-                          aria-pressed={selected}
-                          onClick={() => toggleInteret(opt.value as InteretValue)}
-                          className={[
-                            'px-3 py-2.5 rounded-lg border text-sm font-medium transition-all duration-200 text-left',
-                            selected
-                              ? 'border-blue-400 bg-blue-50 text-blue-700'
-                              : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50',
-                          ].join(' ')}
-                        >
-                          {opt.label}
-                        </button>
-                      )
-                    })}
-                  </div>
-                  {errors.interets && <p className={errorClass}>{errors.interets.message}</p>}
-                </div>
-
-                <div>
-                  <label className={labelClass}>Style de voyage</label>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-2">
-                    {STYLE_VOYAGE_OPTIONS.map((opt) => (
-                      <button
-                        key={opt.value}
-                        type="button"
-                        aria-pressed={selectedStyle === opt.value}
-                        onClick={() => setValue('style_voyage', opt.value)}
-                        className={radioCardClass(selectedStyle === opt.value)}
-                      >
-                        <p className="font-semibold text-sm text-slate-900">{opt.label}</p>
-                        <p className="text-xs mt-0.5 text-slate-400">{opt.desc}</p>
-                      </button>
-                    ))}
-                  </div>
-                  {errors.style_voyage && <p className={errorClass}>{errors.style_voyage.message}</p>}
-                </div>
-
-                <div>
-                  <label className={labelClass}>Période de voyage</label>
-                  <select {...register('periode')} className={`${inputClass} mt-1.5`}>
-                    {MOIS_OPTIONS.map((mois) => (
-                      <option key={mois} value={mois}>
-                        {MOIS_LABELS[mois] ?? mois}
-                      </option>
-                    ))}
-                  </select>
-                  {errors.periode && <p className={errorClass}>{errors.periode.message}</p>}
-                </div>
+              <h2 className="text-xl font-bold text-slate-900 mb-2">Votre situation van</h2>
+              <p className="text-sm text-slate-500 mb-6">
+                Cela nous permet d&apos;adapter les recommandations à votre situation.
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {VAN_STATUS_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    aria-pressed={selectedVan === opt.value}
+                    onClick={() => setValue('vanStatus', opt.value)}
+                    className={[
+                      radioCardClass(selectedVan === opt.value),
+                      'flex flex-col items-center text-center gap-3 py-8',
+                    ].join(' ')}
+                  >
+                    <span className="text-5xl">{opt.emoji}</span>
+                    <span className="text-base font-bold text-slate-900">{opt.title}</span>
+                    <span className="text-xs text-slate-500">{opt.subtitle}</span>
+                  </button>
+                ))}
               </div>
             </motion.div>
           )}
 
-          {/* ── Step 3 ── */}
+          {/* ─ Step 3 : Envies Pays Basque ─ */}
           {step === 3 && (
             <motion.div
               key={3}
@@ -446,88 +457,62 @@ export default function RoadTripWizard() {
               exit="exit"
               transition={{ duration: 0.3, ease: 'easeInOut' }}
             >
-              <h2 className="text-xl font-bold text-slate-900 mb-6">
-                Votre profil
-              </h2>
-
+              <h2 className="text-xl font-bold text-slate-900 mb-6">Vos envies au Pays Basque</h2>
               <div className="space-y-6">
                 <div>
-                  <label className={labelClass}>Vous voyagez...</label>
+                  <label className={labelClass}>Durée du voyage</label>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-2">
-                    {PROFIL_VOYAGEUR_OPTIONS.map((opt) => (
+                    {DURATION_OPTIONS.map((opt) => (
                       <button
                         key={opt.value}
                         type="button"
-                        aria-pressed={selectedProfil === opt.value}
-                        onClick={() => setValue('profil_voyageur', opt.value)}
+                        aria-pressed={selectedDuration === opt.value}
+                        onClick={() => setValue('duration', opt.value)}
                         className={[
-                          radioCardClass(selectedProfil === opt.value),
-                          'text-center items-center flex flex-col gap-1',
+                          radioCardClass(selectedDuration === opt.value),
+                          'text-center',
                         ].join(' ')}
                       >
-                        <span className="text-2xl">{opt.emoji}</span>
                         <span className="text-sm font-semibold text-slate-900">{opt.label}</span>
                       </button>
                     ))}
                   </div>
-                  {errors.profil_voyageur && <p className={errorClass}>{errors.profil_voyageur.message}</p>}
                 </div>
 
                 <div>
-                  <label className={labelClass}>Budget hébergement</label>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-2">
-                    {BUDGET_OPTIONS.map((opt) => (
-                      <button
-                        key={opt.value}
-                        type="button"
-                        aria-pressed={selectedBudget === opt.value}
-                        onClick={() => setValue('budget', opt.value)}
-                        className={radioCardClass(selectedBudget === opt.value)}
-                      >
-                        <p className="font-semibold text-sm text-slate-900">{opt.label}</p>
-                        <p className="text-xs mt-0.5 text-slate-400">{opt.desc}</p>
-                      </button>
-                    ))}
+                  <label className={labelClass}>
+                    Centres d&apos;intérêt{' '}
+                    <span className="font-normal text-slate-400">(plusieurs choix possibles)</span>
+                  </label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
+                    {INTEREST_OPTIONS.map((opt) => {
+                      const selected = selectedInterests.includes(opt.value)
+                      return (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          aria-pressed={selected}
+                          onClick={() => toggleInterest(opt.value)}
+                          className={radioCardClass(selected)}
+                        >
+                          <div className="flex items-start gap-3">
+                            <span className="text-2xl flex-shrink-0">{opt.emoji}</span>
+                            <div>
+                              <p className="text-sm font-semibold text-slate-900">{opt.label}</p>
+                              <p className="text-xs text-slate-500 mt-0.5">{opt.desc}</p>
+                            </div>
+                          </div>
+                        </button>
+                      )
+                    })}
                   </div>
-                  {errors.budget && <p className={errorClass}>{errors.budget.message}</p>}
-                </div>
-
-                <div>
-                  <label className={labelClass}>Expérience en van</label>
-                  <div className="flex gap-3 mt-2">
-                    <button
-                      type="button"
-                      aria-pressed={!selectedExperience}
-                      onClick={() => setValue('experience_van', false)}
-                      className={[
-                        'flex-1 py-3 rounded-xl border text-sm font-medium transition-all duration-200',
-                        !selectedExperience
-                          ? 'border-blue-400 bg-blue-50 text-blue-700'
-                          : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50',
-                      ].join(' ')}
-                    >
-                      Première fois
-                    </button>
-                    <button
-                      type="button"
-                      aria-pressed={selectedExperience}
-                      onClick={() => setValue('experience_van', true)}
-                      className={[
-                        'flex-1 py-3 rounded-xl border text-sm font-medium transition-all duration-200',
-                        selectedExperience
-                          ? 'border-blue-400 bg-blue-50 text-blue-700'
-                          : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50',
-                      ].join(' ')}
-                    >
-                      Habitué(e)
-                    </button>
-                  </div>
+                  {errors.interests && <p className={errorClass}>{errors.interests.message}</p>}
                 </div>
               </div>
             </motion.div>
           )}
 
-          {/* ── Step 4: Confirmation ── */}
+          {/* ─ Step 4 : Budget & nuit van ─ */}
           {step === 4 && (
             <motion.div
               key={4}
@@ -537,63 +522,111 @@ export default function RoadTripWizard() {
               exit="exit"
               transition={{ duration: 0.3, ease: 'easeInOut' }}
             >
-              <h2 className="text-xl font-bold text-slate-900 mb-2">
-                Confirmation
-              </h2>
+              <h2 className="text-xl font-bold text-slate-900 mb-6">Votre budget & nuit en van</h2>
+              <div className="space-y-6">
+                <div>
+                  <label className={labelClass}>Budget activités/repas par jour</label>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-2">
+                    {BUDGET_OPTIONS.map((opt) => (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        aria-pressed={selectedBudget === opt.value}
+                        onClick={() => setValue('budgetLevel', opt.value)}
+                        className={radioCardClass(selectedBudget === opt.value)}
+                      >
+                        <p className="font-semibold text-sm text-slate-900">{opt.label}</p>
+                        <p className="text-xs mt-0.5 text-slate-400">{opt.desc}</p>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className={labelClass}>Où souhaitez-vous dormir ?</label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
+                    {OVERNIGHT_OPTIONS.map((opt) => (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        aria-pressed={selectedOvernight === opt.value}
+                        onClick={() => setValue('overnightPreference', opt.value)}
+                        className={radioCardClass(selectedOvernight === opt.value)}
+                      >
+                        <div className="flex items-start gap-3">
+                          <span className="text-2xl flex-shrink-0">{opt.emoji}</span>
+                          <div>
+                            <p className="text-sm font-semibold text-slate-900">{opt.label}</p>
+                            <p className="text-xs text-slate-500 mt-0.5">{opt.desc}</p>
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* ─ Step 5 : Récap + génération ─ */}
+          {step === 5 && (
+            <motion.div
+              key={5}
+              variants={variants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+            >
+              <h2 className="text-xl font-bold text-slate-900 mb-2">Récapitulatif</h2>
               <p className="text-sm text-slate-500 mb-6">
                 Vérifiez vos informations avant de générer votre road trip.
               </p>
 
               <div className="grid grid-cols-2 gap-3 mb-6">
-                <RecapCard label="Prénom" value={values.prenom} />
+                <RecapCard label="Prénom" value={values.firstname} />
                 <RecapCard label="Email" value={values.email} truncate />
-                <RecapCard label="Région" value={values.region} />
+                <RecapCard
+                  label="Groupe"
+                  value={GROUP_OPTIONS.find((o) => o.value === values.groupType)?.label ?? values.groupType}
+                />
+                <RecapCard
+                  label="Situation van"
+                  value={
+                    values.vanStatus === 'proprietaire' ? 'Propriétaire' : 'Futur locataire'
+                  }
+                />
                 <RecapCard
                   label="Durée"
-                  value={`${values.duree} jour${values.duree > 1 ? 's' : ''}`}
-                />
-                <RecapCard
-                  label="Période"
-                  value={MOIS_LABELS[values.periode] ?? values.periode}
-                />
-                <RecapCard
-                  label="Style"
-                  value={
-                    STYLE_VOYAGE_OPTIONS.find((o) => o.value === values.style_voyage)?.label ??
-                    values.style_voyage
-                  }
-                />
-                <RecapCard
-                  label="Profil"
-                  value={
-                    PROFIL_VOYAGEUR_OPTIONS.find((o) => o.value === values.profil_voyageur)?.label ??
-                    values.profil_voyageur
-                  }
+                  value={DURATION_OPTIONS.find((o) => o.value === values.duration)?.label ?? values.duration}
                 />
                 <RecapCard
                   label="Budget"
-                  value={
-                    BUDGET_OPTIONS.find((o) => o.value === values.budget)?.label ?? values.budget
-                  }
-                />
-                <RecapCard
-                  label="Expérience"
-                  value={values.experience_van ? 'Habitué(e)' : 'Première fois'}
+                  value={BUDGET_OPTIONS.find((o) => o.value === values.budgetLevel)?.label ?? values.budgetLevel}
                 />
                 <div className="col-span-2 rounded-xl p-3 bg-slate-50 border border-slate-200">
                   <p className="text-xs mb-1.5 font-medium uppercase tracking-wide text-slate-400">
-                    Intérêts
+                    Centres d&apos;intérêt
                   </p>
                   <div className="flex flex-wrap gap-1.5">
-                    {(watch('interets') as InteretValue[]).map((v) => (
+                    {selectedInterests.map((v) => (
                       <span
                         key={v}
                         className="px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200"
                       >
-                        {INTERETS_OPTIONS.find((o) => o.value === v)?.label ?? v}
+                        {INTEREST_OPTIONS.find((o) => o.value === v)?.label ?? v}
                       </span>
                     ))}
                   </div>
+                </div>
+                <div className="col-span-2 rounded-xl p-3 bg-purple-50 border border-purple-200">
+                  <p className="text-xs mb-1.5 font-medium uppercase tracking-wide text-purple-600">
+                    🌙 Nuit en van
+                  </p>
+                  <p className="text-sm font-semibold text-purple-900">
+                    {OVERNIGHT_OPTIONS.find((o) => o.value === values.overnightPreference)?.label ??
+                      values.overnightPreference}
+                  </p>
                 </div>
               </div>
 
@@ -615,7 +648,7 @@ export default function RoadTripWizard() {
                   type="submit"
                   className="btn-primary w-full text-base py-3.5 rounded-xl font-semibold text-white"
                 >
-                  Générer mon road trip
+                  Générer mon road trip au Pays Basque
                 </button>
               )}
             </motion.div>
@@ -623,7 +656,7 @@ export default function RoadTripWizard() {
         </AnimatePresence>
 
         {/* Navigation */}
-        {step < 4 && (
+        {step < TOTAL_STEPS && (
           <div className="flex gap-3 mt-8">
             {step > 1 && (
               <button
@@ -643,7 +676,7 @@ export default function RoadTripWizard() {
             </button>
           </div>
         )}
-        {step === 4 && (
+        {step === TOTAL_STEPS && (
           <button
             type="button"
             onClick={handleBack}
@@ -668,12 +701,8 @@ function RecapCard({
 }) {
   return (
     <div className="rounded-xl p-3 bg-slate-50 border border-slate-200">
-      <p className="text-xs font-medium uppercase tracking-wide text-slate-400 mb-0.5">
-        {label}
-      </p>
-      <p className={`text-sm font-semibold text-slate-900 ${truncate ? 'truncate' : ''}`}>
-        {value}
-      </p>
+      <p className="text-xs font-medium uppercase tracking-wide text-slate-400 mb-0.5">{label}</p>
+      <p className={`text-sm font-semibold text-slate-900 ${truncate ? 'truncate' : ''}`}>{value}</p>
     </div>
   )
 }

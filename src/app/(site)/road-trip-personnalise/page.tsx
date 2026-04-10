@@ -5,16 +5,16 @@ import RoadTripWizard from './RoadTripWizard'
 import { faqItems, itineraires, destinations, socialProof } from './seo-data'
 
 export const metadata: Metadata = {
-  title: 'Générateur de Road Trip en Van Gratuit | Itinéraire Personnalisé',
+  title: 'Road Trip Van Pays Basque Personnalisé | Itinéraire Gratuit',
   description:
-    'Créez votre itinéraire road trip en van personnalisé en 1 minute. IA + 200 spots en France. Étapes jour par jour, campings, activités — 100 % gratuit, reçu par email.',
+    'Créez votre road trip van au Pays Basque en 1 minute. Spots de nuit van (parkings gratuits, aires, campings), activités, gastronomie — 100 % gratuit, reçu par email.',
   alternates: {
     canonical: 'https://vanzonexplorer.com/road-trip-personnalise',
   },
   openGraph: {
-    title: 'Générateur de Road Trip en Van Gratuit | Itinéraire Personnalisé',
+    title: 'Road Trip Van Pays Basque Personnalisé | Itinéraire Gratuit',
     description:
-      'Créez votre itinéraire road trip en van personnalisé en 1 minute. IA + 200 spots en France. Étapes jour par jour, campings, activités — 100 % gratuit, reçu par email.',
+      'Créez votre road trip van au Pays Basque en 1 minute. Spots de nuit van, activités, gastronomie basque — 100 % gratuit, reçu par email.',
     type: 'website',
     url: 'https://vanzonexplorer.com/road-trip-personnalise',
   },
@@ -53,17 +53,17 @@ const steps = [
   {
     icon: '1',
     title: 'Remplissez le formulaire',
-    description: 'Région, durée, centres d\'intérêt, profil de voyageur — 4 étapes simples.',
+    description: 'Profil, situation van, durée, envies, budget, nuit — 5 étapes simples.',
   },
   {
     icon: '2',
-    title: 'L\'IA construit votre plan',
-    description: 'Notre algorithme analyse des centaines de spots pour créer l\'itinéraire parfait.',
+    title: "L'IA construit votre plan",
+    description: "Notre algorithme analyse les meilleurs spots du Pays Basque et sélectionne vos spots de nuit van.",
   },
   {
     icon: '3',
     title: 'Reçu par email',
-    description: 'Spots jour par jour, campings, conseils van — livré en moins de 60 secondes.',
+    description: 'Étapes jour par jour, spots de nuit van, conseils pratiques — livré en moins de 60 secondes.',
   },
 ]
 
@@ -121,11 +121,11 @@ export default function RoadTripPersonnalisePage() {
           {/* Hero */}
           <div className="text-center mb-16 pt-8">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 mb-5">
-              Votre Road Trip Sur Mesure
+              Votre Road Trip Van au Pays Basque
             </h1>
             <p className="text-lg text-slate-500 max-w-2xl mx-auto mb-8">
-              Créez votre itinéraire road trip en van personnalisé en 1 minute.
-              IA + 200 spots en France. 100% gratuit, reçu par email.
+              Itinéraire personnalisé en 1 minute : étapes jour par jour, spots de nuit van
+              (parkings gratuits, aires, campings), gastronomie et activités. 100% gratuit, reçu par email.
             </p>
             <a href="#wizard" className="btn-primary px-8 py-3.5 rounded-xl text-white font-semibold">
               Créer mon itinéraire gratuit
@@ -173,7 +173,7 @@ export default function RoadTripPersonnalisePage() {
               <div className="text-center mb-8">
                 <p className="text-xs font-semibold tracking-[0.25em] uppercase text-accent-blue mb-3">Le générateur</p>
                 <h2 className="text-2xl md:text-3xl font-black text-slate-900 mb-2">
-                  Créez votre itinéraire en 4 étapes
+                  Créez votre itinéraire en 5 étapes
                 </h2>
                 <p className="text-slate-500">L&apos;IA s&apos;occupe du reste — vous recevez tout par email.</p>
               </div>
