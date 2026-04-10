@@ -9,7 +9,7 @@ import EquipmentGrid from "@/components/van/EquipmentGrid";
 import BookingButton from "@/components/van/BookingButton";
 import PriceDisplay from "@/components/van/PriceDisplay";
 import Badge from "@/components/ui/Badge";
-import YescapaReassurance from "@/components/van/YescapaReassurance";
+import BookingReassurance from "@/components/van/BookingReassurance";
 
 export const revalidate = 3600;
 
@@ -220,7 +220,7 @@ export default async function LocationVanPage({
                 />
               )}
 
-              <YescapaReassurance />
+              <BookingReassurance platform={van.externalBookingPlatform} />
             </div>
           </div>
         </div>

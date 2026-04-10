@@ -6,7 +6,7 @@ import { slugify } from "@/lib/slugify";
 import Badge from "@/components/ui/Badge";
 import PriceDisplay from "@/components/van/PriceDisplay";
 import BookingButton from "@/components/van/BookingButton";
-import YescapaReassurance from "@/components/van/YescapaReassurance";
+import BookingReassurance from "@/components/van/BookingReassurance";
 import MarketplaceVanGallery from "@/components/marketplace/MarketplaceVanGallery";
 import { parseBookingUrls, detectPlatform } from "@/lib/booking-urls";
 
@@ -176,7 +176,6 @@ export default async function MarketplaceVanPage({ params }: Props) {
                 const bookingUrls = parseBookingUrls(van.booking_url);
                 const primaryUrl = bookingUrls[0];
                 const primaryPlatform = primaryUrl ? detectPlatform(primaryUrl) : "la plateforme";
-                const hasYescapa = bookingUrls.some((u) => u.includes("yescapa"));
 
                 return (
                   <>
@@ -237,8 +236,8 @@ export default async function MarketplaceVanPage({ params }: Props) {
                       </a>
                     )}
 
-                    {/* Reassurance Yescapa si applicable */}
-                    {hasYescapa && <YescapaReassurance />}
+                    {/* Réassurance marketplace (Yescapa ou Wikicampers) */}
+                    <BookingReassurance platform={primaryPlatform} />
                   </>
                 );
               })()}
