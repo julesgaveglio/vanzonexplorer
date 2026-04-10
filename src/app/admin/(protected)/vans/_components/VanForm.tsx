@@ -409,6 +409,7 @@ export default function VanForm({ van }: { van?: VanData }) {
           <Field label="Plateforme">
             <select name="externalBookingPlatform" defaultValue={van?.externalBookingPlatform || "Yescapa"} className={selectCls}>
               <option value="Yescapa">Yescapa</option>
+              <option value="Wikicampers">Wikicampers</option>
               <option value="Outdoorsy">Outdoorsy</option>
               <option value="Privatecar">Privatecar</option>
               <option value="Autre">Autre</option>
