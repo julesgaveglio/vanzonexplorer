@@ -137,6 +137,15 @@ const navGroups = [
         ),
       },
       {
+        label: "POI & Activités",
+        href: "/admin/poi",
+        icon: (
+          <svg className="w-[18px] h-[18px] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 2l3 7h7l-5.5 4 2 7L12 16l-6.5 4 2-7L2 9h7l3-7z" />
+          </svg>
+        ),
+      },
+      {
         label: "Articles Road Trip",
         href: "/admin/road-trips?tab=review",
         icon: (
