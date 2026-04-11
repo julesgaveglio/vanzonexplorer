@@ -112,43 +112,92 @@ export async function classifyArticleCTA(input: ClassifyInput): Promise<Classify
 
 **Modèle** : `llama-3.3-70b-versatile` via Groq (déjà dans le stack, ~200 ms, < 0,0001 € / appel).
 
-**Prompt système** (reproduit in extenso pour garantir la reproductibilité) :
+**Prompt système** (reproduit in extenso pour garantir la reproductibilité). Cette version est le **prompt v2**, durci après un test réel sur 5 articles qui avait révélé que le prompt v1 classait à tort l'article backlink « Cosy Vans » en `location` (confidence 0.9) au lieu de `none` — il mentionnait bien « partenariat backlink » dans la définition de `none` mais enfoui au fond de la liste des 5 catégories, après la définition de `location`. La v2 introduit un **filtre prioritaire "tiers/partenariat"** qui tourne AVANT les 5 catégories et avec des exemples concrets + exceptions explicites. Validé sur les 5 derniers articles : 5/5 tests OK, Cosy Vans correctement classé `none` (confidence 1.0), zéro régression sur les 4 articles positifs.
 
 ```
-Tu classes un article de blog Vanzon Explorer (van aménagé, Pays Basque) pour
-décider quel call-to-action y injecter. Réponds UNIQUEMENT en JSON :
+Tu classes un article de blog Vanzon Explorer (marque de location et
+formation van aménagé, basée au Pays Basque) pour décider quel call-to-action
+interne y injecter. Réponds UNIQUEMENT en JSON :
 { "type": "...", "confidence": 0-1, "reasoning": "..." }
+
+⚠️ FILTRE PRIORITAIRE — applique-le AVANT toute classification :
+
+Vérifie si l'article a pour SUJET PRINCIPAL une autre marque que Vanzon
+Explorer (et non Vanzon lui-même). Indices concrets :
+- Le titre contient le nom d'une entreprise/marque tierce
+- La majorité du contenu décrit positivement cette marque, ses produits,
+  ses services, ses atouts, ses tarifs, son équipe
+- L'intention manifeste de l'article est de faire découvrir ou recommander
+  cette marque au lecteur
+- Le contexte évoque un échange de backlink, un partenariat affiché, un
+  contenu sponsorisé, une présentation d'une société tierce
+- La marque tierce est en CONCURRENCE DIRECTE avec Vanzon Explorer
+  (autre loueur de vans, autre formation vanlife, autre plateforme de
+  location entre particuliers)
+
+Si OUI → { "type": "none", ... } immédiatement, SANS examiner les 5 autres
+catégories. Raison : notre CTA ne doit JAMAIS apparaître à côté d'un article
+qui met en avant un concurrent ou un partenaire tiers, même si la thématique
+générale (location de van, road trip, etc.) semble coller. Mieux vaut aucun
+CTA qu'un CTA qui entre en contradiction avec l'intention éditoriale du
+contenu partenaire.
+
+Exceptions (ce n'est PAS "none" malgré la mention d'un tiers) :
+- Simple mention en passant d'un tiers pour illustrer un chiffre ou un
+  point technique (ex. "sur Yescapa la commission est de 20%" dans un
+  article Vanzon qui parle de rentabilité)
+- Article de comparaison où Vanzon Explorer est explicitement l'une des
+  options évaluées ou mis en avant comme solution
+- Mention d'équipementiers ou fournisseurs complémentaires (batteries
+  lithium, panneaux solaires, accessoires, assurances) qui ne sont pas
+  en concurrence directe avec notre offre de location ou de formation
+- Mention géographique d'un spot/lieu/territoire (même s'il a un nom
+  propre : Biarritz, Saint-Jean-de-Luz, La Rhune — ce sont des lieux,
+  pas des marques concurrentes)
+
+Si le filtre ci-dessus NE s'applique PAS, l'article est un contenu
+Vanzon-first : classe-le alors parmi les 5 catégories suivantes.
+
+─────────────────────────────────────────
 
 Valeurs possibles pour "type" :
 
-- "location"  : l'article donne envie de LOUER un van (road trips, destinations
-                Pays Basque, spots, vanlife découverte, week-end en van, surf,
-                itinéraires, guides pratiques pour voyageurs qui cherchent à
-                louer).
+- "location"  : l'article donne envie de LOUER un van chez Vanzon (road
+                trips, destinations Pays Basque, spots, vanlife découverte,
+                week-end en van, surf, itinéraires, guides pratiques pour
+                voyageurs qui cherchent à louer notre flotte).
 
-- "formation" : l'article parle de RENTABILISER un van, business, Yescapa,
-                revenus, entrepreneuriat, devenir propriétaire loueur, aménager
-                pour la location, VASP, homologation, chiffres de rentabilité.
+- "formation" : l'article parle de RENTABILISER son propre van, business,
+                Yescapa, revenus, entrepreneuriat, devenir propriétaire
+                loueur, aménager pour la location, VASP, homologation,
+                chiffres de rentabilité, Van Business Academy.
 
-- "road-trip" : l'article est un GUIDE D'ITINÉRAIRE spécifique (ex. "road trip
-                au Pays Basque en 7 jours", "itinéraire côte atlantique").
-                Lecteur qui cherche à planifier → on propose notre générateur IA.
+- "road-trip" : l'article est un GUIDE D'ITINÉRAIRE précis avec étapes
+                (ex. "road trip au Pays Basque en 7 jours", "itinéraire
+                côte atlantique"). Lecteur qui cherche à planifier →
+                on propose notre générateur IA de road trip.
 
-- "achat"     : l'article parle d'ACHETER un van d'occasion, choisir un modèle,
-                inspection mécanique, aménagement DIY (hors business — orienté
-                "je veux le mien").
+- "achat"     : l'article parle d'ACHETER un van d'occasion, choisir un
+                modèle, inspection mécanique, aménagement DIY (hors
+                business — orienté "je veux le mien pour moi").
 
-- "none"      : article hors-sujet pour nous (partenariat backlink, actu non
-                liée, mention d'une autre marque, article purement informatif
-                sans intention commerciale exploitable, contenu sponsorisé).
+- "none"      : filtre tiers déclenché (cf. ci-dessus) OU article hors-sujet
+                (actu non liée, contenu purement informatif sans intention
+                commerciale exploitable pour Vanzon).
 
-Règles de priorité (en cas d'ambiguïté) :
-1. Si l'article parle DE RENTABILISER / GAGNER DE L'ARGENT avec un van → formation
-2. Si c'est un itinéraire précis avec étapes → road-trip
-3. Si c'est un guide pour loueurs potentiels → location
-4. Si c'est un guide d'achat/aménagement perso → achat
-5. Si rien ne colle → none (mieux vaut pas de CTA qu'un CTA bancal)
+Règles de priorité en cas d'ambiguïté (entre les 4 catégories positives) :
+1. Rentabiliser / gagner de l'argent avec un van → formation
+2. Itinéraire précis avec étapes → road-trip
+3. Guide pour loueurs potentiels chez Vanzon → location
+4. Guide d'achat/aménagement perso → achat
+5. Si rien ne colle → none
 ```
+
+**Paramètres d'appel Groq** :
+- `model: "llama-3.3-70b-versatile"`
+- `response_format: { type: "json_object" }` (force JSON valide côté modèle)
+- `temperature: 0.1` (quasi-déterministe pour la reproductibilité)
+- `max_tokens: 300` (suffisant pour `type` + `confidence` + `reasoning` en une phrase)
 
 **Parsing** : `JSON.parse` strict, avec validation de `type` contre la liste des 5 valeurs. Toute valeur inconnue → fallback `none`.
 
