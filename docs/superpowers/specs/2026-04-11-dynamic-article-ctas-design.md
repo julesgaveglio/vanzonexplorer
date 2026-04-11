@@ -513,7 +513,7 @@ Fichier : `scripts/agents/backfill-article-ctas.ts` (one-shot, pas registré dan
 | Groq down ou timeout | Faible | Moyen | Fallback silencieux sur `ctaResolved = "none"`. Publication jamais bloquée. Log d'erreur. |
 | Groq renvoie un JSON invalide | Faible | Faible | Parser avec try/catch, validation du champ `type` contre l'enum. Fallback `none`. |
 | Classification erronée sur un article ambigu | Moyen | Faible | Override manuel disponible dans 2 endroits (éditeur + Studio). Le field `ctaResolved` est visible → détection facile. |
-| Modification d'un article existant après publication | Moyen | Faible | `ctaType` persiste, pas de re-classification automatique. Pour reclasser : remettre `ctaType` à `auto` dans Studio, republier (TODO : hook Sanity ? hors scope V1). |
+| Modification d'un article existant après publication | Moyen | Faible | `ctaType` persiste, pas de re-classification automatique. Pour reclasser : remettre `ctaType` à `auto` dans Studio, republier. Hook Sanity automatique reporté en V2 (voir section 5). |
 | Perte de visibilité sur ce que l'IA a décidé | Faible | Moyen | `ctaResolved` est visible en Studio. Log console à chaque publish. |
 | Code duplication entre 5 composants CTA | Faible | Faible | Anatomie commune documentée dans le spec. Si le code diverge trop, introduire un `<CTABase>` en V2. YAGNI pour V1. |
 | Backfill qui échoue en cours de route | Faible | Faible | Script idempotent (filtre `!defined(ctaType)`), relançable sans effet de bord. |
