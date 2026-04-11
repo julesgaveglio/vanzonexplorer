@@ -5,6 +5,7 @@ import { useForm, type SubmitHandler } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useSearchParams } from 'next/navigation'
 import { RoadTripTerminal, type TerminalLine } from './RoadTripTerminal'
 import type {
   GroupType,
@@ -15,6 +16,7 @@ import type {
   OvernightPreference,
   RoadTripScope,
 } from '@/types/roadtrip'
+import { DURATION_SLUG_TO_KEY, type DurationSlug } from '@/types/road-trip-pb'
 
 // ─── Options wizard ─────────────────────────────────────────────────────────
 const GROUP_OPTIONS: { value: GroupType; label: string; emoji: string }[] = [
@@ -164,7 +166,25 @@ function radioCardClass(selected: boolean) {
 }
 
 export default function RoadTripWizard() {
-  const [step, setStep] = useState(1)
+  // ─── Pré-remplissage depuis searchParams (venant de /road-trip-pays-basque-van/*) ─
+  const searchParams = useSearchParams()
+  const prefillDurationSlug = searchParams.get('duration') as DurationSlug | null
+  const prefillGroupType = searchParams.get('groupType') as GroupType | null
+  const prefillBudgetLevel = searchParams.get('budgetLevel') as BudgetLevel | null
+
+  const prefillDurationKey: DurationKey =
+    prefillDurationSlug && DURATION_SLUG_TO_KEY[prefillDurationSlug]
+      ? DURATION_SLUG_TO_KEY[prefillDurationSlug]
+      : '2-3j'
+
+  const hasAnyPrefill = Boolean(prefillDurationSlug || prefillGroupType || prefillBudgetLevel)
+  // Si duration + groupType présents → step 4 (budget/overnight)
+  // Si seulement l'un des deux → step 3
+  // Sinon → step 1
+  const initialStep =
+    prefillDurationSlug && prefillGroupType ? 4 : hasAnyPrefill ? 3 : 1
+
+  const [step, setStep] = useState(initialStep)
   const [status, setStatus] = useState<'idle' | 'streaming' | 'success' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState('')
   const [terminalLines, setTerminalLines] = useState<TerminalLine[]>([])
@@ -181,12 +201,12 @@ export default function RoadTripWizard() {
     defaultValues: {
       firstname: '',
       email: '',
-      groupType: 'couple',
+      groupType: prefillGroupType ?? 'couple',
       vanStatus: 'locataire',
       scope: 'france',
-      duration: '2-3j',
+      duration: prefillDurationKey,
       interests: [],
-      budgetLevel: 'moyen',
+      budgetLevel: prefillBudgetLevel ?? 'moyen',
       overnightPreference: 'mix',
     },
   })
@@ -353,6 +373,11 @@ export default function RoadTripWizard() {
     <div>
       {/* Progress bar */}
       <div className="mb-8">
+        {hasAnyPrefill && (
+          <div className="mb-3 inline-block rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
+            ✓ Pré-rempli depuis la page road trip
+          </div>
+        )}
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm font-medium text-slate-500">
             Étape {step} sur {TOTAL_STEPS}
