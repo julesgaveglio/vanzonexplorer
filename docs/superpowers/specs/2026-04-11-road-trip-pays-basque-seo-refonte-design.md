@@ -50,11 +50,13 @@ D'où la stratégie hybride : **sprint data day-0 (retrofit des 49 POIs existant
 
 ```
 /road-trip-pays-basque-van                              ← hub refondu (remplace la landing 645 lignes)
-/road-trip-pays-basque-van/[duration]                   ← 3 pages duration indexées (+ 1 noindex)
-/road-trip-pays-basque-van/[duration]/[groupType]       ← 12 pages finales (3 durations × 4 groupTypes)
+/road-trip-pays-basque-van/[duration]                   ← 4 pages pré-buildées, 3 indexées, 1 noindex (1-jour)
+/road-trip-pays-basque-van/[duration]/[groupType]       ← 16 pages pré-buildées, 12 indexées, 4 noindex (1-jour/*)
 ```
 
-**Total landings SEO indexables : 16** (1 hub + 3 duration indexés + 12 finales).
+**Pages générées par `generateStaticParams` : 1 hub + 4 duration + 16 finales = 21 pages.**
+**Pages indexables SEO : 1 hub + 3 duration + 12 finales = 16.**
+**Pages `noindex` (pré-buildées pour l'UX mais hors sitemap) : 1 duration (`/1-jour`) + 4 finales (`/1-jour/*`) = 5.**
 
 ### 3.1 Dimensions de filtrage
 
@@ -152,13 +154,66 @@ CREATE POLICY "road_trip_templates_public_read"
 - Idempotent
 
 **Script 3 — `scripts/road-trip/seed-templates.ts`** :
-- Pour chaque combo `(pays-basque × 3 durations indexées × 4 groupTypes = 12)` **et** le 1-jour × 4 = 16 templates
+- Pour **les 16 combos** `(pays-basque × 4 durations × 4 groupTypes)` — on seed aussi les 4 combos `1-jour/*` même s'ils sont noindex, pour que les pages pré-buildées affichent du contenu réel si quelqu'un tape l'URL directement
 - Lit les POIs pertinents du cache (filtrés par tags/category selon groupType)
-- Appelle Groq `llama-3.3-70b-versatile` avec un prompt spécifique : génère title, intro, itinerary_json (format `GeneratedItineraryV2`), tips[], faq[]
+- Appelle Groq `llama-3.3-70b-versatile` avec le **prompt contract** ci-dessous
 - Upsert dans `road_trip_templates` avec `ON CONFLICT (region_slug, duration_key, group_type)`
 - Flag `--force` pour régénérer
 - Flag `--only <duration>/<groupType>` pour cibler un combo
-- Coût total ~$0.05 (16 appels Groq × ~3k tokens)
+
+**Prompt contract Groq (pin dans le script seed-templates)** :
+
+```
+System prompt:
+  "Tu es un expert vanlifer Pays Basque. Tu ne proposes QUE des POIs
+   réels issus de la liste fournie. Tu ne cites pas de lieu hors liste.
+   Tu réponds UNIQUEMENT en JSON valide, sans backtick, sans texte avant/après."
+
+User prompt template:
+  "Crée un itinéraire road trip van pour ce profil:
+   - Région: Pays Basque (départ Cambo-les-Bains)
+   - Durée: {durationDays} jour(s)
+   - Profil: {groupLabel}
+
+   POIs autorisés (tu DOIS uniquement utiliser ces id):
+   {poisJson}   // [{id, name, category, location_city, description, tags, budget_level}]
+
+   Spots nuit autorisés:
+   {overnightJson}  // [{id, name, overnight_type, overnight_price_per_night, location_city}]
+
+   Retourne STRICTEMENT ce JSON:
+   {
+     'title': string,               // 60-80 chars, SEO-friendly
+     'intro': string,               // 80-120 mots, personnalisés au profil
+     'itinerary_json': {
+       'days': [{
+         'day': number,
+         'theme': string,
+         'stops': [{ 'poi_id': string (uuid de la liste), 'time': string, 'note': string }],
+         'overnight_id': string (uuid de la liste)
+       }]
+     },
+     'poi_ids_used': string[],      // tous les poi_id référencés, pour upsert dans row.poi_ids
+     'overnight_ids_used': string[],
+     'tips': string[],              // 5 conseils pratiques van spécifiques au profil
+     'faq': [{ 'q': string, 'a': string }] // 4 à 6 questions pour schema FAQPage
+   }"
+
+Groq params:
+  model: 'llama-3.3-70b-versatile'
+  temperature: 0.5
+  response_format: { type: 'json_object' }
+  max_tokens: 4000
+
+Validation post-parse (le script rejette et retry 1 fois si):
+  - Tout poi_id n'existe pas dans la liste fournie (hallucination)
+  - Nombre de days != durationDays attendu
+  - Un day n'a pas de overnight_id
+  - JSON parse échoue
+  Si 2e retry échoue: log error, skip le combo, continue les suivants.
+```
+
+Groq étant gratuit (free tier), aucun coût direct à prévoir.
 
 Aucun de ces scripts n'est exécuté à chaque requête utilisateur. Tout est **pré-calculé en batch**.
 
@@ -193,9 +248,9 @@ src/
       OvernightCard.tsx               ← card spot nuit
       FAQSection.tsx                  ← FAQ + schema JSON-LD
   lib/road-trip-pb/
-    constants.ts                      ← DURATIONS, GROUP_TYPES, labels, slugs
+    constants.ts                      ← DURATIONS, GROUP_TYPES, labels, slugs, PICKUP_CITY = 'Cambo-les-Bains', PB_CENTER = [-1.48, 43.48]
     queries.ts                        ← server helpers Supabase
-    metadata.ts                       ← buildMetadata() partagé
+    metadata.ts                       ← buildMetadata() partagé, gère le noindex 1-jour (niveau duration + niveau final)
     geocoding.ts                      ← helper Nominatim pour les scripts
   types/road-trip-pb.ts               ← types partagés
 ```
@@ -315,14 +370,14 @@ Toutes ces queries utilisent `createSupabaseAdmin()` (service role, RLS bypass) 
 ## 8. Gestion des cas vides
 
 - **`getPOIsForGroupType()` retourne 0** → fallback sur les POIs génériques `activite` + `nature`. Jamais `notFound()`.
-- **`getTemplate()` retourne `null`** → section "Itinéraire personnalisé bientôt disponible" + curation POIs + CTA wizard très visible. Jamais `notFound()`.
-- **Nominatim a échoué sur tous les POIs** → map affiche centre Pays Basque (43.48, -1.48) + marker unique "Zone du road trip" + fallback liste cliquable dans le composant map.
+- **`getTemplate()` retourne `null`** → section "Itinéraire personnalisé bientôt disponible" + curation POIs + CTA wizard très visible. Jamais `notFound()`. **Dans ce cas, les JSON-LD `TouristTrip` et `FAQPage` sont omis** : on ne publie pas de structured data pointant vers un itinéraire inexistant (Google pénalise les rich results invalides). Seul `BreadcrumbList` reste.
+- **Nominatim a échoué sur tous les POIs** → map affiche centre Pays Basque (`PB_CENTER`) + marker unique "Zone du road trip" + fallback liste cliquable dans le composant map.
 
 ---
 
 ## 9. Map — composant `RoadTripMap.tsx`
 
-Inspiré du pattern existant `src/app/(site)/road-trip/_components/CatalogMap.tsx` (même Maptiler key, même style).
+**Fichier dédié, non partagé avec `CatalogMap.tsx`**. On s'inspire du pattern (même Maptiler key, même style `outdoor-v2`, même User-Agent, même import dynamique) mais on ne touche pas à `CatalogMap.tsx` : les deux composants ont des contrats de props différents (articles de régions vs POIs + polyline d'itinéraire) et un refactor partagé ne ferait qu'ajouter des branchements inutiles.
 
 **Props** :
 ```ts
@@ -411,9 +466,14 @@ export function buildFinalPageMetadata(duration: DurationSlug, groupType: GroupT
     robots: { index: duration !== '1-jour', follow: true },
   }
 }
+
+export function buildDurationPageMetadata(duration: DurationSlug): Metadata {
+  // mêmes champs + robots: { index: duration !== '1-jour', follow: true }
+  // Important: la page duration /1-jour doit aussi être noindex, pas seulement les /1-jour/[groupType]
+}
 ```
 
-Helpers similaires pour hub et page duration.
+Helpers similaires pour hub (`buildHubMetadata()`, toujours `index: true`).
 
 ---
 
@@ -452,13 +512,14 @@ Le design est considéré livré quand :
 - [ ] `backfill-poi-coordinates.ts` exécuté (≥ 40/49 POIs géocodés)
 - [ ] `backfill-poi-images.ts` exécuté (≥ 30/49 POIs avec image_url)
 - [ ] `seed-templates.ts` exécuté (16/16 templates présents)
-- [ ] 16 pages servies correctement en dev (`npm run dev`)
-- [ ] Carte MapLibre fonctionnelle sur les 16 pages
+- [ ] 21 pages servies correctement en dev (`npm run dev`) : 1 hub + 4 duration + 16 finales
+- [ ] 5 pages portent `noindex` dans leur metadata (1 duration `/1-jour` + 4 finales `/1-jour/*`)
+- [ ] Carte MapLibre fonctionnelle sur les 21 pages
 - [ ] Wizard pré-rempli depuis les URLs de test
-- [ ] Sitemap inclut les 16 URLs (14 indexés + 1 hub)
+- [ ] Sitemap inclut **16 URLs** (1 hub + 3 duration + 12 finales), exclut les 5 noindex
 - [ ] `npm run build` passe sans erreur TypeScript/ESLint
 - [ ] Landing monolithique supprimée/remplacée (diff git sur le page.tsx principal)
-- [ ] Schema.org `TouristTrip`, `BreadcrumbList`, `FAQPage` validés via Rich Results Test
+- [ ] Schema.org `TouristTrip`, `BreadcrumbList`, `FAQPage` validés via Rich Results Test (sur une page indexée avec template présent)
 
 ---
 
