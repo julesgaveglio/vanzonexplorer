@@ -17,7 +17,7 @@ const BASE = 'https://vanzonexplorer.com'
 export function buildHubMetadata(): Metadata {
   const canonical = `${BASE}${hubPath()}`
   return {
-    title: 'Road Trip en Van au Pays Basque — Itinéraires sur mesure | Vanzon Explorer',
+    title: 'Road Trip en Van au Pays Basque — Itinéraires sur mesure',
     description:
       'Itinéraires road trip van Pays Basque : weekend, 5 jours, 1 semaine. Spots nuit validés, cartes GPS, activités par profil. Au départ de Cambo-les-Bains.',
     alternates: { canonical },
@@ -36,7 +36,7 @@ export function buildDurationPageMetadata(duration: DurationSlug): Metadata {
   const dLabel = DURATION_LABELS[duration]
   const canonical = `${BASE}${durationPath(duration)}`
   return {
-    title: `Road Trip Pays Basque ${dLabel} en Van — Itinéraire & Spots | Vanzon Explorer`,
+    title: `Road Trip Pays Basque ${dLabel} en Van — Itinéraire & Spots`,
     description: `Road trip Pays Basque ${dLabel} en van aménagé. Étapes détaillées, spots nuit validés, cartes GPS. Départ Cambo-les-Bains.`,
     alternates: { canonical },
     openGraph: {
@@ -57,7 +57,7 @@ export function buildFinalPageMetadata(
   const gLabel = GROUP_LABELS[groupType]
   const canonical = `${BASE}${finalPath(duration, groupType)}`
   return {
-    title: `Road Trip Van Pays Basque ${dLabel} ${gLabel} — Itinéraire & Spots | Vanzon Explorer`,
+    title: `Road Trip Van Pays Basque ${dLabel} ${gLabel} — Itinéraire & Spots`,
     description: `Road trip Pays Basque ${dLabel} en van aménagé ${gLabel}. Itinéraire détaillé jour par jour, spots nuit validés, cartes GPS. Au départ de Cambo-les-Bains.`,
     alternates: { canonical },
     openGraph: {
