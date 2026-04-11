@@ -288,6 +288,7 @@ export const getArticleBySlugQuery = groq`
     },
     seoTitle,
     seoDescription,
+    ctaResolved,
     "coverImage": coverImage {
       "url": asset->url,
       alt,

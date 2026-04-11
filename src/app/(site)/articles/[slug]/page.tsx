@@ -45,6 +45,7 @@ type ArticleDoc = {
   content?: PortableBlock[];
   seoTitle?: string;
   seoDescription?: string;
+  ctaResolved?: string;
   coverImage?: {
     url: string;
     alt?: string;
@@ -136,6 +137,12 @@ export default async function ArticleDetailPage({
 
   const headingIds = new Map(headings.map((h) => [h.text, h.id]));
   const portableComponents = makePortableComponents(headingIds);
+
+  // Quick fix pré-rollout CTA dynamiques : si l'article est classé "none"
+  // (article backlink/partenaire), on supprime TOUS les CTAs Vanzon hardcodés
+  // de la page (in-body SectionCTA, RoadTripCTA bottom, footer "Louer un van").
+  // Piloté par le champ Sanity ctaResolved (cf. spec 2026-04-11-dynamic-article-ctas).
+  const hideVanzonCTAs = article.ctaResolved === "none";
 
   return (
     <main className="min-h-screen bg-white">
@@ -260,7 +267,7 @@ export default async function ArticleDetailPage({
               {sections.map((section, i) => (
                 <div key={i}>
                   {renderBlocks(section, portableComponents)}
-                  {i % 2 === 1 && i < sections.length - 2 && (
+                  {!hideVanzonCTAs && i % 2 === 1 && i < sections.length - 2 && (
                     <SectionCTA index={Math.floor(i / 2)} />
                   )}
                 </div>
@@ -342,22 +349,26 @@ export default async function ArticleDetailPage({
             </div>
           )}
 
-          {/* ── Road Trip CTA ── */}
-          <RoadTripCTA />
+          {/* ── Road Trip CTA (masqué sur articles "none") ── */}
+          {!hideVanzonCTAs && <RoadTripCTA />}
 
           {/* ── Footer CTA ── */}
           <div className="mt-12 pt-10 border-t border-slate-100">
-            <p className="text-sm font-semibold text-slate-500 mb-5">Envie d&apos;aller plus loin ?</p>
+            {!hideVanzonCTAs && (
+              <p className="text-sm font-semibold text-slate-500 mb-5">Envie d&apos;aller plus loin ?</p>
+            )}
             <div className="flex flex-col sm:flex-row gap-3">
-              <Link
-                href="/location"
-                className="btn-primary btn-shine inline-flex items-center justify-center gap-2 text-sm"
-              >
-                <span className="flex flex-col items-start leading-tight">
-                  <span>🚐 Louer un van au Pays Basque</span>
-                  <span className="text-[11px] font-normal opacity-80">Disponible dès 65€/nuit</span>
-                </span>
-              </Link>
+              {!hideVanzonCTAs && (
+                <Link
+                  href="/location"
+                  className="btn-primary btn-shine inline-flex items-center justify-center gap-2 text-sm"
+                >
+                  <span className="flex flex-col items-start leading-tight">
+                    <span>🚐 Louer un van au Pays Basque</span>
+                    <span className="text-[11px] font-normal opacity-80">Disponible dès 65€/nuit</span>
+                  </span>
+                </Link>
+              )}
               <Link
                 href="/articles"
                 className="btn-ghost inline-flex items-center justify-center gap-2 text-sm"
