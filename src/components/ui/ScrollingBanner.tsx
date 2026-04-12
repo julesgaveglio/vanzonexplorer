@@ -26,16 +26,13 @@ export default function ScrollingBanner() {
   const images = [...BANNER_IMAGES, ...BANNER_IMAGES]
 
   return (
-    <div className="relative -mx-4 w-[calc(100%+2rem)] py-4 sm:-mx-6 sm:w-[calc(100%+3rem)] lg:-mx-8 lg:w-[calc(100%+4rem)]">
+    <div className="relative -mx-4 w-[calc(100%+2rem)] overflow-hidden py-4 sm:-mx-6 sm:w-[calc(100%+3rem)] lg:-mx-8 lg:w-[calc(100%+4rem)]">
       {/* Gradient fade collé aux bords écran */}
       <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-gradient-to-r from-bg-primary to-transparent sm:w-16" />
       <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-gradient-to-l from-bg-primary to-transparent sm:w-16" />
 
-      {/* Scroll container : tactile natif + auto-scroll CSS */}
-      <div
-        className="flex gap-3 overflow-x-auto scroll-smooth scrollbar-none animate-scroll-banner hover:[animation-play-state:paused] touch-pan-x"
-        style={{ WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none' }}
-      >
+      {/* Animation marquee — overflow-hidden sur le parent clip tout proprement */}
+      <div className="flex gap-3 animate-scroll-banner hover:[animation-play-state:paused]">
         {images.map((img, i) => (
           <div
             key={`${img.alt}-${i}`}
