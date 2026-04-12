@@ -75,6 +75,7 @@ function BurgerIcon({ open }: { open: boolean }) {
 export default function Navbar() {
   const [mobileOpen, setMobileOpen]   = useState(false);
   const [desktopOpen, setDesktopOpen] = useState(false);
+  const [expandedMenu, setExpandedMenu] = useState<string | null>(null);
   const [headerHidden, setHeaderHidden] = useState(false);
   const lastScrollY = useRef(0);
   const pathname  = usePathname();
@@ -202,33 +203,60 @@ export default function Navbar() {
                     transition={{ delay: i * 0.03, duration: 0.18 }}
                   >
                     {link.children ? (
-                      <div className="mb-1">
-                        <span className="block px-4 pt-3 pb-1 text-xs font-semibold uppercase tracking-wider text-slate-400">
-                          {link.emoji} {link.label}
-                        </span>
-                        {link.children.map((child) => {
-                          const childActive = pathname === child.href;
-                          return (
-                            <Link
-                              key={child.href}
-                              href={child.href}
-                              onClick={() => setDesktopOpen(false)}
-                              className={`flex items-center px-4 py-2.5 ml-2 rounded-xl transition-colors duration-150 ${
-                                childActive
-                                  ? "text-accent-blue bg-blue-50"
-                                  : "text-slate-700 hover:text-slate-900 hover:bg-slate-50"
-                              }`}
+                      <div>
+                        <button
+                          type="button"
+                          onClick={() => setExpandedMenu(expandedMenu === link.label ? null : link.label)}
+                          className={`flex items-center justify-between w-full px-4 py-3 rounded-xl transition-colors duration-150 ${
+                            active
+                              ? "text-accent-blue bg-blue-50"
+                              : "text-slate-700 hover:text-slate-900 hover:bg-slate-50"
+                          }`}
+                        >
+                          <div>
+                            <span className="text-sm font-semibold block">{link.label}</span>
+                            <span className="text-xs text-slate-400 block">{link.desc}</span>
+                          </div>
+                          <svg
+                            className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${expandedMenu === link.label ? "rotate-180" : ""}`}
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </button>
+                        <AnimatePresence>
+                          {expandedMenu === link.label && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: "auto", opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              transition={{ duration: 0.2 }}
+                              className="overflow-hidden"
                             >
-                              <div>
-                                <span className="text-sm font-semibold block">{child.emoji} {child.label}</span>
-                                <span className="text-xs text-slate-400 block">{child.desc}</span>
-                              </div>
-                              {childActive && (
-                                <span className="ml-auto w-1.5 h-1.5 rounded-full bg-accent-blue flex-shrink-0" />
-                              )}
-                            </Link>
-                          );
-                        })}
+                              {link.children.map((child) => {
+                                const childActive = pathname === child.href;
+                                return (
+                                  <Link
+                                    key={child.href}
+                                    href={child.href}
+                                    onClick={() => setDesktopOpen(false)}
+                                    className={`flex items-center px-4 py-2.5 ml-4 rounded-xl transition-colors duration-150 ${
+                                      childActive
+                                        ? "text-accent-blue bg-blue-50"
+                                        : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                                    }`}
+                                  >
+                                    <span className="text-sm">{child.emoji}</span>
+                                    <div className="ml-2">
+                                      <span className="text-sm font-medium block">{child.label}</span>
+                                      <span className="text-xs text-slate-400 block">{child.desc}</span>
+                                    </div>
+                                  </Link>
+                                );
+                              })}
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
                       </div>
                     ) : (
                       <Link
@@ -400,34 +428,64 @@ export default function Navbar() {
                       transition={{ delay: i * 0.03, duration: 0.15 }}
                     >
                       {link.children ? (
-                        <>
-                          <span className="block px-4 pt-3 pb-1 text-xs font-semibold uppercase tracking-wider text-slate-400">
-                            {link.emoji} {link.label}
-                          </span>
-                          {link.children.map((child) => {
-                            const childActive = pathname === child.href;
-                            return (
-                              <Link
-                                key={child.href}
-                                href={child.href}
-                                onClick={() => setMobileOpen(false)}
-                                className={`flex items-center gap-3 px-4 py-2.5 ml-2 rounded-xl transition-colors duration-150 ${
-                                  childActive
-                                    ? "text-accent-blue bg-blue-50"
-                                    : "text-slate-700 hover:text-slate-900 hover:bg-slate-50 active:bg-slate-100"
-                                }`}
+                        <div>
+                          <button
+                            type="button"
+                            onClick={() => setExpandedMenu(expandedMenu === link.label ? null : link.label)}
+                            className={`flex items-center justify-between w-full gap-3 px-4 py-3 rounded-xl transition-colors duration-150 ${
+                              pathname.startsWith(link.href)
+                                ? "text-accent-blue bg-blue-50"
+                                : "text-slate-700 hover:text-slate-900 hover:bg-slate-50 active:bg-slate-100"
+                            }`}
+                          >
+                            <div className="flex items-center gap-3">
+                              <span className="text-lg leading-none w-7 text-center flex-shrink-0">{link.emoji}</span>
+                              <div>
+                                <span className="text-sm font-semibold block">{link.label}</span>
+                                <span className="text-xs text-slate-400 block">{link.desc}</span>
+                              </div>
+                            </div>
+                            <svg
+                              className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${expandedMenu === link.label ? "rotate-180" : ""}`}
+                              fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                            </svg>
+                          </button>
+                          <AnimatePresence>
+                            {expandedMenu === link.label && (
+                              <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: "auto", opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                transition={{ duration: 0.2 }}
+                                className="overflow-hidden"
                               >
-                                <span className="text-lg leading-none w-7 text-center flex-shrink-0">
-                                  {child.emoji}
-                                </span>
-                                <div>
-                                  <span className="text-sm font-semibold block">{child.label}</span>
-                                  <span className="text-xs text-slate-400 block">{child.desc}</span>
-                                </div>
-                              </Link>
-                            );
-                          })}
-                        </>
+                                {link.children.map((child) => {
+                                  const childActive = pathname === child.href;
+                                  return (
+                                    <Link
+                                      key={child.href}
+                                      href={child.href}
+                                      onClick={() => setMobileOpen(false)}
+                                      className={`flex items-center gap-3 px-4 py-2.5 ml-6 rounded-xl transition-colors duration-150 ${
+                                        childActive
+                                          ? "text-accent-blue bg-blue-50"
+                                          : "text-slate-600 hover:text-slate-900 hover:bg-slate-50 active:bg-slate-100"
+                                      }`}
+                                    >
+                                      <span className="text-base leading-none w-6 text-center flex-shrink-0">{child.emoji}</span>
+                                      <div>
+                                        <span className="text-sm font-medium block">{child.label}</span>
+                                        <span className="text-xs text-slate-400 block">{child.desc}</span>
+                                      </div>
+                                    </Link>
+                                  );
+                                })}
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </div>
                       ) : (
                         (() => {
                           const active = pathname.startsWith(link.href);
