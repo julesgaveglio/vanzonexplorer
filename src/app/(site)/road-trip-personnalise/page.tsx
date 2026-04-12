@@ -135,8 +135,8 @@ export default async function RoadTripPersonnalisePage({
               Générateur de Road Trip Pays Basque{' '}
               <SparklesText
                 text="Ultra-personnalisé"
-                className="text-blue-600"
-                colors={{ first: '#3B82F6', second: '#06B6D4' }}
+                className="bg-gradient-to-r from-[#3B82F6] to-[#0EA5E9] bg-clip-text text-transparent"
+                colors={{ first: '#F472B6', second: '#EC4899' }}
                 sparklesCount={8}
               />
             </h1>
@@ -155,8 +155,9 @@ export default async function RoadTripPersonnalisePage({
               <span className="flex items-center gap-1.5">🗺️ {displayCount} road trips générés</span>
             </div>
 
-            <a href="#wizard" className="btn-primary px-8 py-3.5 rounded-xl text-white font-semibold text-lg shadow-lg hover:shadow-xl transition-all">
+            <a href="#wizard" className="btn-primary relative px-8 py-3.5 rounded-full text-white font-semibold text-lg shadow-lg hover:shadow-xl transition-all">
               {isAdTraffic ? 'Générer mon road trip gratuit →' : 'Créer mon itinéraire gratuit'}
+              <span aria-hidden="true" className="absolute inset-0 rounded-full" style={{ boxShadow: 'inset 0 1.5px 1px rgba(255,255,255,0.55), inset 0 -1px 1px rgba(0,0,0,0.20), inset 2px 0 2px rgba(255,255,255,0.10), inset -2px 0 2px rgba(0,0,0,0.10), inset 0 0 10px rgba(255,255,255,0.14)' }} />
             </a>
           </div>
 
