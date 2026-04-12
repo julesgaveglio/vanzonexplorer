@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import Breadcrumbs from '@/components/ui/Breadcrumbs'
+import { SparklesText } from '@/components/ui/SparklesText'
 import RoadTripWizard from './RoadTripWizard'
 import { faqItems, itineraires, destinations, socialProof } from './seo-data'
 import { createSupabaseAdmin } from '@/lib/supabase/server'
@@ -130,11 +131,13 @@ export default async function RoadTripPersonnalisePage({
           {/* ═══ HERO ═══ */}
           <div className="text-center mb-10 pt-4">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 mb-5 leading-tight">
-              {isAdTraffic ? (
-                <>Ton road trip van au Pays Basque,<br className="hidden sm:block" /> personnalisé par IA</>
-              ) : (
-                'Votre Road Trip Van au Pays Basque'
-              )}
+              Générateur de Road Trip{' '}
+              <SparklesText
+                text="Ultra-personnalisé"
+                className="text-blue-600"
+                colors={{ first: '#3B82F6', second: '#06B6D4' }}
+                sparklesCount={8}
+              />
             </h1>
             <p className="text-lg text-slate-500 max-w-2xl mx-auto mb-6">
               {isAdTraffic
