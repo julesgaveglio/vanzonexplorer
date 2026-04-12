@@ -9,16 +9,16 @@ import { createSupabaseAdmin } from '@/lib/supabase/server'
 export const revalidate = 3600 // 1h pour le compteur
 
 export const metadata: Metadata = {
-  title: 'Road Trip Van Pays Basque Personnalisé | Itinéraire Gratuit',
+  title: 'Générateur Road Trip Van Pays Basque — Itinéraire Personnalisé Gratuit',
   description:
-    'Créez votre road trip van au Pays Basque en 1 minute. Spots de nuit van (parkings gratuits, aires, campings), activités, gastronomie — 100 % gratuit, reçu par email.',
+    'Créez votre road trip van au Pays Basque ultra-personnalisé en 1 minute. Spots de nuit van, activités, gastronomie basque — 100 % gratuit, reçu par email. Biarritz, Bayonne, Espelette, Iraty.',
   alternates: {
     canonical: 'https://vanzonexplorer.com/road-trip-personnalise',
   },
   openGraph: {
-    title: 'Road Trip Van Pays Basque Personnalisé | Itinéraire Gratuit',
+    title: 'Générateur Road Trip Van Pays Basque — Itinéraire Personnalisé Gratuit',
     description:
-      'Créez votre road trip van au Pays Basque en 1 minute. Spots de nuit van, activités, gastronomie basque — 100 % gratuit, reçu par email.',
+      'Road trip van Pays Basque ultra-personnalisé par IA. Spots nuit, activités, gastronomie basque — gratuit, reçu par email.',
     type: 'website',
     url: 'https://vanzonexplorer.com/road-trip-personnalise',
   },
@@ -27,9 +27,9 @@ export const metadata: Metadata = {
 const webAppJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
-  name: 'Générateur de road trip van personnalisé',
+  name: 'Générateur de Road Trip Van Pays Basque Ultra-personnalisé',
   applicationCategory: 'TravelApplication',
-  description: 'Génère ton itinéraire road trip en van sur mesure partout en France',
+  description: 'Génère ton itinéraire road trip en van au Pays Basque ultra-personnalisé par IA',
   url: 'https://vanzonexplorer.com/road-trip-personnalise',
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
 }
@@ -131,7 +131,7 @@ export default async function RoadTripPersonnalisePage({
           {/* ═══ HERO ═══ */}
           <div className="text-center mb-10 pt-4">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 mb-5 leading-tight">
-              Générateur de Road Trip{' '}
+              Générateur de Road Trip Pays Basque{' '}
               <SparklesText
                 text="Ultra-personnalisé"
                 className="text-blue-600"
@@ -141,8 +141,8 @@ export default async function RoadTripPersonnalisePage({
             </h1>
             <p className="text-lg text-slate-500 max-w-2xl mx-auto mb-6">
               {isAdTraffic
-                ? 'Itinéraire sur mesure en 2 minutes. Spots nuit, activités, gastronomie — gratuit, reçu par email.'
-                : 'Itinéraire personnalisé en 1 minute : étapes jour par jour, spots de nuit van (parkings gratuits, aires, campings), gastronomie et activités. 100% gratuit, reçu par email.'
+                ? 'Ton itinéraire van au Pays Basque sur mesure en 2 minutes. Spots nuit, activités, gastronomie basque — gratuit, reçu par email.'
+                : 'Itinéraire van Pays Basque personnalisé en 1 minute : étapes jour par jour, spots de nuit van (parkings gratuits, aires, campings), gastronomie basque et activités. 100% gratuit, reçu par email.'
               }
             </p>
 
