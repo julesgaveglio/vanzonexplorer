@@ -1,6 +1,5 @@
 // src/components/ui/SparklesText.tsx
 // Texte avec effet sparkles (étoiles animées autour du texte).
-// Adapté de MagicUI pour le projet Vanzon — client component, framer-motion.
 
 'use client'
 
@@ -28,7 +27,7 @@ export function SparklesText({
   text,
   className = '',
   sparklesCount = 10,
-  colors = { first: '#3B82F6', second: '#06B6D4' }, // bleu Vanzon + cyan
+  colors = { first: '#FBBF24', second: '#F59E0B' },
 }: SparklesTextProps) {
   const [sparkles, setSparkles] = useState<Sparkle[]>([])
 
@@ -38,9 +37,9 @@ export function SparklesText({
       x: `${Math.random() * 100}%`,
       y: `${Math.random() * 100}%`,
       color: Math.random() > 0.5 ? colors.first : colors.second,
-      delay: Math.random() * 2,
-      scale: Math.random() * 1 + 0.3,
-      lifespan: Math.random() * 10 + 5,
+      delay: Math.random() * 4,
+      scale: Math.random() * 0.8 + 0.3,
+      lifespan: Math.random() * 20 + 10,
     })
 
     setSparkles(Array.from({ length: sparklesCount }, generateStar))
@@ -51,7 +50,7 @@ export function SparklesText({
           star.lifespan <= 0 ? generateStar() : { ...star, lifespan: star.lifespan - 0.1 }
         )
       )
-    }, 100)
+    }, 150)
 
     return () => clearInterval(interval)
   }, [colors.first, colors.second, sparklesCount])
@@ -72,11 +71,11 @@ export function SparklesText({
           className="pointer-events-none absolute z-20"
           initial={{ opacity: 0, left: sparkle.x, top: sparkle.y }}
           animate={{
-            opacity: [0, 1, 0],
+            opacity: [0, 0.8, 0],
             scale: [0, sparkle.scale, 0],
             rotate: [75, 120, 150],
           }}
-          transition={{ duration: 0.8, repeat: Infinity, delay: sparkle.delay }}
+          transition={{ duration: 2, repeat: Infinity, delay: sparkle.delay, ease: 'easeInOut' }}
           width="21"
           height="21"
           viewBox="0 0 21 21"

@@ -145,8 +145,8 @@ export default async function RoadTripPersonnalisePage({
               <SparklesText
                 text="Ultra-personnalisé"
                 className="bg-gradient-to-r from-[#3B82F6] to-[#0EA5E9] bg-clip-text text-transparent"
-                colors={{ first: '#F472B6', second: '#EC4899' }}
-                sparklesCount={8}
+                colors={{ first: '#FBBF24', second: '#F59E0B' }}
+                sparklesCount={12}
               />
             </h1>
             <p className="text-lg text-slate-500 max-w-2xl mx-auto mb-6">
