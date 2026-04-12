@@ -45,21 +45,9 @@ const breadcrumbJsonLd = {
 }
 
 const steps = [
-  {
-    icon: '1',
-    title: 'Remplissez le formulaire',
-    description: 'Profil, durée, envies, budget — 5 étapes simples.',
-  },
-  {
-    icon: '2',
-    title: "L'IA construit votre plan",
-    description: 'Analyse des meilleurs spots, sélection des spots de nuit van.',
-  },
-  {
-    icon: '3',
-    title: 'Reçu par email',
-    description: 'Étapes jour par jour, spots de nuit, conseils — en 60 secondes.',
-  },
+  { icon: '📝', title: 'Vos envies', description: 'Durée, style, budget' },
+  { icon: '🤖', title: "L'IA génère", description: 'Spots & itinéraire sur mesure' },
+  { icon: '📧', title: 'Par email', description: 'Prêt en 60 secondes' },
 ]
 
 const howToJsonLd = {
@@ -97,6 +85,27 @@ async function getRoadTripCount(): Promise<number> {
   } catch {
     return 0
   }
+}
+
+function StepsRow() {
+  return (
+    <div className="flex items-center justify-center gap-0 max-w-md mx-auto mb-10">
+      {steps.map((step, i) => (
+        <div key={step.title} className="flex items-center">
+          {/* Step */}
+          <div className="flex flex-col items-center text-center w-28">
+            <span className="text-3xl mb-2">{step.icon}</span>
+            <p className="text-sm font-bold text-slate-900">{step.title}</p>
+            <p className="text-xs text-slate-500 mt-0.5">{step.description}</p>
+          </div>
+          {/* Dotted line between steps */}
+          {i < steps.length - 1 && (
+            <div className="flex-none w-10 border-t-2 border-dashed border-slate-300 mx-1 mt-[-1.5rem]" />
+          )}
+        </div>
+      ))}
+    </div>
+  )
 }
 
 export default async function RoadTripPersonnalisePage({
@@ -167,18 +176,7 @@ export default async function RoadTripPersonnalisePage({
           {/* ═══ MODE ADS : wizard immédiat, pas de SEO fluff ═══ */}
           {isAdTraffic ? (
             <>
-              {/* Comment ça marche — version ads */}
-              <div className="grid grid-cols-3 gap-4 max-w-xl mx-auto mb-10">
-                {steps.map((step) => (
-                  <div key={step.title} className="relative rounded-2xl border border-blue-100 bg-gradient-to-b from-blue-50 to-white p-4 text-center shadow-sm">
-                    <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-600 to-cyan-500 text-sm font-bold text-white shadow">
-                      {step.icon}
-                    </div>
-                    <p className="text-sm font-bold text-slate-900">{step.title}</p>
-                    <p className="mt-1 text-xs text-slate-500 leading-relaxed">{step.description}</p>
-                  </div>
-                ))}
-              </div>
+              <StepsRow />
 
               {/* Wizard */}
               <section id="wizard" className="mb-12 scroll-mt-8">
@@ -207,23 +205,10 @@ export default async function RoadTripPersonnalisePage({
 
               {/* Comment ça marche */}
               <section className="mb-16">
-                <div className="text-center mb-10">
+                <div className="text-center mb-8">
                   <p className="text-xs font-semibold tracking-[0.25em] uppercase text-accent-blue mb-3">Comment ça marche</p>
-                  <h2 className="text-2xl md:text-3xl font-black text-slate-900">
-                    De zéro à votre road trip en 3 étapes
-                  </h2>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-4xl mx-auto">
-                  {steps.map((step) => (
-                    <div key={step.title} className="relative rounded-2xl border border-blue-100 bg-gradient-to-b from-blue-50 to-white p-7 text-center shadow-sm">
-                      <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-blue-600 to-cyan-500 text-base font-bold text-white shadow-md">
-                        {step.icon}
-                      </div>
-                      <h3 className="text-base font-bold text-slate-900 mb-2">{step.title}</h3>
-                      <p className="text-sm text-slate-600 leading-relaxed">{step.description}</p>
-                    </div>
-                  ))}
-                </div>
+                <StepsRow />
               </section>
 
               {/* Wizard */}
