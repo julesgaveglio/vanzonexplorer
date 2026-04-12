@@ -1,12 +1,10 @@
 // src/components/ui/ScrollingBanner.tsx
-// Bandeau d'images défilant en continu (marquee CSS infini).
-// Responsive : hauteur 160px mobile, 200px desktop.
+// Bandeau d'images : auto-scroll CSS + swipe tactile natif.
 
 'use client'
 
 import Image from 'next/image'
 
-// Images emblématiques Pays Basque (sélection manuelle des meilleurs POIs)
 const BANNER_IMAGES = [
   { src: 'https://vekavbjntnrqtwnslvxz.supabase.co/storage/v1/object/public/road-trip-images/poi/grande-plage-885a3d70.webp', alt: 'Grande Plage de Biarritz' },
   { src: 'https://vekavbjntnrqtwnslvxz.supabase.co/storage/v1/object/public/road-trip-images/poi/la-rhune-cb9d1b78.webp', alt: 'La Rhune — sommet montagne Pays Basque' },
@@ -25,26 +23,29 @@ const BANNER_IMAGES = [
 ]
 
 export default function ScrollingBanner() {
-  // On double la liste pour le loop infini
   const images = [...BANNER_IMAGES, ...BANNER_IMAGES]
 
   return (
-    <div className="relative w-full overflow-hidden py-6">
+    <div className="relative w-full py-4">
       {/* Gradient fade gauche/droite */}
-      <div className="pointer-events-none absolute left-0 top-0 z-10 h-full w-16 bg-gradient-to-r from-bg-primary to-transparent sm:w-24" />
-      <div className="pointer-events-none absolute right-0 top-0 z-10 h-full w-16 bg-gradient-to-l from-bg-primary to-transparent sm:w-24" />
+      <div className="pointer-events-none absolute left-0 top-0 z-10 h-full w-12 bg-gradient-to-r from-bg-primary to-transparent sm:w-20" />
+      <div className="pointer-events-none absolute right-0 top-0 z-10 h-full w-12 bg-gradient-to-l from-bg-primary to-transparent sm:w-20" />
 
-      <div className="flex animate-scroll-banner gap-4">
+      {/* Scroll container : tactile natif + auto-scroll CSS */}
+      <div
+        className="flex gap-3 overflow-x-auto scroll-smooth scrollbar-none animate-scroll-banner hover:[animation-play-state:paused] touch-pan-x"
+        style={{ WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none' }}
+      >
         {images.map((img, i) => (
           <div
             key={`${img.alt}-${i}`}
-            className="relative h-40 w-60 flex-none overflow-hidden rounded-2xl shadow-md sm:h-48 sm:w-72 md:h-52 md:w-80"
+            className="relative h-28 w-44 flex-none overflow-hidden rounded-xl shadow-sm sm:h-32 sm:w-52 md:h-36 md:w-56"
           >
             <Image
               src={img.src}
               alt={img.alt}
               fill
-              sizes="320px"
+              sizes="224px"
               className="object-cover"
               unoptimized
             />
