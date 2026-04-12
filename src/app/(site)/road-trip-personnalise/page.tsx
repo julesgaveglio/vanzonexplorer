@@ -89,18 +89,16 @@ async function getRoadTripCount(): Promise<number> {
 
 function StepsRow() {
   return (
-    <div className="flex items-center justify-center gap-0 max-w-md mx-auto mb-10">
+    <div className="flex items-center justify-center max-w-sm mx-auto mb-8">
       {steps.map((step, i) => (
         <div key={step.title} className="flex items-center">
-          {/* Step */}
-          <div className="flex flex-col items-center text-center w-28">
-            <span className="text-3xl mb-2">{step.icon}</span>
-            <p className="text-sm font-bold text-slate-900">{step.title}</p>
-            <p className="text-xs text-slate-500 mt-0.5">{step.description}</p>
+          <div className="flex flex-col items-center text-center w-20 sm:w-24">
+            <span className="text-xl sm:text-2xl mb-1">{step.icon}</span>
+            <p className="text-xs font-bold text-slate-900 leading-tight">{step.title}</p>
+            <p className="text-[10px] sm:text-xs text-slate-500 mt-0.5 leading-tight">{step.description}</p>
           </div>
-          {/* Dotted line between steps */}
           {i < steps.length - 1 && (
-            <div className="flex-none w-10 border-t-2 border-dashed border-slate-300 mx-1 mt-[-1.5rem]" />
+            <div className="flex-none w-6 sm:w-8 border-t border-dashed border-slate-300 mt-[-1rem]" />
           )}
         </div>
       ))}
