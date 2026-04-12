@@ -4,7 +4,7 @@ import Breadcrumbs from '@/components/ui/Breadcrumbs'
 import { SparklesText } from '@/components/ui/SparklesText'
 import ScrollingBanner from '@/components/ui/ScrollingBanner'
 import RoadTripWizard from './RoadTripWizard'
-import { faqItems, itineraires, destinations, socialProof } from './seo-data'
+import { faqItems, itineraires, destinations } from './seo-data'
 import { createSupabaseAdmin } from '@/lib/supabase/server'
 
 export const revalidate = 3600 // 1h pour le compteur
@@ -201,24 +201,6 @@ export default async function RoadTripPersonnalisePage({
                 </div>
               </section>
 
-              {/* Témoignages compacts */}
-              <div className="max-w-2xl mx-auto mb-12">
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  {socialProof.map((t) => (
-                    <div key={t.initiales} className="rounded-xl bg-white border border-slate-100 p-4">
-                      <div className="flex gap-0.5 mb-2">
-                        {Array.from({ length: t.etoiles }).map((_, i) => (
-                          <svg key={i} width="12" height="12" viewBox="0 0 24 24" fill="#3B82F6">
-                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                          </svg>
-                        ))}
-                      </div>
-                      <p className="text-xs text-slate-600 leading-relaxed">&ldquo;{t.texte}&rdquo;</p>
-                      <p className="mt-2 text-xs font-bold text-slate-800">{t.initiales}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
             </>
           ) : (
             /* ═══ MODE ORGANIQUE : page SEO complète ═══ */
@@ -336,21 +318,6 @@ export default async function RoadTripPersonnalisePage({
                     <div key={stat.label} className="glass-card rounded-2xl p-7 text-center">
                       <p className="text-4xl font-black text-slate-900 mb-2">{stat.chiffre}</p>
                       <p className="text-sm font-medium text-slate-500">{stat.label}</p>
-                    </div>
-                  ))}
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-4xl mx-auto">
-                  {socialProof.map((t) => (
-                    <div key={t.initiales} className="glass-card rounded-2xl p-6">
-                      <div className="flex items-center gap-1 mb-3">
-                        {Array.from({ length: t.etoiles }).map((_, i) => (
-                          <svg key={i} width="14" height="14" viewBox="0 0 24 24" fill="#3B82F6">
-                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                          </svg>
-                        ))}
-                      </div>
-                      <p className="text-sm text-slate-600 leading-relaxed mb-4">&ldquo;{t.texte}&rdquo;</p>
-                      <p className="text-xs font-bold text-slate-900">{t.initiales}</p>
                     </div>
                   ))}
                 </div>
