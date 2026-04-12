@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { sanityFetch } from "@/lib/sanity/client";
-import { getAllVanSlugsQuery, getAllArticleSlugsQuery, getAllRoadTripArticleSlugsQuery } from "@/lib/sanity/queries";
+import { getAllVanSlugsQuery, getAllArticleSlugsQuery } from "@/lib/sanity/queries";
 import { VANS } from "@/lib/data/vans";
 import { createSupabaseAnon } from "@/lib/supabase/server";
 import { slugify } from "@/lib/slugify";
@@ -10,8 +10,6 @@ const BASE_URL = "https://vanzonexplorer.com";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const vanSlugs = await sanityFetch<{ slug: string; updatedAt?: string }[]>(getAllVanSlugsQuery) ?? [];
   const articleSlugs = await sanityFetch<{ slug: string; updatedAt?: string }[]>(getAllArticleSlugsQuery) ?? [];
-  const roadTripSlugs = await sanityFetch<{ regionSlug: string; articleSlug: string; updatedAt?: string }[]>(getAllRoadTripArticleSlugsQuery) ?? [];
-
   const staticPages: MetadataRoute.Sitemap = [
     { url: BASE_URL, lastModified: new Date("2026-01-01"), changeFrequency: "weekly", priority: 1 },
     { url: `${BASE_URL}/location`, lastModified: new Date("2026-01-01"), changeFrequency: "weekly", priority: 0.9 },
@@ -44,8 +42,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/road-trip-pays-basque-van/1-semaine/amis`, lastModified: new Date("2026-04-11"), changeFrequency: "weekly", priority: 0.85 },
     { url: `${BASE_URL}/road-trip-pays-basque-van/1-semaine/famille`, lastModified: new Date("2026-04-11"), changeFrequency: "weekly", priority: 0.85 },
     { url: `${BASE_URL}/articles`, lastModified: new Date("2026-01-01"), changeFrequency: "weekly", priority: 0.6 },
-    { url: `${BASE_URL}/road-trip-personnalise`, lastModified: new Date("2026-03-23"), changeFrequency: "monthly", priority: 0.7 },
-    { url: `${BASE_URL}/road-trip`, lastModified: new Date("2026-04-09"), changeFrequency: "weekly", priority: 0.8 },
+    { url: `${BASE_URL}/road-trip-personnalise`, lastModified: new Date("2026-04-12"), changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE_URL}/proprietaire`, lastModified: new Date("2026-04-09"), changeFrequency: "monthly", priority: 0.7 },
     { url: `${BASE_URL}/contact`, lastModified: new Date("2025-01-01"), changeFrequency: "yearly", priority: 0.5 },
     { url: `${BASE_URL}/a-propos`, lastModified: new Date("2025-06-01"), changeFrequency: "yearly", priority: 0.5 },
@@ -65,25 +62,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  // road-trip index now in staticPages above — this is kept for compatibility
-  const roadTripIndexPage: MetadataRoute.Sitemap = [];
-
-  // Only include region pages that actually have articles
-  const regionsWithArticles = Array.from(new Set(roadTripSlugs.map((s) => s.regionSlug)));
-  const roadTripRegionPages: MetadataRoute.Sitemap = regionsWithArticles.map((regionSlug) => ({
-    url: `${BASE_URL}/road-trip/${regionSlug}`,
-    lastModified: new Date("2026-04-09"),
-    changeFrequency: "monthly" as const,
-    priority: 0.7,
-  }));
-
-  const roadTripArticlePages: MetadataRoute.Sitemap = roadTripSlugs.map(({ regionSlug, articleSlug, updatedAt }) => ({
-    url: `${BASE_URL}/road-trip/${regionSlug}/${articleSlug}`,
-    lastModified: updatedAt ? new Date(updatedAt) : new Date(),
-    changeFrequency: "monthly" as const,
-    priority: 0.8,
-  }));
-
   const { data: marketplaceVans } = await createSupabaseAnon()
     .from("marketplace_vans")
     .select("id, location_city, updated_at")
@@ -96,5 +74,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  return [...staticPages, ...vanPages, ...articlePages, ...roadTripIndexPage, ...roadTripRegionPages, ...roadTripArticlePages, ...marketplaceVanPages];
+  return [...staticPages, ...vanPages, ...articlePages, ...marketplaceVanPages];
 }

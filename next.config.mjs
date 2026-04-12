@@ -111,6 +111,10 @@ const nextConfig = {
       // ── Catch-all : /blogs/* et /blogarticles/* restants → /articles ───────
       { source: "/blogs/:slug*", destination: "/articles", permanent: true },
       { source: "/blogarticles/:slug*", destination: "/articles", permanent: true },
+
+      // ── Ancien catalogue road-trip → nouveau hub Pays Basque ──────────────
+      { source: "/road-trip", destination: "/road-trip-pays-basque-van", permanent: true },
+      { source: "/road-trip/:path*", destination: "/road-trip-pays-basque-van", permanent: true },
     ];
   },
   async headers() {

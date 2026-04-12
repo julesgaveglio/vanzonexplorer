@@ -7,13 +7,27 @@ import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser, UserButton } from "@clerk/nextjs";
 
-const navLinks = [
+interface NavLink {
+  label: string
+  href: string
+  desc: string
+  emoji: string
+  children?: { label: string; href: string; desc: string; emoji: string }[]
+}
+
+const navLinks: NavLink[] = [
   { label: "Location", href: "/location", desc: "Louer un van aménagé", emoji: "🚐" },
   { label: "Achat", href: "/achat", desc: "Acheter un fourgon", emoji: "🔑" },
   { label: "Formation", href: "/formation", desc: "Van Business Academy", emoji: "🎓" },
   { label: "Club", href: "/club", desc: "Réductions exclusives", emoji: "🔮" },
   { label: "Pays Basque", href: "/pays-basque", desc: "Vantrips & spots", emoji: "🏄" },
-  { label: "Road Trips", href: "/road-trip", desc: "Itinéraires van en France", emoji: "🗺️" },
+  {
+    label: "Road Trips", href: "/road-trip-pays-basque-van", desc: "Itinéraires van", emoji: "🗺️",
+    children: [
+      { label: "Road Trip Pays Basque", href: "/road-trip-pays-basque-van", desc: "Spots, carte & itinéraires", emoji: "🗺️" },
+      { label: "Générateur IA", href: "/road-trip-personnalise", desc: "Itinéraire ultra-personnalisé", emoji: "✨" },
+    ],
+  },
   { label: "Articles", href: "/articles", desc: "Guides vanlife", emoji: "📖" },
   { label: "À propos", href: "/a-propos", desc: "Notre histoire", emoji: "👋" },
   { label: "Contact", href: "/contact", desc: "Contactez-nous", emoji: "✉️" },
@@ -187,23 +201,54 @@ export default function Navbar() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: i * 0.03, duration: 0.18 }}
                   >
-                    <Link
-                      href={link.href}
-                      onClick={() => setDesktopOpen(false)}
-                      className={`flex items-center px-4 py-3 rounded-xl transition-colors duration-150 ${
-                        active
-                          ? "text-accent-blue bg-blue-50"
-                          : "text-slate-700 hover:text-slate-900 hover:bg-slate-50"
-                      }`}
-                    >
-                      <div>
-                        <span className="text-sm font-semibold block">{link.label}</span>
-                        <span className="text-xs text-slate-400 block">{link.desc}</span>
+                    {link.children ? (
+                      <div className="mb-1">
+                        <span className="block px-4 pt-3 pb-1 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                          {link.emoji} {link.label}
+                        </span>
+                        {link.children.map((child) => {
+                          const childActive = pathname === child.href;
+                          return (
+                            <Link
+                              key={child.href}
+                              href={child.href}
+                              onClick={() => setDesktopOpen(false)}
+                              className={`flex items-center px-4 py-2.5 ml-2 rounded-xl transition-colors duration-150 ${
+                                childActive
+                                  ? "text-accent-blue bg-blue-50"
+                                  : "text-slate-700 hover:text-slate-900 hover:bg-slate-50"
+                              }`}
+                            >
+                              <div>
+                                <span className="text-sm font-semibold block">{child.emoji} {child.label}</span>
+                                <span className="text-xs text-slate-400 block">{child.desc}</span>
+                              </div>
+                              {childActive && (
+                                <span className="ml-auto w-1.5 h-1.5 rounded-full bg-accent-blue flex-shrink-0" />
+                              )}
+                            </Link>
+                          );
+                        })}
                       </div>
-                      {active && (
-                        <span className="ml-auto w-1.5 h-1.5 rounded-full bg-accent-blue flex-shrink-0" />
-                      )}
-                    </Link>
+                    ) : (
+                      <Link
+                        href={link.href}
+                        onClick={() => setDesktopOpen(false)}
+                        className={`flex items-center px-4 py-3 rounded-xl transition-colors duration-150 ${
+                          active
+                            ? "text-accent-blue bg-blue-50"
+                            : "text-slate-700 hover:text-slate-900 hover:bg-slate-50"
+                        }`}
+                      >
+                        <div>
+                          <span className="text-sm font-semibold block">{link.label}</span>
+                          <span className="text-xs text-slate-400 block">{link.desc}</span>
+                        </div>
+                        {active && (
+                          <span className="ml-auto w-1.5 h-1.5 rounded-full bg-accent-blue flex-shrink-0" />
+                        )}
+                      </Link>
+                    )}
                   </motion.div>
                 );
               })}
@@ -347,38 +392,71 @@ export default function Navbar() {
                 }}
               >
                 <div className="p-2">
-                  {navLinks.map((link, i) => {
-                    const active = pathname.startsWith(link.href);
-                    return (
-                      <motion.div
-                        key={link.href}
-                        initial={{ opacity: 0, x: -8 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: i * 0.03, duration: 0.15 }}
-                      >
-                        <Link
-                          href={link.href}
-                          onClick={() => setMobileOpen(false)}
-                          className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors duration-150 ${
-                            active
-                              ? "text-accent-blue bg-blue-50"
-                              : "text-slate-700 hover:text-slate-900 hover:bg-slate-50 active:bg-slate-100"
-                          }`}
-                        >
-                          <span className="text-lg leading-none w-7 text-center flex-shrink-0">
-                            {link.emoji}
+                  {navLinks.map((link, i) => (
+                    <motion.div
+                      key={link.href}
+                      initial={{ opacity: 0, x: -8 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.03, duration: 0.15 }}
+                    >
+                      {link.children ? (
+                        <>
+                          <span className="block px-4 pt-3 pb-1 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                            {link.emoji} {link.label}
                           </span>
-                          <div>
-                            <span className="text-sm font-semibold block">{link.label}</span>
-                            <span className="text-xs text-slate-400 block">{link.desc}</span>
-                          </div>
-                          {active && (
-                            <span className="ml-auto w-1.5 h-1.5 rounded-full bg-accent-blue flex-shrink-0" />
-                          )}
-                        </Link>
-                      </motion.div>
-                    );
-                  })}
+                          {link.children.map((child) => {
+                            const childActive = pathname === child.href;
+                            return (
+                              <Link
+                                key={child.href}
+                                href={child.href}
+                                onClick={() => setMobileOpen(false)}
+                                className={`flex items-center gap-3 px-4 py-2.5 ml-2 rounded-xl transition-colors duration-150 ${
+                                  childActive
+                                    ? "text-accent-blue bg-blue-50"
+                                    : "text-slate-700 hover:text-slate-900 hover:bg-slate-50 active:bg-slate-100"
+                                }`}
+                              >
+                                <span className="text-lg leading-none w-7 text-center flex-shrink-0">
+                                  {child.emoji}
+                                </span>
+                                <div>
+                                  <span className="text-sm font-semibold block">{child.label}</span>
+                                  <span className="text-xs text-slate-400 block">{child.desc}</span>
+                                </div>
+                              </Link>
+                            );
+                          })}
+                        </>
+                      ) : (
+                        (() => {
+                          const active = pathname.startsWith(link.href);
+                          return (
+                            <Link
+                              href={link.href}
+                              onClick={() => setMobileOpen(false)}
+                              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors duration-150 ${
+                                active
+                                  ? "text-accent-blue bg-blue-50"
+                                  : "text-slate-700 hover:text-slate-900 hover:bg-slate-50 active:bg-slate-100"
+                              }`}
+                            >
+                              <span className="text-lg leading-none w-7 text-center flex-shrink-0">
+                                {link.emoji}
+                              </span>
+                              <div>
+                                <span className="text-sm font-semibold block">{link.label}</span>
+                                <span className="text-xs text-slate-400 block">{link.desc}</span>
+                              </div>
+                              {active && (
+                                <span className="ml-auto w-1.5 h-1.5 rounded-full bg-accent-blue flex-shrink-0" />
+                              )}
+                            </Link>
+                          );
+                        })()
+                      )}
+                    </motion.div>
+                  ))}
                 </div>
 
                 <div className="px-2 pb-2 pt-1 border-t border-slate-100">
