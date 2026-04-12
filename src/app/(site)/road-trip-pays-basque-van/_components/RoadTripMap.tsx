@@ -19,6 +19,8 @@ import {
 interface RoadTripMapProps {
   pois: POIRowWithCoords[]
   template?: RoadTripTemplateRow
+  /** Ordered [lng, lat] coords for a custom polyline route (takes priority over template polyline) */
+  route?: [number, number][]
   center?: [number, number]
   zoom?: number
   height?: { desktop: number; mobile: number }
@@ -36,6 +38,7 @@ function escapeHtml(s: string): string {
 export default function RoadTripMap({
   pois,
   template,
+  route,
   center = PB_CENTER,
   zoom = PB_DEFAULT_ZOOM,
   height = { desktop: 500, mobile: 380 },
@@ -97,46 +100,52 @@ export default function RoadTripMap({
           new ml.Marker({ element: el }).setLngLat(coords).setPopup(popup).addTo(map)
         }
 
-        // Polyline si template fourni
-        if (template && template.itinerary_json) {
-          const rawDays = (template.itinerary_json as unknown as {
-            days: Array<{
-              stops: Array<{ poi_id: string }>
-              overnight_id: string
-            }>
-          }).days
-          const lineCoords: Array<[number, number]> = []
-          for (const day of rawDays) {
-            for (const stop of day.stops) {
-              const poi = poiById.get(stop.poi_id)
-              const c = parseCoordinates(poi?.coordinates)
-              if (c) lineCoords.push(c)
-            }
-            const overnight = poiById.get(day.overnight_id)
-            const oc = parseCoordinates(overnight?.coordinates)
-            if (oc) lineCoords.push(oc)
-          }
-          if (lineCoords.length >= 2) {
-            map.addSource('itinerary-line', {
-              type: 'geojson',
-              data: {
-                type: 'Feature',
-                properties: {},
-                geometry: { type: 'LineString', coordinates: lineCoords },
-              },
-            })
-            map.addLayer({
-              id: 'itinerary-line-layer',
-              type: 'line',
-              source: 'itinerary-line',
-              layout: { 'line-join': 'round', 'line-cap': 'round' },
-              paint: {
-                'line-color': '#2563eb',
-                'line-width': 4,
-                'line-dasharray': [2, 1],
-              },
-            })
-          }
+        // Polyline : route custom > template
+        const lineCoords: Array<[number, number]> =
+          route && route.length >= 2
+            ? route
+            : (() => {
+                if (!template?.itinerary_json) return []
+                const rawDays = (template.itinerary_json as unknown as {
+                  days: Array<{
+                    stops: Array<{ poi_id: string }>
+                    overnight_id: string
+                  }>
+                }).days
+                const coords: Array<[number, number]> = []
+                for (const day of rawDays) {
+                  for (const stop of day.stops) {
+                    const poi = poiById.get(stop.poi_id)
+                    const c = parseCoordinates(poi?.coordinates)
+                    if (c) coords.push(c)
+                  }
+                  const overnight = poiById.get(day.overnight_id)
+                  const oc = parseCoordinates(overnight?.coordinates)
+                  if (oc) coords.push(oc)
+                }
+                return coords
+              })()
+
+        if (lineCoords.length >= 2) {
+          map.addSource('itinerary-line', {
+            type: 'geojson',
+            data: {
+              type: 'Feature',
+              properties: {},
+              geometry: { type: 'LineString', coordinates: lineCoords },
+            },
+          })
+          map.addLayer({
+            id: 'itinerary-line-layer',
+            type: 'line',
+            source: 'itinerary-line',
+            layout: { 'line-join': 'round', 'line-cap': 'round' },
+            paint: {
+              'line-color': '#2563eb',
+              'line-width': 4,
+              'line-dasharray': [2, 1],
+            },
+          })
         }
       })
     })

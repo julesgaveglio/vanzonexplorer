@@ -177,7 +177,7 @@ function CityInput({
   }, [])
 
   const filtered = SUGGESTED_CITIES.filter((c) =>
-    c.toLowerCase().includes(query.toLowerCase())
+    c.name.toLowerCase().includes(query.toLowerCase())
   )
 
   const select = (city: string) => {
@@ -208,13 +208,13 @@ function CityInput({
       {open && filtered.length > 0 && (
         <ul className="absolute left-0 right-0 top-full z-50 mt-1 max-h-48 overflow-auto rounded-lg border border-slate-200 bg-white shadow-lg">
           {filtered.slice(0, 8).map((city) => (
-            <li key={city}>
+            <li key={city.name}>
               <button
                 type="button"
-                onClick={() => select(city)}
+                onClick={() => select(city.name)}
                 className="w-full px-3 py-2 text-left text-sm text-slate-700 hover:bg-blue-50 hover:text-blue-700"
               >
-                {city}
+                {city.name}
               </button>
             </li>
           ))}
