@@ -492,23 +492,56 @@ export async function POST(req: NextRequest) {
         })
         .eq('id', record.id)
 
-      // Telegram success
+      // Telegram success — message enrichi avec toute la data
       const totalStops = itinerary.days.reduce((a, d) => a + (d.stops?.length ?? 0), 0)
-      void notifySuccess(
-        {
-          prenom: input.firstname,
-          email: input.email,
-          region: 'Pays Basque',
-          duree: DURATION_TO_DAYS[input.duration],
-        },
-        {
-          modelUsed: modelMeta?.modelUsed ?? 'unknown',
-          fallbackUsed: modelMeta?.fallbackUsed ?? false,
-          photosCount: 0,
-          totalSpots: totalStops,
-          campingsFound: overnightSpots.length,
-        }
-      )
+      const daysCount = DURATION_TO_DAYS[input.duration]
+      const groupLabels: Record<string, string> = { solo: 'Solo', couple: 'Couple', amis: 'Amis', famille: 'Famille' }
+      const budgetLabels: Record<string, string> = { faible: 'Petit budget', moyen: 'Moyen', eleve: 'Confort' }
+      const overnightLabels: Record<string, string> = { gratuit: 'Gratuit', aires_officielles: 'Aires officielles', camping: 'Camping', mix: 'Mix' }
+      const scopeLabels: Record<string, string> = { france: 'FR uniquement', france_espagne: 'FR + Espagne' }
+      const interestLabels: Record<string, string> = { sport: 'Sport', nature: 'Nature', gastronomie: 'Gastro', culture: 'Culture', plages: 'Plages', soirees: 'Soirées' }
+
+      const spotsList = itinerary.days
+        .flatMap((d) => (d.stops ?? []).map((s) => s.name))
+        .slice(0, 8)
+        .join(', ')
+
+      const telegramMsg = [
+        `🎉 *Nouveau road trip généré !*`,
+        ``,
+        `👤 *${input.firstname}*`,
+        `📧 \`${input.email}\``,
+        `🚐 ${input.vanStatus === 'proprietaire' ? 'Propriétaire' : 'Locataire'}`,
+        `👥 ${groupLabels[input.groupType] ?? input.groupType}`,
+        `📅 ${daysCount} jour${daysCount > 1 ? 's' : ''}`,
+        `🎯 ${input.interests.map((i) => interestLabels[i] ?? i).join(', ')}`,
+        `💰 ${budgetLabels[input.budgetLevel] ?? input.budgetLevel}`,
+        `🌙 ${overnightLabels[input.overnightPreference] ?? input.overnightPreference}`,
+        `🗺️ ${scopeLabels[input.scope] ?? input.scope}`,
+        ``,
+        `📍 *"${itinerary.title}"*`,
+        `🛣️ ${totalStops} étapes · ${overnightSpots.length} spots nuit`,
+        `📌 ${spotsList}${totalStops > 8 ? '...' : ''}`,
+        ``,
+        `🤖 \`${modelMeta?.modelUsed ?? 'unknown'}\`${modelMeta?.fallbackUsed ? ' (fallback)' : ''}`,
+        `_${new Date().toLocaleString('fr-FR', { timeZone: 'Europe/Paris' })}_`,
+      ].join('\n')
+
+      void (async () => {
+        try {
+          if (process.env.TELEGRAM_BOT_TOKEN && process.env.TELEGRAM_CHAT_ID) {
+            await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                chat_id: process.env.TELEGRAM_CHAT_ID,
+                text: telegramMsg,
+                parse_mode: 'Markdown',
+              }),
+            })
+          }
+        } catch { /* non-blocking */ }
+      })()
 
       await emit('progress', { message: "✅  C'est prêt ! Vérifiez votre boîte mail 🎉" })
       await emit('done', {})
