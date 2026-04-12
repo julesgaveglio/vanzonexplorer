@@ -166,28 +166,15 @@ export default async function RoadTripPersonnalisePage({
           {/* ═══ MODE ADS : wizard immédiat, pas de SEO fluff ═══ */}
           {isAdTraffic ? (
             <>
-              {/* Social proof compact */}
-              <div className="flex justify-center gap-6 mb-10">
-                {[
-                  { chiffre: displayCount, label: 'Road trips générés' },
-                  { chiffre: '100%', label: 'Gratuit' },
-                  { chiffre: '< 60s', label: 'Temps de génération' },
-                ].map((stat) => (
-                  <div key={stat.label} className="text-center">
-                    <p className="text-2xl font-black text-slate-900">{stat.chiffre}</p>
-                    <p className="text-xs text-slate-500">{stat.label}</p>
-                  </div>
-                ))}
-              </div>
-
-              {/* Comment ça marche mini */}
-              <div className="grid grid-cols-3 gap-3 max-w-lg mx-auto mb-10">
+              {/* Comment ça marche — version ads */}
+              <div className="grid grid-cols-3 gap-4 max-w-xl mx-auto mb-10">
                 {steps.map((step) => (
-                  <div key={step.title} className="text-center">
-                    <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold mx-auto mb-2">
+                  <div key={step.title} className="relative rounded-2xl border border-blue-100 bg-gradient-to-b from-blue-50 to-white p-4 text-center shadow-sm">
+                    <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-600 to-cyan-500 text-sm font-bold text-white shadow">
                       {step.icon}
                     </div>
-                    <p className="text-xs font-semibold text-slate-700">{step.title}</p>
+                    <p className="text-sm font-bold text-slate-900">{step.title}</p>
+                    <p className="mt-1 text-xs text-slate-500 leading-relaxed">{step.description}</p>
                   </div>
                 ))}
               </div>
@@ -227,12 +214,12 @@ export default async function RoadTripPersonnalisePage({
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-4xl mx-auto">
                   {steps.map((step) => (
-                    <div key={step.title} className="glass-card rounded-2xl p-7 text-center">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white text-sm font-bold mx-auto mb-4">
+                    <div key={step.title} className="relative rounded-2xl border border-blue-100 bg-gradient-to-b from-blue-50 to-white p-7 text-center shadow-sm">
+                      <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-blue-600 to-cyan-500 text-base font-bold text-white shadow-md">
                         {step.icon}
                       </div>
-                      <h3 className="text-sm font-bold text-slate-900 mb-2">{step.title}</h3>
-                      <p className="text-sm text-slate-500 leading-relaxed">{step.description}</p>
+                      <h3 className="text-base font-bold text-slate-900 mb-2">{step.title}</h3>
+                      <p className="text-sm text-slate-600 leading-relaxed">{step.description}</p>
                     </div>
                   ))}
                 </div>
@@ -304,22 +291,6 @@ export default async function RoadTripPersonnalisePage({
                   <Link href="/road-trip" className="text-sm font-semibold text-accent-blue hover:underline">
                     Voir tous les itinéraires
                   </Link>
-                </div>
-              </section>
-
-              {/* Social proof — Compteurs */}
-              <section className="mb-16">
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 max-w-4xl mx-auto mb-8">
-                  {[
-                    { chiffre: displayCount, label: 'Road trips générés' },
-                    { chiffre: '100%', label: 'Gratuit' },
-                    { chiffre: '< 60s', label: 'Pour recevoir son plan' },
-                  ].map((stat) => (
-                    <div key={stat.label} className="glass-card rounded-2xl p-7 text-center">
-                      <p className="text-4xl font-black text-slate-900 mb-2">{stat.chiffre}</p>
-                      <p className="text-sm font-medium text-slate-500">{stat.label}</p>
-                    </div>
-                  ))}
                 </div>
               </section>
 
