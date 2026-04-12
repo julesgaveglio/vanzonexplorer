@@ -31,7 +31,6 @@ import type {
   VanStatus,
 } from '@/types/roadtrip'
 import {
-  notifySuccess,
   notifyError as telegramNotifyError,
 } from '@/lib/road-trip/telegram'
 
