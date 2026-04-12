@@ -2,6 +2,7 @@
 // Hub principal — filtres interactifs (durée slider, styles, Espagne).
 // Le contenu (map, POIs, overnight) se filtre côté client via FilterableContent.
 
+import ScrollingBanner from '@/components/ui/ScrollingBanner'
 import type { Metadata } from 'next'
 import { PICKUP_CITY, REGION_NAME, hubPath } from '@/lib/road-trip-pb/constants'
 import { buildHubMetadata } from '@/lib/road-trip-pb/metadata'
@@ -60,6 +61,8 @@ export default async function HubPage() {
           </div>
         </div>
       </header>
+
+      <ScrollingBanner />
 
       <FilterableContent
         allPois={allPois}

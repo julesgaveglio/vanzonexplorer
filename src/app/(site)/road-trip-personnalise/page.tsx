@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import Breadcrumbs from '@/components/ui/Breadcrumbs'
 import { SparklesText } from '@/components/ui/SparklesText'
+import ScrollingBanner from '@/components/ui/ScrollingBanner'
 import RoadTripWizard from './RoadTripWizard'
 import { faqItems, itineraires, destinations, socialProof } from './seo-data'
 import { createSupabaseAdmin } from '@/lib/supabase/server'
@@ -158,6 +159,9 @@ export default async function RoadTripPersonnalisePage({
               {isAdTraffic ? 'Générer mon road trip gratuit →' : 'Créer mon itinéraire gratuit'}
             </a>
           </div>
+
+          {/* Bandeau images défilantes Pays Basque */}
+          <ScrollingBanner />
 
           {/* ═══ MODE ADS : wizard immédiat, pas de SEO fluff ═══ */}
           {isAdTraffic ? (
