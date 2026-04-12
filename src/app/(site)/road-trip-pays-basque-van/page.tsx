@@ -64,7 +64,7 @@ export default async function HubPage() {
       <FilterableContent
         allPois={allPois}
         allOvernight={allOvernight}
-        initialFilters={{ days: 3, styles: [], includeSpain: false }}
+        initialFilters={{ days: 3, styles: [], includeSpain: false, departure: 'Cambo-les-Bains', arrival: '' }}
       />
 
       <script

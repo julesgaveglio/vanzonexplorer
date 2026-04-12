@@ -7,7 +7,34 @@ export interface FilterState {
   days: number
   styles: AdventureStyle[]
   includeSpain: boolean
+  departure: string
+  arrival: string
 }
+
+// Villes préenregistrées pour l'autocomplete (Pays Basque + villes majeures)
+export const SUGGESTED_CITIES = [
+  'Cambo-les-Bains',
+  'Biarritz',
+  'Bayonne',
+  'Anglet',
+  'Saint-Jean-de-Luz',
+  'Hendaye',
+  'Espelette',
+  'Saint-Jean-Pied-de-Port',
+  'Bidart',
+  'Guéthary',
+  'Sare',
+  'Ainhoa',
+  'Itxassou',
+  'Bidarray',
+  'Iraty',
+  'San Sebastián',
+  'Hondarribia',
+  'Pau',
+  'Bordeaux',
+  'Toulouse',
+  'Paris',
+] as const
 
 /** Parse un slug de durée en nombre de jours. */
 export function parseDurationSlug(slug: string): number {

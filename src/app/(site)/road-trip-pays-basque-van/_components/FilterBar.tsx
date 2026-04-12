@@ -1,13 +1,12 @@
 // src/app/(site)/road-trip-pays-basque-van/_components/FilterBar.tsx
-// Barre de filtres : slider 1-14 jours, styles d'aventure, toggle Espagne.
-// Met à jour l'URL via router.push sans reload.
+// Barre de filtres : départ/arrivée, slider durée, styles d'aventure, toggle Espagne.
 
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useCallback } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import type { FilterState, AdventureStyle } from './filter-utils'
-import { buildFilterUrl } from './filter-utils'
+import { buildFilterUrl, SUGGESTED_CITIES } from './filter-utils'
 
 const STYLE_OPTIONS: { value: AdventureStyle; label: string; emoji: string }[] = [
   { value: 'nature', label: 'Nature & Randonnée', emoji: '🥾' },
@@ -43,9 +42,35 @@ export default function FilterBar({ filters, onChange }: FilterBarProps) {
 
   const toggleSpain = () => pushUrl({ ...filters, includeSpain: !filters.includeSpain })
 
+  // Départ / arrivée : pas d'URL push (pas indexable), juste state local
+  const setDeparture = (v: string) => onChange({ ...filters, departure: v })
+  const setArrival = (v: string) => onChange({ ...filters, arrival: v })
+
   return (
     <div className="mx-auto max-w-6xl px-4">
       <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        {/* Row 1 : Départ / Arrivée */}
+        <div className="flex flex-col gap-4 sm:flex-row sm:gap-6">
+          <CityInput
+            label="Départ"
+            emoji="📍"
+            value={filters.departure}
+            onChange={setDeparture}
+            placeholder="Ville de départ…"
+          />
+          <CityInput
+            label="Arrivée"
+            emoji="🏁"
+            value={filters.arrival}
+            onChange={setArrival}
+            placeholder="Ville d'arrivée…"
+          />
+        </div>
+
+        {/* Séparateur */}
+        <div className="my-5 border-t border-slate-100" />
+
+        {/* Row 2 : Durée + Style + Espagne */}
         <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-10">
           {/* Durée */}
           <div className="min-w-0 flex-1">
@@ -116,6 +141,85 @@ export default function FilterBar({ filters, onChange }: FilterBarProps) {
           </div>
         </div>
       </div>
+    </div>
+  )
+}
+
+// ─── CityInput : combobox avec suggestions prédéfinies + saisie libre ────────
+
+function CityInput({
+  label,
+  emoji,
+  value,
+  onChange,
+  placeholder,
+}: {
+  label: string
+  emoji: string
+  value: string
+  onChange: (v: string) => void
+  placeholder: string
+}) {
+  const [open, setOpen] = useState(false)
+  const [query, setQuery] = useState(value)
+  const ref = useRef<HTMLDivElement>(null)
+
+  // Sync external value
+  useEffect(() => { setQuery(value) }, [value])
+
+  // Close on outside click
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
+
+  const filtered = SUGGESTED_CITIES.filter((c) =>
+    c.toLowerCase().includes(query.toLowerCase())
+  )
+
+  const select = (city: string) => {
+    setQuery(city)
+    onChange(city)
+    setOpen(false)
+  }
+
+  const handleInputChange = (v: string) => {
+    setQuery(v)
+    onChange(v)
+    setOpen(true)
+  }
+
+  return (
+    <div className="relative min-w-0 flex-1" ref={ref}>
+      <label className="text-sm font-semibold uppercase tracking-wide text-slate-500">
+        {emoji} {label}
+      </label>
+      <input
+        type="text"
+        value={query}
+        onChange={(e) => handleInputChange(e.target.value)}
+        onFocus={() => setOpen(true)}
+        placeholder={placeholder}
+        className="mt-2 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
+      />
+      {open && filtered.length > 0 && (
+        <ul className="absolute left-0 right-0 top-full z-50 mt-1 max-h-48 overflow-auto rounded-lg border border-slate-200 bg-white shadow-lg">
+          {filtered.slice(0, 8).map((city) => (
+            <li key={city}>
+              <button
+                type="button"
+                onClick={() => select(city)}
+                className="w-full px-3 py-2 text-left text-sm text-slate-700 hover:bg-blue-50 hover:text-blue-700"
+              >
+                {city}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   )
 }

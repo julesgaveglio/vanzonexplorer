@@ -83,7 +83,7 @@ export default async function DurationPage({
       <FilterableContent
         allPois={allPois}
         allOvernight={allOvernight}
-        initialFilters={{ days, styles: [], includeSpain: false }}
+        initialFilters={{ days, styles: [], includeSpain: false, departure: 'Cambo-les-Bains', arrival: '' }}
       />
     </main>
   )
