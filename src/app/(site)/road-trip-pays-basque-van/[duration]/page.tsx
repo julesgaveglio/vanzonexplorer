@@ -1,75 +1,65 @@
 // src/app/(site)/road-trip-pays-basque-van/[duration]/page.tsx
-// Page duration : H1 + grille groupType + top POIs + top overnight + CTA.
+// Page durée : FilterBar (slider pré-positionné) + POIs filtrés client-side.
+// Accepte N-jours arbitraires (1-jour, 3-jours, 14-jours, weekend, 1-semaine).
+// GroupTypeGrid supprimée (le profil reste uniquement dans le wizard).
+// generateStaticParams + generateMetadata intacts pour les 4 slugs SEO pré-existants.
 
-import dynamic from 'next/dynamic'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import Breadcrumbs from '@/components/ui/Breadcrumbs'
-import { ALL_DURATION_SLUGS, DURATION_TO_DAYS_SLUG } from '@/types/road-trip-pb'
+import { ALL_DURATION_SLUGS } from '@/types/road-trip-pb'
 import type { DurationSlug } from '@/types/road-trip-pb'
-import {
-  DURATION_LABELS,
-  PICKUP_CITY,
-  hubPath,
-} from '@/lib/road-trip-pb/constants'
+import { PICKUP_CITY, hubPath } from '@/lib/road-trip-pb/constants'
 import { buildDurationPageMetadata } from '@/lib/road-trip-pb/metadata'
 import {
   getTopActivities,
   getOvernightSpots,
-  getTemplate,
-  getPOIsByIds,
 } from '@/lib/road-trip-pb/queries'
-import GroupTypeGrid from '../_components/GroupTypeGrid'
-import POISection from '../_components/POISection'
-import OvernightSection from '../_components/OvernightSection'
-import ItineraryDisplay from '../_components/ItineraryDisplay'
-import WizardCTA from '../_components/WizardCTA'
+import FilterableContent from '../_components/FilterableContent'
+import { parseDurationSlug } from '../_components/filter-utils'
 
 export const revalidate = 86400
 
+// Pre-build les 4 slugs SEO historiques. Les autres (3-jours, 7-jours...) sont ISR on-demand.
 export async function generateStaticParams() {
   return ALL_DURATION_SLUGS.map((duration) => ({ duration }))
 }
 
-const RoadTripMap = dynamic(() => import('../_components/RoadTripMap'), {
-  ssr: false,
-  loading: () => (
-    <div className="mx-auto max-w-6xl px-4">
-      <div className="h-[380px] w-full animate-pulse rounded-2xl bg-slate-200" />
-    </div>
-  ),
-})
-
+// Metadata : les 4 slugs connus ont leur meta SEO riche. Les autres → meta générique.
 export async function generateMetadata({
   params,
 }: {
-  params: { duration: DurationSlug }
+  params: { duration: string }
 }): Promise<Metadata> {
-  if (!ALL_DURATION_SLUGS.includes(params.duration)) notFound()
-  return buildDurationPageMetadata(params.duration)
+  if (ALL_DURATION_SLUGS.includes(params.duration as DurationSlug)) {
+    return buildDurationPageMetadata(params.duration as DurationSlug)
+  }
+  // Slug dynamique (ex: /3-jours) → meta générique
+  const days = parseDurationSlug(params.duration)
+  return {
+    title: `Road Trip Pays Basque ${days} jours en Van — Spots & Itinéraire`,
+    description: `Itinéraire van ${days} jours au Pays Basque. Spots nuit, activités, cartes GPS. Départ ${PICKUP_CITY}.`,
+    robots: { index: false, follow: true }, // noindex pour les slugs non-canoniques
+  }
 }
 
 export default async function DurationPage({
   params,
 }: {
-  params: { duration: DurationSlug }
+  params: { duration: string }
 }) {
   const { duration } = params
-  if (!ALL_DURATION_SLUGS.includes(duration)) notFound()
 
-  // Affiche le template canonique "couple" pour cette durée
-  const [template, topPOIs, overnight] = await Promise.all([
-    getTemplate(duration, 'couple'),
-    getTopActivities(12),
-    getOvernightSpots(6),
+  // Valider que c'est un slug de durée reconnu (N-jours, weekend, 1-semaine)
+  const days = parseDurationSlug(duration)
+  if (days < 1 || days > 14) notFound()
+
+  const [allPois, allOvernight] = await Promise.all([
+    getTopActivities(50),
+    getOvernightSpots(30),
   ])
-  const templatePOIs = template
-    ? await getPOIsByIds([...template.poi_ids, ...template.overnight_ids])
-    : []
-  const mapPOIs = templatePOIs.length > 0 ? templatePOIs : [...topPOIs, ...overnight]
 
-  const dLabel = DURATION_LABELS[duration]
-  const days = DURATION_TO_DAYS_SLUG[duration]
+  const dLabel = days === 1 ? '1 jour' : `${days} jours`
 
   return (
     <main className="bg-slate-50 pb-16">
@@ -85,40 +75,16 @@ export default async function DurationPage({
             Road Trip Pays Basque {dLabel} en Van
           </h1>
           <p className="mt-4 max-w-3xl text-lg text-blue-100">
-            {days} jour{days > 1 ? 's' : ''} d&apos;immersion vanlife au Pays Basque, au départ de{' '}
-            {PICKUP_CITY}. Choisissez votre profil voyageur ci-dessous ou découvrez l&apos;itinéraire de référence.
+            {dLabel} d&apos;immersion vanlife au Pays Basque, au départ de {PICKUP_CITY}. Ajustez la durée et le style ci-dessous pour explorer les meilleurs spots.
           </p>
-          <div className="mt-8">
-            <WizardCTA duration={duration} variant="primary" />
-          </div>
         </div>
       </header>
 
-      <section className="mx-auto mt-8 max-w-6xl px-4">
-        <RoadTripMap pois={mapPOIs} template={template ?? undefined} />
-      </section>
-
-      <GroupTypeGrid duration={duration} />
-
-      {template && (
-        <section className="mx-auto mt-12 max-w-5xl px-4">
-          <p className="text-sm uppercase tracking-wide text-slate-500">Itinéraire de référence</p>
-          <ItineraryDisplay template={template} pois={templatePOIs} />
-        </section>
-      )}
-
-      <OvernightSection
-        title={`Où dormir en van pendant ${days} jour${days > 1 ? 's' : ''}`}
-        spots={overnight}
+      <FilterableContent
+        allPois={allPois}
+        allOvernight={allOvernight}
+        initialFilters={{ days, styles: [], includeSpain: false }}
       />
-
-      <POISection
-        title="Les incontournables"
-        subtitle="Les meilleures activités à programmer"
-        pois={topPOIs}
-      />
-
-      <WizardCTA duration={duration} />
     </main>
   )
 }

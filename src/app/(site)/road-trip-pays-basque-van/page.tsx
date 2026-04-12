@@ -1,7 +1,7 @@
 // src/app/(site)/road-trip-pays-basque-van/page.tsx
-// Hub refondu — remplace la landing monolithique de 645 lignes.
+// Hub principal — filtres interactifs (durée slider, styles, Espagne).
+// Le contenu (map, POIs, overnight) se filtre côté client via FilterableContent.
 
-import dynamic from 'next/dynamic'
 import type { Metadata } from 'next'
 import { PICKUP_CITY, REGION_NAME, hubPath } from '@/lib/road-trip-pb/constants'
 import { buildHubMetadata } from '@/lib/road-trip-pb/metadata'
@@ -10,9 +10,7 @@ import {
   getOvernightSpots,
   getRegionStats,
 } from '@/lib/road-trip-pb/queries'
-import DurationGrid from './_components/DurationGrid'
-import POISection from './_components/POISection'
-import OvernightSection from './_components/OvernightSection'
+import FilterableContent from './_components/FilterableContent'
 import WizardCTA from './_components/WizardCTA'
 
 export const revalidate = 86400
@@ -21,24 +19,13 @@ export async function generateMetadata(): Promise<Metadata> {
   return buildHubMetadata()
 }
 
-const RoadTripMap = dynamic(() => import('./_components/RoadTripMap'), {
-  ssr: false,
-  loading: () => (
-    <div className="mx-auto max-w-6xl px-4">
-      <div className="h-[380px] w-full animate-pulse rounded-2xl bg-slate-200" />
-    </div>
-  ),
-})
-
 export default async function HubPage() {
-  const [topPOIs, overnight, stats] = await Promise.all([
-    getTopActivities(12),
-    getOvernightSpots(6),
+  const [allPois, allOvernight, stats] = await Promise.all([
+    getTopActivities(50),
+    getOvernightSpots(30),
     getRegionStats(),
   ])
-  const mapPOIs = [...topPOIs, ...overnight]
 
-  // JSON-LD BreadcrumbList minimal
   const breadcrumbJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
@@ -55,14 +42,13 @@ export default async function HubPage() {
 
   return (
     <main className="bg-slate-50 pb-16">
-      {/* Hero */}
-      <header className="bg-gradient-to-br from-blue-700 to-blue-900 px-4 py-16 text-white md:py-24">
+      <header className="bg-gradient-to-br from-blue-700 to-blue-900 px-4 py-12 text-white md:py-20">
         <div className="mx-auto max-w-5xl">
           <h1 className="text-4xl font-bold leading-tight md:text-6xl">
             Road Trip en Van au {REGION_NAME}
           </h1>
           <p className="mt-6 max-w-3xl text-lg text-blue-100 md:text-xl">
-            Des itinéraires van life sur mesure, pensés par des vanlifers qui vivent au Pays Basque depuis 4 ans. Spots nuit validés, activités par profil, cartes GPS prêtes à l&apos;emploi. Départ depuis {PICKUP_CITY}.
+            Itinéraires van life sur mesure au Pays Basque. Spots nuit validés, activités par profil, cartes GPS. Départ {PICKUP_CITY}.
           </p>
           <div className="mt-6 flex flex-wrap gap-2">
             <span className="rounded-full bg-white/10 px-3 py-1 text-sm">📍 {stats.totalPois}+ spots</span>
@@ -75,30 +61,11 @@ export default async function HubPage() {
         </div>
       </header>
 
-      {/* Map */}
-      <section className="mx-auto mt-8 max-w-6xl px-4">
-        <RoadTripMap pois={mapPOIs} />
-      </section>
-
-      {/* Duration grid */}
-      <DurationGrid />
-
-      {/* Top spots nuit */}
-      <OvernightSection
-        title="Où dormir en van au Pays Basque"
-        subtitle="Les meilleurs spots testés et validés"
-        spots={overnight}
+      <FilterableContent
+        allPois={allPois}
+        allOvernight={allOvernight}
+        initialFilters={{ days: 3, styles: [], includeSpain: false }}
       />
-
-      {/* Top activités */}
-      <POISection
-        title="Les incontournables"
-        subtitle="Les activités et lieux à ne pas manquer"
-        pois={topPOIs}
-      />
-
-      {/* CTA final */}
-      <WizardCTA />
 
       <script
         type="application/ld+json"
