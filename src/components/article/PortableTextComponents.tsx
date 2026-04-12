@@ -141,6 +141,25 @@ export function makePortableComponents(headingIds: Map<string, string>) {
         return <p className="text-[18px] text-slate-600 leading-[1.75] mb-6">{children}</p>;
       },
     },
+    list: {
+      bullet: ({ children }: { children?: React.ReactNode }) => (
+        <ul className="my-6 space-y-2 pl-1">{children}</ul>
+      ),
+      number: ({ children }: { children?: React.ReactNode }) => (
+        <ol className="my-6 space-y-2 pl-1 list-decimal list-inside">{children}</ol>
+      ),
+    },
+    listItem: {
+      bullet: ({ children }: { children?: React.ReactNode }) => (
+        <li className="flex gap-3 text-[17px] text-slate-600 leading-relaxed">
+          <span className="flex-shrink-0 mt-1.5 w-2 h-2 rounded-full bg-blue-500" />
+          <span>{children}</span>
+        </li>
+      ),
+      number: ({ children }: { children?: React.ReactNode }) => (
+        <li className="text-[17px] text-slate-600 leading-relaxed">{children}</li>
+      ),
+    },
     marks: {
       strong: ({ children }: { children?: React.ReactNode }) => (
         <strong className="font-bold text-slate-800">{children}</strong>
@@ -176,15 +195,43 @@ export function renderBlocks(
   components: any
 ): React.ReactNode {
   const virtualBlocks = groupTableBlocks(blocks);
-  return virtualBlocks.map((block, i) => {
-    if (block._type === "table") {
-      const tb = block as { _type: "table"; _key: string; rows: string[] };
-      return <ArticleTable key={tb._key || i} rows={tb.rows} />;
+
+  // Group consecutive list items together so PortableText can render
+  // them as proper <ul>/<ol> with <li> children instead of isolated <p> blocks.
+  const grouped: Array<{ type: 'single'; block: PortableBlock } | { type: 'table'; block: { _type: 'table'; _key: string; rows: string[] } } | { type: 'list'; blocks: PortableBlock[] }> = [];
+
+  for (const block of virtualBlocks) {
+    if (block._type === 'table') {
+      grouped.push({ type: 'table', block: block as { _type: 'table'; _key: string; rows: string[] } });
+    } else {
+      const pb = block as PortableBlock;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if ((pb as any).listItem) {
+        const last = grouped[grouped.length - 1];
+        if (last && last.type === 'list') {
+          last.blocks.push(pb);
+        } else {
+          grouped.push({ type: 'list', blocks: [pb] });
+        }
+      } else {
+        grouped.push({ type: 'single', block: pb });
+      }
     }
-    const pb = block as PortableBlock;
+  }
+
+  return grouped.map((entry, i) => {
+    if (entry.type === 'table') {
+      return <ArticleTable key={entry.block._key || i} rows={entry.block.rows} />;
+    }
+    if (entry.type === 'list') {
+      return (
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        <PortableText key={entry.blocks[0]._key || i} value={entry.blocks as any} components={components} />
+      );
+    }
     return (
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      <PortableText key={pb._key || i} value={[pb] as any} components={components} />
+      <PortableText key={entry.block._key || i} value={[entry.block] as any} components={components} />
     );
   });
 }
