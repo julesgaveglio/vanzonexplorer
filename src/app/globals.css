@@ -200,8 +200,15 @@ body {
   0%   { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
+@keyframes scroll-banner-reverse {
+  0%   { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
 .animate-scroll-banner {
   animation: scroll-banner 40s linear infinite;
+}
+.animate-scroll-banner-reverse {
+  animation: scroll-banner-reverse 40s linear infinite;
 }
 
 /* Club button gradient overrides */
