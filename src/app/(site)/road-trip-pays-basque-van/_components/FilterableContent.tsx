@@ -1,6 +1,6 @@
 // src/app/(site)/road-trip-pays-basque-van/_components/FilterableContent.tsx
-// Client island : FilterBar + carte + POI/overnight cards, filtrage côté client.
-// Reçoit TOUTES les données en props (serialized), filtre en JS selon les filtres actifs.
+// Client island : FilterBar + carte + toggle (Incontournables / Itinéraire) + POI/overnight cards.
+// Reçoit TOUTES les données en props, filtre en JS selon les filtres actifs.
 
 'use client'
 
@@ -30,20 +30,15 @@ const STYLE_TO_TAGS: Record<AdventureStyle, string[]> = {
 }
 
 function matchesStyles(poi: POIRowWithCoords, styles: AdventureStyle[]): boolean {
-  if (styles.length === 0) return true // no filter = show all
+  if (styles.length === 0) return true
   const allowedTags = styles.flatMap((s) => STYLE_TO_TAGS[s])
   return poi.tags?.some((t) => allowedTags.includes(t)) ?? false
 }
 
-// ─── Budget badge ────────────────────────────────────────────────────────────
+// ─── Labels ──────────────────────────────────────────────────────────────────
 const BUDGET_DOTS: Record<string, string> = {
-  gratuit: '·',
-  faible: '€',
-  moyen: '€€',
-  eleve: '€€€',
+  gratuit: '·', faible: '€', moyen: '€€', eleve: '€€€',
 }
-
-// ─── Overnight type labels ───────────────────────────────────────────────────
 const OVERNIGHT_LABELS: Record<string, string> = {
   parking_gratuit: 'Parking gratuit',
   aire_camping_car: 'Aire camping-car',
@@ -51,7 +46,58 @@ const OVERNIGHT_LABELS: Record<string, string> = {
   spot_sauvage: 'Spot sauvage',
 }
 
-// ─── Component ───────────────────────────────────────────────────────────────
+// ─── Itinerary builder : répartit les POIs sur N jours ───────────────────────
+
+interface ItineraryDay {
+  day: number
+  theme: string
+  stops: POIRowWithCoords[]
+  overnight: POIRowWithCoords | null
+}
+
+const TIMES = ['9h00', '11h30', '14h00', '16h30', '18h00']
+
+function buildItinerary(
+  pois: POIRowWithCoords[],
+  overnight: POIRowWithCoords[],
+  days: number
+): ItineraryDay[] {
+  const result: ItineraryDay[] = []
+  const stopsPerDay = Math.max(2, Math.ceil(pois.length / Math.max(days, 1)))
+
+  for (let d = 0; d < days; d++) {
+    const dayStops = pois.slice(d * stopsPerDay, (d + 1) * stopsPerDay)
+    const spot = overnight[d % overnight.length] ?? null
+
+    // Theme based on dominant category
+    const cats = dayStops.map((p) => p.category)
+    const dominant = cats.sort((a, b) =>
+      cats.filter((c) => c === b).length - cats.filter((c) => c === a).length
+    )[0]
+    const themes: Record<string, string> = {
+      nature: 'Nature & grands espaces',
+      activite: 'Sport & aventure',
+      restaurant: 'Gastronomie basque',
+      culture: 'Culture & patrimoine',
+      spot_nuit: 'Découverte',
+      parking: 'Découverte',
+    }
+    const cities = Array.from(new Set(dayStops.map((p) => p.location_city)))
+    const theme =
+      cities.length > 0
+        ? `${themes[dominant] ?? 'Découverte'} — ${cities.slice(0, 2).join(' & ')}`
+        : themes[dominant] ?? 'Découverte'
+
+    result.push({ day: d + 1, theme, stops: dayStops, overnight: spot })
+  }
+  return result
+}
+
+// ─── View mode ───────────────────────────────────────────────────────────────
+
+type ViewMode = 'spots' | 'itinerary'
+
+// ─── Main Component ──────────────────────────────────────────────────────────
 
 interface FilterableContentProps {
   allPois: POIRowWithCoords[]
@@ -65,25 +111,26 @@ export default function FilterableContent({
   initialFilters,
 }: FilterableContentProps) {
   const [filters, setFilters] = useState<FilterState>(initialFilters)
+  const [viewMode, setViewMode] = useState<ViewMode>('spots')
 
   const filteredPois = useMemo(
     () => allPois.filter((p) => matchesStyles(p, filters.styles)),
     [allPois, filters.styles]
   )
-
   const filteredOvernight = useMemo(
     () => allOvernight.filter((p) => matchesStyles(p, filters.styles)),
     [allOvernight, filters.styles]
   )
-
-  // For the map, merge POIs + overnight
   const mapPois = useMemo(
     () => [...filteredPois, ...filteredOvernight],
     [filteredPois, filteredOvernight]
   )
-
-  // If overnight doesn't match any style, show all overnight (they're always relevant)
   const visibleOvernight = filteredOvernight.length > 0 ? filteredOvernight : allOvernight
+
+  const itinerary = useMemo(
+    () => buildItinerary(filteredPois, visibleOvernight, filters.days),
+    [filteredPois, visibleOvernight, filters.days]
+  )
 
   const wizardUrl = wizardUrlFromFilters(filters)
 
@@ -99,46 +146,90 @@ export default function FilterableContent({
         <RoadTripMap pois={mapPois} />
       </section>
 
-      {/* Results summary */}
+      {/* Results summary + View Toggle */}
       <div className="mx-auto mt-8 max-w-6xl px-4">
-        <p className="text-sm text-slate-500">
-          {filteredPois.length} activité{filteredPois.length > 1 ? 's' : ''} ·{' '}
-          {visibleOvernight.length} spot{visibleOvernight.length > 1 ? 's' : ''} nuit
-          {filters.styles.length > 0 && (
-            <> · Filtré par : {filters.styles.join(', ')}</>
-          )}
-        </p>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm text-slate-500">
+            {filteredPois.length} activité{filteredPois.length > 1 ? 's' : ''} ·{' '}
+            {visibleOvernight.length} spot{visibleOvernight.length > 1 ? 's' : ''} nuit
+            {filters.styles.length > 0 && <> · Filtré par : {filters.styles.join(', ')}</>}
+          </p>
+          <div className="flex rounded-lg border border-slate-200 bg-white p-1">
+            <button
+              type="button"
+              onClick={() => setViewMode('spots')}
+              className={`rounded-md px-4 py-2 text-sm font-semibold transition ${
+                viewMode === 'spots'
+                  ? 'bg-blue-600 text-white shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              🗺️ Les incontournables
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode('itinerary')}
+              className={`rounded-md px-4 py-2 text-sm font-semibold transition ${
+                viewMode === 'itinerary'
+                  ? 'bg-blue-600 text-white shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              📅 Voir l&apos;itinéraire
+            </button>
+          </div>
+        </div>
       </div>
 
-      {/* Activités */}
-      {filteredPois.length > 0 && (
-        <section className="mx-auto mt-8 max-w-6xl px-4">
+      {/* ═══ VIEW: Incontournables (spots) ═══ */}
+      {viewMode === 'spots' && (
+        <>
+          {filteredPois.length > 0 && (
+            <section className="mx-auto mt-8 max-w-6xl px-4">
+              <h2 className="text-2xl font-bold text-slate-900 md:text-3xl">
+                {filters.styles.length > 0 ? 'Activités filtrées' : 'Les incontournables'}
+              </h2>
+              <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {filteredPois.slice(0, 12).map((poi) => (
+                  <POICardInline key={poi.id} poi={poi} />
+                ))}
+              </div>
+            </section>
+          )}
+
+          {visibleOvernight.length > 0 && (
+            <section className="mx-auto mt-12 max-w-6xl px-4">
+              <h2 className="text-2xl font-bold text-slate-900 md:text-3xl">
+                Où dormir en van au Pays Basque
+              </h2>
+              <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {visibleOvernight.slice(0, 6).map((spot) => (
+                  <OvernightCardInline key={spot.id} spot={spot} />
+                ))}
+              </div>
+            </section>
+          )}
+        </>
+      )}
+
+      {/* ═══ VIEW: Itinéraire jour par jour ═══ */}
+      {viewMode === 'itinerary' && (
+        <section className="mx-auto mt-8 max-w-5xl px-4">
           <h2 className="text-2xl font-bold text-slate-900 md:text-3xl">
-            {filters.styles.length > 0 ? 'Activités filtrées' : 'Les incontournables'}
+            Itinéraire {filters.days} jour{filters.days > 1 ? 's' : ''} au Pays Basque
           </h2>
-          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {filteredPois.slice(0, 12).map((poi) => (
-              <POICardInline key={poi.id} poi={poi} />
+          <p className="mt-2 text-sm text-slate-500">
+            Suggestion d&apos;itinéraire basée sur vos filtres. Ajustez la durée et le style pour personnaliser.
+          </p>
+          <div className="mt-8 space-y-6">
+            {itinerary.map((day) => (
+              <DayCard key={day.day} day={day} />
             ))}
           </div>
         </section>
       )}
 
-      {/* Spots nuit */}
-      {visibleOvernight.length > 0 && (
-        <section className="mx-auto mt-12 max-w-6xl px-4">
-          <h2 className="text-2xl font-bold text-slate-900 md:text-3xl">
-            Où dormir en van au Pays Basque
-          </h2>
-          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {visibleOvernight.slice(0, 6).map((spot) => (
-              <OvernightCardInline key={spot.id} spot={spot} />
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Sticky CTA */}
+      {/* Sticky CTA mobile */}
       <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-slate-200 bg-white/95 backdrop-blur-sm lg:hidden">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
           <span className="text-sm font-medium text-slate-700">
@@ -153,7 +244,7 @@ export default function FilterableContent({
         </div>
       </div>
 
-      {/* Desktop CTA section */}
+      {/* Desktop CTA */}
       <section className="mx-auto my-16 max-w-4xl px-4 max-lg:hidden">
         <div className="rounded-3xl bg-gradient-to-br from-blue-600 to-blue-800 p-8 text-white shadow-xl md:p-12">
           <h2 className="text-2xl font-bold md:text-3xl">Cet itinéraire te plaît ?</h2>
@@ -183,13 +274,142 @@ export default function FilterableContent({
         </div>
       </section>
 
-      {/* Padding pour CTA sticky mobile */}
       <div className="h-20 lg:hidden" />
     </>
   )
 }
 
-// ─── Inline POI card (client-safe, pas d'import server-only) ─────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+// Day Card (itinerary view)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function DayCard({ day }: { day: ItineraryDay }) {
+  // Hero image = first POI with image, or gradient fallback
+  const heroPoi = day.stops.find((p) => p.image_url) ?? day.stops[0]
+  const heroColor = heroPoi ? (CATEGORY_COLORS[heroPoi.category] ?? '#64748b') : '#64748b'
+  const heroEmoji = heroPoi ? (CATEGORY_EMOJIS[heroPoi.category] ?? '📍') : '📍'
+
+  return (
+    <article className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      {/* Day header + hero image */}
+      <div className="relative h-48 w-full">
+        {heroPoi?.image_url ? (
+          <Image
+            src={heroPoi.image_url}
+            alt={`Jour ${day.day}`}
+            fill
+            sizes="(max-width: 768px) 100vw, 800px"
+            className="object-cover"
+            unoptimized
+          />
+        ) : (
+          <div
+            className="flex h-full items-center justify-center text-6xl"
+            style={{ background: `linear-gradient(135deg, ${heroColor}22, ${heroColor}55)` }}
+          >
+            {heroEmoji}
+          </div>
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+        <div className="absolute bottom-4 left-5 right-5">
+          <span className="text-sm font-semibold uppercase tracking-wider text-white/80">
+            Jour {day.day}
+          </span>
+          <h3 className="mt-1 text-xl font-bold text-white">{day.theme}</h3>
+        </div>
+      </div>
+
+      {/* Stops timeline */}
+      <div className="divide-y divide-slate-100 px-5 py-4">
+        {day.stops.map((poi, idx) => (
+          <div key={poi.id} className="flex gap-4 py-4 first:pt-0 last:pb-0">
+            <div className="flex-none pt-0.5">
+              <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-blue-50 text-sm font-bold text-blue-700">
+                {TIMES[idx] ?? `${9 + idx * 2}h`}
+              </span>
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-start gap-2">
+                <span className="text-lg">{CATEGORY_EMOJIS[poi.category] ?? '📍'}</span>
+                <div className="min-w-0">
+                  <p className="font-semibold text-slate-900">{poi.name}</p>
+                  <p className="text-xs uppercase tracking-wide text-slate-500">
+                    {poi.location_city}
+                    {poi.budget_level && ` · ${BUDGET_DOTS[poi.budget_level] ?? ''}`}
+                  </p>
+                </div>
+              </div>
+              {poi.description && (
+                <p className="mt-1.5 line-clamp-2 text-sm text-slate-600">{poi.description}</p>
+              )}
+              <div className="mt-2 flex flex-wrap gap-2">
+                {poi.external_url && (
+                  <a
+                    href={poi.external_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs font-semibold text-blue-600 hover:underline"
+                  >
+                    Voir le site →
+                  </a>
+                )}
+                {poi.google_maps_url && (
+                  <a
+                    href={poi.google_maps_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs font-semibold text-blue-600 hover:underline"
+                  >
+                    Google Maps →
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
+
+        {/* Overnight */}
+        {day.overnight && (
+          <div className="flex gap-4 border-t border-blue-100 bg-blue-50/50 py-4 -mx-5 px-5">
+            <div className="flex-none pt-0.5">
+              <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-lg">
+                🌙
+              </span>
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-semibold uppercase tracking-wide text-blue-700">Nuit</p>
+              <p className="mt-0.5 font-semibold text-slate-900">{day.overnight.name}</p>
+              <p className="text-sm text-slate-600">
+                {day.overnight.location_city}
+                {' · '}
+                {day.overnight.overnight_price_per_night && day.overnight.overnight_price_per_night > 0
+                  ? `${day.overnight.overnight_price_per_night}€/nuit`
+                  : 'Gratuit'}
+                {day.overnight.overnight_type && (
+                  <> · {OVERNIGHT_LABELS[day.overnight.overnight_type] ?? day.overnight.overnight_type}</>
+                )}
+              </p>
+              {day.overnight.google_maps_url && (
+                <a
+                  href={day.overnight.google_maps_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-1 inline-block text-xs font-semibold text-blue-600 hover:underline"
+                >
+                  Google Maps →
+                </a>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </article>
+  )
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Inline POI card (spots view — inchangé)
+// ═══════════════════════════════════════════════════════════════════════════════
 
 function POICardInline({ poi }: { poi: POIRowWithCoords }) {
   const color = CATEGORY_COLORS[poi.category] ?? '#64748b'
@@ -251,7 +471,9 @@ function POICardInline({ poi }: { poi: POIRowWithCoords }) {
   )
 }
 
-// ─── Inline overnight card ───────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+// Inline overnight card (spots view — inchangé)
+// ═══════════════════════════════════════════════════════════════════════════════
 
 function OvernightCardInline({ spot }: { spot: POIRowWithCoords }) {
   const typeLabel = spot.overnight_type
