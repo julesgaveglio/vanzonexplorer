@@ -26,10 +26,10 @@ export default function ScrollingBanner() {
   const images = [...BANNER_IMAGES, ...BANNER_IMAGES]
 
   return (
-    <div className="relative w-full py-4">
-      {/* Gradient fade gauche/droite */}
-      <div className="pointer-events-none absolute left-0 top-0 z-10 h-full w-12 bg-gradient-to-r from-bg-primary to-transparent sm:w-20" />
-      <div className="pointer-events-none absolute right-0 top-0 z-10 h-full w-12 bg-gradient-to-l from-bg-primary to-transparent sm:w-20" />
+    <div className="relative -mx-4 w-[calc(100%+2rem)] py-4 sm:-mx-6 sm:w-[calc(100%+3rem)] lg:-mx-8 lg:w-[calc(100%+4rem)]">
+      {/* Gradient fade collé aux bords écran */}
+      <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-gradient-to-r from-bg-primary to-transparent sm:w-16" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-gradient-to-l from-bg-primary to-transparent sm:w-16" />
 
       {/* Scroll container : tactile natif + auto-scroll CSS */}
       <div
