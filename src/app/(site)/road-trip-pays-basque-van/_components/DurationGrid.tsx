@@ -31,6 +31,7 @@ export default function DurationGrid() {
           <Link
             key={d}
             href={durationPath(d)}
+            scroll={false}
             className="group rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
           >
             <div className="text-4xl">{DURATION_ICONS[d]}</div>

@@ -33,6 +33,7 @@ export default function GroupTypeGrid({ duration }: GroupTypeGridProps) {
           <Link
             key={g}
             href={finalPath(duration, g)}
+            scroll={false}
             className="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
           >
             <div className="text-4xl">{GROUP_EMOJIS[g]}</div>
