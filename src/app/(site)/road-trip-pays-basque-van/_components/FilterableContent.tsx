@@ -148,6 +148,22 @@ function findNearestOvernight(
   return best
 }
 
+/**
+ * Smart itinerary builder.
+ *
+ * Overnight strategy:
+ * - Look ahead: the spot nuit is chosen at the closest to the FIRST activity
+ *   of the NEXT day, so you wake up right next to your morning activity.
+ * - For nature/randonnée activities that start the day → sleep at the trailhead.
+ * - Last day → no overnight (you arrive at destination).
+ * - If no next-day activity (last day or empty), fallback to nearest to current last activity.
+ *
+ * Activity scheduling:
+ * - 1 to 2 activities max per day.
+ * - Randonnées/nature → morning (9h00) to benefit from cool hours.
+ * - Plages → afternoon (14h00).
+ * - Others → distribute morning/afternoon.
+ */
 function buildSmartItinerary(
   pois: POIRowWithCoords[],
   overnightSpots: POIRowWithCoords[],
@@ -158,56 +174,92 @@ function buildSmartItinerary(
   const departureCoords = getCityCoords(departure) ?? PB_CENTER
   const arrivalCoords = arrival ? getCityCoords(arrival) : null
 
-  // Filter non-overnight POIs only
   const activityPois = pois.filter((p) => p.category !== 'spot_nuit')
-
-  // Sort along route
   const sorted = sortPoisAlongRoute(activityPois, departureCoords, arrivalCoords)
 
-  // Max 2 activities per day
   const maxPerDay = 2
   const totalSlots = days * maxPerDay
-  // Pick up to totalSlots POIs, evenly distributed
   const selected = sorted.slice(0, Math.min(sorted.length, totalSlots))
 
-  // Distribute into days
+  // ── Phase 1: distribute POIs into days ──
+  const dayBuckets: POIRowWithCoords[][] = []
+  let poiIdx = 0
+  for (let d = 0; d < days; d++) {
+    const count = Math.min(maxPerDay, Math.ceil((selected.length - poiIdx) / Math.max(1, days - d)))
+    const bucket: POIRowWithCoords[] = []
+    for (let s = 0; s < count && poiIdx < selected.length; s++) {
+      bucket.push(selected[poiIdx++])
+    }
+    dayBuckets.push(bucket)
+  }
+
+  // ── Phase 2: schedule activities with smart times ──
+  function scheduleDay(bucket: POIRowWithCoords[]): ItineraryStop[] {
+    if (bucket.length === 0) return []
+    if (bucket.length === 1) {
+      const poi = bucket[0]
+      const isNatureMorning = poi.tags?.some((t) => ['randonnee', 'montagne', 'cascade', 'nature', 'foret'].includes(t))
+      const isBeach = poi.tags?.some((t) => ['plage', 'detente', 'mer', 'ocean'].includes(t))
+      const time = isNatureMorning ? '9h00' : isBeach ? '14h00' : '10h00'
+      return [{ poi, coords: parseCoordinates(poi.coordinates), startTime: time, duration: estimateActivityDuration(poi) }]
+    }
+    // 2 activities: sort nature/rando first (morning), beach/leisure second (afternoon)
+    const a = [...bucket]
+    a.sort((x, y) => {
+      const xMorning = x.tags?.some((t) => ['randonnee', 'montagne', 'cascade', 'nature', 'foret', 'sport', 'surf', 'rafting'].includes(t)) ? 0 : 1
+      const yMorning = y.tags?.some((t) => ['randonnee', 'montagne', 'cascade', 'nature', 'foret', 'sport', 'surf', 'rafting'].includes(t)) ? 0 : 1
+      return xMorning - yMorning
+    })
+    return [
+      { poi: a[0], coords: parseCoordinates(a[0].coordinates), startTime: '9h30', duration: estimateActivityDuration(a[0]) },
+      { poi: a[1], coords: parseCoordinates(a[1].coordinates), startTime: '14h30', duration: estimateActivityDuration(a[1]) },
+    ]
+  }
+
+  // ── Phase 3: assign overnight based on NEXT day's first activity ──
   const result: ItineraryDay[] = []
   const usedOvernightIds = new Set<string>()
-  let poiIdx = 0
 
   for (let d = 0; d < days; d++) {
-    const dayActivities: ItineraryStop[] = []
-    const poisThisDay = Math.min(maxPerDay, Math.ceil((selected.length - poiIdx) / Math.max(1, days - d)))
+    const activities = scheduleDay(dayBuckets[d])
 
-    for (let s = 0; s < poisThisDay && poiIdx < selected.length; s++) {
-      const poi = selected[poiIdx++]
-      const coords = parseCoordinates(poi.coordinates)
-      const dur = estimateActivityDuration(poi)
-      // Schedule: first activity morning, second afternoon
-      const startTime = s === 0 ? '9h30' : '14h30'
-      dayActivities.push({ poi, coords, startTime, duration: dur })
-    }
-
-    // Theme from activities
-    const cities = Array.from(new Set(dayActivities.map((a) => a.poi.location_city)))
+    // Theme
+    const cities = Array.from(new Set(activities.map((a) => a.poi.location_city)))
     const catLabels: Record<string, string> = {
       nature: 'Nature', activite: 'Aventure', restaurant: 'Gastronomie',
       culture: 'Culture', spot_nuit: 'Découverte', parking: 'Découverte',
     }
-    const dominantCat = dayActivities[0]?.poi.category ?? 'nature'
+    const dominantCat = activities[0]?.poi.category ?? 'nature'
     const theme = cities.length > 0
       ? `${catLabels[dominantCat] ?? 'Découverte'} — ${cities.slice(0, 2).join(' & ')}`
       : 'Journée libre'
 
-    // Overnight: nearest to last activity
-    const lastCoords = dayActivities[dayActivities.length - 1]?.coords ?? departureCoords
-    const overnight = d < days - 1 // Last day = arrival, no overnight
-      ? findNearestOvernight(lastCoords, overnightSpots, usedOvernightIds)
-      : null
-    if (overnight) usedOvernightIds.add(overnight.id)
-    const overnightCoords = overnight ? parseCoordinates(overnight.coordinates) : null
+    // Overnight: look ahead to next day's first activity
+    let overnight: POIRowWithCoords | null = null
+    let overnightCoords: [number, number] | null = null
 
-    result.push({ day: d + 1, theme, activities: dayActivities, overnight, overnightCoords })
+    if (d < days - 1) {
+      // Find coords of the first activity of NEXT day
+      const nextDayBucket = dayBuckets[d + 1]
+      const nextDayScheduled = scheduleDay(nextDayBucket)
+      const nextFirstCoords = nextDayScheduled[0]?.coords ?? null
+
+      if (nextFirstCoords) {
+        // Sleep near tomorrow's first activity (especially for morning hikes)
+        overnight = findNearestOvernight(nextFirstCoords, overnightSpots, usedOvernightIds)
+      } else {
+        // Fallback: sleep near today's last activity
+        const lastCoords = activities[activities.length - 1]?.coords ?? departureCoords
+        overnight = findNearestOvernight(lastCoords, overnightSpots, usedOvernightIds)
+      }
+
+      if (overnight) {
+        usedOvernightIds.add(overnight.id)
+        overnightCoords = parseCoordinates(overnight.coordinates)
+      }
+    }
+
+    result.push({ day: d + 1, theme, activities, overnight, overnightCoords })
   }
 
   return result
@@ -334,9 +386,6 @@ export default function FilterableContent({
       {/* ═══ VIEW: Incontournables ═══ */}
       {viewMode === 'spots' && (
         <>
-          <section className="mx-auto mt-8 max-w-6xl px-4">
-            <RoadTripMap pois={allMapPois} />
-          </section>
           {filteredPois.length > 0 && (
             <section className="mx-auto mt-8 max-w-6xl px-4">
               <h2 className="text-2xl font-bold text-slate-900 md:text-3xl">
@@ -359,6 +408,13 @@ export default function FilterableContent({
               </div>
             </section>
           )}
+          {/* Carte en bas de la vue Incontournables */}
+          <section className="mx-auto mt-12 max-w-6xl px-4">
+            <h2 className="text-2xl font-bold text-slate-900 md:text-3xl">Carte des spots</h2>
+            <div className="mt-6">
+              <RoadTripMap pois={allMapPois} />
+            </div>
+          </section>
         </>
       )}
 
