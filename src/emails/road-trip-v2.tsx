@@ -127,8 +127,8 @@ export function buildRoadTripEmailV2({
             <p style="margin:0 0 2px 0;color:#2563EB;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;">Jour ${day.day}</p>
             <h2 style="margin:0;color:#0F172A;font-size:20px;font-weight:800;line-height:1.2;">${day.theme}</h2>
           </div>
-          ${day.stops.map(buildStopCard).join('')}
-          ${buildOvernightCard(day.overnight)}
+          ${(day.stops ?? []).map(buildStopCard).join('')}
+          ${day.overnight ? buildOvernightCard(day.overnight) : ''}
         </div>
       `
     )
