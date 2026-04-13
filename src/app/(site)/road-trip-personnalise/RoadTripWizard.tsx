@@ -18,28 +18,33 @@ import type {
 } from '@/types/roadtrip'
 import { DURATION_SLUG_TO_KEY, type DurationSlug } from '@/types/road-trip-pb'
 
+// ─── SVG icon helper ────────────────────────────────────────────────────────
+const I = ({ d, cls }: { d: string; cls?: string }) => (
+  <svg className={cls ?? 'w-6 h-6'} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d={d} /></svg>
+)
+
 // ─── Options wizard ─────────────────────────────────────────────────────────
-const GROUP_OPTIONS: { value: GroupType; label: string; emoji: string }[] = [
-  { value: 'solo', label: 'Solo', emoji: '🧍' },
-  { value: 'couple', label: 'En couple', emoji: '💑' },
-  { value: 'amis', label: 'Entre amis', emoji: '👥' },
-  { value: 'famille', label: 'En famille', emoji: '👨\u200d👩\u200d👧' },
+const GROUP_OPTIONS: { value: GroupType; label: string; icon: React.ReactNode }[] = [
+  { value: 'solo', label: 'Solo', icon: <I d="M12 2a4 4 0 100 8 4 4 0 000-8zm0 10c-4.42 0-8 1.79-8 4v2h16v-2c0-2.21-3.58-4-8-4z" /> },
+  { value: 'couple', label: 'En couple', icon: <I d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05C16.19 13.89 17 15.02 17 16.5V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" /> },
+  { value: 'amis', label: 'Entre amis', icon: <I d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /> },
+  { value: 'famille', label: 'En famille', icon: <I d="M9 5a3 3 0 100 6 3 3 0 000-6zm7 1a2 2 0 100 4 2 2 0 000-4zM9 13c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4zm7 0c-.3 0-.64.02-1 .06C16.16 13.77 17 14.77 17 16v1h5v-2c0-1.46-2.5-2-3-2z" /> },
 ]
 
 const VAN_STATUS_OPTIONS: {
   value: VanStatus
   title: string
-  emoji: string
+  icon: React.ReactNode
 }[] = [
   {
     value: 'proprietaire',
     title: 'Je suis propriétaire d\u2019un van',
-    emoji: '🔑',
+    icon: <I d="M15 7h2a5 5 0 010 10h-2m-6-3a3 3 0 110-6 3 3 0 010 6zm-3 4v1a2 2 0 002 2h2a2 2 0 002-2v-1" cls="w-10 h-10" />,
   },
   {
     value: 'locataire',
     title: 'Je suis locataire',
-    emoji: '🚐',
+    icon: <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="8" width="22" height="10" rx="3" /><path d="M5 8V6a2 2 0 012-2h6l4 4" /><circle cx="6.5" cy="18" r="2" /><circle cx="17.5" cy="18" r="2" /></svg>,
   },
 ]
 
@@ -47,19 +52,19 @@ const SCOPE_OPTIONS: {
   value: RoadTripScope
   label: string
   desc: string
-  emoji: string
+  icon: React.ReactNode
 }[] = [
   {
     value: 'france',
     label: 'Pays Basque français',
     desc: 'Biarritz, Bayonne, Espelette, Iraty...',
-    emoji: '🇫🇷',
+    icon: <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" /><circle cx="12" cy="10" r="3" /></svg>,
   },
   {
     value: 'france_espagne',
     label: 'Français + espagnol',
     desc: 'On inclut San Sebastián, Bilbao, Hondarribia...',
-    emoji: '🇪🇸',
+    icon: <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" /></svg>,
   },
 ]
 
@@ -70,13 +75,13 @@ const DURATION_OPTIONS: { value: DurationKey; label: string }[] = [
   { value: '1sem', label: '1 semaine' },
 ]
 
-const INTEREST_OPTIONS: { value: InterestKey; label: string; emoji: string; desc: string }[] = [
-  { value: 'sport', label: 'Sport & Aventure', emoji: '🏄', desc: 'surf, rafting, escalade, VTT' },
-  { value: 'nature', label: 'Nature & Randonnée', emoji: '🥾', desc: 'Rhune, Iraty, GR10' },
-  { value: 'gastronomie', label: 'Gastronomie Basque', emoji: '🍽️', desc: 'pintxos, restaurants, marchés' },
-  { value: 'culture', label: 'Culture & Patrimoine', emoji: '🏛️', desc: 'Espelette, musées, villages' },
-  { value: 'plages', label: 'Plages & Détente', emoji: '🏖️', desc: 'Biarritz, Hendaye, Guéthary' },
-  { value: 'soirees', label: 'Soirées & Vie Locale', emoji: '🌙', desc: 'bars, fêtes basques' },
+const INTEREST_OPTIONS: { value: InterestKey; label: string; icon: React.ReactNode; desc: string }[] = [
+  { value: 'sport', label: 'Sport & Aventure', desc: 'surf, rafting, escalade, VTT', icon: <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 4a2.5 2.5 0 100 5 2.5 2.5 0 000-5zM7 21l3-7 2.5 2V21M10 14l-2.5-3.5L11 7l5 5-3.5 2" /></svg> },
+  { value: 'nature', label: 'Nature & Randonnée', desc: 'Rhune, Iraty, GR10', icon: <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M13 3L4 14h5l-1 7 9-11h-5l1-7z" /><path d="M3 21l5-7m4 7l4-5.5M17 21l4-7" opacity=".5" /></svg> },
+  { value: 'gastronomie', label: 'Gastronomie Basque', desc: 'pintxos, restaurants, marchés', icon: <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8zm2-5v3m4-3v3m4-3v3" /></svg> },
+  { value: 'culture', label: 'Culture & Patrimoine', desc: 'Espelette, musées, villages', icon: <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11m16-11v11M8 14v4m4-4v4m4-4v4" /></svg> },
+  { value: 'plages', label: 'Plages & Détente', desc: 'Biarritz, Hendaye, Guéthary', icon: <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="5" r="3" /><path d="M2 20c2-2 4-3 6-3s4 1 6 3c2-2 4-3 6-3" /><path d="M2 16c2-2 4-3 6-3s4 1 6 3c2-2 4-3 6-3" opacity=".4" /></svg> },
+  { value: 'soirees', label: 'Soirées & Vie Locale', desc: 'bars, fêtes basques', icon: <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" /></svg> },
 ]
 
 const BUDGET_OPTIONS: { value: BudgetLevel; label: string; desc: string }[] = [
@@ -89,31 +94,31 @@ const OVERNIGHT_OPTIONS: {
   value: OvernightPreference
   label: string
   desc: string
-  emoji: string
+  icon: React.ReactNode
 }[] = [
   {
     value: 'gratuit',
     label: 'Parkings gratuits & spots sauvages',
     desc: 'Nuit en van tolérée, 0€',
-    emoji: '🆓',
+    icon: <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20 12V8H6a2 2 0 01-2-2c0-1.1.9-2 2-2h12v4" /><path d="M4 6v12c0 1.1.9 2 2 2h14v-4" /><circle cx="18" cy="16" r="2" /></svg>,
   },
   {
     value: 'aires_officielles',
     label: 'Aires camping-car officielles',
     desc: 'Gratuit ou < 15€/nuit, services',
-    emoji: '⚡',
+    icon: <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" /></svg>,
   },
   {
     value: 'camping',
     label: 'Campings van-friendly',
     desc: '15-30€/nuit, confort',
-    emoji: '🏕️',
+    icon: <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 20l9-16 9 16H3z" /><path d="M12 10v4" /></svg>,
   },
   {
     value: 'mix',
     label: 'Mix selon les étapes',
     desc: 'On alterne selon le trajet',
-    emoji: '🔀',
+    icon: <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 3 21 3 21 8" /><line x1="4" y1="20" x2="21" y2="3" /><polyline points="21 16 21 21 16 21" /><line x1="15" y1="15" x2="21" y2="21" /><line x1="4" y1="4" x2="9" y2="9" /></svg>,
   },
 ]
 
@@ -338,8 +343,8 @@ export default function RoadTripWizard() {
         transition={{ type: 'spring', duration: 0.5 }}
         className="p-8 flex flex-col items-center justify-center gap-6 min-h-[320px] text-center"
       >
-        <div className="w-20 h-20 rounded-full bg-blue-50 flex items-center justify-center text-4xl">
-          🚐
+        <div className="w-20 h-20 rounded-full bg-blue-50 flex items-center justify-center">
+          <svg className="w-10 h-10 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="8" width="22" height="10" rx="3" /><path d="M5 8V6a2 2 0 012-2h6l4 4" /><circle cx="6.5" cy="18" r="2" /><circle cx="17.5" cy="18" r="2" /></svg>
         </div>
         <div>
           <h3 className="text-2xl font-bold text-slate-900 mb-2">C&apos;est parti !</h3>
@@ -448,7 +453,7 @@ export default function RoadTripWizard() {
                           'text-center items-center flex flex-col gap-1',
                         ].join(' ')}
                       >
-                        <span className="text-2xl">{opt.emoji}</span>
+                        <span className="text-2xl">{opt.icon}</span>
                         <span className="text-sm font-semibold text-slate-900">{opt.label}</span>
                       </button>
                     ))}
@@ -483,7 +488,7 @@ export default function RoadTripWizard() {
                         className={radioCardClass(selectedScope === opt.value)}
                       >
                         <div className="flex items-start gap-3">
-                          <span className="text-2xl flex-shrink-0">{opt.emoji}</span>
+                          <span className="text-2xl flex-shrink-0">{opt.icon}</span>
                           <div>
                             <p className="text-sm font-semibold text-slate-900">{opt.label}</p>
                             <p className="text-xs text-slate-500 mt-0.5">{opt.desc}</p>
@@ -531,7 +536,7 @@ export default function RoadTripWizard() {
                           className={radioCardClass(selected)}
                         >
                           <div className="flex items-start gap-3">
-                            <span className="text-2xl flex-shrink-0">{opt.emoji}</span>
+                            <span className="text-2xl flex-shrink-0">{opt.icon}</span>
                             <div>
                               <p className="text-sm font-semibold text-slate-900">{opt.label}</p>
                               <p className="text-xs text-slate-500 mt-0.5">{opt.desc}</p>
@@ -589,7 +594,7 @@ export default function RoadTripWizard() {
                         className={radioCardClass(selectedOvernight === opt.value)}
                       >
                         <div className="flex items-start gap-3">
-                          <span className="text-2xl flex-shrink-0">{opt.emoji}</span>
+                          <span className="text-2xl flex-shrink-0">{opt.icon}</span>
                           <div>
                             <p className="text-sm font-semibold text-slate-900">{opt.label}</p>
                             <p className="text-xs text-slate-500 mt-0.5">{opt.desc}</p>
@@ -629,7 +634,7 @@ export default function RoadTripWizard() {
                       'flex flex-col items-center text-center gap-3 py-8',
                     ].join(' ')}
                   >
-                    <span className="text-5xl">{opt.emoji}</span>
+                    <span className="text-5xl">{opt.icon}</span>
                     <span className="text-base font-bold text-slate-900">{opt.title}</span>
                   </button>
                 ))}
@@ -694,7 +699,8 @@ export default function RoadTripWizard() {
                 </div>
                 <div className="col-span-2 rounded-xl p-3 bg-purple-50 border border-purple-200">
                   <p className="text-xs mb-1.5 font-medium uppercase tracking-wide text-purple-600">
-                    🌙 Nuit en van
+                    <svg className="inline w-3.5 h-3.5 mr-1 -mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" /></svg>
+                    Nuit en van
                   </p>
                   <p className="text-sm font-semibold text-purple-900">
                     {OVERNIGHT_OPTIONS.find((o) => o.value === values.overnightPreference)?.label ??

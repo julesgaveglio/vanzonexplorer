@@ -45,9 +45,9 @@ const breadcrumbJsonLd = {
 }
 
 const steps = [
-  { icon: '📝', title: 'Vos envies', description: 'Durée, style, budget' },
-  { icon: '🤖', title: "L'IA génère", description: 'Spots & itinéraire sur mesure' },
-  { icon: '📧', title: 'Par email', description: 'Prêt en 60 secondes' },
+  { icon: <svg className="w-6 h-6 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>, title: 'Vos envies', description: 'Durée, style, budget' },
+  { icon: <svg className="w-6 h-6 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2l2.09 6.26L20 10l-5.91 1.74L12 18l-2.09-6.26L4 10l5.91-1.74z" /><path d="M19 15l1.04 3.13L23 19l-2.96.87L19 23l-1.04-3.13L15 19l2.96-.87z" opacity=".5" /></svg>, title: "L'IA génère", description: 'Spots & itinéraire sur mesure' },
+  { icon: <svg className="w-6 h-6 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></svg>, title: 'Par email', description: 'Prêt en 60 secondes' },
 ]
 
 const howToJsonLd = {
@@ -156,10 +156,22 @@ export default async function RoadTripPersonnalisePage({
 
             {/* Réassurance au-dessus du fold */}
             <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-slate-600 mb-8">
-              <span className="flex items-center gap-1.5">✅ 100% gratuit</span>
-              <span className="flex items-center gap-1.5">📧 Reçu par email</span>
-              <span className="flex items-center gap-1.5">⚡ En 60 secondes</span>
-              <span className="flex items-center gap-1.5">🗺️ {displayCount} road trips générés</span>
+              <span className="flex items-center gap-1.5">
+                <svg className="w-4 h-4 text-green-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
+                100% gratuit
+              </span>
+              <span className="flex items-center gap-1.5">
+                <svg className="w-4 h-4 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></svg>
+                Recu par email
+              </span>
+              <span className="flex items-center gap-1.5">
+                <svg className="w-4 h-4 text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" /></svg>
+                En 60 secondes
+              </span>
+              <span className="flex items-center gap-1.5">
+                <svg className="w-4 h-4 text-indigo-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6" /><line x1="8" y1="2" x2="8" y2="18" /><line x1="16" y1="6" x2="16" y2="22" /></svg>
+                {displayCount} road trips generés
+              </span>
             </div>
 
             <a href="#wizard" className="btn-primary relative px-8 py-3.5 rounded-full text-white font-semibold text-lg shadow-lg hover:shadow-xl transition-all inline-flex items-center gap-2">
