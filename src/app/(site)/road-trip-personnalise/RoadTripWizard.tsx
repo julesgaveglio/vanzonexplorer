@@ -5,7 +5,7 @@ import { useForm, type SubmitHandler } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { RoadTripTerminal, type TerminalLine } from './RoadTripTerminal'
 import type {
   GroupType,
@@ -172,6 +172,7 @@ function radioCardClass(selected: boolean) {
 
 export default function RoadTripWizard() {
   // ─── Pré-remplissage depuis searchParams (venant de /road-trip-pays-basque-van/*) ─
+  const router = useRouter()
   const searchParams = useSearchParams()
   const prefillDurationSlug = searchParams.get('duration') as DurationSlug | null
   const prefillGroupType = searchParams.get('groupType') as GroupType | null
@@ -293,7 +294,7 @@ export default function RoadTripWizard() {
               else if (event.type === 'done') {
                 receivedTerminalEvent = true
                 setTerminalLines((prev) => prev.map((l) => ({ ...l, done: true })))
-                setTimeout(() => setStatus('success'), 1000)
+                setTimeout(() => router.push('/road-trip-personnalise/confirmation'), 1000)
                 return
               } else if (event.type === 'error') {
                 receivedTerminalEvent = true

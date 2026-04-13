@@ -6,6 +6,7 @@ import { sanityFetch } from "@/lib/sanity/client";
 import { getSiteSettingsQuery } from "@/lib/sanity/queries";
 import { getGooglePlaceStats } from "@/lib/google-places";
 import CookieBanner from "@/components/ui/CookieBanner";
+import MetaPixel from "@/components/analytics/MetaPixel";
 import { LocalBusinessJsonLd, WebSiteJsonLd } from "@/components/seo/JsonLd";
 import "./globals.css";
 import "maplibre-gl/dist/maplibre-gl.css";
@@ -99,6 +100,7 @@ export default async function RootLayout({
           <WebSiteJsonLd />
           {children}
           <CookieBanner />
+          <MetaPixel />
           {/* Calendly chargé dynamiquement via CalendlyModal uniquement à l'ouverture */}
         </body>
       </html>
