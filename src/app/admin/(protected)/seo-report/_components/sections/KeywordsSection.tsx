@@ -13,8 +13,14 @@ export default function KeywordsSection({ data }: { data: KeywordsData }) {
     <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-5">
       <div className="flex items-center justify-between">
         <h3 className="text-base font-semibold text-slate-800">Positionnement & Mots-clés</h3>
-        <span className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded-full font-medium">
-          {data.indexedCount} pages indexées
+        <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+          data.indexedCount < 0 ? "bg-red-50 text-red-700" :
+          data.indexedCount === 0 ? "bg-amber-50 text-amber-700" :
+          "bg-blue-50 text-blue-700"
+        }`}>
+          {data.indexedCount < 0 ? "Erreur de récupération" :
+           data.indexedCount === 0 ? "0 pages indexées" :
+           `${data.indexedCount} pages indexées`}
         </span>
       </div>
 

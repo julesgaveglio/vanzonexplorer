@@ -50,11 +50,12 @@ export async function POST(req: NextRequest) {
   "quick_wins_justification": "string — pourquoi ces articles en priorité"
 }
 
-Critères :
+Critères STRICTS :
 - Prioriser volume > 100 ET difficulté < 40
-- Chaque article doit avoir un lien avec ce que vend le site
-- Mix : 40% informational, 40% commercial, 20% transactional
-- Intégrer la zone géo si pertinent`,
+- Chaque article DOIT avoir un cta_naturel pointant vers un produit, service ou catégorie RÉEL détecté sur le site. Aucun article purement informatif sans lien de conversion.
+- Mix intentions : 40% informational (avec CTA soft), 40% commercial (comparatif, guide d'achat), 20% transactional (landing page, promotion)
+- Intégrer la zone géo dans les mots-clés si le business est local
+- Le cta_naturel doit mentionner une page/produit CONCRET du site (pas un CTA générique)`,
         },
         {
           role: "user",

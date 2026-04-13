@@ -105,6 +105,7 @@ export default function SeoReportClient() {
       callStep<KeywordsData>("/api/admin/seo-report/keywords", {
         url,
         businessKeywords: business?.mots_cles_metier,
+        zoneGeo: business?.zone_geo,
       }),
       callStep<CompetitorsData>("/api/admin/seo-report/competitors", { url }),
     ]);

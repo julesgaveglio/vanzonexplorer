@@ -103,15 +103,18 @@ export async function POST(req: NextRequest) {
           content: `À partir du contenu HTML suivant de plusieurs pages d'un site web, détermine en JSON UNIQUEMENT :
 {
   "nom_site": "string",
-  "secteur_activite": "string",
-  "business_model": "string — ex: SaaS, e-commerce, marketplace, service local, média",
-  "produits_services": ["string"],
+  "secteur_activite": "string — IGNORE le nom de domaine. Base-toi UNIQUEMENT sur les produits, prix et services visibles dans le HTML pour déterminer le secteur.",
+  "business_model": "string — ex: SaaS, e-commerce, marketplace, service local, média, blog, agence",
+  "produits_services": ["string — liste les produits/services RÉELS visibles sur le site"],
   "cible_audience": "string",
   "proposition_valeur": "string — 1 phrase",
-  "zone_geo": "string — ex: France, Pays Basque, International",
-  "mots_cles_metier": ["string — 5 à 10 mots-clés métier"]
+  "zone_geo": "string — ex: France, Pays Basque, International, Paris, etc.",
+  "mots_cles_metier": ["string — 5 à 10 mots-clés SEO pertinents pour ce business, utilisables comme seeds de recherche DataForSEO"]
 }
-Sois factuel, base-toi uniquement sur le contenu fourni.`,
+RÈGLES STRICTES :
+- Base-toi UNIQUEMENT sur les produits, prix et CTAs visibles — pas sur le nom de domaine.
+- Les mots_cles_metier doivent être des requêtes que les clients potentiels taperaient sur Google.
+- Inclus la zone géographique dans certains mots-clés si le business est local.`,
         },
         { role: "user", content: allContent.slice(0, 8000) },
       ],
