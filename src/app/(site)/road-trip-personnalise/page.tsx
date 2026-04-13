@@ -189,18 +189,6 @@ export default async function RoadTripPersonnalisePage({
           ) : (
             /* ═══ MODE ORGANIQUE : page SEO complète ═══ */
             <>
-              {/* Intro SEO */}
-              <section className="mb-16 glass-card rounded-2xl p-8 max-w-3xl mx-auto">
-                <p className="text-sm leading-relaxed text-slate-600">
-                  Notre <strong className="text-slate-800">générateur de road trip en van</strong> gratuit vous aide à{' '}
-                  <strong className="text-slate-800">planifier votre road trip</strong> en quelques clics. Que vous rêviez
-                  d&apos;un <strong className="text-slate-800">itinéraire personnalisé</strong> sur la côte atlantique,
-                  d&apos;un <strong className="text-slate-800">road trip France</strong> à travers les Pyrénées ou d&apos;une
-                  escapade en <strong className="text-slate-800">voyage en van aménagé</strong> sur les routes secondaires,
-                  notre IA analyse des centaines de spots pour créer votre plan idéal.
-                </p>
-              </section>
-
               {/* Comment ça marche */}
               <section className="mb-16">
                 <div className="text-center mb-8">
