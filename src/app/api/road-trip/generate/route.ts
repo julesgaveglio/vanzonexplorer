@@ -91,9 +91,10 @@ function createEmitter(writer: WritableStreamDefaultWriter<Uint8Array>): EmitFn 
 async function fetchPOIsForProfile(
   interests: InterestKey[],
   budgetLevel: BudgetLevel,
-  overnightPreference: OvernightPreference
+  overnightPreference: OvernightPreference,
+  budgetFilter?: BudgetLevel
 ): Promise<{ pois: POIRow[]; overnightSpots: POIRow[] }> {
-  const { pois, overnightSpots } = await getPOIsFromCache(interests, overnightPreference)
+  const { pois, overnightSpots } = await getPOIsFromCache(interests, overnightPreference, budgetFilter)
 
   let finalPOIs = pois
   let finalOvernight = overnightSpots
@@ -163,8 +164,20 @@ async function generateItineraryV2(
   const overnightLabel = OVERNIGHT_LABELS[input.overnightPreference]
   const scopeInstruction = SCOPE_INSTRUCTIONS[input.scope]
 
-  // POIs/overnight passés au modèle — version réduite pour économiser les tokens
-  const poiSummary = pois.slice(0, 30).map((p) => ({
+  // POIs triés géographiquement (côte nord → intérieur sud) pour aider Groq
+  // à construire un parcours logique
+  const sortedPois = [...pois].sort((a, b) => {
+    const coordsA = (a as unknown as { coordinates?: string }).coordinates
+    const coordsB = (b as unknown as { coordinates?: string }).coordinates
+    if (!coordsA && !coordsB) return 0
+    if (!coordsA) return 1
+    if (!coordsB) return -1
+    const latA = Number(coordsA.split(',')[0])
+    const latB = Number(coordsB.split(',')[0])
+    return latB - latA // nord (côte) en premier, sud (montagne) en dernier
+  })
+
+  const poiSummary = sortedPois.slice(0, 30).map((p) => ({
     name: p.name,
     category: p.category,
     subcategory: p.subcategory,
@@ -176,13 +189,13 @@ async function generateItineraryV2(
     budget: p.budget_level,
   }))
 
-  const overnightSummary = overnightSpots.slice(0, 15).map((o) => ({
+  const overnightSummary = overnightSpots.slice(0, 20).map((o) => ({
     name: o.name,
     type: o.overnight_type,
     price: o.overnight_price_per_night,
     city: o.location_city,
     address: o.address,
-    coordinates: o.overnight_coordinates,
+    coordinates: (o as unknown as { coordinates?: string }).coordinates ?? o.overnight_coordinates,
     maps_url: o.google_maps_url,
     amenities: o.overnight_amenities,
     restrictions: o.overnight_restrictions,
@@ -190,7 +203,12 @@ async function generateItineraryV2(
     capacity: o.overnight_capacity,
   }))
 
-  const systemPrompt = `Tu es un expert du Pays Basque et un vanlifer expérimenté. Tu crées des itinéraires van pratiques, locaux et authentiques. Tu connais les spots de nuit discrets, les parkings adaptés aux grands véhicules, et les meilleures adresses selon les profils. Chaque journée se termine OBLIGATOIREMENT par un spot de nuit concret (parking, aire, camping) avec les informations pratiques pour garer et dormir dans le van.
+  const systemPrompt = `Tu es un expert du Pays Basque et un vanlifer expérimenté. Tu crées des itinéraires van RÉALISTES et PRATIQUES. Règles absolues :
+- Maximum 1 à 2 activités par jour (pas plus — c'est un road trip, pas un marathon).
+- Les étapes doivent suivre un parcours géographique LOGIQUE (pas de zigzag entre la côte et la montagne dans la même journée).
+- Le spot de nuit de chaque soir doit être PROCHE de la première activité du lendemain matin (pour dormir sur place et partir tôt).
+- Inclus un temps de route estimé entre les étapes principales.
+- Adapte le ton et les suggestions au profil voyageur (solo = liberté, couple = romantique, amis = festif, famille = sécurité + enfants).
 
 Réponds UNIQUEMENT avec du JSON valide. Aucun texte avant ou après. Aucun backtick markdown.`
 
@@ -203,23 +221,26 @@ Réponds UNIQUEMENT avec du JSON valide. Aucun texte avant ou après. Aucun back
 
 ${scopeInstruction}
 
-POIs activités disponibles (utilise en priorité, avec leurs URLs exactes) :
+POIs activités disponibles (utilise UNIQUEMENT ceux-ci, avec leurs URLs exactes) :
 ${JSON.stringify(poiSummary)}
 
-Spots de nuit disponibles (OBLIGATOIRE : 1 spot par nuit, utilise ceux-ci en priorité) :
+Spots de nuit disponibles (OBLIGATOIRE : 1 spot par nuit, pioche UNIQUEMENT dans cette liste) :
 ${JSON.stringify(overnightSummary)}
 
-Contraintes :
+CONTRAINTES STRICTES :
 - Exactement ${durationDays} journée${durationDays > 1 ? 's' : ''}.
-- Chaque journée = 3 à 5 étapes ("stops") dans l'ordre chronologique (matin → soir).
-- Chaque journée termine par un champ "overnight" concret (jamais inventé, piocher dans la liste ci-dessus en priorité).
-- Budgets indicatifs réalistes pour chaque stop.
-- Les URLs viennent des POI réels fournis, pas d'invention.
+- Chaque journée = 1 à 2 activités MAX + éventuellement 1 restaurant.
+- L'itinéraire suit un parcours géographique cohérent (ex: côte → intérieur ou nord → sud), PAS de zigzag.
+- Le spot nuit du soir est le plus PROCHE possible de la première activité du lendemain (dormir sur place pour partir tôt).
+- Indique le temps de route entre les étapes principales (ex: "30 min de route").
+- Budgets indicatifs RÉALISTES pour chaque stop (basés sur le budget_level des POIs fournis).
+- Les noms et URLs viennent des POI réels fournis — NE RIEN INVENTER.
+- Adapte les horaires au type d'activité : randonnée → tôt le matin (8h-9h), plage → après-midi, restaurant → midi ou soir.
 
-Retourne STRICTEMENT ce JSON (aucun texte avant/après, aucun backtick) :
+Retourne STRICTEMENT ce JSON :
 {
   "title": "Titre accrocheur du road trip",
-  "intro": "2-3 phrases d'introduction personnalisée à ${input.firstname}",
+  "intro": "2-3 phrases d'introduction personnalisée à ${input.firstname}, adaptée au profil ${groupLabel}",
   "days": [
     {
       "day": 1,
@@ -227,16 +248,16 @@ Retourne STRICTEMENT ce JSON (aucun texte avant/après, aucun backtick) :
       "stops": [
         {
           "time": "9h00",
-          "name": "Nom du lieu",
+          "name": "Nom du lieu (exactement tel que dans la liste POI)",
           "type": "activite|restaurant|culture|nature|plage|soiree",
-          "description": "2-3 phrases pratiques et évocatrices",
+          "description": "2-3 phrases pratiques + temps de route depuis l'étape précédente si > 15min",
           "address": "adresse complète",
-          "url": "lien externe (site officiel ou Google Maps)",
+          "url": "lien externe du POI fourni",
           "budget_indicatif": "gratuit | 5-15€ | 20-50€"
         }
       ],
       "overnight": {
-        "name": "Nom du spot de nuit",
+        "name": "Nom du spot de nuit (exactement tel que dans la liste)",
         "type": "parking_gratuit|aire_camping_car|camping_van|spot_sauvage",
         "price": "gratuit | 8€/nuit | 22€/nuit",
         "address": "adresse",
@@ -244,16 +265,14 @@ Retourne STRICTEMENT ce JSON (aucun texte avant/après, aucun backtick) :
         "google_maps_url": "url",
         "amenities": ["eau potable", "vidange"],
         "restrictions": "ex: 72h max, interdit en août",
-        "tip": "astuce pratique pour ce spot (heure d'arrivée conseillée, discrétion, etc.)"
+        "tip": "astuce pratique (heure d'arrivée, discrétion, proximité activité du lendemain)"
       }
     }
   ],
   "tips_van": [
-    "conseil pratique spécifique van 1",
-    "conseil 2",
-    "conseil 3"
+    "5 conseils pratiques spécifiques au profil ${groupLabel} et au Pays Basque"
   ],
-  "cta": "phrase d'appel à l'action pour louer un van Vanzon"
+  "cta": "phrase d'appel à l'action pour louer un van Vanzon Explorer"
 }`
 
   const { content, modelUsed, fallbackUsed } = await groqWithFallback({
@@ -262,7 +281,7 @@ Retourne STRICTEMENT ce JSON (aucun texte avant/après, aucun backtick) :
       { role: 'user', content: userPrompt },
     ],
     model: 'llama-3.3-70b-versatile',
-    temperature: 0.6,
+    temperature: 0.35,
     response_format: { type: 'json_object' },
     max_tokens: 5000,
   })
@@ -434,7 +453,8 @@ export async function POST(req: NextRequest) {
       const { pois, overnightSpots } = await fetchPOIsForProfile(
         input.interests,
         input.budgetLevel,
-        input.overnightPreference
+        input.overnightPreference,
+        input.budgetLevel
       )
 
       if (pois.length === 0) {

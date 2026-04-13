@@ -38,30 +38,57 @@ interface CacheResult {
 
 export async function getPOIsFromCache(
   interests: InterestKey[],
-  overnightPreference: OvernightPreference
+  overnightPreference: OvernightPreference,
+  budgetLevel?: BudgetLevel
 ): Promise<CacheResult> {
   const supabase = createSupabaseAdmin()
   const targetTags = interests.flatMap((i) => INTEREST_TAG_MAP[i] ?? [])
   const overnightTypes = OVERNIGHT_PREFERENCE_TO_TYPES[overnightPreference]
 
-  const [poisRes, spotsRes] = await Promise.all([
-    supabase
-      .from('poi_cache')
-      .select('*')
-      .overlaps('tags', targetTags.length > 0 ? targetTags : ['nature'])
-      .neq('category', 'spot_nuit')
-      .limit(40),
+  // Budget filter : faible = gratuit+faible, moyen = tous sauf eleve, eleve = tous
+  const budgetValues: string[] | null =
+    budgetLevel === 'faible' ? ['gratuit', 'faible'] :
+    budgetLevel === 'moyen' ? ['gratuit', 'faible', 'moyen'] :
+    null // eleve or undefined = no filter
+
+  // Activités : exclure spot_nuit ET parking (les parkings ne sont pas des activités)
+  let poisQuery = supabase
+    .from('poi_cache')
+    .select('*')
+    .overlaps('tags', targetTags.length > 0 ? targetTags : ['nature'])
+    .neq('category', 'spot_nuit')
+    .neq('category', 'parking')
+    .limit(40)
+  if (budgetValues) {
+    poisQuery = poisQuery.in('budget_level', budgetValues)
+  }
+
+  // Spots nuit : spot_nuit category + parkings avec overnight_allowed
+  const [poisRes, spotsNuitRes, parkingOvernightRes] = await Promise.all([
+    poisQuery,
     supabase
       .from('poi_cache')
       .select('*')
       .eq('category', 'spot_nuit')
       .in('overnight_type', overnightTypes)
       .limit(20),
+    // Parkings qui autorisent la nuit
+    supabase
+      .from('poi_cache')
+      .select('*')
+      .eq('category', 'parking')
+      .eq('overnight_allowed', true)
+      .limit(10),
   ])
+
+  const overnightSpots = [
+    ...((spotsNuitRes.data as POIRow[] | null) ?? []),
+    ...((parkingOvernightRes.data as POIRow[] | null) ?? []),
+  ]
 
   return {
     pois: (poisRes.data as POIRow[] | null) ?? [],
-    overnightSpots: (spotsRes.data as POIRow[] | null) ?? [],
+    overnightSpots,
   }
 }
 
