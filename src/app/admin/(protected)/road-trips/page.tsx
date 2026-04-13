@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
 import { ReviewActions } from "./ReviewActions";
 import { ContactedToggle } from "./ContactedToggle";
+import { RetryStatusBadge } from "./RetryStatusBadge";
 
 export const metadata: Metadata = {
   title: "Road Trips — Vanzon Admin",
@@ -667,7 +668,7 @@ export default async function RoadTripsAdminPage({
                           />
                         </td>
                         <td className="px-4 py-3">
-                          <StatusBadge status={row.status} />
+                          <RetryStatusBadge id={row.id} status={row.status} />
                         </td>
                         <td className="px-4 py-3 text-slate-500 text-xs whitespace-nowrap">
                           {new Date(row.created_at).toLocaleDateString("fr-FR")}
