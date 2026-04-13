@@ -49,6 +49,7 @@ export default function RoadTripCTA() {
                   boxShadow: "0 4px 14px rgba(37,99,235,0.3)",
                 }}
               >
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2l2.09 6.26L20 10l-5.91 1.74L12 18l-2.09-6.26L4 10l5.91-1.74z"/><path d="M19 15l1.04 3.13L23 19l-2.96.87L19 23l-1.04-3.13L15 19l2.96-.87z" opacity=".6"/></svg>
                 Créer mon itinéraire gratuit →
               </Link>
               <div className="flex gap-3 text-xs text-slate-400">

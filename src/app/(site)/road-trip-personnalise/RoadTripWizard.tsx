@@ -743,8 +743,9 @@ export default function RoadTripWizard() {
             <button
               type="button"
               onClick={handleNext}
-              className="btn-primary flex-1 py-3 rounded-xl text-sm font-semibold text-white"
+              className="btn-primary flex-1 py-3 rounded-xl text-sm font-semibold text-white inline-flex items-center justify-center gap-1.5"
             >
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2l2.09 6.26L20 10l-5.91 1.74L12 18l-2.09-6.26L4 10l5.91-1.74z"/><path d="M19 15l1.04 3.13L23 19l-2.96.87L19 23l-1.04-3.13L15 19l2.96-.87z" opacity=".6"/></svg>
               Suivant
             </button>
           </div>

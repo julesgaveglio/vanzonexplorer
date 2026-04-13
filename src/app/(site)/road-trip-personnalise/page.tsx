@@ -162,7 +162,8 @@ export default async function RoadTripPersonnalisePage({
               <span className="flex items-center gap-1.5">🗺️ {displayCount} road trips générés</span>
             </div>
 
-            <a href="#wizard" className="btn-primary relative px-8 py-3.5 rounded-full text-white font-semibold text-lg shadow-lg hover:shadow-xl transition-all">
+            <a href="#wizard" className="btn-primary relative px-8 py-3.5 rounded-full text-white font-semibold text-lg shadow-lg hover:shadow-xl transition-all inline-flex items-center gap-2">
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2l2.09 6.26L20 10l-5.91 1.74L12 18l-2.09-6.26L4 10l5.91-1.74z"/><path d="M19 15l1.04 3.13L23 19l-2.96.87L19 23l-1.04-3.13L15 19l2.96-.87z" opacity=".6"/></svg>
               {isAdTraffic ? 'Générer mon road trip gratuit →' : 'Créer mon itinéraire gratuit'}
               <span aria-hidden="true" className="absolute inset-0 rounded-full" style={{ boxShadow: 'inset 0 1.5px 1px rgba(255,255,255,0.55), inset 0 -1px 1px rgba(0,0,0,0.20), inset 2px 0 2px rgba(255,255,255,0.10), inset -2px 0 2px rgba(0,0,0,0.10), inset 0 0 10px rgba(255,255,255,0.14)' }} />
             </a>
@@ -294,7 +295,8 @@ export default async function RoadTripPersonnalisePage({
                   Louez un van Vanzon Explorer tout équipé et partez sur la route dès demain.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <a href="#wizard" className="btn-primary px-8 py-3.5 rounded-xl text-white font-semibold">
+                  <a href="#wizard" className="btn-primary px-8 py-3.5 rounded-xl text-white font-semibold inline-flex items-center gap-2">
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2l2.09 6.26L20 10l-5.91 1.74L12 18l-2.09-6.26L4 10l5.91-1.74z"/><path d="M19 15l1.04 3.13L23 19l-2.96.87L19 23l-1.04-3.13L15 19l2.96-.87z" opacity=".6"/></svg>
                     Générer mon itinéraire gratuit
                   </a>
                   <Link href="/location" className="btn-ghost px-8 py-3.5 rounded-xl font-semibold">
