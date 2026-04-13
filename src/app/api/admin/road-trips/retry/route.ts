@@ -234,7 +234,7 @@ CONTRAINTES STRICTES :
 Retourne STRICTEMENT ce JSON :
 {
   "title": "Titre accrocheur du road trip",
-  "intro": "2-3 phrases d'introduction personnalisée à ${firstname}, adaptée au profil ${groupLabel}",
+  "intro": "2-3 phrases d'introduction adaptée au profil ${groupLabel}. Commence par 'Découvrez avec Vanzon Explorer…' — NE PAS mentionner le prénom du voyageur dans l'intro.",
   "days": [
     {
       "day": 1,

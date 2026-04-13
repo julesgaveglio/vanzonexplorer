@@ -165,8 +165,7 @@ export function buildRoadTripEmailV2({
       .email-wrapper { padding: 8px 0 24px !important; }
       .email-card { margin: 0 8px !important; border-radius: 14px !important; }
       .email-card-inner { padding: 16px 14px !important; }
-      .hero-pad { padding: 20px 14px 18px !important; }
-      .hero-title { font-size: 22px !important; }
+      .hero-title { font-size: 21px !important; }
       .cta-block { margin: 10px 8px 0 !important; padding: 20px 14px !important; }
       .cta-title { font-size: 17px !important; }
       .cta-btn { padding: 14px 24px !important; font-size: 15px !important; }
@@ -182,18 +181,22 @@ export function buildRoadTripEmailV2({
            alt="Vanzon Explorer" width="140" style="height:auto;display:inline-block;" />
     </div>
 
-    <!-- Hero banner with photo -->
+    <!-- Hero banner — texte sur l'image (variante C) -->
     <div class="email-card" style="background:#FFFFFF;margin:0 16px;border-radius:16px;overflow:hidden;box-shadow:0 2px 16px rgba(0,0,0,0.06);">
-      <img src="https://vekavbjntnrqtwnslvxz.supabase.co/storage/v1/object/public/road-trip-images/poi/grande-plage-885a3d70.webp"
-           alt="Pays Basque — road trip van" width="100%" height="180" style="display:block;width:100%;height:180px;object-fit:cover;" />
-      <div class="hero-pad" style="background:linear-gradient(135deg,#1D4ED8 0%,#0EA5E9 100%);padding:24px 20px 22px;text-align:center;">
-        <div style="display:inline-block;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);border-radius:16px;padding:3px 12px;margin-bottom:12px;">
-          <span style="color:#FFFFFF;font-size:11px;font-weight:600;">✨ Généré par IA · Vanzon Explorer</span>
+      <div style="background:url('https://vekavbjntnrqtwnslvxz.supabase.co/storage/v1/object/public/road-trip-images/poi/grande-plage-885a3d70.webp') center/cover no-repeat;min-height:340px;position:relative;">
+        <div style="background:linear-gradient(to bottom, rgba(0,0,0,0) 15%, rgba(0,0,0,0.15) 40%, rgba(0,0,0,0.72) 100%);min-height:340px;display:flex;flex-direction:column;justify-content:flex-end;padding:0 22px 24px;">
+          <div style="margin-bottom:10px;">
+            <span style="display:inline-block;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.2);border-radius:14px;padding:3px 12px;color:rgba(255,255,255,0.9);font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,0.5);">
+              ✨ Généré par IA · Vanzon Explorer
+            </span>
+          </div>
+          <h1 class="hero-title" style="margin:0 0 6px 0;color:#FFFFFF;font-size:24px;font-weight:800;line-height:1.2;text-shadow:0 2px 6px rgba(0,0,0,0.7),0 0 20px rgba(0,0,0,0.3);">
+            ${itinerary.title}
+          </h1>
+          <p style="margin:0;color:rgba(255,255,255,0.88);font-size:13px;line-height:1.5;text-shadow:0 1px 4px rgba(0,0,0,0.6);">
+            Salut ${firstname} ! Ton itinéraire van au Pays Basque est prêt.
+          </p>
         </div>
-        <h1 class="hero-title" style="margin:0 0 8px 0;color:#FFFFFF;font-size:24px;font-weight:800;line-height:1.25;">
-          ${itinerary.title}
-        </h1>
-        <p style="margin:0;color:rgba(255,255,255,0.9);font-size:14px;">Salut ${firstname} ! Ton itinéraire van au Pays Basque est prêt.</p>
       </div>
       <div class="email-card-inner" style="padding:18px 20px 16px;">
         <p style="margin:0;color:#334155;font-size:14px;line-height:1.7;">${itinerary.intro}</p>
