@@ -16,7 +16,6 @@ import type {
   PagespeedData, OnPageData, AuthorityData, CompetitorsData, AiInsightsData
 } from "@/types/seo-report";
 
-// PDF côté client uniquement (react-pdf utilise des APIs canvas non SSR-compatibles)
 const PdfDownloadButton = dynamic(() => import("./_pdf/PdfDownloadButton"), { ssr: false });
 
 const INITIAL_PIPELINE: PipelineState = {
@@ -58,41 +57,46 @@ export default function SeoReportClient() {
     setPipeline(INITIAL_PIPELINE);
     setReport({ url, label: label || undefined, generatedAt: new Date().toISOString(), scoreGlobal: 0 });
 
-    // Étape 1 — PageSpeed
+    // ═══ Étapes 1-3 en PARALLÈLE (PageSpeed + On-page + Authority) ═══
     setStep("pagespeed", "loading");
-    const pagespeed = await callStep<PagespeedData>("/api/admin/seo-report/pagespeed", { url });
-    setStep("pagespeed", pagespeed ? "done" : "error");
-    if (pagespeed) setReport((r) => ({ ...r, pagespeed }));
-
-    // Étape 2 — On-page
     setStep("onpage", "loading");
-    const onpage = await callStep<OnPageData>("/api/admin/seo-report/onpage", { url });
-    setStep("onpage", onpage ? "done" : "error");
-    if (onpage) setReport((r) => ({ ...r, onpage }));
-
-    // Étape 3 — Authority
     setStep("authority", "loading");
-    const authority = await callStep<AuthorityData>("/api/admin/seo-report/authority", { url });
+
+    const [pagespeedRes, onpageRes, authorityRes] = await Promise.allSettled([
+      callStep<PagespeedData>("/api/admin/seo-report/pagespeed", { url }),
+      callStep<OnPageData>("/api/admin/seo-report/onpage", { url }),
+      callStep<AuthorityData>("/api/admin/seo-report/authority", { url }),
+    ]);
+
+    const pagespeed = pagespeedRes.status === "fulfilled" ? pagespeedRes.value : null;
+    const onpage = onpageRes.status === "fulfilled" ? onpageRes.value : null;
+    const authority = authorityRes.status === "fulfilled" ? authorityRes.value : null;
+
+    setStep("pagespeed", pagespeed ? "done" : "error");
+    setStep("onpage", onpage ? "done" : "error");
     setStep("authority", authority ? "done" : "error");
-    if (authority) setReport((r) => ({ ...r, authority }));
 
-    // Calcul score global intermédiaire
-    setReport((r) => {
-      const scoreGlobal = calcScoreGlobal(
-        r?.pagespeed ?? pagespeed ?? undefined,
-        r?.onpage ?? onpage ?? undefined,
-        r?.authority ?? authority ?? undefined,
-      );
-      return { ...r, scoreGlobal };
-    });
+    const scoreGlobal = calcScoreGlobal(
+      pagespeed ?? undefined,
+      onpage ?? undefined,
+      authority ?? undefined,
+    );
 
-    // Étape 4 — Concurrents
+    setReport((r) => ({
+      ...r,
+      pagespeed: pagespeed ?? undefined,
+      onpage: onpage ?? undefined,
+      authority: authority ?? undefined,
+      scoreGlobal,
+    }));
+
+    // ═══ Étape 4 — Concurrents ═══
     setStep("competitors", "loading");
     const competitors = await callStep<CompetitorsData>("/api/admin/seo-report/competitors", { url });
     setStep("competitors", competitors ? "done" : "error");
     if (competitors) setReport((r) => ({ ...r, competitors }));
 
-    // Étape 5 — IA (envoyer toutes les données collectées)
+    // ═══ Étape 5 — IA (envoie toutes les données collectées) ═══
     setStep("ai-insights", "loading");
     const aiPayload = { url, pagespeed, onpage, authority, competitors };
     const aiInsights = await callStep<AiInsightsData>("/api/admin/seo-report/ai-insights", aiPayload);
@@ -141,6 +145,15 @@ export default function SeoReportClient() {
       {hasReport && report.scoreGlobal !== undefined && (
         <div className="space-y-4">
           <ScoreGlobal report={report as SeoReportData & { scoreGlobal: number; url: string }} />
+
+          {/* AI Résumé exécutif en premier si disponible */}
+          {report.aiInsights?.resumeExecutif && (
+            <div className="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-5">
+              <h3 className="text-sm font-bold text-blue-900 mb-2">Résumé exécutif</h3>
+              <p className="text-sm text-blue-800 leading-relaxed">{report.aiInsights.resumeExecutif}</p>
+            </div>
+          )}
+
           {report.pagespeed  && <PerformanceSection data={report.pagespeed} />}
           {report.onpage     && <OnPageSection data={report.onpage} />}
           {report.authority  && <AuthoritySection data={report.authority} />}

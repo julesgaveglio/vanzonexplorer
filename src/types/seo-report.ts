@@ -51,6 +51,32 @@ export interface OnPageData {
   totalImages: number;
   h2s: string[];
   h3s: string[];
+  internalLinks: number;
+  externalLinks: number;
+  wordCount: number;
+}
+
+// ─── Authority enrichi ──────────────────────────────────────────────────────
+
+export interface SslInfo {
+  grade: string | null;
+  validFrom: string | null;
+  validTo: string | null;
+  issuer: string | null;
+  protocol: string | null;
+}
+
+export interface DomainWhois {
+  createdDate: string | null;
+  expiryDate: string | null;
+  registrar: string | null;
+  nameservers: string[];
+  domainAge: string | null;
+}
+
+export interface DnsInfo {
+  ip: string | null;
+  ttl: number | null;
 }
 
 export interface AuthorityData {
@@ -58,6 +84,12 @@ export interface AuthorityData {
   backlinksCount: number;
   referringDomains: number;
   organicTraffic: number;
+  // Nouveaux champs
+  pageRank: number | null;
+  pageRankDecimal: number | null;
+  ssl: SslInfo | null;
+  whois: DomainWhois | null;
+  dns: DnsInfo | null;
 }
 
 export interface CompetitorItem {
@@ -81,6 +113,11 @@ export interface AiInsightsData {
   secteur: string;
   axes: AiAxis[];
   conclusion: string;
+  resumeExecutif?: string;
+  scoreGlobal?: number;
+  scoreJustification?: string;
+  analyseCwv?: string;
+  analyseAutorite?: string;
 }
 
 export interface SeoReportData {
