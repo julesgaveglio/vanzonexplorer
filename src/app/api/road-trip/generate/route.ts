@@ -466,11 +466,21 @@ export async function POST(req: NextRequest) {
       if (!process.env.RESEND_API_KEY) throw new Error('RESEND_API_KEY is not set')
       const resend = new Resend(process.env.RESEND_API_KEY)
       const emailEncoded = encodeURIComponent(input.email)
+      // Build image map: stop name → image_url from POI cache
+      const imageMap: Record<string, string> = {}
+      for (const p of [...pois, ...overnightSpots]) {
+        const imgUrl = (p as unknown as { image_url?: string }).image_url
+        if (p.name && imgUrl) {
+          imageMap[p.name] = imgUrl
+        }
+      }
+
       const { subject, html } = buildRoadTripEmailV2({
         firstname: input.firstname,
         duree: DURATION_TO_DAYS[input.duration],
         itinerary,
         emailEncoded,
+        imageMap,
       })
 
       const { error: resendError } = await resend.emails.send({
