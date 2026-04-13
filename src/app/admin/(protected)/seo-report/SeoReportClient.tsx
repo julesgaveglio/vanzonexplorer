@@ -9,21 +9,27 @@ import PerformanceSection from "./_components/sections/PerformanceSection";
 import OnPageSection from "./_components/sections/OnPageSection";
 import AuthoritySection from "./_components/sections/AuthoritySection";
 import CompetitorsSection from "./_components/sections/CompetitorsSection";
+import KeywordsSection from "./_components/sections/KeywordsSection";
+import ContentStrategySection from "./_components/sections/ContentStrategySection";
 import AiInsightsSection from "./_components/sections/AiInsightsSection";
 import { calcScoreGlobal } from "./_lib/score";
 import type {
   PipelineState, SeoReportData,
-  PagespeedData, OnPageData, AuthorityData, CompetitorsData, AiInsightsData
+  PagespeedData, OnPageData, AuthorityData, CompetitorsData,
+  KeywordsData, ContentStrategyData, AiInsightsData, BusinessAnalysis
 } from "@/types/seo-report";
 
 const PdfDownloadButton = dynamic(() => import("./_pdf/PdfDownloadButton"), { ssr: false });
 
 const INITIAL_PIPELINE: PipelineState = {
-  pagespeed:    "pending",
-  onpage:       "pending",
-  authority:    "pending",
-  competitors:  "pending",
-  "ai-insights": "pending",
+  business:          "pending",
+  pagespeed:         "pending",
+  onpage:            "pending",
+  authority:         "pending",
+  keywords:          "pending",
+  competitors:       "pending",
+  "content-strategy": "pending",
+  "ai-insights":     "pending",
 };
 
 async function callStep<T>(url: string, body: unknown): Promise<T | null> {
@@ -57,7 +63,13 @@ export default function SeoReportClient() {
     setPipeline(INITIAL_PIPELINE);
     setReport({ url, label: label || undefined, generatedAt: new Date().toISOString(), scoreGlobal: 0 });
 
-    // ═══ Étapes 1-3 en PARALLÈLE (PageSpeed + On-page + Authority) ═══
+    // ═══ Étape 0 — Analyse business ═══
+    setStep("business", "loading");
+    const business = await callStep<BusinessAnalysis>("/api/admin/seo-report/business", { url });
+    setStep("business", business ? "done" : "error");
+    if (business) setReport((r) => ({ ...r, business }));
+
+    // ═══ Étapes 1-3 en PARALLÈLE ═══
     setStep("pagespeed", "loading");
     setStep("onpage", "loading");
     setStep("authority", "loading");
@@ -76,12 +88,7 @@ export default function SeoReportClient() {
     setStep("onpage", onpage ? "done" : "error");
     setStep("authority", authority ? "done" : "error");
 
-    const scoreGlobal = calcScoreGlobal(
-      pagespeed ?? undefined,
-      onpage ?? undefined,
-      authority ?? undefined,
-    );
-
+    const scoreGlobal = calcScoreGlobal(pagespeed ?? undefined, onpage ?? undefined, authority ?? undefined);
     setReport((r) => ({
       ...r,
       pagespeed: pagespeed ?? undefined,
@@ -90,15 +97,39 @@ export default function SeoReportClient() {
       scoreGlobal,
     }));
 
-    // ═══ Étape 4 — Concurrents ═══
+    // ═══ Étapes 4-5 en PARALLÈLE (Keywords + Competitors) ═══
+    setStep("keywords", "loading");
     setStep("competitors", "loading");
-    const competitors = await callStep<CompetitorsData>("/api/admin/seo-report/competitors", { url });
+
+    const [keywordsRes, competitorsRes] = await Promise.allSettled([
+      callStep<KeywordsData>("/api/admin/seo-report/keywords", {
+        url,
+        businessKeywords: business?.mots_cles_metier,
+      }),
+      callStep<CompetitorsData>("/api/admin/seo-report/competitors", { url }),
+    ]);
+
+    const keywords = keywordsRes.status === "fulfilled" ? keywordsRes.value : null;
+    const competitors = competitorsRes.status === "fulfilled" ? competitorsRes.value : null;
+
+    setStep("keywords", keywords ? "done" : "error");
     setStep("competitors", competitors ? "done" : "error");
+    if (keywords) setReport((r) => ({ ...r, keywords }));
     if (competitors) setReport((r) => ({ ...r, competitors }));
 
-    // ═══ Étape 5 — IA (envoie toutes les données collectées) ═══
+    // ═══ Étape 6 — Stratégie contenu (basée sur business + keywords) ═══
+    setStep("content-strategy", "loading");
+    const contentStrategy = await callStep<ContentStrategyData>("/api/admin/seo-report/content-strategy", {
+      url,
+      business,
+      keywords,
+    });
+    setStep("content-strategy", contentStrategy ? "done" : "error");
+    if (contentStrategy) setReport((r) => ({ ...r, contentStrategy }));
+
+    // ═══ Étape 7 — Synthèse IA (toutes les données) ═══
     setStep("ai-insights", "loading");
-    const aiPayload = { url, pagespeed, onpage, authority, competitors };
+    const aiPayload = { url, pagespeed, onpage, authority, competitors, keywords, business, contentStrategy };
     const aiInsights = await callStep<AiInsightsData>("/api/admin/seo-report/ai-insights", aiPayload);
     setStep("ai-insights", aiInsights ? "done" : "error");
     if (aiInsights) setReport((r) => ({ ...r, aiInsights }));
@@ -128,25 +159,21 @@ export default function SeoReportClient() {
 
   return (
     <div className="space-y-6">
-      {/* Input URL */}
       <div className="bg-white rounded-xl border border-slate-200 p-6">
         <h2 className="text-base font-semibold text-slate-800 mb-4">Analyser un site</h2>
         <UrlInput onGenerate={generate} loading={isGenerating} />
       </div>
 
-      {/* Pipeline progress */}
       {(isGenerating || isComplete) && (
         <div className="bg-white rounded-xl border border-slate-200 p-6">
           <ProgressPipeline state={pipeline} />
         </div>
       )}
 
-      {/* Rapport */}
       {hasReport && report.scoreGlobal !== undefined && (
         <div className="space-y-4">
           <ScoreGlobal report={report as SeoReportData & { scoreGlobal: number; url: string }} />
 
-          {/* AI Résumé exécutif en premier si disponible */}
           {report.aiInsights?.resumeExecutif && (
             <div className="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-5">
               <h3 className="text-sm font-bold text-blue-900 mb-2">Résumé exécutif</h3>
@@ -154,13 +181,16 @@ export default function SeoReportClient() {
             </div>
           )}
 
-          {report.pagespeed  && <PerformanceSection data={report.pagespeed} />}
-          {report.onpage     && <OnPageSection data={report.onpage} />}
-          {report.authority  && <AuthoritySection data={report.authority} />}
-          {report.competitors && <CompetitorsSection data={report.competitors} />}
-          {report.aiInsights  && <AiInsightsSection data={report.aiInsights} />}
+          {report.pagespeed   && <PerformanceSection data={report.pagespeed} />}
+          {report.onpage       && <OnPageSection data={report.onpage} />}
+          {report.authority    && <AuthoritySection data={report.authority} />}
+          {report.keywords     && <KeywordsSection data={report.keywords} />}
+          {report.competitors  && <CompetitorsSection data={report.competitors} />}
+          {report.contentStrategy && (
+            <ContentStrategySection data={report.contentStrategy} business={report.business} />
+          )}
+          {report.aiInsights   && <AiInsightsSection data={report.aiInsights} />}
 
-          {/* Actions */}
           {isComplete && (
             <div className="flex gap-3">
               <PdfDownloadButton report={report as SeoReportData} />
@@ -176,7 +206,6 @@ export default function SeoReportClient() {
         </div>
       )}
 
-      {/* Historique */}
       <div className="bg-white rounded-xl border border-slate-200 p-6">
         <ReportHistory key={historyKey} />
       </div>

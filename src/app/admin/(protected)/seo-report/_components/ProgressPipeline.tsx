@@ -3,11 +3,14 @@
 import type { PipelineState, PipelineStep } from "@/types/seo-report";
 
 const STEPS: { key: PipelineStep; label: string }[] = [
-  { key: "pagespeed",    label: "Performance" },
-  { key: "onpage",       label: "On-page" },
-  { key: "authority",    label: "Autorité" },
-  { key: "competitors",  label: "Concurrents" },
-  { key: "ai-insights",  label: "Analyse IA" },
+  { key: "business",           label: "Business" },
+  { key: "pagespeed",          label: "Performance" },
+  { key: "onpage",             label: "On-page" },
+  { key: "authority",          label: "Autorité" },
+  { key: "keywords",           label: "Mots-clés" },
+  { key: "competitors",        label: "Concurrents" },
+  { key: "content-strategy",   label: "Stratégie" },
+  { key: "ai-insights",        label: "Synthèse IA" },
 ];
 
 interface ProgressPipelineProps {

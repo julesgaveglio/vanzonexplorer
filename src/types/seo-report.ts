@@ -118,6 +118,73 @@ export interface AiInsightsData {
   scoreJustification?: string;
   analyseCwv?: string;
   analyseAutorite?: string;
+  positionnementActuel?: string;
+  analyseConcurrents?: string;
+  strategieContenu?: string;
+}
+
+// ─── Business analysis ───────────────────────────────────────────────────────
+export interface BusinessAnalysis {
+  nom_site: string;
+  secteur_activite: string;
+  business_model: string;
+  produits_services: string[];
+  cible_audience: string;
+  proposition_valeur: string;
+  zone_geo: string;
+  mots_cles_metier: string[];
+}
+
+// ─── Keywords & indexation ───────────────────────────────────────────────────
+export interface IndexedPage {
+  url: string;
+  title: string;
+  snippet: string;
+}
+
+export interface KeywordOpportunity {
+  keyword: string;
+  searchVolume: number;
+  difficulty: number;
+  position: number | null;
+  cpc: number | null;
+  intent?: string;
+  priority: number; // volume / max(difficulty, 1)
+}
+
+export interface KeywordIdea {
+  keyword: string;
+  searchVolume: number;
+  difficulty: number;
+  intent: string;
+}
+
+export interface KeywordsData {
+  indexedPages: IndexedPage[];
+  indexedCount: number;
+  keywordsForSite: KeywordOpportunity[];
+  keywordIdeas: KeywordIdea[];
+}
+
+// ─── Content strategy ────────────────────────────────────────────────────────
+export interface ContentArticle {
+  rang: number;
+  titre_seo: string;
+  mot_cle_principal: string;
+  volume_mensuel: number;
+  difficulte: number;
+  intention: string;
+  pourquoi_ce_site: string;
+  angle_editorial: string;
+  titre_accrocheur: string;
+  cta_naturel: string;
+  priorite: string;
+}
+
+export interface ContentStrategyData {
+  articles: ContentArticle[];
+  strategie_globale: string;
+  quick_wins_justification: string;
 }
 
 export interface SeoReportData {
@@ -130,16 +197,22 @@ export interface SeoReportData {
   authority?: AuthorityData;
   competitors?: CompetitorsData;
   aiInsights?: AiInsightsData;
+  business?: BusinessAnalysis;
+  keywords?: KeywordsData;
+  contentStrategy?: ContentStrategyData;
 }
 
-export type PipelineStep = "pagespeed" | "onpage" | "authority" | "competitors" | "ai-insights";
+export type PipelineStep = "business" | "pagespeed" | "onpage" | "authority" | "keywords" | "competitors" | "content-strategy" | "ai-insights";
 
 export type StepStatus = "pending" | "loading" | "done" | "error";
 
 export interface PipelineState {
+  business: StepStatus;
   pagespeed: StepStatus;
   onpage: StepStatus;
   authority: StepStatus;
+  keywords: StepStatus;
   competitors: StepStatus;
+  "content-strategy": StepStatus;
   "ai-insights": StepStatus;
 }
