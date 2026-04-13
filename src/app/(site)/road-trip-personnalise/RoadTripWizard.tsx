@@ -138,9 +138,9 @@ type FormData = z.infer<typeof schema>
 // ─── Step validation map ─────────────────────────────────────────────────────
 const STEP_FIELDS: Record<number, (keyof FormData)[]> = {
   1: ['firstname', 'email', 'groupType'],
-  2: ['vanStatus'],
-  3: ['scope', 'duration', 'interests'],
-  4: ['budgetLevel', 'overnightPreference'],
+  2: ['scope', 'duration', 'interests'],
+  3: ['budgetLevel', 'overnightPreference'],
+  4: ['vanStatus'],
 }
 
 const TOTAL_STEPS = 5
@@ -178,11 +178,11 @@ export default function RoadTripWizard() {
       : '2-3j'
 
   const hasAnyPrefill = Boolean(prefillDurationSlug || prefillGroupType || prefillBudgetLevel)
-  // Si duration + groupType présents → step 4 (budget/overnight)
-  // Si seulement l'un des deux → step 3
+  // Si duration + groupType présents → step 3 (budget/overnight)
+  // Si seulement l'un des deux → step 2
   // Sinon → step 1
   const initialStep =
-    prefillDurationSlug && prefillGroupType ? 4 : hasAnyPrefill ? 3 : 1
+    prefillDurationSlug && prefillGroupType ? 3 : hasAnyPrefill ? 2 : 1
 
   const [step, setStep] = useState(initialStep)
   const [status, setStatus] = useState<'idle' | 'streaming' | 'success' | 'error'>('idle')
@@ -459,41 +459,8 @@ export default function RoadTripWizard() {
           )}
 
           {/* ─ Step 2 : Situation van ─ */}
+          {/* ─ Step 2 : Envies Pays Basque ─ */}
           {step === 2 && (
-            <motion.div
-              key={2}
-              variants={variants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ duration: 0.3, ease: 'easeInOut' }}
-            >
-              <h2 className="text-xl font-bold text-slate-900 mb-2">Votre situation van</h2>
-              <p className="text-sm text-slate-500 mb-6">
-                Cela nous permet d&apos;adapter les recommandations à votre situation.
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {VAN_STATUS_OPTIONS.map((opt) => (
-                  <button
-                    key={opt.value}
-                    type="button"
-                    aria-pressed={selectedVan === opt.value}
-                    onClick={() => setValue('vanStatus', opt.value)}
-                    className={[
-                      radioCardClass(selectedVan === opt.value),
-                      'flex flex-col items-center text-center gap-3 py-8',
-                    ].join(' ')}
-                  >
-                    <span className="text-5xl">{opt.emoji}</span>
-                    <span className="text-base font-bold text-slate-900">{opt.title}</span>
-                  </button>
-                ))}
-              </div>
-            </motion.div>
-          )}
-
-          {/* ─ Step 3 : Envies Pays Basque ─ */}
-          {step === 3 && (
             <motion.div
               key={3}
               variants={variants}
@@ -580,8 +547,8 @@ export default function RoadTripWizard() {
             </motion.div>
           )}
 
-          {/* ─ Step 4 : Budget & nuit van ─ */}
-          {step === 4 && (
+          {/* ─ Step 3 : Budget & nuit van ─ */}
+          {step === 3 && (
             <motion.div
               key={4}
               variants={variants}
@@ -632,6 +599,40 @@ export default function RoadTripWizard() {
                     ))}
                   </div>
                 </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* ─ Step 4 : Situation van ─ */}
+          {step === 4 && (
+            <motion.div
+              key={4}
+              variants={variants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+            >
+              <h2 className="text-xl font-bold text-slate-900 mb-2">Votre situation van</h2>
+              <p className="text-sm text-slate-500 mb-6">
+                Cela nous permet d&apos;adapter les recommandations à votre situation.
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {VAN_STATUS_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    aria-pressed={selectedVan === opt.value}
+                    onClick={() => setValue('vanStatus', opt.value)}
+                    className={[
+                      radioCardClass(selectedVan === opt.value),
+                      'flex flex-col items-center text-center gap-3 py-8',
+                    ].join(' ')}
+                  >
+                    <span className="text-5xl">{opt.emoji}</span>
+                    <span className="text-base font-bold text-slate-900">{opt.title}</span>
+                  </button>
+                ))}
               </div>
             </motion.div>
           )}
