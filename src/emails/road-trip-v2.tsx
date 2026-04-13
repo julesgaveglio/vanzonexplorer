@@ -182,8 +182,10 @@ export function buildRoadTripEmailV2({
            alt="Vanzon Explorer" width="140" style="height:auto;display:inline-block;" />
     </div>
 
-    <!-- Hero banner -->
+    <!-- Hero banner with photo -->
     <div class="email-card" style="background:#FFFFFF;margin:0 16px;border-radius:16px;overflow:hidden;box-shadow:0 2px 16px rgba(0,0,0,0.06);">
+      <img src="https://vekavbjntnrqtwnslvxz.supabase.co/storage/v1/object/public/road-trip-images/poi/grande-plage-885a3d70.webp"
+           alt="Pays Basque — road trip van" width="100%" height="180" style="display:block;width:100%;height:180px;object-fit:cover;" />
       <div class="hero-pad" style="background:linear-gradient(135deg,#1D4ED8 0%,#0EA5E9 100%);padding:24px 20px 22px;text-align:center;">
         <div style="display:inline-block;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);border-radius:16px;padding:3px 12px;margin-bottom:12px;">
           <span style="color:#FFFFFF;font-size:11px;font-weight:600;">✨ Généré par IA · Vanzon Explorer</span>
