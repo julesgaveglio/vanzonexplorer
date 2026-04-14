@@ -12,16 +12,20 @@ export const metadata: Metadata = {
 
 const VAN_PHOTOS = [
   {
-    src: "https://cdn.sanity.io/images/lewexa74/production/2e9214211ef5a235dcf2aa639d0feafcc867c88f-1080x750.png",
-    alt: "Yoni — Van aménagé Renault Trafic extérieur",
+    src: "https://cdn.sanity.io/images/lewexa74/production/9da403575f5e7fa290ec4c8a65e1705e0182c95a-2182x1362.png?auto=format&fit=max&q=82",
+    alt: "Van aménagé Vanzon — extérieur",
   },
   {
-    src: "https://cdn.sanity.io/images/lewexa74/production/660105a28e577c33f642a8fdff528d88925642e3-1080x750.png",
-    alt: "Yoni — Intérieur cuisine et rangements",
+    src: "https://cdn.sanity.io/images/lewexa74/production/0dce51f1f42fde5dd51529fe1c61b74221edcb4e-4032x3024.jpg?auto=format&fit=max&q=82",
+    alt: "Van aménagé Vanzon — intérieur cuisine",
   },
   {
-    src: "https://cdn.sanity.io/images/lewexa74/production/f93fa16ab46d8934dcc3092a8e86fc80ebce4305-1080x750.png",
-    alt: "Yoni — Intérieur lit et espace de vie",
+    src: "https://cdn.sanity.io/images/lewexa74/production/0ae4827be0c39318cca4f43ff1febb903a3541c1-4032x3024.jpg?auto=format&fit=max&q=82",
+    alt: "Van aménagé Vanzon — intérieur espace de vie",
+  },
+  {
+    src: "https://cdn.sanity.io/images/lewexa74/production/95175bcfd8540286b18ec3b7484e23f490bcf5dd-2000x1500.webp?auto=format&fit=max&q=82",
+    alt: "Van aménagé Vanzon — vue d'ensemble",
   },
 ];
 
@@ -92,7 +96,7 @@ export default function OptinPage() {
             <div key={item} className="flex items-start gap-3">
               <span
                 className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center mt-0.5"
-                style={{ background: "linear-gradient(135deg, #B9945F, #E4D398)" }}
+                style={{ background: "#10B981" }}
               >
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M20 6L9 17l-5-5" />
