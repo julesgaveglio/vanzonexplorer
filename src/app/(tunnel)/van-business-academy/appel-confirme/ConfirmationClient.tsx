@@ -49,27 +49,27 @@ export default function ConfirmationClient() {
         C&apos;est confirmé{firstname ? ` ${firstname}` : ""} !
       </h1>
       <p className="text-center text-slate-500 text-base mb-8">
-        Votre appel stratégique est réservé. Vérifiez votre boîte email pour les détails.
+        Ton appel stratégique est réservé. Vérifie ta boîte email pour les détails.
       </p>
 
       {/* What to expect */}
       <GlassCard padding="p-6" className="mb-6">
         <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wider mb-4">
-          Ce qui vous attend
+          Ce qui t&apos;attend
         </h2>
         <div className="space-y-3">
           {[
             {
               icon: "🎯",
-              text: "On analyse votre situation actuelle et votre projet de van",
+              text: "On analyse ta situation actuelle et ton projet de van",
             },
             {
               icon: "🗺️",
-              text: "On définit ensemble votre feuille de route personnalisée",
+              text: "On définit ensemble ta feuille de route personnalisée",
             },
             {
               icon: "💡",
-              text: "On voit si l'accompagnement Van Business Academy est fait pour vous",
+              text: "On voit si l'accompagnement Van Business Academy est fait pour toi",
             },
           ].map((item) => (
             <div key={item.text} className="flex items-start gap-3">
@@ -83,14 +83,14 @@ export default function ConfirmationClient() {
       {/* How to prepare */}
       <GlassCard padding="p-6" className="mb-8">
         <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wider mb-4">
-          Comment vous préparer
+          Comment te préparer
         </h2>
         <div className="space-y-3">
           {[
-            "Réfléchissez à votre budget disponible pour vous lancer",
-            "Notez vos questions sur le business de van aménagé",
-            "Pensez à votre timeline idéale pour démarrer",
-            "Installez-vous dans un endroit calme le jour de l'appel",
+            "Réfléchis à ton budget disponible pour te lancer",
+            "Note tes questions sur le business de van aménagé",
+            "Pense à ta timeline idéale pour démarrer",
+            "Installe-toi dans un endroit calme le jour de l'appel",
           ].map((item) => (
             <div key={item} className="flex items-start gap-3">
               <span
@@ -107,7 +107,7 @@ export default function ConfirmationClient() {
         </div>
       </GlassCard>
 
-      {/* Testimonial */}
+      {/* Testimonial — Avis Sylvain Trustpilot */}
       <div
         className="rounded-2xl px-6 py-5 mb-8"
         style={{
@@ -115,24 +115,29 @@ export default function ConfirmationClient() {
           border: "1px solid rgba(185,148,95,0.15)",
         }}
       >
-        <div className="flex gap-0.5 mb-2">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <span key={i} className="text-amber-400 text-sm">★</span>
-          ))}
+        <div className="flex items-center gap-2 mb-2">
+          <div className="flex gap-0.5">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <span key={i} className="text-amber-400 text-sm">★</span>
+            ))}
+          </div>
+          <span className="text-[11px] text-slate-400 font-medium">Trustpilot</span>
         </div>
         <p className="text-slate-600 text-sm leading-relaxed italic mb-3">
-          &ldquo;Je tiens à remercier Jules pour sa formation. Avant, j&apos;étais un peu perdu.
-          Aujourd&apos;hui, je suis fier d&apos;avoir commencé mon propre aménagement.&rdquo;
+          &ldquo;Je tiens à remercier Jules pour sa formation dédiée à l&apos;aménagement de van.
+          Avant, j&apos;étais un peu perdu. J&apos;avais regardé plusieurs vidéos sur Internet,
+          mais rien n&apos;était vraiment structuré. Aujourd&apos;hui, je suis fier d&apos;avoir
+          commencé mon propre aménagement. C&apos;est une fierté indescriptible.&rdquo;
         </p>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <div
-            className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white"
+            className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0"
             style={{ background: "linear-gradient(135deg, #B9945F, #8B6B3D)" }}
           >
             S
           </div>
           <div>
-            <p className="text-xs font-semibold text-slate-800">Sylvain D.</p>
+            <p className="text-sm font-semibold text-slate-800">Sylvain Delonca</p>
             <p className="text-[11px] text-slate-400">Élève Van Business Academy</p>
           </div>
         </div>

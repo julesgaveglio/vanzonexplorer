@@ -51,7 +51,7 @@ export default function VSLClient() {
         className="font-display text-2xl sm:text-3xl text-center leading-tight mb-3"
         style={{ color: "#0F172A" }}
       >
-        Regardez cette vidéo en entier
+        Regarde cette vidéo en entier
       </h1>
 
       {/* Instruction */}
@@ -61,7 +61,7 @@ export default function VSLClient() {
           <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
           <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
         </svg>
-        <p className="text-slate-500 text-sm">Activez le son et regardez jusqu&apos;à la fin</p>
+        <p className="text-slate-500 text-sm">Active le son et regarde jusqu&apos;à la fin</p>
       </div>
 
       {/* Video embed */}
@@ -90,57 +90,36 @@ export default function VSLClient() {
         <p className="text-xs text-slate-400 mt-3">30 minutes &middot; Gratuit &middot; Sans engagement</p>
       </div>
 
-      {/* Social proof */}
+      {/* Social proof — Avis Sylvain Trustpilot */}
       <div className="space-y-6">
-        <h2 className="font-display text-xl text-center mb-6" style={{ color: "#0F172A" }}>
-          Ils ont lancé leur business de van
-        </h2>
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          <GlassCard padding="p-5">
-            <div className="flex gap-0.5 mb-2">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <span key={i} className="text-amber-400 text-sm">★</span>
-              ))}
+        <div className="max-w-lg mx-auto">
+          <GlassCard padding="p-6">
+            {/* Trustpilot badge */}
+            <div className="flex items-center gap-2 mb-3">
+              <div className="flex gap-0.5">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <span key={i} className="text-amber-400 text-base">★</span>
+                ))}
+              </div>
+              <span className="text-[11px] text-slate-400 font-medium">Trustpilot</span>
             </div>
-            <p className="text-slate-600 text-sm leading-relaxed italic mb-3">
-              &ldquo;Grâce à la formation, j&apos;ai pu aménager mon van et le mettre en location.
-              En 3 mois, j&apos;avais déjà rentabilisé mon investissement initial.&rdquo;
+            <p className="text-slate-600 text-sm leading-relaxed italic mb-4">
+              &ldquo;Je tiens à remercier Jules pour sa formation dédiée à l&apos;aménagement de van.
+              Avant, j&apos;étais un peu perdu. J&apos;avais regardé plusieurs vidéos sur Internet,
+              mais rien n&apos;était vraiment structuré ni clair. Aujourd&apos;hui, je suis fier d&apos;avoir
+              commencé mon propre aménagement. Le fait de créer son espace, de comprendre chaque détail
+              et chaque choix, c&apos;est une fierté indescriptible.&rdquo;
             </p>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <div
-                className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white"
+                className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0"
                 style={{ background: "linear-gradient(135deg, #B9945F, #8B6B3D)" }}
               >
                 S
               </div>
               <div>
-                <p className="text-xs font-semibold text-slate-800">Sylvain D.</p>
-                <p className="text-[11px] text-slate-400">Élève VBA</p>
-              </div>
-            </div>
-          </GlassCard>
-
-          <GlassCard padding="p-5">
-            <div className="flex gap-0.5 mb-2">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <span key={i} className="text-amber-400 text-sm">★</span>
-              ))}
-            </div>
-            <p className="text-slate-600 text-sm leading-relaxed italic mb-3">
-              &ldquo;Je ne connaissais rien à la mécanique. La formation m&apos;a guidé étape par étape,
-              du choix du véhicule jusqu&apos;à la mise en location.&rdquo;
-            </p>
-            <div className="flex items-center gap-2">
-              <div
-                className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white"
-                style={{ background: "linear-gradient(135deg, #3B82F6, #0EA5E9)" }}
-              >
-                M
-              </div>
-              <div>
-                <p className="text-xs font-semibold text-slate-800">Maxime R.</p>
-                <p className="text-[11px] text-slate-400">Élève VBA</p>
+                <p className="text-sm font-semibold text-slate-800">Sylvain Delonca</p>
+                <p className="text-[11px] text-slate-400">Élève Van Business Academy</p>
               </div>
             </div>
           </GlassCard>
@@ -151,7 +130,7 @@ export default function VSLClient() {
           {[
             { value: "50+", label: "vidéos de formation" },
             { value: "9", label: "modules complets" },
-            { value: "5-9k€", label: "revenus/an par van" },
+            { value: "5-8k€", label: "revenus/an par van" },
           ].map((stat) => (
             <div key={stat.label} className="text-center">
               <p className="text-2xl font-bold" style={{ color: "#B9945F" }}>{stat.value}</p>

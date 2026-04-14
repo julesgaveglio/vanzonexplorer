@@ -53,13 +53,13 @@ export default function BookingClient() {
         style={{ color: "#0F172A" }}
       >
         {firstname
-          ? `${firstname}, réservez votre appel stratégique gratuit`
-          : "Réservez votre appel stratégique gratuit"}
+          ? `${firstname}, réserve ton appel stratégique gratuit`
+          : "Réserve ton appel stratégique gratuit"}
       </h1>
 
       <p className="text-center text-slate-500 text-sm sm:text-base mb-6 leading-relaxed">
-        On regarde ensemble si notre accompagnement est fait pour vous et comment
-        on peut vous aider à lancer votre business de van.
+        On regarde ensemble si notre accompagnement est fait pour toi et comment
+        on peut t&apos;aider à lancer ton business de van.
       </p>
 
       {/* Badges */}
@@ -87,11 +87,11 @@ export default function BookingClient() {
       {/* Reassurance */}
       <div className="mt-8 text-center space-y-2">
         <p className="text-sm text-slate-500">
-          Vous parlerez directement avec <strong className="text-slate-700">Jules</strong>,
+          Tu parleras directement avec <strong className="text-slate-700">Jules</strong>,
           fondateur de Vanzon Explorer et de la Van Business Academy.
         </p>
         <p className="text-xs text-slate-400">
-          Aucun engagement. On discute de votre projet et on voit si on peut vous aider.
+          Aucun engagement. On discute de ton projet et on voit si on peut t&apos;aider.
         </p>
       </div>
     </div>

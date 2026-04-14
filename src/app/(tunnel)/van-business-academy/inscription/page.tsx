@@ -6,7 +6,7 @@ import OptinForm from "./OptinForm";
 export const metadata: Metadata = {
   title: "Formation Van Business Academy",
   description:
-    "Découvrez comment créer un business rentable de van aménagé de A à Z, même sans expérience.",
+    "Découvre comment créer un business rentable de van aménagé de A à Z, même sans expérience.",
   robots: { index: false, follow: false },
 };
 
@@ -77,12 +77,12 @@ export default function OptinPage() {
           className="font-display text-3xl sm:text-4xl text-center leading-tight mb-4"
           style={{ color: "#0F172A" }}
         >
-          Découvrez comment créer un business rentable de van aménagé de A à Z
+          Découvre comment créer un business rentable de van aménagé de A à Z
         </h1>
 
         {/* Sous-titre */}
         <p className="text-center text-slate-500 text-base sm:text-lg mb-8 leading-relaxed">
-          La vidéo gratuite qui vous explique exactement comment lancer votre propre activité
+          La vidéo gratuite qui t&apos;explique exactement comment lancer ta propre activité
           de van aménagé, même sans expérience en mécanique ou en aménagement.
         </p>
 
@@ -114,7 +114,7 @@ export default function OptinPage() {
 
         {/* Réassurance */}
         <p className="text-center text-xs text-slate-400 mt-6">
-          Vos informations restent confidentielles. Pas de spam, promis.
+          Tes informations restent confidentielles. Pas de spam, promis.
         </p>
       </div>
     </div>
