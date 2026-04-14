@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { Suspense } from "react";
 import OptinForm from "./OptinForm";
 
@@ -9,10 +10,50 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+const VAN_PHOTOS = [
+  {
+    src: "https://cdn.sanity.io/images/lewexa74/production/2e9214211ef5a235dcf2aa639d0feafcc867c88f-1080x750.png",
+    alt: "Yoni — Van aménagé Renault Trafic extérieur",
+  },
+  {
+    src: "https://cdn.sanity.io/images/lewexa74/production/660105a28e577c33f642a8fdff528d88925642e3-1080x750.png",
+    alt: "Yoni — Intérieur cuisine et rangements",
+  },
+  {
+    src: "https://cdn.sanity.io/images/lewexa74/production/f93fa16ab46d8934dcc3092a8e86fc80ebce4305-1080x750.png",
+    alt: "Yoni — Intérieur lit et espace de vie",
+  },
+];
+
+// Double the array for seamless infinite scroll
+const MARQUEE_PHOTOS = [...VAN_PHOTOS, ...VAN_PHOTOS];
+
 export default function OptinPage() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-80px)] px-4 pb-12">
-      <div className="w-full max-w-lg">
+    <div className="flex flex-col items-center min-h-[calc(100vh-80px)] pb-12">
+      {/* Marquee photos */}
+      <div className="w-full overflow-hidden mb-8">
+        <div className="flex animate-scroll-banner gap-4 py-2" style={{ width: "max-content" }}>
+          {MARQUEE_PHOTOS.map((photo, i) => (
+            <div
+              key={i}
+              className="flex-shrink-0 rounded-2xl overflow-hidden shadow-md"
+              style={{ width: 280, height: 190 }}
+            >
+              <Image
+                src={photo.src}
+                alt={photo.alt}
+                width={280}
+                height={190}
+                unoptimized
+                className="w-full h-full object-cover"
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="w-full max-w-lg px-4">
         {/* Badge */}
         <div className="flex justify-center mb-6">
           <span
@@ -75,3 +116,4 @@ export default function OptinPage() {
     </div>
   );
 }
+
