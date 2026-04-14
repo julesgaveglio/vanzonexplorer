@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { Suspense } from "react";
 import OptinForm from "./OptinForm";
+import BeforeAfterSlider from "@/components/ui/BeforeAfterSlider";
 
 export const metadata: Metadata = {
   title: "Formation Van Business Academy",
@@ -116,6 +117,21 @@ export default function OptinPage() {
         <p className="text-center text-xs text-slate-400 mt-6">
           Tes informations restent confidentielles. Pas de spam, promis.
         </p>
+
+        {/* Before/After Slider */}
+        <div className="mt-10">
+          <p className="text-center text-xs font-semibold uppercase tracking-wider text-slate-400 mb-4">
+            La transformation
+          </p>
+          <BeforeAfterSlider
+            beforeSrc="https://cdn.sanity.io/images/lewexa74/production/c255ea909e53ab9253932c9924e9b22ad8657bfe-600x668.png"
+            afterSrc="https://cdn.sanity.io/images/lewexa74/production/957901ef27061c890d5bc8876c2aae09e708d13e-600x668.png"
+            beforeAlt="Renault Trafic 3 — intérieur vide"
+            afterAlt="Renault Trafic 3 — van entièrement aménagé"
+            width={600}
+            height={668}
+          />
+        </div>
       </div>
     </div>
   );
