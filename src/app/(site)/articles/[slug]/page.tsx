@@ -65,6 +65,9 @@ type RelatedArticle = {
   readTime?: string;
 };
 
+// ── ISR — régénère les pages article toutes les 60s ──────────────────────────
+export const revalidate = 60;
+
 // ── Static generation ──────────────────────────────────────────────────────────
 
 export async function generateStaticParams() {
