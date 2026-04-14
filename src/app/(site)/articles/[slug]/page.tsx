@@ -10,6 +10,7 @@ import {
 } from "@/lib/sanity/queries";
 import { ArticleJsonLd } from "@/components/seo/JsonLd";
 import ArticleTOC from "./_components/ArticleTOC";
+import SidebarVanSaleAd from "./_components/SidebarVanSaleAd";
 import ReadingProgressBar from "./_components/ReadingProgressBar";
 import ArticleFAQ from "./_components/ArticleFAQ";
 import ArticleCategorySync from "./_components/ArticleCategorySync";
@@ -380,7 +381,10 @@ export default async function ArticleDetailPage({
         </article>
 
         {/* ── Sticky TOC sidebar ── */}
-        <ArticleTOC headings={headings} />
+        <div className="hidden lg:block sticky top-24 space-y-6">
+          <ArticleTOC headings={headings} />
+          {article.category === "Achat Van" && <SidebarVanSaleAd />}
+        </div>
       </div>
     </main>
   );
