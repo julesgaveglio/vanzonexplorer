@@ -1,17 +1,11 @@
 import { sanityFetch } from "@/lib/sanity/client";
-import { getAllSaleVansQuery } from "@/lib/sanity/queries";
+import { getAllLocationVansQuery } from "@/lib/sanity/queries";
 import type { VanCard } from "@/lib/sanity/types";
 import Image from "next/image";
 import Link from "next/link";
 
-const equipIcons: { key: keyof VanCard; label: string; icon: string }[] = [
-  { key: "eq_kitchen", label: "Cuisine", icon: "M3 3h18v18H3V3zm2 2v14h14V5H5zm3 3h8v2H8V8zm0 4h5v2H8v-2z" },
-  { key: "eq_shower", label: "Douche", icon: "M7 3v2H5v2h2v14h2V7h6v14h2V7h2V5h-2V3H7zm0 0" },
-  { key: "eq_solar", label: "Solaire", icon: "M12 2v3m0 14v3M4.22 4.22l2.12 2.12m11.32 11.32l2.12 2.12M2 12h3m14 0h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12M12 8a4 4 0 100 8 4 4 0 000-8z" },
-];
-
 export default async function SidebarVanSaleAd() {
-  const vans = await sanityFetch<VanCard[]>(getAllSaleVansQuery);
+  const vans = await sanityFetch<VanCard[]>(getAllLocationVansQuery);
   if (!vans || vans.length === 0) return null;
 
   return (
@@ -35,7 +29,10 @@ export default async function SidebarVanSaleAd() {
       {/* Van cards */}
       <div className="space-y-3">
         {vans.map((van) => {
-          const equips = equipIcons.filter((e) => van[e.key]);
+          const equips: string[] = [];
+          if (van.eq_kitchen) equips.push("Cuisine");
+          if (van.eq_shower) equips.push("Douche");
+          if (van.eq_solar) equips.push("Solaire");
 
           return (
             <Link
@@ -56,12 +53,21 @@ export default async function SidebarVanSaleAd() {
                   {/* Overlay gradient */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
 
+                  {/* Badge "À vendre" */}
+                  <div className="absolute top-2 left-2 flex items-center gap-1 bg-violet-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
+                    À vendre
+                  </div>
+
                   {/* Prix en overlay */}
-                  {van.salePrice && (
+                  {van.salePrice ? (
                     <div className="absolute bottom-2 right-2 bg-white/95 backdrop-blur-sm text-slate-900 text-sm font-black px-2.5 py-1 rounded-lg shadow-sm">
                       {van.salePrice.toLocaleString("fr-FR")}&thinsp;€
                     </div>
-                  )}
+                  ) : van.startingPricePerNight ? (
+                    <div className="absolute bottom-2 right-2 bg-white/95 backdrop-blur-sm text-slate-900 text-xs font-bold px-2 py-1 rounded-lg shadow-sm">
+                      Dès {van.startingPricePerNight}€/nuit en location
+                    </div>
+                  ) : null}
                 </div>
               )}
 
@@ -88,37 +94,24 @@ export default async function SidebarVanSaleAd() {
                     </span>
                   )}
                   {van.vanType && (
-                    <span className="text-slate-300">|</span>
-                  )}
-                  {van.vanType && (
-                    <span className="capitalize">{van.vanType}</span>
+                    <>
+                      <span className="text-slate-300">|</span>
+                      <span className="capitalize">{van.vanType}</span>
+                    </>
                   )}
                 </div>
 
                 {/* Equip pills */}
                 {equips.length > 0 && (
                   <div className="flex flex-wrap gap-1">
-                    {equips.map((e) => (
+                    {equips.map((label) => (
                       <span
-                        key={e.key}
+                        key={label}
                         className="text-[9px] font-medium text-violet-600 bg-violet-50 px-1.5 py-0.5 rounded"
                       >
-                        {e.label}
+                        {label}
                       </span>
                     ))}
-                  </div>
-                )}
-
-                {/* Prix (fallback si pas d'image) */}
-                {!van.mainImage?.url && (
-                  <div className="mt-2">
-                    {van.salePrice ? (
-                      <span className="text-base font-black text-slate-900">
-                        {van.salePrice.toLocaleString("fr-FR")}&thinsp;€
-                      </span>
-                    ) : (
-                      <span className="text-xs text-slate-400">Prix sur demande</span>
-                    )}
                   </div>
                 )}
               </div>
