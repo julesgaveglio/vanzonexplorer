@@ -12,6 +12,32 @@ export const metadata: Metadata = {
 };
 
 const VAN_PHOTOS = [
+  // 6 nouvelles photos (dans l'ordre)
+  {
+    src: "https://cdn.sanity.io/images/lewexa74/production/b9e17e130b0c26af16b1feb8748d21612e722a64-1920x1080.png",
+    alt: "Van aménagé Vanzon — construction meuble atelier",
+  },
+  {
+    src: "https://cdn.sanity.io/images/lewexa74/production/c70a917e07fc97ffa4fb1fb7b934442a34b909c7-1920x1080.png",
+    alt: "Van aménagé Vanzon — intérieur bois et rangements",
+  },
+  {
+    src: "https://cdn.sanity.io/images/lewexa74/production/85d7e9705921806e4b4e0f2c3de444766b849bc4-1920x1080.png",
+    alt: "Van aménagé Vanzon — meuble arrière filets",
+  },
+  {
+    src: "https://cdn.sanity.io/images/lewexa74/production/068918fd837d35adbd9bb9d618d8cee11c8d7487-1920x1080.png",
+    alt: "Van aménagé Vanzon — tournage vidéo lit",
+  },
+  {
+    src: "https://cdn.sanity.io/images/lewexa74/production/500a017dd30a6edcdc13bada3bd93cee215d9ff4-1920x1080.png",
+    alt: "Van aménagé Vanzon — cuisine extérieure coucher de soleil",
+  },
+  {
+    src: "https://cdn.sanity.io/images/lewexa74/production/4bf0c179cde8e3e6101b0e4ee2b8638a56de9839-1920x1080.png",
+    alt: "Van aménagé Vanzon — cuisine coulissante avec table",
+  },
+  // Photos existantes
   {
     src: "https://cdn.sanity.io/images/lewexa74/production/9da403575f5e7fa290ec4c8a65e1705e0182c95a-2182x1362.png?auto=format&fit=max&q=82",
     alt: "Van aménagé Vanzon — extérieur",
