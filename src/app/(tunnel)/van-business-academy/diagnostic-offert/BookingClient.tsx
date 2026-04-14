@@ -1,0 +1,99 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import CalendlyInline from "@/components/ui/CalendlyInline";
+import { getFunnelData } from "@/lib/hooks/useUTMParams";
+import { trackEvent } from "@/lib/meta-pixel";
+
+export default function BookingClient() {
+  const router = useRouter();
+  const [firstname, setFirstname] = useState("");
+
+  useEffect(() => {
+    const data = getFunnelData();
+    if (!data) {
+      router.replace("/van-business-academy/inscription");
+      return;
+    }
+    setFirstname(data.firstname);
+
+    // Track step
+    trackEvent("Schedule", { content_name: "vba-booking" });
+    fetch("/api/van-business-academy/inscription/step", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: data.email, step: "booking" }),
+    }).catch(() => {});
+
+    // Listen for Calendly booking completion
+    const handleMessage = (e: MessageEvent) => {
+      if (e.data?.event === "calendly.event_scheduled") {
+        // Update step to confirmed
+        fetch("/api/van-business-academy/inscription/step", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: data.email, step: "confirmed" }),
+        }).catch(() => {});
+
+        trackEvent("CompleteRegistration", { content_name: "vba-confirmation" });
+        router.push("/van-business-academy/appel-confirme");
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, [router]);
+
+  return (
+    <div className="max-w-2xl mx-auto px-4 pb-12">
+      {/* Title */}
+      <h1
+        className="font-display text-2xl sm:text-3xl text-center leading-tight mb-2"
+        style={{ color: "#0F172A" }}
+      >
+        {firstname
+          ? `${firstname}, réservez votre appel stratégique gratuit`
+          : "Réservez votre appel stratégique gratuit"}
+      </h1>
+
+      <p className="text-center text-slate-500 text-sm sm:text-base mb-6 leading-relaxed">
+        On regarde ensemble si notre accompagnement est fait pour vous et comment
+        on peut vous aider à lancer votre business de van.
+      </p>
+
+      {/* Badges */}
+      <div className="flex justify-center gap-3 mb-8">
+        {["⏱ 30 min", "✓ Gratuit", "✓ Sans engagement"].map((tag) => (
+          <span
+            key={tag}
+            className="text-xs font-semibold px-3 py-1.5 rounded-full"
+            style={{
+              background: "rgba(185,148,95,0.08)",
+              color: "#B9945F",
+              border: "1px solid rgba(185,148,95,0.15)",
+            }}
+          >
+            {tag}
+          </span>
+        ))}
+      </div>
+
+      {/* Calendly inline */}
+      <div className="rounded-2xl overflow-hidden border" style={{ borderColor: "rgba(0,0,0,0.06)" }}>
+        <CalendlyInline height={700} />
+      </div>
+
+      {/* Reassurance */}
+      <div className="mt-8 text-center space-y-2">
+        <p className="text-sm text-slate-500">
+          Vous parlerez directement avec <strong className="text-slate-700">Jules</strong>,
+          fondateur de Vanzon Explorer et de la Van Business Academy.
+        </p>
+        <p className="text-xs text-slate-400">
+          Aucun engagement. On discute de votre projet et on voit si on peut vous aider.
+        </p>
+      </div>
+    </div>
+  );
+}
