@@ -154,6 +154,19 @@ export default function OptinPage() {
               Les <strong className="text-slate-800">erreurs qui coûtent des milliers d&apos;euros</strong> (et comment les éviter)
             </p>
           </div>
+          <div className="flex items-start gap-3">
+            <span
+              className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center mt-0.5"
+              style={{ background: "#10B981" }}
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 6L9 17l-5-5" />
+              </svg>
+            </span>
+            <p className="text-slate-600 text-sm leading-relaxed">
+              Comment revendre ton van avec <strong className="text-slate-800">plusieurs milliers d&apos;euros de plus-value</strong>
+            </p>
+          </div>
         </div>
 
         {/* Formulaire */}
