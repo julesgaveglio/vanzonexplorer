@@ -104,34 +104,56 @@ export default function OptinPage() {
           className="font-display text-3xl sm:text-4xl text-center leading-tight mb-4"
           style={{ color: "#0F172A" }}
         >
-          Découvre comment créer un business rentable de van aménagé de A à Z
+          Découvre comment créer un <strong>business rentable</strong> de van aménagé de A à Z
         </h1>
 
         {/* Sous-titre */}
         <p className="text-center text-slate-500 text-base sm:text-lg mb-8 leading-relaxed">
-          La vidéo gratuite qui t&apos;explique exactement comment lancer ta propre activité
-          de van aménagé, même sans expérience en mécanique ou en aménagement.
+          La <strong className="text-slate-700">vidéo gratuite</strong> qui t&apos;explique exactement comment lancer ta propre activité
+          de van aménagé, même <strong className="text-slate-700">sans expérience</strong> en mécanique ou en aménagement.
         </p>
 
         {/* Bénéfices */}
         <div className="space-y-3 mb-8">
-          {[
-            "Comment acheter, aménager et rentabiliser un van en partant de zéro",
-            "La méthode pour générer des revenus récurrents avec la location",
-            "Les erreurs qui coûtent des milliers d'euros (et comment les éviter)",
-          ].map((item) => (
-            <div key={item} className="flex items-start gap-3">
-              <span
-                className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center mt-0.5"
-                style={{ background: "#10B981" }}
-              >
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M20 6L9 17l-5-5" />
-                </svg>
-              </span>
-              <p className="text-slate-600 text-sm leading-relaxed">{item}</p>
-            </div>
-          ))}
+          <div className="flex items-start gap-3">
+            <span
+              className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center mt-0.5"
+              style={{ background: "#10B981" }}
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 6L9 17l-5-5" />
+              </svg>
+            </span>
+            <p className="text-slate-600 text-sm leading-relaxed">
+              Comment <strong className="text-slate-800">acheter, aménager et rentabiliser</strong> un van en partant de zéro
+            </p>
+          </div>
+          <div className="flex items-start gap-3">
+            <span
+              className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center mt-0.5"
+              style={{ background: "#10B981" }}
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 6L9 17l-5-5" />
+              </svg>
+            </span>
+            <p className="text-slate-600 text-sm leading-relaxed">
+              La méthode pour générer des <strong className="text-slate-800">revenus récurrents</strong> avec la location
+            </p>
+          </div>
+          <div className="flex items-start gap-3">
+            <span
+              className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center mt-0.5"
+              style={{ background: "#10B981" }}
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 6L9 17l-5-5" />
+              </svg>
+            </span>
+            <p className="text-slate-600 text-sm leading-relaxed">
+              Les <strong className="text-slate-800">erreurs qui coûtent des milliers d&apos;euros</strong> (et comment les éviter)
+            </p>
+          </div>
         </div>
 
         {/* Formulaire */}
