@@ -1,7 +1,7 @@
 import type { Viewport } from "next";
 
 export const viewport: Viewport = {
-  themeColor: "#B9945F",
+  themeColor: "#FFFFFF",
 };
 
 export default function TunnelLayout({
