@@ -382,8 +382,8 @@ export default async function ArticleDetailPage({
 
         {/* ── Sticky TOC sidebar ── */}
         <div className="hidden lg:block sticky top-24 space-y-6">
-          <ArticleTOC headings={headings} />
           {article.category === "Achat Van" && <SidebarVanSaleAd />}
+          <ArticleTOC headings={headings} />
         </div>
       </div>
     </main>
