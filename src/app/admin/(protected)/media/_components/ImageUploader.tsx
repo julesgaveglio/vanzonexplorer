@@ -24,7 +24,7 @@ interface Props {
 
 export default function ImageUploader({ onUploaded }: Props) {
   const [isDragging, setIsDragging] = useState(false);
-  const [uploads, setUploads] = useState<{ name: string; progress: "pending" | "done" | "error" }[]>([]);
+  const [uploads, setUploads] = useState<{ name: string; progress: "pending" | "done" | "error"; error?: string }[]>([]);
   const [category, setCategory] = useState("divers");
   const [isUploading, setIsUploading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -56,6 +56,10 @@ export default function ImageUploader({ onUploaded }: Props) {
           formData.append("category", category);
 
           const res = await fetch("/api/admin/upload", { method: "POST", body: formData });
+          if (!res.ok) {
+            const errText = await res.text().catch(() => `HTTP ${res.status}`);
+            throw new Error(errText);
+          }
           const data = await res.json();
 
           if (data.success) {
@@ -65,19 +69,21 @@ export default function ImageUploader({ onUploaded }: Props) {
             );
           } else {
             setUploads((prev) =>
-              prev.map((u, idx) => (idx === i ? { ...u, progress: "error" } : u))
+              prev.map((u, idx) => (idx === i ? { ...u, progress: "error", error: data.error || "Erreur inconnue" } : u))
             );
           }
-        } catch {
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : "Erreur reseau";
           setUploads((prev) =>
-            prev.map((u, idx) => (idx === i ? { ...u, progress: "error" } : u))
+            prev.map((u, idx) => (idx === i ? { ...u, progress: "error", error: msg } : u))
           );
         }
       }
 
       onUploaded(results);
       setIsUploading(false);
-      setTimeout(() => setUploads([]), 3000);
+      const hasErrors = uploads.some((u) => u.progress === "error");
+      setTimeout(() => setUploads([]), hasErrors ? 8000 : 3000);
     },
     [category, onUploaded]
   );
@@ -158,7 +164,7 @@ export default function ImageUploader({ onUploaded }: Props) {
                 u.progress === "error" ? "text-red-500" :
                 "text-blue-400"
               }`}>
-                {u.progress === "done" ? "Upload !" : u.progress === "error" ? "Erreur" : "En cours..."}
+                {u.progress === "done" ? "Upload !" : u.progress === "error" ? (u.error || "Erreur") : "En cours..."}
               </span>
             </div>
           ))}

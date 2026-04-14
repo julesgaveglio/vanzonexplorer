@@ -4,6 +4,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { processVanImage } from "@/lib/ai/imageProcessor";
 import { analyzeVanImage } from "@/lib/ai/imageAnalyzer";
 
+// Vercel serverless : 60s max, body jusqu'à 4.5 MB
+export const maxDuration = 60;
+
 const writeClient = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || "production",
@@ -21,8 +24,6 @@ export async function POST(req: NextRequest) {
     const file = formData.get("file") as File | null;
     const title = (formData.get("title") as string) || "Sans titre";
     const alt = (formData.get("alt") as string) || "";
-    // Résoudre la catégorie Sanity à partir du vanName si disponible
-    // (les valeurs valides du schéma mediaAsset sont : van-yoni, van-xalbat, equipe, pays-basque, formation, divers)
     const rawCategory = (formData.get("category") as string) || "";
     const vanNameForCat = (formData.get("vanName") as string) || "";
     const category = rawCategory && rawCategory !== "vans"
@@ -39,18 +40,28 @@ export async function POST(req: NextRequest) {
     const rawBuffer = Buffer.from(await file.arrayBuffer());
 
     // ── 1. Traitement Sharp : conversion WebP, ratio original préservé ──
-    const processedBuffer = await processVanImage(rawBuffer);
+    let processedBuffer: Buffer;
+    let contentType = "image/webp";
+    let filename = `${vanName ? vanName.toLowerCase().replace(/\s+/g, "-") + "-" : ""}van-amenage.webp`;
+    try {
+      processedBuffer = await processVanImage(rawBuffer);
+    } catch (sharpErr) {
+      console.warn("[upload] Sharp failed, using raw buffer:", sharpErr);
+      processedBuffer = rawBuffer;
+      contentType = file.type || "image/jpeg";
+      filename = file.name || "upload.jpg";
+    }
 
-    // ── 2. Analyse Gemini Vision + upload Sanity en parallèle ──
-    const [asset, aiMeta] = await Promise.all([
-      writeClient.assets.upload("image", processedBuffer, {
-        filename: `${vanName ? vanName.toLowerCase().replace(/\s+/g, "-") + "-" : ""}van-amenage.webp`,
-        contentType: "image/webp",
-      }),
-      analyzeVanImage(processedBuffer, { vanName }),
+    // ── 2. Upload Sanity (priorité) + analyse Gemini (best-effort) ──
+    let aiMeta = { alt: "", caption: "", filename: "" };
+    const [asset] = await Promise.all([
+      writeClient.assets.upload("image", processedBuffer, { filename, contentType }),
+      analyzeVanImage(processedBuffer, { vanName })
+        .then((m) => { aiMeta = m; })
+        .catch((err) => { console.warn("[upload] AI analysis skipped:", err); }),
     ]);
 
-    // ── 3. Créer le document mediaAsset avec les métadonnées IA ──
+    // ── 3. Créer le document mediaAsset ──
     const finalAlt = alt || aiMeta.alt;
     const doc = await writeClient.create({
       _type: "mediaAsset",
@@ -72,13 +83,13 @@ export async function POST(req: NextRequest) {
       url: asset.url,
       webpUrl: `${asset.url}?auto=format&fit=max&q=85`,
       dimensions: asset.metadata?.dimensions,
-      // Suggestions IA pour pré-remplir le formulaire
       aiAlt: aiMeta.alt,
       aiCaption: aiMeta.caption,
       aiFilename: aiMeta.filename,
     });
   } catch (err) {
-    console.error("[upload]", err);
-    return Response.json({ error: "Erreur upload Sanity" }, { status: 500 });
+    console.error("[upload] Error:", err);
+    const message = err instanceof Error ? err.message : "Erreur upload Sanity";
+    return Response.json({ error: message }, { status: 500 });
   }
 }
