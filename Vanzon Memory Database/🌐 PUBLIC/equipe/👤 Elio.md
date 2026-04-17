@@ -1,38 +1,40 @@
-# 👤 Elio — Co-fondateur Vanzon Explorer
-
-> *Le bricoleur, le bâtisseur. Celui qui a appris la mécanique par diplôme et le vanlife par amour.*
-
+---
+name: Profil Elio — Co-fondateur Vanzon Explorer
+description: Identité, parcours et rôle d'Elio dans Vanzon
+type: project
 ---
 
 ## Identité
 
-- **Origine** : Grandi à Madagascar, adopté à 12 ans
-- **Parcours géographique** : Madagascar → Bretagne → Pays Basque (arrivée à 17 ans)
-- **Rôle chez Vanzon** : Aménagement, mécanique, technique
-- **Trait dominant** : Investi avec le cœur, généreux dans le partage de compétences
+- Grandi à **Madagascar**, adopté à 12 ans
+- Parcours : Madagascar → Bretagne → **Pays Basque à 17 ans**
+- Rôle chez Vanzon : aménagement, mécanique, technique, **terrain France**
+- Trait dominant : investi avec le cœur, généreux dans le partage de compétences
 
 ---
 
 ## Avant Vanzon
 
 - Études de **mécanique en alternance** dans un garage
-- A obtenu son diplôme de mécanique
-- Premier van construit **en couple**, projet partagé avec son ex — l'envie de voyager ensemble
-- A donc développé ses compétences en aménagement de van bien avant la rencontre avec Jules
+- Premier van construit **en couple** avant de connaître Jules — compétences en aménagement déjà développées
+- Rencontre Jules en **mai 2024** : Jules le contacte pour des conseils sur le projet Yoni
 
 ---
 
-## La rencontre avec Jules (mai 2024)
+## Rôle opérationnel (terrain France)
 
-Elio avait déjà un van aménagé, avec beaucoup de voyages et travaux derrière lui. Jules l'a contacté pour des conseils sur son projet Yoni.
+Elio gère en **prestataire à la tâche** (pas de charges fixes) :
+- Préparation des vans avant chaque location
+- Remise de clés aux locataires
+- État des lieux retour
+- Facturation à la tâche uniquement quand il y a des réservations
 
-> *"Elio s'est montré très motivé pour m'aider. Il s'est investi avec beaucoup de cœur dans mon projet et m'a apporté un maximum de conseils pour faire les bons choix, tout en m'aidant à éviter les erreurs qu'il avait lui-même pu faire."* — Jules
+**Importance stratégique** : c'est ce qui permet à Jules de gérer depuis la Thaïlande.
 
-Ce premier contact autour de l'aménagement a tout lancé.
+**Risque opérationnel** : dépendance à une seule personne physique. Si Elio se blesse ou part, le terrain s'arrête.
 
 ---
 
-## Liens
-- [[📖 Naissance de Vanzon]]
-- [[🚐 Xalbat]]
-- [[🎭 Les nuits d'aménagement]]
+## Capital SAS
+
+- **40%** du capital SAS "Van Zone Explorer" (Jules 40%, Mario 20%)

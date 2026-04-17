@@ -1,46 +1,56 @@
-# 👤 Mario — Associé 20%
-
-## Profil
-
-- 20% du capital SAS "Van Zone Explorer"
-- Domaine de génie : systèmes de vente (VSL → webinaire → closers)
-- A monté un système similaire pour une formation immobilière avec succès
-- Pilote le bras commercial de la formation Van Business
-
+---
+name: Formation Van Business — Situation Mario
+description: Risques, structure et état de la formation "Van Business" pilotée par Mario (associé 20%)
+type: project
 ---
 
-## Formation Van Business — Ce qu'il gère
+## Rôle de Mario dans Vanzon
 
-**Funnel complet :**
-1. VSL (Video Sales Letter) → pub Meta/Instagram → trafic froid qualifié
+Mario n'est pas seulement impliqué dans la formation — il est aussi le **financeur prévu** de l'expansion de la flotte (voir `project_fleet_expansion.md`). Il a son entreprise principale **SigmaFactory.fr** qui traverse actuellement des problèmes, ce qui crée des retards sur tous ses engagements envers Vanzon.
+
+## Structure (formation)
+
+- **Co-créateurs** : Jules + Elio (contenu), Mario (vente et funnel)
+- **Capital SAS** : Jules 40%, Elio 40%, Mario 20%
+- **Contenu** : ~50 vidéos hébergées sur le compte Podia de Mario
+- **Contrat écrit** : AUCUN au 2026-04-04
+
+## Funnel de vente (piloté par Mario)
+
+1. VSL (Video Sales Letter) → publicités Meta/Instagram
 2. Landing page → inscription webinaire hebdomadaire
 3. Webinaire live par un présentateur recruté par Mario
-4. Offre finale → équipe de closers (répond aux objections, finalise la vente)
+4. Offre finale → équipe de closers
 5. Paiement + onboarding automatisé
 
-Le contenu (~50 vidéos) est hébergé sur **son compte Podia personnel**.
+Mario a déjà monté ce type de système pour une formation immobilière avec succès.
 
 ---
 
-## ⚠️ RISQUE CRITIQUE — Contrat absent (état au 2026-04-04)
+## RISQUE CRITIQUE — Contrat absent
 
-**Situation :** accord verbal uniquement. Zéro contrat écrit.
-
-**Ce qui n'est pas défini :**
+**Situation au 2026-04-04 :** Accord verbal uniquement. Zéro contrat écrit sur :
 - Propriété intellectuelle des vidéos
-- Répartition des revenus formation
-- Conditions de sortie de Mario du capital
+- Répartition des revenus
+- Conditions de sortie d'un associé
 - Clause de non-concurrence
 
-**Risque réel :** si Mario performe et génère 10-20k€/mois, l'accord verbal ne tient plus rien. Il peut sortir la formation de la SAS.
+**Risque réel :** Mario peut sortir la formation de la SAS, vendre sous sa propre structure, ou contester la répartition quand il y aura de l'argent. Plus Mario performe, plus le risque augmente.
 
-**Actions urgentes :**
-1. ✅ Télécharger toutes les vidéos en local
-2. ✅ Signer un contrat avant que Mario génère du revenu
+**Actions à faire AVANT que Mario génère du revenu :**
+1. Télécharger toutes les vidéos en local immédiatement
+2. Signer un contrat définissant propriété, % revenus, conditions de sortie
 
 ---
 
-## Tension structurelle
+## Risques supplémentaires
 
-Mario a 20% du capital mais peut représenter 80% du CA via la formation.
-Cette asymétrie est une source de friction future inévitable si non adressée par contrat.
+- Mario a 20% du capital mais pilote potentiellement 80% du CA via la formation → source de friction future sur la répartition
+- Formations "liberté financière" avec closers agressifs sont dans le viseur de la DGCCRF en France
+- Jules ne doit pas compter la formation dans son calcul de sécurité financière — variable non contrôlé
+
+---
+
+## How to apply
+
+Quand Jules parle de la formation ou de Mario : rappeler l'urgence du contrat écrit. Ne jamais intégrer les revenus formation dans les projections de sécurité de Jules. Ce n'est pas un revenu garanti.

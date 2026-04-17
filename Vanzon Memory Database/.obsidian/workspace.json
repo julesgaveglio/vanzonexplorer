@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "🏠 INDEX.md",
+                "file": "🔒 INTERNE/VSL — Van Business Academy.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "🏠 INDEX"
+              "title": "VSL — Van Business Academy"
             }
           }
         ]
@@ -78,7 +78,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 300,
+    "collapsed": true
   },
   "right": {
     "id": "7cf8bacfe1beb71c",
@@ -185,41 +186,41 @@
   },
   "active": "6a7b7ed356fff62c",
   "lastOpenFiles": [
-    "🌐 PUBLIC/marque/🎓 Van Business Academy - Méthode Complète.md",
-    "🌐 PUBLIC/vans/🚐 Yoni.md",
-    "🌐 PUBLIC/vans/🚐 Xalbat.md",
-    "🌐 PUBLIC/histoire/📖 Naissance de Vanzon.md",
-    "🌐 PUBLIC/equipe/👤 Jules.md",
-    "🌐 PUBLIC/equipe/👤 Elio.md",
-    "🌐 PUBLIC/histoire/📖 Tour du monde de Jules.md",
+    "🌐 PUBLIC/formation/🎓 VBA — Script complet formation.md",
+    "🌐 PUBLIC/formation/🎓 VBA — Méthode et chiffres clés.md",
+    "🔒 INTERNE/VSL — Van Business Academy.md",
+    "🔒 INTERNE/references/📚 Schéma Supabase marketplace.md",
+    "🔒 INTERNE/references/📚 Journal quotidien.md",
+    "🔒 INTERNE/references/📚 Google Business Profile.md",
+    "🔒 INTERNE/references/📚 Déploiement Vercel.md",
+    "🔒 INTERNE/legal/📄 Juridique marketplace.md",
+    "🔒 INTERNE/legal/📄 KBIS — SAS Vanzon Explorer.md",
     "🏠 INDEX.md",
-    "🔒 INTERNE/journal/2026-04-05.md",
-    "🔒 INTERNE/journal/README.md",
-    "🔒 INTERNE/journal",
-    "🔒 INTERNE/strategie/📊 État du Projet — Avril 2026.md",
-    "🌐 PUBLIC/territoire/🗺️ Pays Basque — Notre terrain.md",
-    "Club Privé.md",
-    "🔒 INTERNE/strategie/🏪 Marketplace — Vision & MVP.md",
-    "🔒 INTERNE/strategie/💰 Business Model & Objectif Thaïlande.md",
-    "🔒 INTERNE/strategie/🔍 SEO — Infrastructure de trafic.md",
+    "🔒 INTERNE/regles-claude/🤖 Admin responsive patterns.md",
     "📋 README — Utilisation.md",
-    "🔒 INTERNE/equipe/👤 Mario.md",
-    "🌐 PUBLIC/anecdotes/🎭 Première nuit dans le van.md",
-    "🌐 PUBLIC/anecdotes/🎭 Première location.md",
-    "🌐 PUBLIC/anecdotes/🎭 Les nuits d'aménagement.md",
-    "🌐 PUBLIC/anecdotes/🎭 L'incident du rétroviseur.md",
-    "🌐 PUBLIC/blog/✍️ Angles & Sujets Blog.md",
-    "🌐 PUBLIC/blog/✍️ Opinions tranchées.md",
-    "🌐 PUBLIC/blog/✍️ Idées reçues sur le vanlife.md",
-    "🌐 PUBLIC/marque/💡 Business Model & Revenus.md",
+    "🔒 INTERNE/references/📚 Médiathèque Vanzon.md",
+    "🌐 PUBLIC/marque/💡 Identité de marque.md",
+    "🌐 PUBLIC/blog/✍️ Contenu blog — Règles agent.md",
+    "🌐 PUBLIC/territoire/📍 Cambo-les-Bains — Point de départ.md",
+    "🌐 PUBLIC/vans/💶 Tarifs officiels.md",
+    "🌐 PUBLIC/vans/🚐 Flotte complète.md",
+    "🔒 INTERNE/regles-claude/🤖 Mode conseiller stratégique.md",
+    "🔒 INTERNE/references/📚 VBA — Veille concurrents.md",
+    "🔒 INTERNE/references/📚 Template article blog.md",
+    "🔒 INTERNE/backlinks/🔗 Infrastructure backlinks.md",
+    "🔒 INTERNE/strategie/💰 Objectif 2000 euros mois.md",
+    "🔒 INTERNE/strategie/🚐 Expansion flotte — 2 vans VASP.md",
+    "🔒 INTERNE/strategie/🎯 Club Privé — Stratégie.md",
+    "🔒 INTERNE/regles-claude/🤖 Vercel env sync.md",
+    "🔒 INTERNE/tunnel-vente",
+    "🔒 INTERNE/backlinks",
+    "🔒 INTERNE/references",
+    "🔒 INTERNE/regles-claude",
+    "🔒 INTERNE/journal",
     "🔒 INTERNE/strategie",
     "🔒 INTERNE/legal",
     "🔒 INTERNE/equipe",
     "🔒 INTERNE",
-    "🌐 PUBLIC/equipe",
-    "🌐 PUBLIC/vans",
-    "🌐 PUBLIC/territoire",
-    "🌐 PUBLIC/marque",
-    "🌐 PUBLIC/histoire"
+    "🌐 PUBLIC/equipe"
   ]
 }

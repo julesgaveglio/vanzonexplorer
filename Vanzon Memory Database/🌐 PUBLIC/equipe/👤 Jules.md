@@ -1,48 +1,50 @@
-# 👤 Jules — Co-fondateur Vanzon Explorer
-
-> *"J'ai compris que l'entrepreneuriat était, pour moi, le meilleur moyen de continuer à vivre une vie libre, faite de voyages, de rencontres et d'aventures."*
-
+---
+name: Profil Jules — Co-fondateur Vanzon Explorer
+description: Identité, parcours, valeurs et vision de Jules — à utiliser pour personnaliser les réponses et le contenu
+type: user
 ---
 
 ## Identité
 
-- **Né à** : Bordeaux
-- **Grandi au** : Pays Basque depuis l'âge de 4 ans
-- **Rôle chez Vanzon** : Vision, location, relation clients, contenu
-- **Trait dominant** : Chercheur de liberté, entrepreneur par conviction
+- Né à **Bordeaux**, grandi au **Pays Basque depuis l'âge de 4 ans**
+- Rôle chez Vanzon : vision, location, relation clients, contenu, développement tech
+- **Activité parallèle** : consultant en automatisation et intégration d'intelligence artificielle au sein des entreprises. Vanzon est un projet complémentaire, pas son unique source de revenus.
+- Trait dominant : chercheur de liberté, entrepreneur par conviction
+- Biais connu : surinvestir dans la technique, sous-investir dans la monétisation directe
 
 ---
 
 ## Le tournant — Tour du monde (2023-2024)
 
-Jules a fait un tour du monde avec sa famille (son père et sa sœur) avant de rencontrer Elio. Un voyage dense à travers **14 pays** :
+Parti avec sa **famille** (père + sœur) à travers **14 pays** :
 
-> Inde · Bali · Indonésie · Thaïlande · Vietnam · Philippines · Japon · Australie · Tahiti · Hawaï · Équateur · Mexique · Pérou · Brésil
+Inde → Bali → Indonésie → Thaïlande → Vietnam → Philippines → Japon → Australie → Tahiti → Hawaï → Équateur → Mexique → Pérou → Brésil
 
-### Ce que ce voyage lui a appris
-- La France pousse vers un schéma classique : études → emploi → entreprise. Mais il existe une autre voie.
-- Un parcours classique ne permet pas de voyager longuement ni librement.
-- **Déclic entrepreneur** : pour être libre, il faut se donner les moyens d'entreprendre.
-- Le voyage l'a ouvert aux autres, lui a appris à communiquer avec le cœur, à mettre son ego de côté.
-- *"Il y a clairement eu un avant et un après."*
+### Ce que ce voyage a changé
+- Déclic entrepreneur : un parcours classique (études → emploi) ne permet pas de vivre librement
+- Ouverture aux autres, communication avec le cœur, ego mis de côté
+- > *"Il y a clairement eu un avant et un après."*
 
 ---
 
-## Retour en France — La page blanche
+## Après le voyage → Vanzon
 
-À son retour de voyage, Jules se retrouve avec :
-- Des économies de côté
-- Des questions sur la suite : projets, travail, direction à prendre
-- Une "page blanche" qui s'ouvre à lui
-
-**Décision** : investir dans un projet d'aménagement de van — pour la liberté, et pour rentabiliser via la location.
-
-C'est dans ce contexte qu'il rencontre Elio.
+Rentré avec des économies et une page blanche. Décision : investir dans un van, apprendre à l'aménager, le louer. Rencontre Elio en mai 2024. Reste, c'est l'histoire de Vanzon.
 
 ---
 
-## Liens
-- [[📖 Naissance de Vanzon]]
-- [[🚐 Yoni]]
-- [[🎭 Première nuit dans le van]]
-- [[🎭 Première location]]
+## Objectif de vie
+
+**Expatriation en Thaïlande en 2027/2028** — via des revenus passifs/semi-passifs générés par Vanzon Explorer. Cible : 2 000€/mois nets récurrents.
+
+La Thaïlande n'est pas un hasard — c'est un des pays du tour du monde qui l'a marqué.
+
+---
+
+## Citations personnelles (à utiliser dans le contenu)
+
+> *"J'ai compris que l'entrepreneuriat était, pour moi, le meilleur moyen de continuer à vivre une vie libre, faite de voyages, de rencontres et d'aventures."*
+
+> *"Heureusement, je n'ai pas écouté ces discours remplis de peurs, souvent exprimés par des personnes qui n'avaient elles-mêmes jamais vécu l'expérience."*
+
+> *"Tu te gares, tu coupes le moteur, et tu es déjà chez toi, en pleine nature."*

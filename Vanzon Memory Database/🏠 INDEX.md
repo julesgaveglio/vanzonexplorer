@@ -1,63 +1,105 @@
-# 🏠 Vanzon Memory Database
+# Vanzon Memory Database
 
-> Base de connaissance vivante — équipe, stratégie, contenu, IA.
-> **Slogan** : *"Rendre accessible à tous le goût de la liberté"*
-
-📋 Voir [[📋 README — Utilisation]] pour comprendre la structure PUBLIC / INTERNE.
+> Base de connaissance unique — tout ce que Claude sait sur Vanzon Explorer.
+> **Slogan** : *"Rendre accessible a tous le gout de la liberte"*
 
 ---
 
-## 🌐 PUBLIC — Données agents IA
+## PUBLIC — Contenu agents IA & site
 
-### 🎨 Marque & Vision
+### Marque & Vision
 - [[💡 Valeurs de Vanzon]]
-- [[💡 Ce qui nous énerve dans l'industrie]]
+- [[💡 Ce qui nous enerve dans l'industrie]]
 - [[💡 Business Model & Revenus]]
-- [[🎓 Van Business Academy - Méthode Complète]]
+- [[💡 Identite de marque]]
 
-### 👥 Équipe (profils publics)
+### Equipe
 - [[👤 Jules]] — Co-fondateur, vision & location
-- [[👤 Elio]] — Co-fondateur, mécanique & aménagement
+- [[👤 Elio]] — Co-fondateur, mecanique & amenagement
 
-### 🚐 Les Vans
+### Vans & Tarifs
 - [[🚐 Yoni]] — Le van vert, le premier
-- [[🚐 Xalbat]] — Le van blanc, le deuxième
+- [[🚐 Xalbat]] — Le van blanc, le deuxieme
+- [[🚐 Flotte complete]] — Regles, donnees Yescapa, historique
+- [[💶 Tarifs officiels]] — 65/75/95 EUR selon saison
 
-### 📖 Histoire & Genèse
+### Formation VBA
+- [[🎓 VBA — Methode et chiffres cles]] — Positionnement, cycle, 3 erreurs classiques
+- [[🎓 VBA — Script complet formation]] — 6 modules, 50+ videos, tout le contenu detaille
+
+### Histoire & Genese
 - [[📖 Naissance de Vanzon]]
 - [[📖 Tour du monde de Jules]]
 
-### 🎭 Anecdotes & Moments Clés
-- [[🎭 Première nuit dans le van]]
-- [[🎭 Première location]]
-- [[🎭 L'incident du rétroviseur]]
-- [[🎭 Les nuits d'aménagement]]
+### Anecdotes & Moments Cles
+- [[🎭 Premiere nuit dans le van]]
+- [[🎭 Premiere location]]
+- [[🎭 L'incident du retroviseur]]
+- [[🎭 Les nuits d'amenagement]]
 
-### 🗺️ Territoire
+### Territoire
 - [[🗺️ Pays Basque — Notre terrain]]
+- [[📍 Cambo-les-Bains — Point de depart]]
 
-### ✍️ Pour le Blog
-- [[✍️ Idées reçues sur le vanlife]]
-- [[✍️ Opinions tranchées]]
+### Blog
+- [[✍️ Idees recues sur le vanlife]]
+- [[✍️ Opinions tranchees]]
 - [[✍️ Angles & Sujets Blog]]
+- [[✍️ Contenu blog — Regles agent]]
 
 ---
 
-## 🔒 INTERNE — Stratégie confidentielle
+## INTERNE — Strategie & configuration
 
-### 💰 Stratégie & Finances
-- [[💰 Business Model & Objectif Thaïlande]] — Stack revenus, objectif 2 000€/mois
-- [[🏪 Marketplace — Vision & MVP]] — Commission 8-10%, plan MVP, légal
+### Strategie & Finances
+- [[💰 Business Model & Objectif Thailande]] — Stack revenus, objectif 2 000 EUR/mois
+- [[💰 Objectif 2000 euros mois]] — Donnees reelles, projections, regles
+- [[🏪 Marketplace — Vision & MVP]] — Commission 8-10%, plan MVP, legal
 - [[🔍 SEO — Infrastructure de trafic]] — Blog auto, road trip IA, Le Club, Pinterest
-- [[📊 État du Projet — Avril 2026]] — Document d'état vivant, mis à jour régulièrement
+- [[📊 Etat du Projet — Avril 2026]] — Document d'etat vivant
+- [[🎯 Club Prive — Strategie]] — 100% gratuit, pas de Stripe
+- [[🚐 Expansion flotte — 2 vans VASP]] — Budget 38k, bloque (Mario)
 
-### 👥 Associés (confidentiel)
-- [[👤 Mario]] — Associé 20%, formation Van Business ⚠️ contrat à signer
+### Tunnel de vente
+- [[VSL — Van Business Academy]] — Script VSL, strategie media buyer
+
+### Associes (confidentiel)
+- [[👤 Mario]] — Associe 20%, formation VBA, risque contrat absent
+
+### Legal
+- [[📄 KBIS — SAS Vanzon Explorer]] — SIREN 943 719 724, RCS Bayonne
+- [[📄 Juridique marketplace]] — Stripe Connect, assurance, RGPD, CGU
+
+### Backlinks SEO
+- [[🔗 Infrastructure backlinks]] — Agent daily 5 emails/jour, 72 prospects
+
+### References techniques
+- [[📚 Mediatheque Vanzon]] — API /api/admin/media, schema mediaAsset
+- [[📚 Schema Supabase marketplace]] — 7 tables planifiees
+- [[📚 Google Business Profile]] — Profil actif, Google Maps
+- [[📚 Journal quotidien]] — INTERNE/journal/, un fichier par jour
+- [[📚 Deploiement Vercel]] — Auto-deploy sur push main
+- [[📚 Template article blog]] — ArticleTemplate.tsx, accent #4D5FEC
+- [[📚 VBA — Veille concurrents]] — Tables, API, admin
+
+### Regles Claude (comportement IA)
+- [[🤖 Style decisionnel]] — Direct, une reco, pas de A/B/C
+- [[🤖 Mode conseiller strategique]] — Verdict brutal, angles morts, pas de validation par defaut
+- [[🤖 Admin responsive patterns]] — Composants partages, breakpoints, 44px touch
+- [[🤖 Agents registry]] — Toujours ajouter dans registry.json
+- [[🤖 Upload images]] — Bibliotheque Vanzon en premier
+- [[🤖 Template emails]] — Fond blanc, logo, degrade bleu
+- [[🤖 Ton blog]] — Vouvoiement professionnel
+- [[🤖 Boutons — ne pas reecrire]] — Edit minimal, jamais rewrite markup
+- [[🤖 Vercel env sync]] — Toujours sync .env.local + Vercel
+
+### Journal quotidien
+- `🔒 INTERNE/journal/` — Un fichier par jour (YYYY-MM-DD.md)
 
 ---
 
-## À enrichir régulièrement
-- Nouvelles anecdotes locataires → `🌐 PUBLIC/anecdotes/`
-- Nouveaux spots découverts → `🌐 PUBLIC/territoire/`
-- Décisions stratégiques prises → `🔒 INTERNE/strategie/`
-- Leçons apprises sur le terrain → `🌐 PUBLIC/` ou `🔒 INTERNE/` selon le niveau
+## A enrichir regulierement
+- Nouvelles anecdotes locataires → `PUBLIC/anecdotes/`
+- Nouveaux spots decouverts → `PUBLIC/territoire/`
+- Decisions strategiques → `INTERNE/strategie/`
+- Lecons terrain → `PUBLIC/` ou `INTERNE/` selon le niveau
