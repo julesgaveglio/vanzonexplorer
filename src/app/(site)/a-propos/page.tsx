@@ -406,7 +406,7 @@ export default async function AProposPage() {
             logo: "https://cdn.sanity.io/images/lewexa74/production/1f483103ef15ee3549eab14ba2801d11b32a9055-313x313.png?auto=format&q=82",
             description:
               "Écosystème vanlife 360° — location, achat, formation et Club au Pays Basque. Fondé en 2024 par Jules Gaveglio et Elio.",
-            foundingDate: "2024",
+            foundingDate: "2024-01-01",
             foundingLocation: { "@type": "Place", name: "Cambo-les-Bains, Pays Basque, France" },
             areaServed: "FR",
             employee: [

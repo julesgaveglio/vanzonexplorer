@@ -12,15 +12,15 @@ export function LocationRentalJsonLd({ destination, url }: { destination: string
     brand: { "@type": "Brand", name: "Vanzon Explorer" },
     offers: {
       "@type": "AggregateOffer",
-      lowPrice: 65,
-      highPrice: 95,
+      lowPrice: "65",
+      highPrice: "95",
       priceCurrency: "EUR",
-      offerCount: 3,
+      offerCount: "3",
       offers: [
         {
           "@type": "Offer",
           name: "Basse saison (15/11–15/02)",
-          price: 65,
+          price: "65",
           priceCurrency: "EUR",
           availability: "https://schema.org/InStock",
           seller: { "@type": "Organization", name: "Vanzon Explorer", url: SITE_URL },
@@ -28,7 +28,7 @@ export function LocationRentalJsonLd({ destination, url }: { destination: string
         {
           "@type": "Offer",
           name: "Saison intermédiaire",
-          price: 75,
+          price: "75",
           priceCurrency: "EUR",
           availability: "https://schema.org/InStock",
           seller: { "@type": "Organization", name: "Vanzon Explorer", url: SITE_URL },
@@ -36,7 +36,7 @@ export function LocationRentalJsonLd({ destination, url }: { destination: string
         {
           "@type": "Offer",
           name: "Haute saison (15/04–15/09)",
-          price: 95,
+          price: "95",
           priceCurrency: "EUR",
           availability: "https://schema.org/InStock",
           seller: { "@type": "Organization", name: "Vanzon Explorer", url: SITE_URL },
@@ -96,7 +96,7 @@ const schema = {
     "https://www.tiktok.com/@vanzonexplorer",
     "https://www.trustpilot.com/review/vanzonexplorer.com",
   ],
-  foundingDate: "2024",
+  foundingDate: "2024-01-01",
   founder: [
     { "@type": "Person", name: "Jules Gaveglio" },
     { "@type": "Person", name: "Elio Dubernet" },
@@ -157,7 +157,7 @@ export function VanProductJsonLd({ van }: { van: VanData }) {
     "url": `${BASE_URL}/achat/${van.id}`,
     "offers": {
       "@type": "Offer",
-      "price": parseFloat(van.price.replace(/[^\d]/g, "")),
+      "price": van.price.replace(/[^\d]/g, ""),
       "priceCurrency": "EUR",
       "availability": "https://schema.org/InStock",
       "seller": { "@type": "Organization", "name": "Vanzon Explorer" }
