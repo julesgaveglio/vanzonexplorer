@@ -108,7 +108,7 @@ Sends emails from `jules@vanzonexplorer.com` via Gmail API OAuth2. Automatically
 
 ### Admin panel (`/admin`)
 
-Sections: Dashboard, SEO Analytics, Mots-Clés, Performance (PSI), Blog, Vans, Marques, Produits, Spots, Media, Prospection, Road Trips, Backlinks, Agents, Marketing (CMO).
+Sections: Dashboard, SEO Analytics, Mots-Clés, Performance (PSI), Blog, Vans, Marques, Produits, Spots, Media, Prospection, Road Trips, Backlinks, Agents, Marketing (CMO), VBA (Formation).
 
 **Prospection** (`/admin/club/prospection`) — internal CRM for partner brand outreach. Separate `prospects` Supabase table (distinct from `brands`). Three AI-powered API routes using SSE streaming:
 - `/api/admin/club/prospect/discover` — Tavily search + Groq analysis
@@ -120,6 +120,13 @@ Sections: Dashboard, SEO Analytics, Mots-Clés, Performance (PSI), Blog, Vans, M
 **Marketplace MVP-0** (`/proprietaire`) — Landing page for van owner pre-registration. Simple form → Supabase `marketplace_leads` table. Goal: validate interest from 5 van owners before building the full marketplace.
 
 **Road Trip Personnalisé** (`/road-trip-personnalise`) — AI-powered itinerary generator. Wizard collects region/duration/interests/profile → Tavily search + Groq (llama-3.3-70b) → Resend email. Stores requests in Supabase `road_trip_requests` table. Rate limited (3 req/IP/hour). Admin at `/admin/road-trips`.
+
+**Van Business Academy (VBA)** (`/dashboard/vba`) — Formation vidéo intégrée au dashboard utilisateur. Vidéos hébergées sur Bunny.net Stream (embed iframe). Gating via `profiles.plan = "vba_member"`. Structure :
+- Tables Supabase : `vba_modules`, `vba_lessons`, `vba_progress`
+- Dashboard côté user : hub progression (`/dashboard/vba`), lecteur vidéo (`/dashboard/vba/[moduleSlug]/[lessonSlug]`)
+- Admin : `/admin/vba` (modules CRUD + réordonnement), `/admin/vba/[moduleId]` (leçons CRUD + ressources)
+- API routes : `/api/admin/vba/modules`, `/api/admin/vba/lessons`
+- Server Actions pour marquage complétion : `src/app/(site)/dashboard/vba/_actions.ts`
 
 ## Environment Variables
 
@@ -166,6 +173,9 @@ ZEROBOUNCE_API_KEY=
 PINTEREST_APP_ID=
 PINTEREST_APP_SECRET=
 PINTEREST_ACCESS_TOKEN=
+# VBA — Bunny.net video hosting
+NEXT_PUBLIC_BUNNY_LIBRARY_ID=   # Library ID Bunny.net Stream
+BUNNY_API_KEY=                  # Pour upload vidéo futur
 ```
 
 ## Design System

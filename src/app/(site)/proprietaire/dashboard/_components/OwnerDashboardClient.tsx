@@ -48,7 +48,7 @@ const inputCls =
 
 /* ─── Component ─────────────────────────────────────────────────────────── */
 
-export default function OwnerDashboardClient() {
+export default function OwnerDashboardClient({ embedded = false }: { embedded?: boolean }) {
   const { user, isLoaded } = useUser();
   const [vans, setVans] = useState<MarketplaceVan[]>([]);
   const [loading, setLoading] = useState(true);
@@ -71,45 +71,47 @@ export default function OwnerDashboardClient() {
   }
 
   return (
-    <section className="min-h-screen bg-slate-50">
-      {/* Header */}
-      <div className="bg-white border-b border-slate-100">
-        <div className="max-w-5xl mx-auto px-6 py-5 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Image
-              src="https://cdn.sanity.io/images/lewexa74/production/1f483103ef15ee3549eab14ba2801d11b32a9055-313x313.png"
-              alt="Vanzon Explorer"
-              width={36}
-              height={36}
-              className="rounded-lg"
-              unoptimized
-            />
-            <div>
-              <h1 className="text-lg font-bold text-slate-900">Mon espace</h1>
-              <p className="text-xs text-slate-400">{user?.emailAddresses?.[0]?.emailAddress}</p>
+    <section className={embedded ? "" : "min-h-screen bg-slate-50"}>
+      {/* Header — hidden in embedded mode (dashboard layout provides it) */}
+      {!embedded && (
+        <div className="bg-white border-b border-slate-100">
+          <div className="max-w-5xl mx-auto px-6 py-5 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Image
+                src="https://cdn.sanity.io/images/lewexa74/production/1f483103ef15ee3549eab14ba2801d11b32a9055-313x313.png"
+                alt="Vanzon Explorer"
+                width={36}
+                height={36}
+                className="rounded-lg"
+                unoptimized
+              />
+              <div>
+                <h1 className="text-lg font-bold text-slate-900">Mon espace</h1>
+                <p className="text-xs text-slate-400">{user?.emailAddresses?.[0]?.emailAddress}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <Link
+                href="/proprietaire/inscription"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all"
+                style={{ background: "linear-gradient(135deg, #4D5FEC 0%, #3B82F6 100%)" }}
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+                Ajouter un van
+              </Link>
+              <SignOutButton>
+                <button className="px-3 py-2 rounded-xl text-sm text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors">
+                  Déconnexion
+                </button>
+              </SignOutButton>
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            <Link
-              href="/proprietaire/inscription"
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all"
-              style={{ background: "linear-gradient(135deg, #4D5FEC 0%, #3B82F6 100%)" }}
-            >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-              </svg>
-              Ajouter un van
-            </Link>
-            <SignOutButton>
-              <button className="px-3 py-2 rounded-xl text-sm text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors">
-                Déconnexion
-              </button>
-            </SignOutButton>
-          </div>
         </div>
-      </div>
+      )}
 
-      <div className="max-w-5xl mx-auto px-6 py-8">
+      <div className={embedded ? "" : "max-w-5xl mx-auto px-6 py-8"}>
         {editingVan ? (
           <VanEditForm
             van={editingVan}
