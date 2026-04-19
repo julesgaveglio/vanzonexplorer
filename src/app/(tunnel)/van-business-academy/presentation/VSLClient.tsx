@@ -7,8 +7,7 @@ import GlassCard from "@/components/ui/GlassCard";
 import { getFunnelData } from "@/lib/hooks/useUTMParams";
 import { trackEvent } from "@/lib/meta-pixel";
 
-// TODO: Remplacer par l'ID YouTube de la VSL quand elle sera prête
-const YOUTUBE_VSL_ID = "PLACEHOLDER_VIDEO_ID";
+const YOUTUBE_VSL_ID = "VpjD6V8FjKA";
 const CTA_DELAY_SECONDS = 120;
 
 export default function VSLClient() {
@@ -68,7 +67,7 @@ export default function VSLClient() {
       <div className="relative w-full rounded-2xl overflow-hidden shadow-lg mb-10" style={{ paddingBottom: "56.25%" }}>
         <iframe
           className="absolute inset-0 w-full h-full"
-          src={`https://www.youtube.com/embed/${YOUTUBE_VSL_ID}?rel=0&modestbranding=1`}
+          src={`https://www.youtube.com/embed/${YOUTUBE_VSL_ID}?rel=0&modestbranding=1&controls=0&disablekb=1&fs=0&iv_load_policy=3`}
           title="Van Business Academy — Vidéo de présentation"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
