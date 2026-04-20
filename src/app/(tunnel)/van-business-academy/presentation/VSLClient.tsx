@@ -11,17 +11,28 @@ const VIDEO_POSTER =
   "https://vz-c0494fd3-b7d.b-cdn.net/71157b6a-e2a6-408b-ba1c-b46550cf01ef/thumbnail.jpg";
 const CTA_DELAY_SECONDS = 440; // 7min20
 
+const QUALITY_OPTIONS = [
+  { label: "Auto", value: -1 },
+  { label: "720p", value: 720 },
+  { label: "360p", value: 360 },
+  { label: "180p", value: 180 },
+];
+
+const SPEED_OPTIONS = [0.75, 1, 1.5, 2];
+
 export default function VSLClient() {
   const router = useRouter();
   const [firstname, setFirstname] = useState("");
   const [showCTA, setShowCTA] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [playbackRate, setPlaybackRate] = useState(1);
-  const [showSpeedMenu, setShowSpeedMenu] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
+  const [playbackRate, setPlaybackRate] = useState(1);
+  const [qualityLabel, setQualityLabel] = useState("Auto");
+  const [showSettings, setShowSettings] = useState(false);
+  const [settingsTab, setSettingsTab] = useState<"main" | "quality" | "speed">("main");
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const hlsRef = useRef<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
   const lastAllowedTimeRef = useRef(0);
 
   // --- Handlers ---
@@ -29,7 +40,6 @@ export default function VSLClient() {
   const handlePlayPause = useCallback(() => {
     const v = videoRef.current;
     if (!v) return;
-    // Unmute on first user interaction
     if (v.muted) {
       v.muted = false;
       setIsMuted(false);
@@ -43,45 +53,32 @@ export default function VSLClient() {
     if (!v) return;
     v.playbackRate = rate;
     setPlaybackRate(rate);
-    setShowSpeedMenu(false);
+    setShowSettings(false);
+    setSettingsTab("main");
   }, []);
 
-  const handleFullscreen = useCallback(() => {
-    const v = videoRef.current;
-    const el = containerRef.current;
-
-    // Exit fullscreen
-    if (document.fullscreenElement || (document as any).webkitFullscreenElement) { // eslint-disable-line @typescript-eslint/no-explicit-any
-      if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
-      else if ((document as any).webkitExitFullscreen) (document as any).webkitExitFullscreen(); // eslint-disable-line @typescript-eslint/no-explicit-any
-      return;
+  const handleQuality = useCallback((value: number, label: string) => {
+    const hls = hlsRef.current;
+    if (hls) {
+      if (value === -1) {
+        hls.currentLevel = -1;
+      } else {
+        const idx = hls.levels.findIndex((l: any) => l.height === value); // eslint-disable-line @typescript-eslint/no-explicit-any
+        if (idx !== -1) hls.currentLevel = idx;
+      }
     }
+    setQualityLabel(label);
+    setShowSettings(false);
+    setSettingsTab("main");
+  }, []);
 
-    // Enter fullscreen: try container → video.requestFullscreen → video.webkitEnterFullscreen (iOS)
-    if (el?.requestFullscreen) {
-      el.requestFullscreen().catch(() => {
-        if (v?.requestFullscreen) v.requestFullscreen().catch(() => {});
-        else if ((v as any)?.webkitEnterFullscreen) (v as any).webkitEnterFullscreen(); // eslint-disable-line @typescript-eslint/no-explicit-any
-      });
-    } else if (v?.requestFullscreen) {
-      v.requestFullscreen().catch(() => {});
-    } else if ((v as any)?.webkitEnterFullscreen) { // eslint-disable-line @typescript-eslint/no-explicit-any
-      (v as any).webkitEnterFullscreen(); // eslint-disable-line @typescript-eslint/no-explicit-any
-    }
+  const toggleSettings = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowSettings((v) => !v);
+    setSettingsTab("main");
   }, []);
 
   // --- Effects ---
-
-  // Fullscreen tracking (standard + webkit)
-  useEffect(() => {
-    const onChange = () => setIsFullscreen(!!(document.fullscreenElement || (document as any).webkitFullscreenElement)); // eslint-disable-line @typescript-eslint/no-explicit-any
-    document.addEventListener("fullscreenchange", onChange);
-    document.addEventListener("webkitfullscreenchange", onChange);
-    return () => {
-      document.removeEventListener("fullscreenchange", onChange);
-      document.removeEventListener("webkitfullscreenchange", onChange);
-    };
-  }, []);
 
   // Funnel data + tracking
   useEffect(() => {
@@ -105,25 +102,24 @@ export default function VSLClient() {
     if (!v) return;
 
     const startPlayback = () => {
-      v.currentTime = 1; // skip first second
-      v.muted = true; // browsers require muted for autoplay
+      v.currentTime = 1;
+      v.muted = true;
       v.play().catch(() => {});
     };
 
-    // Safari supports HLS natively
     if (v.canPlayType("application/vnd.apple.mpegurl")) {
       v.src = VIDEO_HLS_URL;
       v.addEventListener("loadedmetadata", startPlayback, { once: true });
       return;
     }
 
-    // Other browsers: load hls.js dynamically
     const script = document.createElement("script");
     script.src = "https://cdn.jsdelivr.net/npm/hls.js@latest";
     script.onload = () => {
       const Hls = (window as any).Hls; // eslint-disable-line @typescript-eslint/no-explicit-any
       if (Hls.isSupported()) {
         const hls = new Hls();
+        hlsRef.current = hls;
         hls.loadSource(VIDEO_HLS_URL);
         hls.attachMedia(v);
         hls.on(Hls.Events.MANIFEST_PARSED, startPlayback);
@@ -132,7 +128,7 @@ export default function VSLClient() {
     document.head.appendChild(script);
   }, []);
 
-  // Block seeking — only allow forward progress
+  // Block seeking + track watch time
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
@@ -163,13 +159,13 @@ export default function VSLClient() {
     };
   }, [showCTA]);
 
-  // Close speed menu on outside click
+  // Close settings on outside click
   useEffect(() => {
-    if (!showSpeedMenu) return;
-    const close = () => setShowSpeedMenu(false);
+    if (!showSettings) return;
+    const close = () => { setShowSettings(false); setSettingsTab("main"); };
     document.addEventListener("click", close);
     return () => document.removeEventListener("click", close);
-  }, [showSpeedMenu]);
+  }, [showSettings]);
 
   return (
     <div className="max-w-3xl mx-auto px-4 pb-16">
@@ -181,23 +177,12 @@ export default function VSLClient() {
         .sound-pulse {
           animation: gentle-pulse 2.5s ease-in-out infinite;
         }
-        .vsl-container:fullscreen {
-          background: #000;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-        .vsl-container:fullscreen video {
-          width: 100%;
-          height: 100%;
-          object-fit: contain;
-        }
       `}</style>
 
       {/* Greeting */}
       {firstname && (
         <p className="text-center text-sm font-semibold mb-2" style={{ color: "#B9945F" }}>
-          Bravo {firstname} !
+          Bienvenue {firstname} !
         </p>
       )}
 
@@ -209,7 +194,7 @@ export default function VSLClient() {
         Comment construire sa liberté avec les vans aménagés
       </h1>
 
-      {/* Instruction — icon pulses gently */}
+      {/* Instruction */}
       <div className="flex items-center justify-center gap-2 mb-8">
         <svg className="sound-pulse" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B9945F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
@@ -222,7 +207,7 @@ export default function VSLClient() {
       {/* Video player */}
       <div
         ref={containerRef}
-        className="vsl-container relative w-full rounded-2xl overflow-hidden shadow-lg mb-10 group bg-black"
+        className="relative w-full rounded-2xl overflow-hidden shadow-lg mb-10 group bg-black"
       >
         <video
           ref={videoRef}
@@ -236,26 +221,24 @@ export default function VSLClient() {
           style={{ cursor: "pointer" }}
         />
 
-        {/* Muted indicator — tap to unmute */}
+        {/* Unmute banner — compact, single line on mobile */}
         {isMuted && isPlaying && (
           <div
-            className="absolute top-4 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 px-4 py-2 rounded-full bg-black/60 backdrop-blur-sm cursor-pointer animate-pulse"
+            className="absolute top-3 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-sm cursor-pointer animate-pulse whitespace-nowrap"
             onClick={handlePlayPause}
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
               <line x1="23" y1="9" x2="17" y2="15" />
               <line x1="17" y1="9" x2="23" y2="15" />
             </svg>
-            <span className="text-white text-xs font-medium">Appuie ici pour le son</span>
+            <span className="text-white text-[11px] font-medium">Activer le son</span>
           </div>
         )}
 
-        {/* Play overlay icon (centered) — visible when paused */}
+        {/* Play overlay */}
         {!isPlaying && (
-          <div
-            className="absolute inset-0 flex items-center justify-center pointer-events-none"
-          >
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <div className="w-16 h-16 rounded-full bg-black/50 flex items-center justify-center backdrop-blur-sm">
               <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
                 <polygon points="6,3 20,12 6,21" />
@@ -264,7 +247,7 @@ export default function VSLClient() {
           </div>
         )}
 
-        {/* Custom controls bar — appears on hover / tap */}
+        {/* Controls bar */}
         <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between px-4 py-3 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           {/* Play/Pause */}
           <button onClick={handlePlayPause} className="text-white p-1.5 hover:bg-white/10 rounded-full transition" aria-label={isPlaying ? "Pause" : "Lecture"}>
@@ -275,46 +258,85 @@ export default function VSLClient() {
             )}
           </button>
 
-          <div className="flex items-center gap-2">
-            {/* Speed selector */}
-            <div className="relative">
-              <button
-                onClick={(e) => { e.stopPropagation(); setShowSpeedMenu((v) => !v); }}
-                className="text-white text-xs font-semibold px-2.5 py-1.5 rounded-md bg-white/10 hover:bg-white/20 transition"
-              >
-                x{playbackRate}
-              </button>
-              {showSpeedMenu && (
-                <div className="absolute bottom-full right-0 mb-2 bg-black/90 rounded-lg overflow-hidden shadow-xl backdrop-blur-sm" onClick={(e) => e.stopPropagation()}>
-                  {[0.75, 1, 1.5, 2].map((r) => (
-                    <button
-                      key={r}
-                      onClick={() => handleSpeed(r)}
-                      className={`block w-full text-left px-4 py-2.5 text-xs text-white hover:bg-white/10 transition ${playbackRate === r ? "bg-white/20 font-bold" : ""}`}
-                    >
-                      x{r}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Fullscreen */}
-            <button onClick={handleFullscreen} className="text-white p-1.5 hover:bg-white/10 rounded-full transition" aria-label="Plein écran">
+          {/* Settings gear */}
+          <div className="relative">
+            <button
+              onClick={toggleSettings}
+              className="text-white p-1.5 hover:bg-white/10 rounded-full transition"
+              aria-label="Paramètres"
+            >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                {isFullscreen ? (
-                  <>
-                    <polyline points="4 14 10 14 10 20" /><polyline points="20 10 14 10 14 4" />
-                    <line x1="14" y1="10" x2="21" y2="3" /><line x1="3" y1="21" x2="10" y2="14" />
-                  </>
-                ) : (
-                  <>
-                    <polyline points="15 3 21 3 21 9" /><polyline points="9 21 3 21 3 15" />
-                    <line x1="21" y1="3" x2="14" y2="10" /><line x1="3" y1="21" x2="10" y2="14" />
-                  </>
-                )}
+                <circle cx="12" cy="12" r="3" />
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
               </svg>
             </button>
+
+            {/* Settings dropdown */}
+            {showSettings && (
+              <div
+                className="absolute bottom-full right-0 mb-2 w-44 bg-black/90 rounded-lg overflow-hidden shadow-xl backdrop-blur-sm"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {settingsTab === "main" && (
+                  <>
+                    <button
+                      onClick={() => setSettingsTab("quality")}
+                      className="flex items-center justify-between w-full px-4 py-3 text-xs text-white hover:bg-white/10 transition"
+                    >
+                      <span>Qualité</span>
+                      <span className="text-white/60">{qualityLabel} ›</span>
+                    </button>
+                    <button
+                      onClick={() => setSettingsTab("speed")}
+                      className="flex items-center justify-between w-full px-4 py-3 text-xs text-white hover:bg-white/10 transition"
+                    >
+                      <span>Vitesse</span>
+                      <span className="text-white/60">x{playbackRate} ›</span>
+                    </button>
+                  </>
+                )}
+
+                {settingsTab === "quality" && (
+                  <>
+                    <button
+                      onClick={() => setSettingsTab("main")}
+                      className="flex items-center gap-2 w-full px-4 py-2.5 text-xs text-white/60 hover:bg-white/10 transition border-b border-white/10"
+                    >
+                      <span>‹</span><span>Qualité</span>
+                    </button>
+                    {QUALITY_OPTIONS.map((q) => (
+                      <button
+                        key={q.label}
+                        onClick={() => handleQuality(q.value, q.label)}
+                        className={`block w-full text-left px-4 py-2.5 text-xs text-white hover:bg-white/10 transition ${qualityLabel === q.label ? "bg-white/20 font-bold" : ""}`}
+                      >
+                        {q.label}
+                      </button>
+                    ))}
+                  </>
+                )}
+
+                {settingsTab === "speed" && (
+                  <>
+                    <button
+                      onClick={() => setSettingsTab("main")}
+                      className="flex items-center gap-2 w-full px-4 py-2.5 text-xs text-white/60 hover:bg-white/10 transition border-b border-white/10"
+                    >
+                      <span>‹</span><span>Vitesse</span>
+                    </button>
+                    {SPEED_OPTIONS.map((r) => (
+                      <button
+                        key={r}
+                        onClick={() => handleSpeed(r)}
+                        className={`block w-full text-left px-4 py-2.5 text-xs text-white hover:bg-white/10 transition ${playbackRate === r ? "bg-white/20 font-bold" : ""}`}
+                      >
+                        x{r}
+                      </button>
+                    ))}
+                  </>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
