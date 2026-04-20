@@ -4,6 +4,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { getFunnelData } from "@/lib/hooks/useUTMParams";
 import { trackEvent } from "@/lib/meta-pixel";
+import LiquidButton from "@/components/ui/LiquidButton";
 
 const VIDEO_HLS_URL =
   "https://vz-c0494fd3-b7d.b-cdn.net/71157b6a-e2a6-408b-ba1c-b46550cf01ef/playlist.m3u8";
@@ -348,13 +349,9 @@ export default function VSLClient() {
             className="transition-all duration-1000"
             style={{ opacity: 1, transform: "translateY(0)" }}
           >
-            <a
-              href="/van-business-academy/diagnostic-offert"
-              className="block w-full rounded-xl text-center font-bold text-white py-4 text-base sm:text-lg transition-all hover:scale-[1.02] hover:shadow-lg"
-              style={{ background: "linear-gradient(135deg, #B9945F 0%, #E4D398 50%, #B9945F 100%)" }}
-            >
+            <LiquidButton variant="gold" size="responsive" href="/van-business-academy/diagnostic-offert" fullWidth>
               Réserver mon appel stratégique gratuit →
-            </a>
+            </LiquidButton>
             <p className="text-xs text-slate-400 mt-3">30 minutes &middot; Gratuit &middot; Sans engagement</p>
           </div>
         ) : (
