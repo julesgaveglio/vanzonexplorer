@@ -168,12 +168,21 @@ export default function VSLClient() {
     };
   }, [showCTA]);
 
-  // Close settings on outside click
+  // Close settings on outside click (mousedown to avoid same-event conflicts)
   useEffect(() => {
     if (!showSettings) return;
-    const close = () => { setShowSettings(false); setSettingsTab("main"); };
-    document.addEventListener("click", close);
-    return () => document.removeEventListener("click", close);
+    const close = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.closest("[data-settings-menu]")) return;
+      setShowSettings(false);
+      setSettingsTab("main");
+    };
+    document.addEventListener("mousedown", close);
+    document.addEventListener("touchstart", close as any); // eslint-disable-line @typescript-eslint/no-explicit-any
+    return () => {
+      document.removeEventListener("mousedown", close);
+      document.removeEventListener("touchstart", close as any); // eslint-disable-line @typescript-eslint/no-explicit-any
+    };
   }, [showSettings]);
 
   return (
@@ -256,8 +265,8 @@ export default function VSLClient() {
           </div>
         )}
 
-        {/* Controls bar */}
-        <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between px-4 py-3 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        {/* Controls bar — always visible on mobile, hover on desktop */}
+        <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between px-4 py-3 bg-gradient-to-t from-black/70 to-transparent opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">
           {/* Play/Pause */}
           <button onClick={handlePlayPause} className="text-white p-1.5 hover:bg-white/10 rounded-full transition" aria-label={isPlaying ? "Pause" : "Lecture"}>
             {isPlaying ? (
@@ -268,7 +277,7 @@ export default function VSLClient() {
           </button>
 
           {/* Settings gear */}
-          <div className="relative">
+          <div className="relative" data-settings-menu>
             <button
               onClick={toggleSettings}
               className="text-white p-1.5 hover:bg-white/10 rounded-full transition"
@@ -280,11 +289,10 @@ export default function VSLClient() {
               </svg>
             </button>
 
-            {/* Settings dropdown */}
+            {/* Settings dropdown — opens upward inside container */}
             {showSettings && (
               <div
-                className="absolute bottom-full right-0 mb-2 w-44 bg-black/90 rounded-lg overflow-hidden shadow-xl backdrop-blur-sm"
-                onClick={(e) => e.stopPropagation()}
+                className="absolute bottom-12 right-0 w-44 bg-black/90 rounded-lg overflow-hidden shadow-xl backdrop-blur-sm z-40"
               >
                 {settingsTab === "main" && (
                   <>
