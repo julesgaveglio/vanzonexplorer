@@ -104,8 +104,16 @@ export default function VSLClient() {
 
     const startPlayback = () => {
       v.currentTime = 1;
-      v.muted = true;
-      v.play().catch(() => {});
+      // Try unmuted first (works if user already interacted with the domain)
+      v.muted = false;
+      v.play().then(() => {
+        setIsMuted(false);
+      }).catch(() => {
+        // Browser blocked unmuted autoplay — fallback to muted
+        v.muted = true;
+        setIsMuted(true);
+        v.play().catch(() => {});
+      });
     };
 
     if (v.canPlayType("application/vnd.apple.mpegurl")) {
