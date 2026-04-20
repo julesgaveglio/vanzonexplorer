@@ -81,6 +81,7 @@ export default function VSLClient() {
     if (!v) return;
 
     const startPlayback = () => {
+      v.currentTime = 1; // skip first second
       v.muted = true; // browsers require muted for autoplay
       v.play().catch(() => {});
     };
@@ -246,7 +247,7 @@ export default function VSLClient() {
               </button>
               {showSpeedMenu && (
                 <div className="absolute bottom-full right-0 mb-2 bg-black/90 rounded-lg overflow-hidden shadow-xl backdrop-blur-sm" onClick={(e) => e.stopPropagation()}>
-                  {[0.5, 1, 1.5, 2].map((r) => (
+                  {[0.75, 1, 1.5, 2].map((r) => (
                     <button
                       key={r}
                       onClick={() => handleSpeed(r)}
