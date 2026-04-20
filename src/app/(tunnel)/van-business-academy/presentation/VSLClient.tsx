@@ -19,6 +19,7 @@ export default function VSLClient() {
   const [playbackRate, setPlaybackRate] = useState(1);
   const [showSpeedMenu, setShowSpeedMenu] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const lastAllowedTimeRef = useRef(0);
@@ -28,6 +29,11 @@ export default function VSLClient() {
   const handlePlayPause = useCallback(() => {
     const v = videoRef.current;
     if (!v) return;
+    // Unmute on first user interaction
+    if (v.muted) {
+      v.muted = false;
+      setIsMuted(false);
+    }
     if (v.paused) v.play();
     else v.pause();
   }, []);
@@ -41,22 +47,40 @@ export default function VSLClient() {
   }, []);
 
   const handleFullscreen = useCallback(() => {
+    const v = videoRef.current;
     const el = containerRef.current;
-    if (!el) return;
-    if (document.fullscreenElement) {
-      document.exitFullscreen().catch(() => {});
-    } else {
-      el.requestFullscreen().catch(() => {});
+
+    // Exit fullscreen
+    if (document.fullscreenElement || (document as any).webkitFullscreenElement) { // eslint-disable-line @typescript-eslint/no-explicit-any
+      if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
+      else if ((document as any).webkitExitFullscreen) (document as any).webkitExitFullscreen(); // eslint-disable-line @typescript-eslint/no-explicit-any
+      return;
+    }
+
+    // Enter fullscreen: try container → video.requestFullscreen → video.webkitEnterFullscreen (iOS)
+    if (el?.requestFullscreen) {
+      el.requestFullscreen().catch(() => {
+        if (v?.requestFullscreen) v.requestFullscreen().catch(() => {});
+        else if ((v as any)?.webkitEnterFullscreen) (v as any).webkitEnterFullscreen(); // eslint-disable-line @typescript-eslint/no-explicit-any
+      });
+    } else if (v?.requestFullscreen) {
+      v.requestFullscreen().catch(() => {});
+    } else if ((v as any)?.webkitEnterFullscreen) {
+      (v as any).webkitEnterFullscreen(); // eslint-disable-line @typescript-eslint/no-explicit-any
     }
   }, []);
 
   // --- Effects ---
 
-  // Fullscreen tracking
+  // Fullscreen tracking (standard + webkit)
   useEffect(() => {
-    const onChange = () => setIsFullscreen(!!document.fullscreenElement);
+    const onChange = () => setIsFullscreen(!!(document.fullscreenElement || (document as any).webkitFullscreenElement)); // eslint-disable-line @typescript-eslint/no-explicit-any
     document.addEventListener("fullscreenchange", onChange);
-    return () => document.removeEventListener("fullscreenchange", onChange);
+    document.addEventListener("webkitfullscreenchange", onChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", onChange);
+      document.removeEventListener("webkitfullscreenchange", onChange);
+    };
   }, []);
 
   // Funnel data + tracking
@@ -211,6 +235,21 @@ export default function VSLClient() {
           onClick={handlePlayPause}
           style={{ cursor: "pointer" }}
         />
+
+        {/* Muted indicator — tap to unmute */}
+        {isMuted && isPlaying && (
+          <div
+            className="absolute top-4 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 px-4 py-2 rounded-full bg-black/60 backdrop-blur-sm cursor-pointer animate-pulse"
+            onClick={handlePlayPause}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+              <line x1="23" y1="9" x2="17" y2="15" />
+              <line x1="17" y1="9" x2="23" y2="15" />
+            </svg>
+            <span className="text-white text-xs font-medium">Appuie ici pour le son</span>
+          </div>
+        )}
 
         {/* Play overlay icon (centered) — visible when paused */}
         {!isPlaying && (
