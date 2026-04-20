@@ -5,10 +5,11 @@ import { useRouter } from "next/navigation";
 import { getFunnelData } from "@/lib/hooks/useUTMParams";
 import { trackEvent } from "@/lib/meta-pixel";
 
-const YOUTUBE_VSL_ID = "VpjD6V8FjKA";
-const CTA_DELAY_SECONDS = 450; // 7min30
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
+const VIDEO_HLS_URL =
+  "https://vz-c0494fd3-b7d.b-cdn.net/71157b6a-e2a6-408b-ba1c-b46550cf01ef/playlist.m3u8";
+const VIDEO_POSTER =
+  "https://vz-c0494fd3-b7d.b-cdn.net/71157b6a-e2a6-408b-ba1c-b46550cf01ef/thumbnail.jpg";
+const CTA_DELAY_SECONDS = 440; // 7min20
 
 export default function VSLClient() {
   const router = useRouter();
@@ -18,24 +19,23 @@ export default function VSLClient() {
   const [playbackRate, setPlaybackRate] = useState(1);
   const [showSpeedMenu, setShowSpeedMenu] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const playerRef = useRef<any>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const watchTimeRef = useRef(0);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const lastAllowedTimeRef = useRef(0);
+
+  // --- Handlers ---
 
   const handlePlayPause = useCallback(() => {
-    if (!playerRef.current) return;
-    const state = playerRef.current.getPlayerState();
-    if (state === 1) {
-      playerRef.current.pauseVideo();
-    } else {
-      playerRef.current.playVideo();
-    }
+    const v = videoRef.current;
+    if (!v) return;
+    if (v.paused) v.play();
+    else v.pause();
   }, []);
 
   const handleSpeed = useCallback((rate: number) => {
-    if (!playerRef.current) return;
-    playerRef.current.setPlaybackRate(rate);
+    const v = videoRef.current;
+    if (!v) return;
+    v.playbackRate = rate;
     setPlaybackRate(rate);
     setShowSpeedMenu(false);
   }, []);
@@ -43,25 +43,23 @@ export default function VSLClient() {
   const handleFullscreen = useCallback(() => {
     const el = containerRef.current;
     if (!el) return;
-
     if (document.fullscreenElement) {
       document.exitFullscreen().catch(() => {});
     } else {
-      // Try container first, fallback to iframe
-      el.requestFullscreen().catch(() => {
-        const iframe = el.querySelector("iframe");
-        if (iframe) iframe.requestFullscreen().catch(() => {});
-      });
+      el.requestFullscreen().catch(() => {});
     }
   }, []);
 
-  // Track fullscreen changes
+  // --- Effects ---
+
+  // Fullscreen tracking
   useEffect(() => {
     const onChange = () => setIsFullscreen(!!document.fullscreenElement);
     document.addEventListener("fullscreenchange", onChange);
     return () => document.removeEventListener("fullscreenchange", onChange);
   }, []);
 
+  // Funnel data + tracking
   useEffect(() => {
     const data = getFunnelData();
     if (!data) {
@@ -69,7 +67,6 @@ export default function VSLClient() {
       return;
     }
     setFirstname(data.firstname);
-
     trackEvent("ViewContent", { content_name: "vba-vsl" });
     fetch("/api/van-business-academy/inscription/step", {
       method: "PATCH",
@@ -78,61 +75,68 @@ export default function VSLClient() {
     }).catch(() => {});
   }, [router]);
 
-  // Load YouTube IFrame API + create player
+  // Load HLS.js for non-Safari browsers + autoplay
   useEffect(() => {
-    const tag = document.createElement("script");
-    tag.src = "https://www.youtube.com/iframe_api";
-    document.head.appendChild(tag);
+    const v = videoRef.current;
+    if (!v) return;
 
-    const initPlayer = () => {
-      playerRef.current = new (window as any).YT.Player("vsl-player", {
-        videoId: YOUTUBE_VSL_ID,
-        playerVars: {
-          autoplay: 1,
-          controls: 0,
-          disablekb: 1,
-          fs: 0,
-          iv_load_policy: 3,
-          modestbranding: 1,
-          rel: 0,
-          showinfo: 0,
-          playsinline: 1,
-          origin: window.location.origin,
-        },
-        events: {
-          onReady: (e: any) => {
-            e.target.playVideo();
-          },
-          onStateChange: (e: any) => {
-            const playing = e.data === 1;
-            setIsPlaying(playing);
-
-            if (playing) {
-              intervalRef.current = setInterval(() => {
-                watchTimeRef.current += 1;
-                if (watchTimeRef.current >= CTA_DELAY_SECONDS) {
-                  setShowCTA(true);
-                  if (intervalRef.current) clearInterval(intervalRef.current);
-                }
-              }, 1000);
-            } else {
-              if (intervalRef.current) clearInterval(intervalRef.current);
-            }
-          },
-        },
-      });
+    const startPlayback = () => {
+      v.muted = true; // browsers require muted for autoplay
+      v.play().catch(() => {});
     };
 
-    if ((window as any).YT && (window as any).YT.Player) {
-      initPlayer();
-    } else {
-      (window as any).onYouTubeIframeAPIReady = initPlayer;
+    // Safari supports HLS natively
+    if (v.canPlayType("application/vnd.apple.mpegurl")) {
+      v.src = VIDEO_HLS_URL;
+      v.addEventListener("loadedmetadata", startPlayback, { once: true });
+      return;
     }
 
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
+    // Other browsers: load hls.js dynamically
+    const script = document.createElement("script");
+    script.src = "https://cdn.jsdelivr.net/npm/hls.js@latest";
+    script.onload = () => {
+      const Hls = (window as any).Hls; // eslint-disable-line @typescript-eslint/no-explicit-any
+      if (Hls.isSupported()) {
+        const hls = new Hls();
+        hls.loadSource(VIDEO_HLS_URL);
+        hls.attachMedia(v);
+        hls.on(Hls.Events.MANIFEST_PARSED, startPlayback);
+      }
     };
+    document.head.appendChild(script);
   }, []);
+
+  // Block seeking — only allow forward progress
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+
+    const onTimeUpdate = () => {
+      lastAllowedTimeRef.current = Math.max(lastAllowedTimeRef.current, v.currentTime);
+      if (v.currentTime >= CTA_DELAY_SECONDS && !showCTA) {
+        setShowCTA(true);
+      }
+    };
+    const onSeeking = () => {
+      if (v.currentTime > lastAllowedTimeRef.current + 1) {
+        v.currentTime = lastAllowedTimeRef.current;
+      }
+    };
+    const onPlay = () => setIsPlaying(true);
+    const onPause = () => setIsPlaying(false);
+
+    v.addEventListener("timeupdate", onTimeUpdate);
+    v.addEventListener("seeking", onSeeking);
+    v.addEventListener("play", onPlay);
+    v.addEventListener("pause", onPause);
+    return () => {
+      v.removeEventListener("timeupdate", onTimeUpdate);
+      v.removeEventListener("seeking", onSeeking);
+      v.removeEventListener("play", onPlay);
+      v.removeEventListener("pause", onPause);
+    };
+  }, [showCTA]);
 
   // Close speed menu on outside click
   useEffect(() => {
@@ -144,7 +148,6 @@ export default function VSLClient() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 pb-16">
-      {/* Pulse animation for sound icon */}
       <style>{`
         @keyframes gentle-pulse {
           0%, 100% { opacity: 1; }
@@ -153,27 +156,16 @@ export default function VSLClient() {
         .sound-pulse {
           animation: gentle-pulse 2.5s ease-in-out infinite;
         }
-        /* Crop YouTube branding via scaling — no black bars */
-        .yt-wrapper iframe {
-          position: absolute;
-          top: -1px;
-          left: -1px;
-          width: calc(100% + 2px);
-          height: calc(100% + 2px);
-        }
-        /* Fullscreen: fill entire screen, black bg */
-        .yt-wrapper:fullscreen {
+        .vsl-container:fullscreen {
           background: #000;
           display: flex;
           align-items: center;
           justify-content: center;
         }
-        .yt-wrapper:fullscreen iframe {
-          position: relative;
-          top: 0;
-          left: 0;
-          width: 100vw;
-          height: 100vh;
+        .vsl-container:fullscreen video {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
         }
       `}</style>
 
@@ -205,22 +197,25 @@ export default function VSLClient() {
       {/* Video player */}
       <div
         ref={containerRef}
-        className="yt-wrapper relative w-full rounded-2xl overflow-hidden shadow-lg mb-10 group bg-black"
-        style={{ paddingBottom: isFullscreen ? undefined : "56.25%" }}
+        className="vsl-container relative w-full rounded-2xl overflow-hidden shadow-lg mb-10 group bg-black"
       >
-        {/* YouTube iframe rendered here by IFrame API */}
-        <div id="vsl-player" className="absolute inset-0 w-full h-full" />
-
-        {/* Transparent overlay — blocks YouTube clickables, passes our clicks */}
-        <div
-          className="absolute inset-0 z-10"
+        <video
+          ref={videoRef}
+          className="w-full block"
+          poster={VIDEO_POSTER}
+          playsInline
+          preload="auto"
+          controlsList="nodownload noremoteplayback"
+          disablePictureInPicture
           onClick={handlePlayPause}
           style={{ cursor: "pointer" }}
         />
 
-        {/* Play/Pause overlay icon (centered) */}
+        {/* Play overlay icon (centered) — visible when paused */}
         {!isPlaying && (
-          <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
+          <div
+            className="absolute inset-0 flex items-center justify-center pointer-events-none"
+          >
             <div className="w-16 h-16 rounded-full bg-black/50 flex items-center justify-center backdrop-blur-sm">
               <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
                 <polygon points="6,3 20,12 6,21" />
@@ -230,7 +225,7 @@ export default function VSLClient() {
         )}
 
         {/* Custom controls bar — appears on hover / tap */}
-        <div className="absolute bottom-0 left-0 right-0 z-20 flex items-center justify-between px-4 py-3 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between px-4 py-3 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           {/* Play/Pause */}
           <button onClick={handlePlayPause} className="text-white p-1.5 hover:bg-white/10 rounded-full transition" aria-label={isPlaying ? "Pause" : "Lecture"}>
             {isPlaying ? (
