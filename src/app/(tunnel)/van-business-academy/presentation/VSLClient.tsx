@@ -65,7 +65,7 @@ export default function VSLClient() {
       });
     } else if (v?.requestFullscreen) {
       v.requestFullscreen().catch(() => {});
-    } else if ((v as any)?.webkitEnterFullscreen) {
+    } else if ((v as any)?.webkitEnterFullscreen) { // eslint-disable-line @typescript-eslint/no-explicit-any
       (v as any).webkitEnterFullscreen(); // eslint-disable-line @typescript-eslint/no-explicit-any
     }
   }, []);
