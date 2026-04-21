@@ -68,7 +68,7 @@ export default function VBASidebar({
     totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
 
   return (
-    <aside className="w-[280px] flex-shrink-0 bg-white border-r border-slate-100 overflow-y-auto">
+    <aside className="w-[340px] flex-shrink-0 bg-white border-r border-slate-100 overflow-y-auto">
       {/* Progression globale */}
       <div className="p-4 border-b border-slate-100">
         <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
@@ -110,8 +110,8 @@ export default function VBASidebar({
                     isOpen ? "" : "-rotate-90"
                   }`}
                 />
-                <span className="text-sm font-medium text-slate-700 flex-1 leading-tight">
-                  Module {idx + 1} — {mod.title}
+                <span className="text-sm font-medium text-slate-700 flex-1 leading-snug">
+                  {mod.title}
                 </span>
               </button>
 
@@ -138,7 +138,7 @@ export default function VBASidebar({
                         ) : (
                           <Circle className="w-4 h-4 text-slate-300 flex-shrink-0" />
                         )}
-                        <span className="flex-1 truncate">{lesson.title}</span>
+                        <span className="flex-1 leading-snug">{lesson.title}</span>
                         {lesson.duration_seconds && (
                           <span className="text-xs text-slate-400 flex-shrink-0">
                             {formatDuration(lesson.duration_seconds)}
