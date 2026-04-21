@@ -29,27 +29,58 @@ export default function VSLClient() {
   const [qualityLabel, setQualityLabel] = useState("Auto");
   const [showSettings, setShowSettings] = useState(false);
   const [settingsTab, setSettingsTab] = useState<"main" | "quality" | "speed">("main");
+  const [showControls, setShowControls] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const hlsRef = useRef<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
   const lastAllowedTimeRef = useRef(0);
+  const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // --- Handlers ---
 
-  const handlePlayPause = useCallback(() => {
+  const resetHideTimer = useCallback(() => {
+    if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
+    setShowControls(true);
+    hideTimerRef.current = setTimeout(() => setShowControls(false), 3000);
+  }, []);
+
+  const handleVideoTap = useCallback(() => {
     const v = videoRef.current;
     if (!v) return;
-    // Always ensure unmuted on user interaction
     if (v.muted) {
       v.muted = false;
       setIsMuted(false);
     }
     if (v.paused) {
       v.play().catch(() => {});
+      resetHideTimer();
+    } else {
+      // If playing, toggle controls visibility
+      if (showControls) {
+        setShowControls(false);
+        if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
+      } else {
+        resetHideTimer();
+      }
+    }
+  }, [showControls, resetHideTimer]);
+
+  const handlePlayPause = useCallback(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    if (v.muted) {
+      v.muted = false;
+      setIsMuted(false);
+    }
+    if (v.paused) {
+      v.play().catch(() => {});
+      resetHideTimer();
     } else {
       v.pause();
+      setShowControls(true);
+      if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
     }
-  }, []);
+  }, [resetHideTimer]);
 
   const handleSpeed = useCallback((rate: number) => {
     const v = videoRef.current;
@@ -236,7 +267,7 @@ export default function VSLClient() {
           preload="auto"
           controlsList="nodownload noremoteplayback"
           disablePictureInPicture
-          onClick={handlePlayPause}
+          onClick={handleVideoTap}
           style={{ cursor: "pointer" }}
         />
 
@@ -266,8 +297,8 @@ export default function VSLClient() {
           </div>
         )}
 
-        {/* Controls bar — always visible on mobile, hover on desktop */}
-        <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between px-4 py-3 bg-gradient-to-t from-black/70 to-transparent opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">
+        {/* Controls bar — auto-hide after 3s, reappears on tap */}
+        <div className={`absolute bottom-0 left-0 right-0 flex items-center justify-between px-4 py-3 bg-gradient-to-t from-black/70 to-transparent transition-opacity duration-500 ${showControls || !isPlaying ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
           {/* Play/Pause */}
           <button onClick={handlePlayPause} className="text-white p-1.5 hover:bg-white/10 rounded-full transition" aria-label={isPlaying ? "Pause" : "Lecture"}>
             {isPlaying ? (
