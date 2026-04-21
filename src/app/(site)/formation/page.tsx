@@ -106,13 +106,12 @@ export default async function FormationPage() {
             🎓 Van Business Academy
           </span>
 
-          {/* H1 — première ligne compacte, deuxième ligne en gradient */}
-          <h1 className="font-black text-slate-900 leading-[1.08] tracking-tight">
-            <span className="block text-2xl sm:text-3xl md:text-4xl tracking-widest uppercase text-slate-400 font-bold mb-2">
-              Réaménage &middot; Loue &middot; Revends &middot; Recommence
-            </span>
+          {/* H1 */}
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-slate-900 leading-[1.08] tracking-tight">
+            Réaménage. Loue. Revends. Recommence.
+            <br />
             <span
-              className="block text-4xl sm:text-5xl md:text-7xl bg-clip-text text-transparent"
+              className="bg-clip-text text-transparent"
               style={{
                 backgroundImage:
                   "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
