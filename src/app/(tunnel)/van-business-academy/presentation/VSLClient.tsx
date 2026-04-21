@@ -201,11 +201,19 @@ export default function VSLClient() {
       )}
 
       {/* Title */}
-      <h1
-        className="font-display text-2xl sm:text-3xl text-center leading-tight mb-3"
-        style={{ color: "#0F172A" }}
-      >
-        Découvre la méthode pour construire ta liberté intérieure grâce aux vans aménagés
+      <h1 className="text-center leading-tight mb-3">
+        <span className="block text-xs sm:text-sm tracking-widest uppercase text-slate-400 font-bold mb-2">
+          Découvre la méthode pour
+        </span>
+        <span
+          className="block font-display text-2xl sm:text-3xl md:text-4xl font-black bg-clip-text text-transparent"
+          style={{ backgroundImage: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)" }}
+        >
+          Construire ta liberté intérieure
+        </span>
+        <span className="block font-display text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 mt-1">
+          grâce aux vans aménagés
+        </span>
       </h1>
 
       {/* Instruction */}
