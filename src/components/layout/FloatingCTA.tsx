@@ -58,9 +58,8 @@ function getCTAConfig(pathname: string): CTAConfig | null {
   // Formation — doré
   if (pathname.startsWith("/formation")) {
     return {
-      btnLabel: "Réserver un appel",
-      href: "#",
-      calendly: true,
+      btnLabel: "En savoir plus",
+      href: "/van-business-academy/presentation",
       ...PALETTE.gold,
     };
   }

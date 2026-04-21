@@ -106,12 +106,13 @@ export default async function FormationPage() {
             🎓 Van Business Academy
           </span>
 
-          {/* H1 */}
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-slate-900 leading-[1.08] tracking-tight">
-            Réaménage. Loue. Revends. Recommence.
-            <br />
+          {/* H1 — première ligne compacte, deuxième ligne en gradient */}
+          <h1 className="font-black text-slate-900 leading-[1.08] tracking-tight">
+            <span className="block text-2xl sm:text-3xl md:text-4xl tracking-widest uppercase text-slate-400 font-bold mb-2">
+              Réaménage &middot; Loue &middot; Revends &middot; Recommence
+            </span>
             <span
-              className="bg-clip-text text-transparent"
+              className="block text-4xl sm:text-5xl md:text-7xl bg-clip-text text-transparent"
               style={{
                 backgroundImage:
                   "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
@@ -127,6 +128,22 @@ export default async function FormationPage() {
             mettre en location, le revendre avec plus-value, et recommencer.
             Créé par des loueurs en activité au Pays Basque.
           </p>
+
+          {/* CTA visible sans scroll */}
+          <div className="mt-8">
+            <Link
+              href="/van-business-academy/presentation"
+              className="inline-block font-bold text-white py-4 px-10 rounded-xl text-base sm:text-lg transition-all hover:scale-[1.02] hover:shadow-lg"
+              style={{
+                background:
+                  "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
+                boxShadow:
+                  "0 4px 18px rgba(185, 148, 95, 0.45)",
+              }}
+            >
+              En savoir plus →
+            </Link>
+          </div>
         </div>
 
         {/* Card stack formation */}
@@ -184,7 +201,7 @@ export default async function FormationPage() {
                 <span
                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-bold text-white backdrop-blur-sm"
                   style={{
-                    background: "rgba(185,148,95,0.85)",
+                    background: "rgba(0,0,0,0.60)",
                   }}
                 >
                   🎓 Van Business Academy™
