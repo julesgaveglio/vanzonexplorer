@@ -103,15 +103,15 @@ export default function ComparisonSection() {
                 className="inline-block px-4 py-2 rounded-lg text-xl md:text-2xl font-black text-white"
                 style={{ background: "rgba(34,197,94,0.25)" }}
               >
-                14 000 €
+                15 000 €
               </span>
             </div>
 
             {/* Détails */}
             <ul className="space-y-3">
               {[
-                { value: "9 500 €", label: "Véhicule négocié" },
-                { value: "4 500 €", label: "Aménagement" },
+                { value: "10 000 €", label: "Véhicule négocié" },
+                { value: "5 000 €", label: "Aménagement" },
                 { value: "3 mois", label: "Temps des travaux" },
                 { value: "7 000 €/an", label: "Mise en location" },
                 { value: "Revente", label: "optimisée" },
@@ -140,7 +140,7 @@ export default function ComparisonSection() {
           <p className="text-white/60 text-sm">
             Économie moyenne constatée :{" "}
             <span className="font-bold" style={{ color: "#CDA77B" }}>
-              9 626 € + un van qui génère des revenus
+              8 626 € + un van qui génère des revenus
             </span>
           </p>
         </div>

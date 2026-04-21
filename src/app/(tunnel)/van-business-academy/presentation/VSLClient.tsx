@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useRef, useCallback } from "react";
-import { useRouter } from "next/navigation";
 import { getFunnelData } from "@/lib/hooks/useUTMParams";
 import { trackEvent } from "@/lib/meta-pixel";
 import LiquidButton from "@/components/ui/LiquidButton";
@@ -22,7 +21,6 @@ const QUALITY_OPTIONS = [
 const SPEED_OPTIONS = [0.75, 1, 1.5, 2];
 
 export default function VSLClient() {
-  const router = useRouter();
   const [firstname, setFirstname] = useState("");
   const [showCTA, setShowCTA] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -81,21 +79,19 @@ export default function VSLClient() {
 
   // --- Effects ---
 
-  // Funnel data + tracking
+  // Funnel data + tracking (optional — page accessible directly)
   useEffect(() => {
     const data = getFunnelData();
-    if (!data) {
-      router.replace("/van-business-academy/inscription");
-      return;
+    if (data) {
+      setFirstname(data.firstname);
+      fetch("/api/van-business-academy/inscription/step", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: data.email, step: "vsl" }),
+      }).catch(() => {});
     }
-    setFirstname(data.firstname);
     trackEvent("ViewContent", { content_name: "vba-vsl" });
-    fetch("/api/van-business-academy/inscription/step", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: data.email, step: "vsl" }),
-    }).catch(() => {});
-  }, [router]);
+  }, []);
 
   // Load HLS.js for non-Safari browsers + autoplay
   useEffect(() => {

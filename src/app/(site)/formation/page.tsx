@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { sanityFetch } from "@/lib/sanity/client";
+import { getFormationCardsQuery } from "@/lib/sanity/queries";
+import type { FormationCardData } from "@/components/formation/FormationCardStack";
+import FormationCardStack from "@/components/formation/FormationCardStack";
+import ComparisonSection from "@/components/formation/ComparisonSection";
 
 export const metadata: Metadata = {
   title: "Van Business Academy — Construis ta liberté van par van",
@@ -60,7 +65,9 @@ const courseJsonLd = {
   inLanguage: "fr-FR",
 };
 
-export default function FormationPage() {
+export default async function FormationPage() {
+  const cards = await sanityFetch<FormationCardData[]>(getFormationCardsQuery) ?? [];
+
   return (
     <>
       <script
@@ -86,7 +93,7 @@ export default function FormationPage() {
           style={{ background: "#B9945F" }}
         />
 
-        <div className="relative max-w-4xl mx-auto px-6 pt-24 pb-16 md:pt-36 md:pb-24 text-center">
+        <div className="relative max-w-4xl mx-auto px-6 pt-24 pb-10 md:pt-36 md:pb-12 text-center">
           {/* Badge */}
           <span
             className="inline-flex items-center gap-2 badge-glass !px-5 !py-2 text-sm font-medium mb-8"
@@ -121,19 +128,32 @@ export default function FormationPage() {
             Créé par des loueurs en activité au Pays Basque.
           </p>
         </div>
+
+        {/* Card stack formation */}
+        {cards.length > 0 && <FormationCardStack cards={cards} />}
       </section>
 
-      {/* ── TRANSITION ── */}
+      {/* ── CTA SECTION ── */}
       <section className="py-16 md:py-20 bg-white">
-        <div className="max-w-2xl mx-auto px-6">
-          <p className="text-base sm:text-lg text-slate-600 leading-relaxed text-center">
-            Van Business Academy est un accompagnement complet pour celles et
-            ceux qui veulent réaménager leur van et en faire un véritable levier
-            de liberté. Un modèle progressif et reproductible : construire un
-            van, l&apos;exploiter en location, le revendre, et recommencer avec
-            deux. Conçu et animé par des loueurs de vans en activité au Pays
-            Basque, pas par des formateurs de bureau.
+        <div className="max-w-2xl mx-auto px-6 text-center">
+          <p className="text-base sm:text-lg text-slate-600 leading-relaxed mb-8">
+            Un accompagnement terrain pour apprendre à réaménager ton van, le
+            mettre en location, le revendre avec plus-value, et recommencer.
+            Créé par des loueurs en activité au Pays Basque.
           </p>
+
+          <Link
+            href="/van-business-academy/presentation"
+            className="inline-block font-bold text-white py-4 px-10 rounded-xl text-base sm:text-lg transition-all hover:scale-[1.02] hover:shadow-lg"
+            style={{
+              background:
+                "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
+              boxShadow:
+                "0 4px 18px rgba(185, 148, 95, 0.45)",
+            }}
+          >
+            En savoir plus →
+          </Link>
         </div>
       </section>
 
@@ -179,9 +199,7 @@ export default function FormationPage() {
                 <div className="flex items-start gap-3">
                   <span
                     className="flex-shrink-0 w-8 h-8 rounded-xl flex items-center justify-center text-base mt-0.5"
-                    style={{
-                      background: "rgba(185,148,95,0.10)",
-                    }}
+                    style={{ background: "rgba(185,148,95,0.10)" }}
                   >
                     🎯
                   </span>
@@ -196,9 +214,7 @@ export default function FormationPage() {
                 <div className="flex items-start gap-3">
                   <span
                     className="flex-shrink-0 w-8 h-8 rounded-xl flex items-center justify-center text-base mt-0.5"
-                    style={{
-                      background: "rgba(185,148,95,0.10)",
-                    }}
+                    style={{ background: "rgba(185,148,95,0.10)" }}
                   >
                     🗺️
                   </span>
@@ -213,9 +229,7 @@ export default function FormationPage() {
                 <div className="flex items-start gap-3">
                   <span
                     className="flex-shrink-0 w-8 h-8 rounded-xl flex items-center justify-center text-base mt-0.5"
-                    style={{
-                      background: "rgba(185,148,95,0.10)",
-                    }}
+                    style={{ background: "rgba(185,148,95,0.10)" }}
                   >
                     🔧
                   </span>
@@ -229,7 +243,7 @@ export default function FormationPage() {
               {/* CTA */}
               <div className="mt-8">
                 <Link
-                  href="/van-business-academy/inscription"
+                  href="/van-business-academy/presentation"
                   className="block w-full text-center font-bold text-white py-4 rounded-xl text-base sm:text-lg transition-all hover:scale-[1.02] hover:shadow-lg"
                   style={{
                     background:
@@ -245,6 +259,9 @@ export default function FormationPage() {
           </div>
         </div>
       </section>
+
+      {/* ── COMPARAISON ── */}
+      <ComparisonSection />
     </>
   );
 }
