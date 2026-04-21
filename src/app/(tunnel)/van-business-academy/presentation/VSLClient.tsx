@@ -7,9 +7,9 @@ import { trackEvent } from "@/lib/meta-pixel";
 import LiquidButton from "@/components/ui/LiquidButton";
 
 const VIDEO_HLS_URL =
-  "https://vz-c0494fd3-b7d.b-cdn.net/71157b6a-e2a6-408b-ba1c-b46550cf01ef/playlist.m3u8";
+  "https://vz-c0494fd3-b7d.b-cdn.net/c35fca15-b9b4-4a39-8bcf-9db2ece00d43/playlist.m3u8";
 const VIDEO_POSTER =
-  "https://vz-c0494fd3-b7d.b-cdn.net/71157b6a-e2a6-408b-ba1c-b46550cf01ef/thumbnail.jpg";
+  "https://vz-c0494fd3-b7d.b-cdn.net/c35fca15-b9b4-4a39-8bcf-9db2ece00d43/thumbnail.jpg";
 const CTA_DELAY_SECONDS = 180; // 3min
 
 const QUALITY_OPTIONS = [
