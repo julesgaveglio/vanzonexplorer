@@ -39,12 +39,16 @@ export default function VSLClient() {
   const handlePlayPause = useCallback(() => {
     const v = videoRef.current;
     if (!v) return;
+    // Always ensure unmuted on user interaction
     if (v.muted) {
       v.muted = false;
       setIsMuted(false);
     }
-    if (v.paused) v.play();
-    else v.pause();
+    if (v.paused) {
+      v.play().catch(() => {});
+    } else {
+      v.pause();
+    }
   }, []);
 
   const handleSpeed = useCallback((rate: number) => {
@@ -98,23 +102,16 @@ export default function VSLClient() {
     const v = videoRef.current;
     if (!v) return;
 
-    const startPlayback = () => {
+    const prepareVideo = () => {
       v.currentTime = 1;
-      // Try unmuted first (works if user already interacted with the domain)
+      // Don't autoplay — wait for user click so sound works from the start
       v.muted = false;
-      v.play().then(() => {
-        setIsMuted(false);
-      }).catch(() => {
-        // Browser blocked unmuted autoplay — fallback to muted
-        v.muted = true;
-        setIsMuted(true);
-        v.play().catch(() => {});
-      });
+      setIsMuted(false);
     };
 
     if (v.canPlayType("application/vnd.apple.mpegurl")) {
       v.src = VIDEO_HLS_URL;
-      v.addEventListener("loadedmetadata", startPlayback, { once: true });
+      v.addEventListener("loadedmetadata", prepareVideo, { once: true });
       return;
     }
 
@@ -127,7 +124,7 @@ export default function VSLClient() {
         hlsRef.current = hls;
         hls.loadSource(VIDEO_HLS_URL);
         hls.attachMedia(v);
-        hls.on(Hls.Events.MANIFEST_PARSED, startPlayback);
+        hls.on(Hls.Events.MANIFEST_PARSED, prepareVideo);
       }
     };
     document.head.appendChild(script);
@@ -209,7 +206,7 @@ export default function VSLClient() {
           className="block font-display text-2xl sm:text-3xl md:text-4xl font-black bg-clip-text text-transparent"
           style={{ backgroundImage: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)" }}
         >
-          Construire ta liberté intérieure
+          Construire ta liberté
         </span>
         <span className="block font-display text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 mt-1">
           grâce aux vans aménagés
