@@ -93,7 +93,7 @@ export default function VBASidebar({
 
       {/* Modules accordion */}
       <div className="py-2">
-        {modules.map((mod, idx) => {
+        {modules.map((mod) => {
           const modLessons = lessons
             .filter((l) => l.module_id === mod.id)
             .sort((a, b) => a.order - b.order);
