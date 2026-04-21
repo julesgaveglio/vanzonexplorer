@@ -1,9 +1,26 @@
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
-import { CheckCircle2, Circle, Play } from "lucide-react";
+import {
+  CheckCircle2, Circle, Play,
+  Clapperboard, Search, Ruler, Hammer, Zap, ClipboardList, Wallet, FileCheck,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import VBAPaywall from "./_components/VBAPaywall";
+
+const MODULE_ICONS: Record<number, LucideIcon> = {
+  1: Clapperboard,
+  2: Search,
+  3: Ruler,
+  4: Hammer,
+  5: Zap,
+  6: ClipboardList,
+  7: Wallet,
+  8: FileCheck,
+};
+
+const ADMIN_EMAIL = "gavegliojules@gmail.com";
 
 interface VBAModule {
   id: string;
@@ -38,18 +55,14 @@ export default async function VBAPage() {
   const { userId } = await auth();
   if (!userId) redirect("/sign-in");
 
-  const supabase = createSupabaseAdmin();
-
-  // Check access
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("plan")
-    .eq("clerk_id", userId)
-    .single();
-
-  if (profile?.plan !== "vba_member") {
+  // Admin-only access
+  const user = await currentUser();
+  const email = user?.emailAddresses?.[0]?.emailAddress;
+  if (email !== ADMIN_EMAIL) {
     return <VBAPaywall />;
   }
+
+  const supabase = createSupabaseAdmin();
 
   // Fetch modules, lessons, progress
   const [modulesRes, lessonsRes, progressRes] = await Promise.all([
@@ -124,7 +137,7 @@ export default async function VBAPage() {
         </div>
       ) : (
         <div className="space-y-4">
-          {modules.map((mod, idx) => {
+          {modules.map((mod) => {
             const modLessons = lessons
               .filter((l) => l.module_id === mod.id)
               .sort((a, b) => a.order - b.order);
@@ -139,9 +152,10 @@ export default async function VBAPage() {
               <div key={mod.id} className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
                 <div className="p-5 border-b border-slate-50">
                   <div className="flex items-center justify-between">
-                    <div>
+                    <div className="flex items-center gap-2.5">
+                      {(() => { const Icon = MODULE_ICONS[mod.order] ?? Clapperboard; return <Icon className="w-5 h-5 flex-shrink-0" style={{ color: "#B9945F" }} />; })()}
                       <h3 className="font-bold text-slate-900">
-                        Module {idx + 1} — {mod.title}
+                        {mod.title}
                       </h3>
                       {mod.description && (
                         <p className="text-sm text-slate-500 mt-1">

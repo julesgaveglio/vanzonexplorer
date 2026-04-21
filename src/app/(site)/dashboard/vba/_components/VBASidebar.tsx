@@ -2,7 +2,22 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ChevronDown, CheckCircle2, Circle, Play } from "lucide-react";
+import {
+  ChevronDown, CheckCircle2, Circle, Play,
+  Clapperboard, Search, Ruler, Hammer, Zap, ClipboardList, Wallet, FileCheck,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+
+const MODULE_ICONS: Record<number, LucideIcon> = {
+  1: Clapperboard,
+  2: Search,
+  3: Ruler,
+  4: Hammer,
+  5: Zap,
+  6: ClipboardList,
+  7: Wallet,
+  8: FileCheck,
+};
 
 interface Module {
   id: string;
@@ -99,17 +114,20 @@ export default function VBASidebar({
             .sort((a, b) => a.order - b.order);
           const isOpen = openModules.has(mod.id);
 
+          const Icon = MODULE_ICONS[mod.order] ?? Clapperboard;
+
           return (
             <div key={mod.id}>
               <button
                 onClick={() => toggleModule(mod.id)}
-                className="w-full flex items-center gap-2 px-4 py-3 text-left hover:bg-slate-50 transition-colors"
+                className="w-full flex items-center gap-2.5 px-4 py-3 text-left hover:bg-slate-50 transition-colors"
               >
                 <ChevronDown
                   className={`w-4 h-4 text-slate-400 transition-transform flex-shrink-0 ${
                     isOpen ? "" : "-rotate-90"
                   }`}
                 />
+                <Icon className="w-4 h-4 flex-shrink-0" style={{ color: "#B9945F" }} />
                 <span className="text-sm font-medium text-slate-700 flex-1 leading-snug">
                   {mod.title}
                 </span>

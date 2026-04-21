@@ -1,8 +1,10 @@
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
 import { ArrowLeft, ArrowRight, FileText, Image as ImageIcon, ExternalLink } from "lucide-react";
+
+const ADMIN_EMAIL = "gavegliojules@gmail.com";
 import VBASidebar from "../../_components/VBASidebar";
 import MarkCompleteButton from "../../_components/MarkCompleteButton";
 import VBAPaywall from "../../_components/VBAPaywall";
@@ -22,18 +24,14 @@ export default async function LessonPage({
   const { userId } = await auth();
   if (!userId) redirect("/sign-in");
 
-  const supabase = createSupabaseAdmin();
-
-  // Check access
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("plan")
-    .eq("clerk_id", userId)
-    .single();
-
-  if (profile?.plan !== "vba_member") {
+  // Admin-only access
+  const user = await currentUser();
+  const email = user?.emailAddresses?.[0]?.emailAddress;
+  if (email !== ADMIN_EMAIL) {
     return <VBAPaywall />;
   }
+
+  const supabase = createSupabaseAdmin();
 
   // Fetch all data in parallel
   const [modulesRes, lessonsRes, progressRes] = await Promise.all([
