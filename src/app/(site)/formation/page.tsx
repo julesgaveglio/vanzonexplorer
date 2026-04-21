@@ -1,120 +1,28 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import GlassCard from "@/components/ui/GlassCard";
-import OtherServices from "@/components/ui/OtherServices";
-import FormationHero from "@/components/formation/FormationHero";
-import { sanityFetch } from "@/lib/sanity/client";
-import { getFormationCardsQuery } from "@/lib/sanity/queries";
-import type { FormationCardData } from "@/components/formation/FormationCardStack";
-import ProgrammeAccordion from "@/components/formation/ProgrammeAccordion";
-import FormationFAQ from "@/components/formation/FormationFAQ";
-import FormationCTA from "@/components/formation/FormationCTA";
-import ComparisonSection from "@/components/formation/ComparisonSection";
-import SylvainTestimonial from "@/components/formation/SylvainTestimonial";
+import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Van Business Academy — Formation Vanlife",
+  title: "Van Business Academy — Construis ta liberté van par van",
   description:
-    "Apprends à aménager ton fourgon et lancer ton business de location de van. Formation complète par Jules & Elio de Vanzon Explorer — de l'achat au premier euro généré.",
+    "Apprends à réaménager ton van, le mettre en location, le revendre avec plus-value et recommencer. Accompagnement terrain créé par des loueurs en activité au Pays Basque.",
   alternates: {
     canonical: "https://vanzonexplorer.com/formation",
   },
   openGraph: {
-    title: "Van Business Academy — Formation Vanlife",
-    description: "Apprends à aménager ton fourgon et lancer ton business de location de van. Formation complète par Jules & Elio — de l'achat au premier euro généré.",
+    title: "Van Business Academy — Construis ta liberté van par van",
+    description:
+      "Réaménage. Loue. Revends. Recommence. Un accompagnement terrain pour lancer ton business de van aménagé.",
     type: "website",
   },
 };
-
-const promiseCards = [
-  {
-    icon: "🚐",
-    title: "Ton van aménagé",
-    color: "blue" as const,
-    description:
-      "On t'accompagne dans le choix du fourgon, l'achat malin, et chaque étape de l'aménagement intérieur — de l'isolation à l'électricité. Même si tu n'as jamais tenu une perceuse.",
-  },
-  {
-    icon: "📋",
-    title: "Ton homologation VASP",
-    color: "amber" as const,
-    description:
-      "Pour ceux qui veulent aller plus loin : on te guide dans tout le processus VASP, les normes, la DREAL, Qualigaz — avec nos templates et outils IA pour ne rien oublier.",
-  },
-  {
-    icon: "💰",
-    title: "Ton business de location",
-    color: "teal" as const,
-    description:
-      "Comment fixer tes prix, créer ton annonce qui convertit, gérer tes locataires, optimiser ton taux d'occupation, et déclarer tes revenus.",
-  },
-];
-
-const promiseIconBg = {
-  blue:  "bg-blue-50 text-blue-600",
-  amber: "bg-[#F5EDE5] text-[#B9945F]",
-  teal:  "bg-[#F5EDE5] text-[#CDA77B]",
-};
-
-const forYou = [
-  "Tu rêves de plus de liberté et de revenus complémentaires",
-  "Tu veux voyager plus souvent, autrement, à ton rythme",
-  "Tu n'as aucune compétence en bricolage (on t'apprend tout)",
-  "Tu veux aménager ton fourgon et/ou en faire un business",
-  "Tu veux une formation moderne avec de vrais outils",
-];
-
-const notForYou = [
-  "Tu cherches une formation magistrale théorique (c'est 100% pratique)",
-  "Tu cherches à faire de l'argent rapidement et facilement",
-];
-
-const differentiators = [
-  {
-    icon: "🤖",
-    title: "Outils IA intégrés",
-    description:
-      "Prompts ChatGPT, Perplexity pour les dossiers admin, Airtable configuré pour ton budget — les meilleurs outils modernes sont inclus dans la formation.",
-  },
-  {
-    icon: "🎯",
-    title: "Double parcours",
-    description:
-      "VASP ou non-VASP selon ton projet. On adapte la formation à tes objectifs — juste aménager, ou aller jusqu'au business complet.",
-  },
-  {
-    icon: "🔧",
-    title: "100% pratique & terrain",
-    description:
-      "Chaque vidéo a été filmée pendant de vrais chantiers. On te montre nos erreurs, nos astuces, les produits qu'on utilise vraiment.",
-  },
-  {
-    icon: "👥",
-    title: "Créée par ceux qui vivent ça",
-    description:
-      "Jules et Elio ont 22 ans et ont tout construit eux-mêmes. Tu apprends de personnes qui font exactement ce qu'elles enseignent.",
-  },
-  {
-    icon: "📊",
-    title: "Airtable du budget inclus",
-    description:
-      "Un tableau de bord complet avec tous les matériaux, les coûts, les fournisseurs — pour ne rien oublier et commander intelligent.",
-  },
-  {
-    icon: "🌊",
-    title: "Ancrée au Pays Basque",
-    description:
-      "Une formation créée depuis le Pays Basque, par une équipe qui connaît le marché local et les meilleures pratiques pour la location estivale.",
-  },
-];
-
 
 const courseJsonLd = {
   "@context": "https://schema.org",
   "@type": "Course",
   name: "Van Business Academy",
   description:
-    "Formation complète pour aménager ton fourgon et lancer un business de location de van. De l'achat du véhicule à la mise en location rentable — homologation VASP incluse.",
+    "Accompagnement terrain pour réaménager ton van, le mettre en location, le revendre avec plus-value et recommencer. Créé par des loueurs en activité au Pays Basque.",
   url: "https://vanzonexplorer.com/formation",
   image:
     "https://cdn.sanity.io/images/lewexa74/production/28a2c5acbe2ee16169d4ace1ab0522481c43d356-1170x2080.jpg?auto=format&q=82",
@@ -150,207 +58,193 @@ const courseJsonLd = {
   },
   educationalLevel: "Beginner",
   inLanguage: "fr-FR",
-  teaches: [
-    "Choix et achat d'un fourgon aménageable",
-    "Aménagement intérieur van (isolation, électricité, menuiserie)",
-    "Homologation VASP",
-    "Création d'un business de location de van",
-    "Mise en ligne sur Yescapa et optimisation des annonces",
-    "Fiscalité et déclaration des revenus vanlife",
-  ],
 };
 
-export default async function FormationPage() {
-  const cards = await sanityFetch<FormationCardData[]>(getFormationCardsQuery) ?? [];
-
+export default function FormationPage() {
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(courseJsonLd) }}
       />
-      <FormationHero cards={cards} />
 
-      <section className="py-20" style={{ background: '#FAF6F0' }}>
-        <div className="max-w-5xl mx-auto px-6">
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 text-center">
-            Ce qu&apos;on t&apos;apprend à construire
-          </h2>
+      {/* ── HERO ── */}
+      <section
+        className="relative overflow-hidden"
+        style={{
+          background:
+            "linear-gradient(160deg, #FFFFFF 0%, #FAF6F0 60%, #F5EDE5 100%)",
+        }}
+      >
+        {/* Blobs décoratifs */}
+        <div
+          className="absolute top-20 -left-40 w-[500px] h-[500px] rounded-full opacity-[0.12] blur-3xl"
+          style={{ background: "#CDA77B" }}
+        />
+        <div
+          className="absolute top-60 right-0 w-96 h-96 rounded-full opacity-[0.10] blur-3xl"
+          style={{ background: "#B9945F" }}
+        />
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
-            {promiseCards.map((card) => (
-              <GlassCard key={card.title}>
-                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-2xl ${promiseIconBg[card.color]}`}>
-                  {card.icon}
-                </div>
-                <h3 className="text-lg font-semibold text-slate-900 mt-4">
-                  {card.title}
-                </h3>
-                <p className="text-sm text-slate-500 mt-2 leading-relaxed">
-                  {card.description}
-                </p>
-              </GlassCard>
-            ))}
-          </div>
+        <div className="relative max-w-4xl mx-auto px-6 pt-24 pb-16 md:pt-36 md:pb-24 text-center">
+          {/* Badge */}
+          <span
+            className="inline-flex items-center gap-2 badge-glass !px-5 !py-2 text-sm font-medium mb-8"
+            style={{
+              background: "rgba(205,167,123,0.12)",
+              border: "1px solid rgba(205,167,123,0.35)",
+              color: "#B9945F",
+            }}
+          >
+            🎓 Van Business Academy
+          </span>
+
+          {/* H1 */}
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-slate-900 leading-[1.08] tracking-tight">
+            Réaménage. Loue. Revends. Recommence.
+            <br />
+            <span
+              className="bg-clip-text text-transparent"
+              style={{
+                backgroundImage:
+                  "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
+              }}
+            >
+              Construis ta liberté van par van.
+            </span>
+          </h1>
+
+          {/* Sous-titre */}
+          <p className="text-lg sm:text-xl text-slate-500 mt-6 max-w-2xl mx-auto leading-relaxed">
+            Un accompagnement terrain pour apprendre à réaménager ton van, le
+            mettre en location, le revendre avec plus-value, et recommencer.
+            Créé par des loueurs en activité au Pays Basque.
+          </p>
         </div>
       </section>
 
-      <section className="bg-white py-20">
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-3xl font-bold text-slate-900">
-                L&apos;accompagnement est fait pour toi si…
-              </h2>
+      {/* ── TRANSITION ── */}
+      <section className="py-16 md:py-20 bg-white">
+        <div className="max-w-2xl mx-auto px-6">
+          <p className="text-base sm:text-lg text-slate-600 leading-relaxed text-center">
+            Van Business Academy est un accompagnement complet pour celles et
+            ceux qui veulent réaménager leur van et en faire un véritable levier
+            de liberté. Un modèle progressif et reproductible : construire un
+            van, l&apos;exploiter en location, le revendre, et recommencer avec
+            deux. Conçu et animé par des loueurs de vans en activité au Pays
+            Basque, pas par des formateurs de bureau.
+          </p>
+        </div>
+      </section>
 
-              <ul className="space-y-3 mt-6">
-                {forYou.map((item) => (
-                  <li key={item} className="flex items-start gap-3 text-slate-600">
-                    <span className="mt-0.5 flex-shrink-0 font-bold" style={{ color: '#B9945F' }}>✓</span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-
-              <div className="mt-8 pt-6 border-t border-border-default">
-                <p className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">
-                  Et NON fait pour toi si :
-                </p>
-                <ul className="space-y-2">
-                  {notForYou.map((item) => (
-                    <li key={item} className="flex items-start gap-3 text-slate-400 text-sm">
-                      <span className="text-red-400 mt-0.5 flex-shrink-0">✗</span>
-                      {item}
-                    </li>
-                  ))}
-                </ul>
+      {/* ── CARTE FORMATION ── */}
+      <section
+        className="py-16 md:py-20"
+        style={{ background: "#FAF6F0" }}
+      >
+        <div className="max-w-xl mx-auto px-6">
+          <div
+            className="rounded-3xl overflow-hidden shadow-lg"
+            style={{
+              background: "#FFFFFF",
+              border: "1px solid rgba(185,148,95,0.12)",
+            }}
+          >
+            {/* Image */}
+            <div className="relative aspect-[16/9]">
+              <Image
+                src="https://cdn.sanity.io/images/lewexa74/production/28a2c5acbe2ee16169d4ace1ab0522481c43d356-1170x2080.jpg?auto=format&q=82&w=800"
+                alt="Jules et Elio, fondateurs de Van Business Academy"
+                fill
+                className="object-cover"
+                unoptimized
+              />
+              {/* Badge overlay */}
+              <div className="absolute bottom-4 left-4">
+                <span
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-bold text-white backdrop-blur-sm"
+                  style={{
+                    background: "rgba(185,148,95,0.85)",
+                  }}
+                >
+                  🎓 Van Business Academy™
+                </span>
               </div>
             </div>
 
-            <div className="flex justify-center">
-              <Image
-                src="https://cdn.sanity.io/images/lewexa74/production/e8d8a66703e846a5bd916e38bd9a488b663ce433-1920x1080.png?auto=format&q=82"
-                alt="Aménagement intérieur de van - Van Business Academy"
-                width={800}
-                height={600}
-                className="w-full h-auto max-w-lg"
-                priority
-              />
+            {/* Contenu */}
+            <div className="px-6 py-8 sm:px-8">
+              <div className="space-y-5">
+                {/* Bullet 1 - Pour qui */}
+                <div className="flex items-start gap-3">
+                  <span
+                    className="flex-shrink-0 w-8 h-8 rounded-xl flex items-center justify-center text-base mt-0.5"
+                    style={{
+                      background: "rgba(185,148,95,0.10)",
+                    }}
+                  >
+                    🎯
+                  </span>
+                  <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
+                    Pour celles et ceux qui veulent réaménager leur van,
+                    l&apos;exploiter intelligemment et construire leur liberté
+                    projet après projet.
+                  </p>
+                </div>
+
+                {/* Bullet 2 - Comment */}
+                <div className="flex items-start gap-3">
+                  <span
+                    className="flex-shrink-0 w-8 h-8 rounded-xl flex items-center justify-center text-base mt-0.5"
+                    style={{
+                      background: "rgba(185,148,95,0.10)",
+                    }}
+                  >
+                    🗺️
+                  </span>
+                  <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
+                    Une méthode progressive : du choix du van à la revente, en
+                    passant par l&apos;aménagement, l&apos;homologation et
+                    l&apos;exploitation.
+                  </p>
+                </div>
+
+                {/* Bullet 3 - Promesse */}
+                <div className="flex items-start gap-3">
+                  <span
+                    className="flex-shrink-0 w-8 h-8 rounded-xl flex items-center justify-center text-base mt-0.5"
+                    style={{
+                      background: "rgba(185,148,95,0.10)",
+                    }}
+                  >
+                    🔧
+                  </span>
+                  <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
+                    Une formation 100% terrain, créée par des loueurs de vans en
+                    activité au Pays Basque.
+                  </p>
+                </div>
+              </div>
+
+              {/* CTA */}
+              <div className="mt-8">
+                <Link
+                  href="/van-business-academy/inscription"
+                  className="block w-full text-center font-bold text-white py-4 rounded-xl text-base sm:text-lg transition-all hover:scale-[1.02] hover:shadow-lg"
+                  style={{
+                    background:
+                      "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
+                    boxShadow:
+                      "0 4px 18px rgba(185, 148, 95, 0.45)",
+                  }}
+                >
+                  En savoir plus →
+                </Link>
+              </div>
             </div>
           </div>
         </div>
       </section>
-
-      <section className="bg-[#F8FAFC] py-20">
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
-              Apprenez de ceux qui l&apos;ont fait
-            </h2>
-            <p className="text-slate-500 mt-3 max-w-xl mx-auto">
-              Jules et Elio n&apos;enseignent que ce qu&apos;ils ont construit,
-              testé et vécu eux-mêmes.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-3 gap-3 md:gap-4 rounded-2xl overflow-hidden">
-            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden">
-              <Image
-                src="https://cdn.sanity.io/images/lewexa74/production/16f9120e659bdd4bba47e663e9df9a1a9293fe3f-1170x2080.jpg?auto=format&q=82"
-                alt="Jules co-fondateur Vanzon Explorer - formateur vanlife et aménagement van Pays Basque"
-                fill
-                className="object-cover hover:scale-105 transition-transform duration-500"
-              />
-            </div>
-            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden">
-              <Image
-                src="https://cdn.sanity.io/images/lewexa74/production/28a2c5acbe2ee16169d4ace1ab0522481c43d356-1170x2080.jpg?auto=format&q=82"
-                alt="Jules et Elio fondateurs Vanzon Explorer - experts location van aménagé Pays Basque"
-                fill
-                className="object-cover hover:scale-105 transition-transform duration-500"
-              />
-            </div>
-            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden">
-              <Image
-                src="https://cdn.sanity.io/images/lewexa74/production/325f3ebf1d68fd890487229864c73cc65bef20d3-1186x1654.png?auto=format&q=82"
-                alt="Elio co-fondateur Vanzon Explorer - expert mécanique et construction van aménagé"
-                fill
-                className="object-cover hover:scale-105 transition-transform duration-500"
-              />
-            </div>
-          </div>
-
-          <div className="mt-8 text-center max-w-2xl mx-auto">
-            <p className="text-slate-600 leading-relaxed">
-              <span className="font-semibold text-slate-900">Jules &amp; Elio</span> — Deux passionnés de vanlife et de liberté. Elio maîtrise la mécanique et l&apos;aménagement. Jules pilote le business et la rentabilité. Ensemble, ils t&apos;accompagnent pour transformer ton van en projet solide et rentable.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <ProgrammeAccordion />
-
-      <section className="py-20" style={{ background: '#FAF6F0' }}>
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
-              Pourquoi Van Business Academy ?
-            </h2>
-            <p className="text-slate-500 mt-3 max-w-xl mx-auto">
-              Pas un accompagnement de plus. Une méthode moderne créée par des
-              jeunes qui vivent la vanlife.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {differentiators.map((d) => (
-              <GlassCard key={d.title}>
-                <span className="text-2xl">{d.icon}</span>
-                <h3 className="text-base font-semibold text-slate-900 mt-3">
-                  {d.title}
-                </h3>
-                <p className="text-sm text-slate-500 mt-2 leading-relaxed">
-                  {d.description}
-                </p>
-              </GlassCard>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <ComparisonSection />
-
-      <section className="bg-white py-20">
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-slate-900">
-              Ce que disent nos élèves
-            </h2>
-            <p className="text-slate-500 mt-2">Avis vérifiés sur Trustpilot</p>
-          </div>
-
-          <SylvainTestimonial />
-
-          <div className="text-center mt-8">
-            <a
-              href="https://www.trustpilot.com/review/vanzonexplorer.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm font-medium hover:underline"
-              style={{ color: '#B9945F' }}
-            >
-              Voir tous les avis sur Trustpilot →
-            </a>
-          </div>
-        </div>
-      </section>
-
-      <FormationFAQ />
-
-      <FormationCTA />
-
-      <OtherServices current="formation" bgColor="#FAF6F0" />
-
     </>
   );
 }
