@@ -1,14 +1,15 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { loadCalendlyAssets, CALENDLY_URL, type CalendlyWindow } from "@/lib/calendly";
+import { loadCalendlyAssets, CALENDLY_URL, type CalendlyWindow, type CalendlyPrefill } from "@/lib/calendly";
 
 interface CalendlyInlineProps {
   url?: string;
   height?: number;
+  prefill?: CalendlyPrefill;
 }
 
-export default function CalendlyInline({ url = CALENDLY_URL, height = 700 }: CalendlyInlineProps) {
+export default function CalendlyInline({ url = CALENDLY_URL, height = 700, prefill }: CalendlyInlineProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [loaded, setLoaded] = useState(false);
 
@@ -21,8 +22,9 @@ export default function CalendlyInline({ url = CALENDLY_URL, height = 700 }: Cal
     (window as CalendlyWindow).Calendly?.initInlineWidget({
       url,
       parentElement: containerRef.current,
+      prefill,
     });
-  }, [loaded, url]);
+  }, [loaded, url, prefill]);
 
   if (!loaded) {
     return (

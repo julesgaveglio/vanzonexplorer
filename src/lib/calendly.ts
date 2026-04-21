@@ -1,7 +1,12 @@
 export const CALENDLY_URL = "https://calendly.com/vanzonexplorer/accompagnement";
 
+export interface CalendlyPrefill {
+  name?: string;
+  email?: string;
+}
+
 export type CalendlyWindow = Window & {
-  Calendly?: { initInlineWidget: (opts: { url: string; parentElement: HTMLElement }) => void };
+  Calendly?: { initInlineWidget: (opts: { url: string; parentElement: HTMLElement; prefill?: CalendlyPrefill }) => void };
 };
 
 export function loadCalendlyAssets(): Promise<void> {

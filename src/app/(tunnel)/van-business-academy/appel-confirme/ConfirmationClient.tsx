@@ -87,9 +87,9 @@ export default function ConfirmationClient() {
         </h2>
         <div className="space-y-3">
           {[
-            "Réfléchis à ton budget disponible pour te lancer",
             "Note tes questions sur le business de van aménagé",
             "Pense à ta timeline idéale pour démarrer",
+            "Réfléchis à ton budget disponible pour te lancer",
             "Installe-toi dans un endroit calme le jour de l'appel",
           ].map((item) => (
             <div key={item} className="flex items-start gap-3">
@@ -106,42 +106,6 @@ export default function ConfirmationClient() {
           ))}
         </div>
       </GlassCard>
-
-      {/* Testimonial — Avis Sylvain Trustpilot */}
-      <div
-        className="rounded-2xl px-6 py-5 mb-8"
-        style={{
-          background: "rgba(255,255,255,0.85)",
-          border: "1px solid rgba(185,148,95,0.15)",
-        }}
-      >
-        <div className="flex items-center gap-2 mb-2">
-          <div className="flex gap-0.5">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <span key={i} className="text-amber-400 text-sm">★</span>
-            ))}
-          </div>
-          <span className="text-[11px] text-slate-400 font-medium">Trustpilot</span>
-        </div>
-        <p className="text-slate-600 text-sm leading-relaxed italic mb-3">
-          &ldquo;Je tiens à remercier Jules pour sa formation dédiée à l&apos;aménagement de van.
-          Avant, j&apos;étais un peu perdu. J&apos;avais regardé plusieurs vidéos sur Internet,
-          mais rien n&apos;était vraiment structuré. Aujourd&apos;hui, je suis fier d&apos;avoir
-          commencé mon propre aménagement. C&apos;est une fierté indescriptible.&rdquo;
-        </p>
-        <div className="flex items-center gap-3">
-          <div
-            className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0"
-            style={{ background: "linear-gradient(135deg, #B9945F, #8B6B3D)" }}
-          >
-            S
-          </div>
-          <div>
-            <p className="text-sm font-semibold text-slate-800">Sylvain Delonca</p>
-            <p className="text-[11px] text-slate-400">Élève Van Business Academy</p>
-          </div>
-        </div>
-      </div>
 
       {/* Link back */}
       <div className="text-center">

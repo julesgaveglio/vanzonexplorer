@@ -53,7 +53,7 @@ export default function OptinForm() {
       <div>
         <input
           type="text"
-          placeholder="Votre prénom"
+          placeholder="Ton prénom"
           value={firstname}
           onChange={(e) => setFirstname(e.target.value)}
           required
@@ -71,7 +71,7 @@ export default function OptinForm() {
       <div>
         <input
           type="email"
-          placeholder="Votre email"
+          placeholder="Ton email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required

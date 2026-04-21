@@ -9,6 +9,7 @@ import { trackEvent } from "@/lib/meta-pixel";
 export default function BookingClient() {
   const router = useRouter();
   const [firstname, setFirstname] = useState("");
+  const [email, setEmail] = useState("");
 
   useEffect(() => {
     const data = getFunnelData();
@@ -17,6 +18,7 @@ export default function BookingClient() {
       return;
     }
     setFirstname(data.firstname);
+    setEmail(data.email);
 
     // Track step
     trackEvent("Schedule", { content_name: "vba-booking" });
@@ -81,7 +83,10 @@ export default function BookingClient() {
 
       {/* Calendly inline */}
       <div className="rounded-2xl overflow-hidden border" style={{ borderColor: "rgba(0,0,0,0.06)" }}>
-        <CalendlyInline height={700} />
+        <CalendlyInline
+          height={700}
+          prefill={firstname ? { name: firstname, email } : undefined}
+        />
       </div>
 
       {/* Reassurance */}

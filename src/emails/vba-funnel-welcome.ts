@@ -7,7 +7,7 @@ export function buildVBAWelcomeEmail({ firstname, vslUrl }: VBAWelcomeEmailProps
   subject: string;
   html: string;
 } {
-  const subject = `${firstname}, votre vidéo est prête`;
+  const subject = `${firstname}, ta vidéo est prête`;
 
   const html = `
 <!DOCTYPE html>
@@ -25,12 +25,12 @@ export function buildVBAWelcomeEmail({ firstname, vslUrl }: VBAWelcomeEmailProps
     <div style="background:#FFFFFF;border-radius:16px;padding:40px 32px;box-shadow:0 1px 3px rgba(0,0,0,0.06);">
 
       <h1 style="margin:0 0 16px 0;font-size:24px;font-weight:800;color:#0F172A;line-height:1.3;">
-        ${firstname}, votre vidéo vous attend
+        ${firstname}, ta vidéo t'attend
       </h1>
 
       <p style="margin:0 0 24px 0;font-size:15px;color:#475569;line-height:1.7;">
-        Vous avez fait le premier pas vers la création de votre business de van aménagé.
-        Dans cette vidéo, vous allez découvrir exactement comment passer de zéro à un business rentable,
+        Tu as fait le premier pas vers la création de ton business de van aménagé.
+        Dans cette vidéo, tu vas découvrir exactement comment passer de zéro à un business rentable,
         même sans expérience en mécanique ou en aménagement.
       </p>
 
@@ -42,7 +42,7 @@ export function buildVBAWelcomeEmail({ firstname, vslUrl }: VBAWelcomeEmailProps
       </div>
 
       <p style="margin:0;font-size:13px;color:#94A3B8;line-height:1.6;text-align:center;">
-        Prenez 15 minutes au calme, activez le son, et regardez jusqu'à la fin.
+        Prends 15 minutes au calme, active le son, et regarde jusqu'à la fin.
       </p>
 
     </div>

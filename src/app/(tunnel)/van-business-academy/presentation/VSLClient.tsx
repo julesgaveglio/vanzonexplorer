@@ -10,7 +10,7 @@ const VIDEO_HLS_URL =
   "https://vz-c0494fd3-b7d.b-cdn.net/71157b6a-e2a6-408b-ba1c-b46550cf01ef/playlist.m3u8";
 const VIDEO_POSTER =
   "https://vz-c0494fd3-b7d.b-cdn.net/71157b6a-e2a6-408b-ba1c-b46550cf01ef/thumbnail.jpg";
-const CTA_DELAY_SECONDS = 440; // 7min20
+const CTA_DELAY_SECONDS = 180; // 3min
 
 const QUALITY_OPTIONS = [
   { label: "Auto", value: -1 },
@@ -209,7 +209,7 @@ export default function VSLClient() {
         className="font-display text-2xl sm:text-3xl text-center leading-tight mb-3"
         style={{ color: "#0F172A" }}
       >
-        Comment construire sa liberté avec les vans aménagés
+        Découvre la méthode pour construire ta liberté intérieure grâce aux vans aménagés
       </h1>
 
       {/* Instruction */}
