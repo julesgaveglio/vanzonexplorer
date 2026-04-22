@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { Shield, CheckCircle, Zap, BookOpen, Headphones } from "lucide-react";
+import LiquidButton from "@/components/ui/LiquidButton";
 
 const FEATURES = [
   { icon: BookOpen, text: "8 modules, 60+ vidéos terrain" },
@@ -63,6 +65,17 @@ export default function CheckoutClient() {
           border: "1px solid rgba(185,148,95,0.15)",
         }}
       >
+        {/* Image */}
+        <div className="relative aspect-[3/2]">
+          <Image
+            src="https://cdn.sanity.io/images/lewexa74/production/323c9f640fbc20593e70cca82009bfc8ab353fcd-1459x955.png?auto=format&fit=max&q=82"
+            alt="Van Business Academy — Formation complète"
+            fill
+            className="object-cover"
+            unoptimized
+          />
+        </div>
+
         <div className="px-6 py-8 sm:px-8">
           {/* Price */}
           <div className="text-center mb-8">
@@ -109,18 +122,15 @@ export default function CheckoutClient() {
           </div>
 
           {/* CTA */}
-          <button
+          <LiquidButton
+            variant="gold"
+            size="responsive"
+            fullWidth
             onClick={handleCheckout}
             disabled={loading}
-            className="block w-full text-center font-bold text-white py-4 rounded-xl text-base sm:text-lg transition-all hover:scale-[1.02] hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed"
-            style={{
-              background:
-                "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
-              boxShadow: "0 4px 18px rgba(185, 148, 95, 0.45)",
-            }}
           >
             {loading ? "Redirection..." : "Accéder à la formation →"}
-          </button>
+          </LiquidButton>
 
           {/* Trust */}
           <div className="flex items-center justify-center gap-2 mt-4">
