@@ -50,7 +50,7 @@ const ARTICLE_CATEGORY_CTA: Record<string, CTAConfig> = {
   "Pays Basque": { btnLabel: "Louer un van au Pays Basque", href: "/location", ...PALETTE.blue },
   "Aménagement Van": { btnLabel: "Trouver mon van", href: "/achat", ...PALETTE.slate },
   "Achat Van": { btnLabel: "Trouver mon van", href: "/achat", ...PALETTE.slate },
-  "Business Van": { btnLabel: "Découvrir la formation", href: "/formation", ...PALETTE.gold },
+  // Business Van: disabled — VSLStickyBar handles mobile CTA on these articles
   "Club": { btnLabel: "Rejoindre le Club", href: "/club", ...PALETTE.purple },
 };
 

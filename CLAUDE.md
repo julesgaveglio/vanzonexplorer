@@ -128,6 +128,25 @@ Sections: Dashboard, SEO Analytics, Mots-Clés, Performance (PSI), Blog, Vans, M
 - API routes : `/api/admin/vba/modules`, `/api/admin/vba/lessons`
 - Server Actions pour marquage complétion : `src/app/(site)/dashboard/vba/_actions.ts`
 
+## VSL Acquisition Strategy (articles Business Van)
+
+Tous les articles avec `category === "Business Van"` integrent automatiquement un systeme d'acquisition VSL a 3 couches pointant vers `/van-business-academy/presentation`.
+
+**Detection** : basee sur le champ Sanity `category`. Pas de champ `articleIntent` separe.
+
+**Composants** (conditionnels dans `articles/[slug]/page.tsx`) :
+- `VSLHeroBanner` (`src/components/marketing/VSLHeroBanner.tsx`) — above-the-fold, avant le contenu
+- `VSLCalloutBlock` (`src/components/marketing/VSLCalloutBlock.tsx`) — fin d'article, remplace RoadTripCTA
+- `VSLStickyBar` (`src/components/marketing/VSLStickyBar.tsx`) — barre mobile apres 40% scroll, fermable
+
+**URL centralisee** : `src/lib/constants/vsl.ts` — ne JAMAIS hardcoder l'URL VSL ailleurs. Utiliser `buildVslUrl(layer, slug)` pour les UTM.
+
+**FloatingCTA** : desactive sur articles "Business Van" (la VSLStickyBar prend le relais).
+
+**Blog-writer-agent** : si `category === "Business Van"`, le prompt Gemini injecte 2-3 liens inline naturels vers la VSL dans le corps de l'article. Logging en console.
+
+**Regle absolue** : ces composants ne doivent JAMAIS apparaitre sur des articles travel/destinations/spots — uniquement sur Business Van.
+
 ## Environment Variables
 
 Required in `.env.local`:

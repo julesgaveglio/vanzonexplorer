@@ -16,6 +16,9 @@ import ArticleFAQ from "./_components/ArticleFAQ";
 import ArticleCategorySync from "./_components/ArticleCategorySync";
 import ShareButton from "./_components/ShareButton";
 import RoadTripCTA from "@/components/ui/RoadTripCTA";
+import VSLHeroBanner from "@/components/marketing/VSLHeroBanner";
+import VSLCalloutBlock from "@/components/marketing/VSLCalloutBlock";
+import VSLStickyBar from "@/components/marketing/VSLStickyBar";
 import {
   extractHeadings,
   extractFAQ,
@@ -147,6 +150,7 @@ export default async function ArticleDetailPage({
   // de la page (in-body SectionCTA, RoadTripCTA bottom, footer "Louer un van").
   // Piloté par le champ Sanity ctaResolved (cf. spec 2026-04-11-dynamic-article-ctas).
   const hideVanzonCTAs = article.ctaResolved === "none";
+  const isBusinessVan = article.category === "Business Van";
 
   return (
     <main className="min-h-screen bg-white">
@@ -265,6 +269,11 @@ export default async function ArticleDetailPage({
             </nav>
           )}
 
+          {/* ── VSL Hero Banner (Business Van only) ── */}
+          {isBusinessVan && !hideVanzonCTAs && (
+            <VSLHeroBanner articleSlug={article.slug} />
+          )}
+
           {/* ── Article body with CTA injection ── */}
           {content.length > 0 ? (
             <div>
@@ -353,8 +362,12 @@ export default async function ArticleDetailPage({
             </div>
           )}
 
-          {/* ── Road Trip CTA (masqué sur articles "none") ── */}
-          {!hideVanzonCTAs && <RoadTripCTA />}
+          {/* ── VSL Callout Block (Business Van) or Road Trip CTA ── */}
+          {isBusinessVan && !hideVanzonCTAs ? (
+            <VSLCalloutBlock articleSlug={article.slug} />
+          ) : (
+            !hideVanzonCTAs && <RoadTripCTA />
+          )}
 
           {/* ── Footer CTA ── */}
           <div className="mt-12 pt-10 border-t border-slate-100">
@@ -389,6 +402,11 @@ export default async function ArticleDetailPage({
           <ArticleTOC headings={headings} />
         </div>
       </div>
+
+      {/* ── VSL Sticky Bar mobile (Business Van only) ── */}
+      {isBusinessVan && !hideVanzonCTAs && (
+        <VSLStickyBar articleSlug={article.slug} />
+      )}
     </main>
   );
 }

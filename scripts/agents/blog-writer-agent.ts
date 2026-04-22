@@ -997,6 +997,24 @@ Format: [texte ancre descriptif](url) — intègre dans des phrases naturelles, 
 
 Réponds UNIQUEMENT avec le texte markdown. Aucune explication, aucune balise, aucun JSON.`;
 
+  // VSL inline links injection for Business Van articles
+  if (article.category === "Business Van") {
+    bodyPrompt += `
+
+LIENS VSL (OBLIGATOIRE pour cet article Business Van)
+Insere 2 a 3 liens naturels vers la video gratuite dans le corps de l'article.
+URL: /van-business-academy/presentation
+Anchor texts varies (exemples, adapte au contexte) :
+- "j'explique en detail ces erreurs dans ma video gratuite"
+- "j'ai detaille tout le calcul dans cette video"
+- "tu peux regarder la video complete ici"
+- "je montre exactement comment faire dans cette video gratuite"
+Place-les apres avoir evoque une difficulte, une erreur, un calcul ou une decision technique.
+Ne force JAMAIS un lien hors-sujet. Integre-les naturellement dans le flux du texte.
+Format: [anchor text](/van-business-academy/presentation)`;
+    console.log(`  [VSL] Business Van article — VSL inline links injection enabled`);
+  }
+
   // Injection des notes mémoire Supabase si pertinentes
   try {
     const memories = await searchVanzonMemory({ query: article.targetKeyword ?? article.title, limit: 5 });
