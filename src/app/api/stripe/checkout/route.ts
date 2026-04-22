@@ -6,7 +6,7 @@ const PROMO_CODES: Record<string, number> = {
   LANCEMENT: 99700, // 997 €
 };
 
-const DEFAULT_PRICE = 149700; // 1497 €
+const DEFAULT_PRICE = 100; // 1 € (TEST)
 
 export async function POST(req: Request) {
   try {
