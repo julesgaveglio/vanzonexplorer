@@ -101,7 +101,7 @@ export default function CheckoutClient() {
         {/* Image */}
         <div className="relative aspect-[3/2]">
           <Image
-            src="https://cdn.sanity.io/images/lewexa74/production/323c9f640fbc20593e70cca82009bfc8ab353fcd-1459x955.png?auto=format&fit=max&q=82"
+            src="https://cdn.sanity.io/images/lewexa74/production/e8d8a66703e846a5bd916e38bd9a488b663ce433-1920x1080.png?w=600&h=450&fit=crop&auto=format&q=80"
             alt="Van Business Academy — Formation complète"
             fill
             className="object-cover"
@@ -198,7 +198,7 @@ export default function CheckoutClient() {
                 <button
                   onClick={handleApplyPromo}
                   className="px-4 py-3 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90"
-                  style={{ background: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)" }}
+                  style={{ background: "#0F172A" }}
                 >
                   Appliquer
                 </button>
