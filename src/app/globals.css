@@ -23,6 +23,11 @@ body {
   background: var(--bg-primary);
 }
 
+/* ━━━ Typographie Vanzon — Rubik titres, Inter body ━━━ */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-rubik), sans-serif;
+}
+
 /* ━━━ Classes utilitaires Glass — Thème blanc ━━━ */
 @layer components {
   /* Container glass blanc */
