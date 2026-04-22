@@ -5,7 +5,7 @@ import { getFormationCardsQuery } from "@/lib/sanity/queries";
 import type { FormationCardData } from "@/components/formation/FormationCardStack";
 import FormationCardStack from "@/components/formation/FormationCardStack";
 import ComparisonSection from "@/components/formation/ComparisonSection";
-import PixelEvent from "@/components/analytics/PixelEvent";
+
 import CTAButton from "@/components/formation/CTAButton";
 
 export const metadata: Metadata = {
@@ -75,8 +75,6 @@ export default async function FormationPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(courseJsonLd) }}
       />
-
-      <PixelEvent event="ViewContent" contentName="vba-landing" />
 
       {/* ── HERO ── */}
       <section
