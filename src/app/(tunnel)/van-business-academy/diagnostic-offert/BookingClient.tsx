@@ -11,26 +11,26 @@ export default function BookingClient() {
 
   useEffect(() => {
     const data = getFunnelData();
-    if (!data) {
-      router.replace("/van-business-academy/inscription");
-      return;
+    if (data) {
+      setFirstname(data.firstname);
+      setEmail(data.email);
+      fetch("/api/van-business-academy/inscription/step", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: data.email, step: "booking" }),
+      }).catch(() => {});
     }
-    setFirstname(data.firstname);
-    setEmail(data.email);
-    fetch("/api/van-business-academy/inscription/step", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: data.email, step: "booking" }),
-    }).catch(() => {});
 
     // Listen for Calendly booking completion
     const handleMessage = (e: MessageEvent) => {
       if (e.data?.event === "calendly.event_scheduled") {
-        fetch("/api/van-business-academy/inscription/step", {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: data.email, step: "confirmed" }),
-        }).catch(() => {});
+        if (data) {
+          fetch("/api/van-business-academy/inscription/step", {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: data.email, step: "confirmed" }),
+          }).catch(() => {});
+        }
         router.push("/van-business-academy/appel-confirme");
       }
     };

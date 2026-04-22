@@ -1,23 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import GlassCard from "@/components/ui/GlassCard";
 import LiquidButton from "@/components/ui/LiquidButton";
 import { getFunnelData } from "@/lib/hooks/useUTMParams";
 
 export default function ConfirmationClient() {
-  const router = useRouter();
   const [firstname, setFirstname] = useState("");
 
   useEffect(() => {
     const data = getFunnelData();
-    if (!data) {
-      router.replace("/van-business-academy/inscription");
-      return;
+    if (data) {
+      setFirstname(data.firstname);
     }
-    setFirstname(data.firstname);
-  }, [router]);
+  }, []);
 
   return (
     <div className="max-w-lg mx-auto px-4 pb-16">
