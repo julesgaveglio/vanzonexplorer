@@ -402,8 +402,8 @@ export default function VSLClient() {
             <p className="text-xs text-slate-400 mt-3">30 minutes &middot; Gratuit &middot; Sans engagement</p>
           </div>
         ) : (
-          <p className="text-sm text-slate-400 italic animate-pulse">
-            Une surprise apparaitra juste ici...
+          <p className="text-base text-slate-400 italic animate-pulse">
+            &#127873; Une surprise apparaitra juste ici...
           </p>
         )}
       </div>
