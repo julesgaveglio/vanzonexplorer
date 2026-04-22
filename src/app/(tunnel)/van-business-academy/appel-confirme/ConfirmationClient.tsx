@@ -21,7 +21,7 @@ export default function ConfirmationClient() {
 
     // Track pixel (may already have fired from booking page postMessage,
     // but safe to fire again — Meta deduplicates)
-    trackEvent("CompleteRegistration", { content_name: "vba-confirmation" });
+    trackEvent("SubmitApplication", { content_name: "vba-appel-confirme" });
   }, [router]);
 
   return (

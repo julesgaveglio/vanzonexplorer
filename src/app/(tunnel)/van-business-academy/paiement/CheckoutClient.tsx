@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { Shield, CheckCircle, Zap, BookOpen, Headphones, Tag } from "lucide-react";
 import LiquidButton from "@/components/ui/LiquidButton";
+import { trackEvent } from "@/lib/meta-pixel";
 
 const FEATURES = [
   { icon: BookOpen, text: "8 modules, 60+ vidéos terrain" },
@@ -45,6 +46,11 @@ export default function CheckoutClient() {
 
   const handleCheckout = async () => {
     setLoading(true);
+    trackEvent("InitiateCheckout", {
+      content_name: "vba",
+      value: promo ? promo.amount / 100 : 1497,
+      currency: "EUR",
+    });
     try {
       const res = await fetch("/api/stripe/checkout", {
         method: "POST",

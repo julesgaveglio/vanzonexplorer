@@ -38,7 +38,7 @@ export default function BookingClient() {
           body: JSON.stringify({ email: data.email, step: "confirmed" }),
         }).catch(() => {});
 
-        trackEvent("CompleteRegistration", { content_name: "vba-confirmation" });
+        trackEvent("SubmitApplication", { content_name: "vba-appel-confirme" });
         router.push("/van-business-academy/appel-confirme");
       }
     };
