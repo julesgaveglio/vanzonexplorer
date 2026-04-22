@@ -6,25 +6,29 @@ import { Shield, CheckCircle, Zap, BookOpen, Headphones, Tag } from "lucide-reac
 import LiquidButton from "@/components/ui/LiquidButton";
 
 const FEATURES = [
-  { icon: BookOpen, text: "8 modules, 60+ vidéos terrain" },
-  { icon: Zap, text: "De l'achat du van à la mise en location" },
-  { icon: Headphones, text: "Accès à vie, mises à jour incluses" },
+  { icon: BookOpen, text: "8 modules, 60+ videos terrain" },
+  { icon: Zap, text: "De l'achat du van a la mise en location" },
+  { icon: Headphones, text: "Acces a vie, mises a jour incluses" },
 ];
 
-const PROMO_PRICES: Record<string, { price: string; amount: number }> = {
-  LANCEMENT: { price: "997", amount: 99700 },
+const PROMO_PRICES: Record<string, { total: number; label: string; savings: string }> = {
+  LANCEMENT: { total: 99700, label: "997", savings: "500" },
 };
 
-const DEFAULT_PRICE = "1 497";
+const DEFAULT_TOTAL = 149700;
+const DEFAULT_LABEL = "1 497";
 
 export default function CheckoutClient() {
   const [loading, setLoading] = useState(false);
   const [promoCode, setPromoCode] = useState("");
   const [appliedCode, setAppliedCode] = useState("");
   const [promoError, setPromoError] = useState("");
+  const [paymentMode, setPaymentMode] = useState<"1x" | "4x">("1x");
 
   const promo = PROMO_PRICES[appliedCode];
-  const displayPrice = promo ? promo.price : DEFAULT_PRICE;
+  const totalAmount = promo ? promo.total : DEFAULT_TOTAL;
+  const displayPrice = promo ? promo.label : DEFAULT_LABEL;
+  const installmentPrice = Math.ceil(totalAmount / 4 / 100);
 
   const handleApplyPromo = () => {
     const code = promoCode.toUpperCase().trim();
@@ -49,7 +53,10 @@ export default function CheckoutClient() {
       const res = await fetch("/api/stripe/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ promoCode: appliedCode }),
+        body: JSON.stringify({
+          promoCode: appliedCode,
+          installments: paymentMode === "4x" ? 4 : undefined,
+        }),
       });
       const data = await res.json();
       if (data.url) {
@@ -59,7 +66,7 @@ export default function CheckoutClient() {
         setLoading(false);
       }
     } catch {
-      alert("Erreur réseau. Réessaie.");
+      alert("Erreur reseau. Reessaie.");
       setLoading(false);
     }
   };
@@ -85,9 +92,6 @@ export default function CheckoutClient() {
         >
           Rejoins la formation
         </h1>
-        <p className="text-slate-500 text-base">
-          Paiement unique, accès à vie.
-        </p>
       </div>
 
       {/* Card */}
@@ -102,7 +106,7 @@ export default function CheckoutClient() {
         <div className="relative aspect-[3/1] max-h-[180px]">
           <Image
             src="https://cdn.sanity.io/images/lewexa74/production/e8d8a66703e846a5bd916e38bd9a488b663ce433-1920x1080.png?w=600&h=450&fit=crop&auto=format&q=80"
-            alt="Van Business Academy — Formation complète"
+            alt="Van Business Academy"
             fill
             className="object-cover"
             unoptimized
@@ -110,23 +114,61 @@ export default function CheckoutClient() {
         </div>
 
         <div className="px-6 py-8 sm:px-8">
+          {/* Payment mode selector */}
+          <div className="flex gap-3 mb-8">
+            <button
+              onClick={() => setPaymentMode("1x")}
+              className={`flex-1 py-3 px-4 rounded-xl text-sm font-semibold border-2 transition-all ${
+                paymentMode === "1x"
+                  ? "border-slate-900 bg-slate-900 text-white"
+                  : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
+              }`}
+            >
+              Paiement unique
+            </button>
+            <button
+              onClick={() => setPaymentMode("4x")}
+              className={`flex-1 py-3 px-4 rounded-xl text-sm font-semibold border-2 transition-all ${
+                paymentMode === "4x"
+                  ? "border-slate-900 bg-slate-900 text-white"
+                  : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
+              }`}
+            >
+              4x sans frais
+            </button>
+          </div>
+
           {/* Price */}
           <div className="text-center mb-8">
-            <div className="flex items-baseline justify-center gap-2">
-              {promo && (
-                <span className="text-2xl font-bold text-slate-300 line-through">
-                  1 497 €
-                </span>
-              )}
-              <span className="text-5xl font-black text-slate-900">{displayPrice}</span>
-              <span className="text-xl font-bold text-slate-400">€</span>
-            </div>
-            <p className="text-sm text-slate-400 mt-2">Paiement unique</p>
+            {paymentMode === "1x" ? (
+              <>
+                <div className="flex items-baseline justify-center gap-2">
+                  {promo && (
+                    <span className="text-2xl font-bold text-slate-300 line-through">
+                      1 497 EUR
+                    </span>
+                  )}
+                  <span className="text-5xl font-black text-slate-900">{displayPrice}</span>
+                  <span className="text-xl font-bold text-slate-400">EUR</span>
+                </div>
+                <p className="text-sm text-slate-400 mt-2">Paiement unique</p>
+              </>
+            ) : (
+              <>
+                <div className="flex items-baseline justify-center gap-2">
+                  <span className="text-5xl font-black text-slate-900">{installmentPrice}</span>
+                  <span className="text-xl font-bold text-slate-400">EUR/mois</span>
+                </div>
+                <p className="text-sm text-slate-400 mt-2">
+                  4 mensualites de {installmentPrice} EUR soit {displayPrice} EUR au total
+                </p>
+              </>
+            )}
             {promo && (
               <div className="flex items-center justify-center gap-1.5 mt-2">
                 <Tag className="w-3.5 h-3.5" style={{ color: "#22C55E" }} />
                 <span className="text-sm font-semibold" style={{ color: "#22C55E" }}>
-                  Code {appliedCode} appliqué — 500 € de réduction
+                  Code {appliedCode} - {promo.savings} EUR de reduction
                 </span>
               </div>
             )}
@@ -153,9 +195,9 @@ export default function CheckoutClient() {
           {/* What you get */}
           <div className="space-y-2.5 mb-8">
             {[
-              "Méthode progressive : acheter, aménager, louer, revendre",
+              "Methode progressive : acheter, amenager, louer, revendre",
               "Outils IA et templates inclus",
-              "Créée par des loueurs en activité au Pays Basque",
+              "Creee par des loueurs en activite au Pays Basque",
             ].map((item) => (
               <div key={item} className="flex items-start gap-2.5">
                 <CheckCircle
@@ -217,14 +259,18 @@ export default function CheckoutClient() {
             onClick={handleCheckout}
             disabled={loading}
           >
-            {loading ? "Redirection..." : "Accéder à la formation →"}
+            {loading
+              ? "Redirection..."
+              : paymentMode === "4x"
+                ? `Payer ${installmentPrice} EUR/mois pendant 4 mois`
+                : "Acceder a la formation"}
           </LiquidButton>
 
           {/* Trust */}
           <div className="flex items-center justify-center gap-2 mt-4">
             <Shield className="w-4 h-4 text-slate-400" />
             <p className="text-xs text-slate-400">
-              Paiement sécurisé par Stripe
+              Paiement securise par Stripe
             </p>
           </div>
         </div>

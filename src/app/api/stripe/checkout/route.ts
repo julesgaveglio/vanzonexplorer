@@ -12,21 +12,74 @@ export async function POST(req: Request) {
   try {
     const { userId } = await auth();
     if (!userId) {
-      return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
+      return NextResponse.json({ error: "Non authentifie" }, { status: 401 });
     }
 
     const body = await req.json().catch(() => ({}));
     const code = (body.promoCode || "").toUpperCase().trim();
+    const installments = body.installments === 4; // true = 4x, false = 1x
 
-    const unitAmount = PROMO_CODES[code] ?? DEFAULT_PRICE;
+    const totalAmount = PROMO_CODES[code] ?? DEFAULT_PRICE;
 
     const user = await currentUser();
     const email = user?.emailAddresses?.[0]?.emailAddress ?? undefined;
     const name = user?.firstName ?? undefined;
 
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://vanzonexplorer.com";
+    const stripe = getStripe();
 
-    const session = await getStripe().checkout.sessions.create({
+    if (installments) {
+      // 4x sans frais via Stripe Subscriptions (4 mois)
+      const installmentAmount = Math.ceil(totalAmount / 4);
+
+      // Create or retrieve customer
+      const customers = await stripe.customers.list({ email, limit: 1 });
+      let customer = customers.data[0];
+      if (!customer) {
+        customer = await stripe.customers.create({
+          email,
+          name: name || undefined,
+          metadata: { clerk_user_id: userId },
+        });
+      }
+
+      // Create a price for the installment
+      const price = await stripe.prices.create({
+        currency: "eur",
+        unit_amount: installmentAmount,
+        recurring: { interval: "month", interval_count: 1 },
+        product_data: {
+          name: "Van Business Academy - 4x sans frais",
+        },
+      });
+
+      const session = await stripe.checkout.sessions.create({
+        mode: "subscription",
+        customer: customer.id,
+        payment_method_types: ["card"],
+        metadata: {
+          clerk_user_id: userId,
+          product: "vba",
+          promo_code: code || "none",
+          payment_type: "4x",
+        },
+        subscription_data: {
+          metadata: {
+            clerk_user_id: userId,
+            product: "vba",
+            cancel_after_payments: "4",
+          },
+        },
+        line_items: [{ price: price.id, quantity: 1 }],
+        success_url: `${siteUrl}/van-business-academy/paiement-confirme?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${siteUrl}/van-business-academy/paiement`,
+      });
+
+      return NextResponse.json({ url: session.url });
+    }
+
+    // Paiement unique
+    const session = await stripe.checkout.sessions.create({
       mode: "payment",
       payment_method_types: ["card"],
       customer_email: email,
@@ -34,6 +87,7 @@ export async function POST(req: Request) {
         clerk_user_id: userId,
         product: "vba",
         promo_code: code || "none",
+        payment_type: "1x",
       },
       line_items: [
         {
@@ -42,23 +96,23 @@ export async function POST(req: Request) {
             product_data: {
               name: "Van Business Academy",
               description:
-                "Accès complet à la formation : 8 modules, 60+ vidéos, méthode terrain.",
+                "Acces complet a la formation : 8 modules, 60+ videos, methode terrain.",
             },
-            unit_amount: unitAmount,
+            unit_amount: totalAmount,
           },
           quantity: 1,
         },
       ],
       success_url: `${siteUrl}/van-business-academy/paiement-confirme?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${siteUrl}/van-business-academy/paiement`,
-      ...(name ? { payment_intent_data: { description: `VBA — ${name}` } } : {}),
+      ...(name ? { payment_intent_data: { description: `VBA - ${name}` } } : {}),
     });
 
     return NextResponse.json({ url: session.url });
   } catch (err) {
     console.error("[stripe/checkout] Error:", err);
     return NextResponse.json(
-      { error: "Erreur lors de la création du paiement." },
+      { error: "Erreur lors de la creation du paiement." },
       { status: 500 }
     );
   }

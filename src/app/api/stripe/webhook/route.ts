@@ -7,7 +7,6 @@ export async function POST(req: Request) {
   const body = await req.text();
   const sig = req.headers.get("stripe-signature");
 
-  // If webhook secret is configured, verify signature
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
   let event: Stripe.Event;
@@ -23,15 +22,15 @@ export async function POST(req: Request) {
     event = JSON.parse(body) as Stripe.Event;
   }
 
+  const supabase = createSupabaseAdmin();
+
+  // Payment unique or first installment payment
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
     const clerkUserId = session.metadata?.clerk_user_id;
     const product = session.metadata?.product;
 
     if (clerkUserId && product === "vba") {
-      const supabase = createSupabaseAdmin();
-
-      // Update user plan to vba_member
       const { error } = await supabase
         .from("profiles")
         .update({ plan: "vba_member" })
@@ -40,7 +39,37 @@ export async function POST(req: Request) {
       if (error) {
         console.error("[stripe/webhook] Supabase update error:", error);
       } else {
-        console.log(`[stripe/webhook] ✅ User ${clerkUserId} upgraded to vba_member`);
+        console.log(`[stripe/webhook] User ${clerkUserId} upgraded to vba_member`);
+      }
+    }
+  }
+
+  // Auto-cancel subscription after 4 payments
+  if (event.type === "invoice.paid") {
+    const invoice = event.data.object as Stripe.Invoice;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const subscriptionId = (invoice as any).subscription as string | undefined;
+
+    if (subscriptionId) {
+      try {
+        const subscription = await getStripe().subscriptions.retrieve(subscriptionId);
+        const cancelAfter = subscription.metadata?.cancel_after_payments;
+
+        if (cancelAfter) {
+          // Count paid invoices for this subscription
+          const invoices = await getStripe().invoices.list({
+            subscription: subscriptionId,
+            status: "paid",
+            limit: 10,
+          });
+
+          if (invoices.data.length >= parseInt(cancelAfter, 10)) {
+            await getStripe().subscriptions.cancel(subscriptionId);
+            console.log(`[stripe/webhook] Subscription ${subscriptionId} cancelled after ${cancelAfter} payments`);
+          }
+        }
+      } catch (err) {
+        console.error("[stripe/webhook] Auto-cancel error:", err);
       }
     }
   }
