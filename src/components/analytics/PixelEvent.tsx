@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import Script from "next/script";
 
 interface PixelEventProps {
   event: string;
@@ -10,34 +10,18 @@ interface PixelEventProps {
 }
 
 export default function PixelEvent({ event, contentName, value, currency }: PixelEventProps) {
-  const fired = useRef(false);
+  const parts: string[] = [];
+  if (contentName) parts.push(`content_name:'${contentName}'`);
+  if (value !== undefined) parts.push(`value:${value}`);
+  if (currency) parts.push(`currency:'${currency}'`);
+  const paramsStr = parts.length > 0 ? `,{${parts.join(",")}}` : "";
 
-  useEffect(() => {
-    if (fired.current) return;
-    fired.current = true;
+  // Unique ID per event to avoid deduplication by next/script
+  const scriptId = `pixel-${event}-${contentName || "default"}-${Date.now()}`;
 
-    const params: Record<string, unknown> = {};
-    if (contentName) params.content_name = contentName;
-    if (value !== undefined) params.value = value;
-    if (currency) params.currency = currency;
-
-    const fire = () => {
-      if (typeof window !== "undefined" && typeof window.fbq === "function") {
-        window.fbq("track", event, Object.keys(params).length > 0 ? params : undefined);
-        return true;
-      }
-      return false;
-    };
-
-    // Try immediately, then retry
-    if (!fire()) {
-      let attempts = 0;
-      const interval = setInterval(() => {
-        attempts++;
-        if (fire() || attempts >= 30) clearInterval(interval);
-      }, 200);
-    }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  return null;
+  return (
+    <Script id={scriptId} strategy="lazyOnload">
+      {`(function(){var f=function(){if(typeof fbq==='function'){fbq('track','${event}'${paramsStr});return}setTimeout(f,500)};f()})();`}
+    </Script>
+  );
 }

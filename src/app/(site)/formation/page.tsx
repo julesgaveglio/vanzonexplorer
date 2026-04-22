@@ -6,6 +6,7 @@ import { getFormationCardsQuery } from "@/lib/sanity/queries";
 import type { FormationCardData } from "@/components/formation/FormationCardStack";
 import FormationCardStack from "@/components/formation/FormationCardStack";
 import ComparisonSection from "@/components/formation/ComparisonSection";
+import PixelEvent from "@/components/analytics/PixelEvent";
 
 export const metadata: Metadata = {
   title: "Van Business Academy — Construis ta liberté van par van",
@@ -75,11 +76,7 @@ export default async function FormationPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(courseJsonLd) }}
       />
 
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `(function(){var f=function(){if(typeof fbq==='function'){fbq('track','ViewContent',{content_name:'vba-landing'});return}setTimeout(f,500)};f()})();`,
-        }}
-      />
+      <PixelEvent event="ViewContent" contentName="vba-landing" />
 
       {/* ── HERO ── */}
       <section
