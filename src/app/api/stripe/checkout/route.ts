@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { stripe } from "@/lib/stripe";
+import { getStripe } from "@/lib/stripe";
 import { auth, currentUser } from "@clerk/nextjs/server";
 
 export async function POST() {
@@ -15,7 +15,7 @@ export async function POST() {
 
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://vanzonexplorer.com";
 
-    const session = await stripe.checkout.sessions.create({
+    const session = await getStripe().checkout.sessions.create({
       mode: "payment",
       payment_method_types: ["card"],
       customer_email: email,
