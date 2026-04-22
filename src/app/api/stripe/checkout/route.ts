@@ -10,20 +10,23 @@ const DEFAULT_PRICE = 149700; // 1497 €
 
 export async function POST(req: Request) {
   try {
+    // Auth is optional — unauthenticated users can still pay
     const { userId } = await auth();
-    if (!userId) {
-      return NextResponse.json({ error: "Non authentifie" }, { status: 401 });
-    }
 
     const body = await req.json().catch(() => ({}));
     const code = (body.promoCode || "").toUpperCase().trim();
-    const installments = body.installments === 4; // true = 4x, false = 1x
+    const installments = body.installments === 4;
 
     const totalAmount = PROMO_CODES[code] ?? DEFAULT_PRICE;
 
-    const user = await currentUser();
-    const email = user?.emailAddresses?.[0]?.emailAddress ?? undefined;
-    const name = user?.firstName ?? undefined;
+    let email: string | undefined;
+    let name: string | undefined;
+
+    if (userId) {
+      const user = await currentUser();
+      email = user?.emailAddresses?.[0]?.emailAddress ?? undefined;
+      name = user?.firstName ?? undefined;
+    }
 
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://vanzonexplorer.com";
     const stripe = getStripe();
@@ -39,7 +42,7 @@ export async function POST(req: Request) {
         customer = await stripe.customers.create({
           email,
           name: name || undefined,
-          metadata: { clerk_user_id: userId },
+          metadata: { clerk_user_id: userId || "anonymous" },
         });
       }
 
@@ -58,14 +61,14 @@ export async function POST(req: Request) {
         customer: customer.id,
         payment_method_types: ["card"],
         metadata: {
-          clerk_user_id: userId,
+          clerk_user_id: userId || "anonymous",
           product: "vba",
           promo_code: code || "none",
           payment_type: "4x",
         },
         subscription_data: {
           metadata: {
-            clerk_user_id: userId,
+            clerk_user_id: userId || "anonymous",
             product: "vba",
             cancel_after_payments: "4",
           },
@@ -84,7 +87,7 @@ export async function POST(req: Request) {
       payment_method_types: ["card"],
       customer_email: email,
       metadata: {
-        clerk_user_id: userId,
+        clerk_user_id: userId || "anonymous",
         product: "vba",
         promo_code: code || "none",
         payment_type: "1x",
