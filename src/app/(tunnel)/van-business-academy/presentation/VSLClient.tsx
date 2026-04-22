@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useRef, useCallback } from "react";
 import { getFunnelData } from "@/lib/hooks/useUTMParams";
-import { trackEvent } from "@/lib/meta-pixel";
 import LiquidButton from "@/components/ui/LiquidButton";
 
 const VIDEO_HLS_URL =
