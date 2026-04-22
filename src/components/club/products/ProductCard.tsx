@@ -56,7 +56,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             <div className="mt-3 flex items-center justify-between rounded-lg bg-earth px-3 py-2 text-cream">
               <div className="flex items-center gap-1.5">
                 <Tag className="h-3 w-3" />
-                <span className="font-club-mono text-xs tracking-wider">{product.promoCode}</span>
+                <span className="font-display text-xs tracking-wider">{product.promoCode}</span>
               </div>
               <span className="text-xs text-cream/60">Code promo</span>
             </div>

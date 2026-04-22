@@ -40,7 +40,7 @@ export default async function DealDetailPage({ params }: { params: { slug: strin
 
           <div>
             <p className="text-sm uppercase tracking-wider text-muted">{product.brand.name}</p>
-            <h1 className="mt-2 font-display text-4xl tracking-display text-earth md:text-5xl">{product.name}</h1>
+            <h1 className="mt-2 font-display text-4xl tracking-wide text-earth md:text-5xl">{product.name}</h1>
             <p className="mt-4 leading-relaxed text-muted">{product.description}</p>
 
             <div className="mt-6 rounded-xl border border-border bg-white p-5">
@@ -90,7 +90,7 @@ export default async function DealDetailPage({ params }: { params: { slug: strin
 
         {similarProducts.length > 0 && (
           <section className="mt-16">
-            <h2 className="mb-8 font-display text-3xl tracking-display text-earth">Produits similaires</h2>
+            <h2 className="mb-8 font-display text-3xl tracking-wide text-earth">Produits similaires</h2>
             <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
               {similarProducts.map((p) => <ProductCard key={p.id} product={p} />)}
             </div>

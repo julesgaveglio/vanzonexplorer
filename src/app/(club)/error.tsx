@@ -15,7 +15,7 @@ export default function ClubError({
 
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center px-4 text-center">
-      <h2 className="font-display text-3xl tracking-display text-earth">Une erreur est survenue</h2>
+      <h2 className="font-display text-3xl tracking-wide text-earth">Une erreur est survenue</h2>
       <p className="mt-3 text-muted">Quelque chose s&apos;est mal passé.</p>
       <button
         onClick={reset}

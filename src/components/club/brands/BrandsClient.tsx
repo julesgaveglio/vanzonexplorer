@@ -21,7 +21,7 @@ export default function BrandsClient({ brands, categories }: BrandsClientProps) 
     <div className="py-12 px-4">
       <div className="max-w-6xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-12">
-          <h1 className="font-display text-5xl md:text-7xl tracking-display text-earth">Marques</h1>
+          <h1 className="font-display text-5xl md:text-7xl tracking-wide text-earth">Marques</h1>
           <p className="text-muted mt-4 text-lg max-w-xl mx-auto">
             Découvre toutes les marques partenaires et leurs offres exclusives pour ton van.
           </p>

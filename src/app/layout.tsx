@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Bebas_Neue } from "next/font/google";
+import { Inter, Rubik } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { frFR } from "@clerk/localizations";
 import { sanityFetch } from "@/lib/sanity/client";
@@ -17,10 +17,10 @@ const inter = Inter({
   display: "swap",
 });
 
-const bebasNeue = Bebas_Neue({
-  weight: "400",
+const rubik = Rubik({
   subsets: ["latin"],
-  variable: "--font-bebas-neue",
+  weight: ["500", "600", "700", "800"],
+  variable: "--font-rubik",
   display: "swap",
 });
 
@@ -96,7 +96,7 @@ export default async function RootLayout({
           />
         </head>
         <body
-          className={`${inter.variable} ${bebasNeue.variable} font-sans antialiased bg-bg-primary text-text-primary min-h-screen`}
+          className={`${inter.variable} ${rubik.variable} font-sans antialiased bg-bg-primary text-text-primary min-h-screen`}
         >
           <LocalBusinessJsonLd
             ratingValue={placeStats.ratingDisplay}

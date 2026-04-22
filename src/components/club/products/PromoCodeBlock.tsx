@@ -27,7 +27,7 @@ export default function PromoCodeBlock({ code, onCopy }: PromoCodeBlockProps) {
       <div className="flex items-center justify-between">
         <div>
           <p className="mb-1 text-xs uppercase tracking-wider text-cream/60">Code promo</p>
-          <p className="font-club-mono text-2xl font-medium tracking-[0.15em]">{code}</p>
+          <p className="font-display text-2xl font-medium tracking-[0.15em]">{code}</p>
         </div>
         <button
           onClick={handleCopy}

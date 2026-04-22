@@ -142,7 +142,7 @@ export default function ProductsClient({ products, categories, brands }: Product
           {/* Desktop Sidebar */}
           <aside className="hidden w-64 flex-shrink-0 md:block">
             <div className="sticky top-24">
-              <h2 className="mb-6 font-display text-2xl tracking-display text-earth">Filtres</h2>
+              <h2 className="mb-6 font-display text-2xl tracking-wide text-earth">Filtres</h2>
               {filtersContent}
             </div>
           </aside>
@@ -166,7 +166,7 @@ export default function ProductsClient({ products, categories, brands }: Product
                 <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }} transition={{ type: "spring", damping: 25, stiffness: 300 }} className="fixed inset-x-0 bottom-0 z-50 max-h-[85vh] overflow-y-auto rounded-t-2xl bg-cream px-6 pb-8 pt-4">
                   <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-muted/30" />
                   <div className="mb-6 flex items-center justify-between">
-                    <h2 className="font-display text-2xl tracking-display text-earth">Filtres</h2>
+                    <h2 className="font-display text-2xl tracking-wide text-earth">Filtres</h2>
                     <button onClick={() => setMobileFiltersOpen(false)} className="flex h-8 w-8 items-center justify-center rounded-full bg-earth/10 text-earth transition hover:bg-earth/20"><X className="h-4 w-4" /></button>
                   </div>
                   {filtersContent}

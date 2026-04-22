@@ -35,7 +35,7 @@ export default async function BrandDetailPage({ params }: { params: { slug: stri
             </div>
             <div className="flex-1">
               <div className="flex items-center gap-3 flex-wrap">
-                <h1 className="font-display text-4xl md:text-5xl tracking-display text-earth">{brand.name}</h1>
+                <h1 className="font-display text-4xl md:text-5xl tracking-wide text-earth">{brand.name}</h1>
                 {brand.isPartner && (
                   <span className="inline-flex items-center gap-1 bg-sage/10 text-sage text-xs font-medium px-3 py-1.5 rounded-full">
                     <Award className="w-3 h-3" />Partenaire officiel
@@ -53,7 +53,7 @@ export default async function BrandDetailPage({ params }: { params: { slug: stri
           </div>
         </div>
 
-        <h2 className="font-display text-3xl tracking-display text-earth mb-8">Offres {brand.name}</h2>
+        <h2 className="font-display text-3xl tracking-wide text-earth mb-8">Offres {brand.name}</h2>
 
         {brandProducts.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

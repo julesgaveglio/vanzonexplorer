@@ -66,13 +66,8 @@ const config: Config = {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        sans: ["Inter var", ...defaultTheme.fontFamily.sans],
-        display: ["var(--font-bebas-neue)", "sans-serif"],
-        "club-sans": ["var(--font-dm-sans)", "sans-serif"],
-        "club-mono": ["var(--font-dm-mono)", "monospace"],
-      },
-      letterSpacing: {
-        display: "0.05em",
+        sans: ["var(--font-inter)", ...defaultTheme.fontFamily.sans],
+        display: ["var(--font-rubik)", "sans-serif"],
       },
     },
   },
