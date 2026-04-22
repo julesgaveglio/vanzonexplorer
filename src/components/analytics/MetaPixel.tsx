@@ -1,23 +1,9 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
-import { usePathname } from 'next/navigation'
-
-// Pixel is loaded in root layout <head>. This component only tracks SPA navigations.
+// Pixel is fully loaded in root layout <head> script.
+// This component exists only to maintain the import in layout.tsx.
+// No additional tracking needed — the <head> script handles PageView
+// and all custom events are fired via trackEvent() in their respective components.
 export default function MetaPixel() {
-  const pathname = usePathname()
-  const isFirst = useRef(true)
-
-  useEffect(() => {
-    // Skip first render (PageView already fired from head script)
-    if (isFirst.current) {
-      isFirst.current = false
-      return
-    }
-    if (window.fbq) {
-      window.fbq('track', 'PageView')
-    }
-  }, [pathname])
-
   return null
 }
