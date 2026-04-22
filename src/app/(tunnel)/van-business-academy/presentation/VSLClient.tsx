@@ -113,7 +113,7 @@ export default function VSLClient() {
 
   // --- Effects ---
 
-  // Funnel data + tracking (optional — page accessible directly)
+  // Funnel data + tracking
   useEffect(() => {
     const data = getFunnelData();
     if (data) {
@@ -124,7 +124,7 @@ export default function VSLClient() {
         body: JSON.stringify({ email: data.email, step: "vsl" }),
       }).catch(() => {});
     }
-    // Pixel event removed — ViewContent only on /formation landing
+    // Pixel event removed
   }, []);
 
   // Load HLS.js for non-Safari browsers + autoplay
@@ -134,7 +134,7 @@ export default function VSLClient() {
 
     const prepareVideo = () => {
       v.currentTime = 1;
-      // Don't autoplay — wait for user click so sound works from the start
+      // No autoplay, wait for user click so sound works from the start
       v.muted = false;
       setIsMuted(false);
     };
@@ -403,7 +403,7 @@ export default function VSLClient() {
           </div>
         ) : (
           <p className="text-sm text-slate-400 italic animate-pulse">
-            🎁 Une surprise apparaîtra juste ici…
+            Une surprise apparaitra juste ici...
           </p>
         )}
       </div>
