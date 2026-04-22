@@ -18,7 +18,30 @@ const isProtectedRoute = createRouteMatcher([
   "/user(.*)",
 ]);
 
+// Old WordPress paths that no longer exist — return 410 Gone
+const GONE_PREFIXES = [
+  "/blogs/blogarticles",
+  "/blogarticles/",
+  "/events/",
+  "/wp-content/",
+  "/wp-",
+  "/product-category/",
+  "/checkout",
+  "/galerie",
+  "/author/",
+  "/category/",
+];
+
+function isGonePath(pathname: string): boolean {
+  return GONE_PREFIXES.some((prefix) => pathname.startsWith(prefix));
+}
+
 export default clerkMiddleware(async (auth, req) => {
+  // Old WordPress URLs — 410 Gone (tell Google to stop crawling)
+  if (isGonePath(req.nextUrl.pathname)) {
+    return new NextResponse("Gone", { status: 410 });
+  }
+
   // Dev-only routes (pixel-agents) — pass through, they have their own NODE_ENV guard
   if (isDevOnlyRoute(req)) return NextResponse.next();
 
