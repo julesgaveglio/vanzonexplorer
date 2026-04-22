@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { trackEvent } from "@/lib/meta-pixel";
+import Script from "next/script";
 
 interface PixelEventProps {
   event: string;
@@ -11,23 +10,32 @@ interface PixelEventProps {
 }
 
 export default function PixelEvent({ event, contentName, value, currency }: PixelEventProps) {
-  const fired = useRef(false);
+  const params: Record<string, unknown> = {};
+  if (contentName) params.content_name = contentName;
+  if (value !== undefined) params.value = value;
+  if (currency) params.currency = currency;
 
-  useEffect(() => {
-    // Fire only once per mount
-    if (fired.current) return;
-    fired.current = true;
+  const paramsStr = Object.keys(params).length > 0 ? `, ${JSON.stringify(params)}` : "";
 
-    const params: Record<string, unknown> = {};
-    if (contentName) params.content_name = contentName;
-    if (value !== undefined) params.value = value;
-    if (currency) params.currency = currency;
-
-    // Delay slightly to ensure pixel script is fully initialized
-    setTimeout(() => {
-      trackEvent(event, Object.keys(params).length > 0 ? params : undefined);
-    }, 500);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  return null;
+  return (
+    <Script
+      id={`pixel-${event}`}
+      strategy="afterInteractive"
+      dangerouslySetInnerHTML={{
+        __html: `
+          (function() {
+            function fire() {
+              if (typeof fbq === 'function') {
+                fbq('track', '${event}'${paramsStr});
+                console.log('[Meta Pixel] ✅ ${event}');
+              } else {
+                setTimeout(fire, 300);
+              }
+            }
+            fire();
+          })();
+        `,
+      }}
+    />
+  );
 }
