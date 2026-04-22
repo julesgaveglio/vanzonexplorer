@@ -1,6 +1,6 @@
 "use client";
 
-import Script from "next/script";
+import { useEffect, useRef } from "react";
 
 interface PixelEventProps {
   event: string;
@@ -10,32 +10,34 @@ interface PixelEventProps {
 }
 
 export default function PixelEvent({ event, contentName, value, currency }: PixelEventProps) {
-  const params: Record<string, unknown> = {};
-  if (contentName) params.content_name = contentName;
-  if (value !== undefined) params.value = value;
-  if (currency) params.currency = currency;
+  const fired = useRef(false);
 
-  const paramsStr = Object.keys(params).length > 0 ? `, ${JSON.stringify(params)}` : "";
+  useEffect(() => {
+    if (fired.current) return;
+    fired.current = true;
 
-  return (
-    <Script
-      id={`pixel-${event}`}
-      strategy="afterInteractive"
-      dangerouslySetInnerHTML={{
-        __html: `
-          (function() {
-            function fire() {
-              if (typeof fbq === 'function') {
-                fbq('track', '${event}'${paramsStr});
-                console.log('[Meta Pixel] fired: ${event}');
-              } else {
-                setTimeout(fire, 300);
-              }
-            }
-            fire();
-          })();
-        `,
-      }}
-    />
-  );
+    const params: Record<string, unknown> = {};
+    if (contentName) params.content_name = contentName;
+    if (value !== undefined) params.value = value;
+    if (currency) params.currency = currency;
+
+    const fire = () => {
+      if (typeof window !== "undefined" && typeof window.fbq === "function") {
+        window.fbq("track", event, Object.keys(params).length > 0 ? params : undefined);
+        return true;
+      }
+      return false;
+    };
+
+    // Try immediately, then retry
+    if (!fire()) {
+      let attempts = 0;
+      const interval = setInterval(() => {
+        attempts++;
+        if (fire() || attempts >= 30) clearInterval(interval);
+      }, 200);
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  return null;
 }
