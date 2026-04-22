@@ -1,4 +1,4 @@
-// Helper to fire Meta Pixel events from client components
+// Fire Meta Pixel events from client components
 // Usage: import { trackEvent } from '@/lib/meta-pixel'
 //        trackEvent('Lead', { content_name: 'road-trip' })
 
@@ -17,22 +17,17 @@ export function trackEvent(
   const fire = () => {
     if (window.fbq) {
       window.fbq('track', eventName, params)
-      console.log(`[Meta Pixel] ✅ ${eventName}`, params || '')
       return true
     }
     return false
   }
 
-  // Try immediately
   if (fire()) return
 
-  // Retry until fbq is available
+  // Retry until fbq is available (max 10s)
   let attempts = 0
-  const retry = () => {
+  const interval = setInterval(() => {
     attempts++
-    if (fire()) return
-    if (attempts < 30) setTimeout(retry, 300)
-    else console.warn(`[Meta Pixel] ❌ fbq never loaded for ${eventName}`)
-  }
-  setTimeout(retry, 300)
+    if (fire() || attempts >= 50) clearInterval(interval)
+  }, 200)
 }
