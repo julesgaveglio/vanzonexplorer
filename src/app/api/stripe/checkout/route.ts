@@ -2,12 +2,23 @@ import { NextResponse } from "next/server";
 import { getStripe } from "@/lib/stripe";
 import { auth, currentUser } from "@clerk/nextjs/server";
 
-export async function POST() {
+const PROMO_CODES: Record<string, number> = {
+  LANCEMENT: 99700, // 997 €
+};
+
+const DEFAULT_PRICE = 149700; // 1497 €
+
+export async function POST(req: Request) {
   try {
     const { userId } = await auth();
     if (!userId) {
       return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
     }
+
+    const body = await req.json().catch(() => ({}));
+    const code = (body.promoCode || "").toUpperCase().trim();
+
+    const unitAmount = PROMO_CODES[code] ?? DEFAULT_PRICE;
 
     const user = await currentUser();
     const email = user?.emailAddresses?.[0]?.emailAddress ?? undefined;
@@ -22,6 +33,7 @@ export async function POST() {
       metadata: {
         clerk_user_id: userId,
         product: "vba",
+        promo_code: code || "none",
       },
       line_items: [
         {
@@ -32,7 +44,7 @@ export async function POST() {
               description:
                 "Accès complet à la formation : 8 modules, 60+ vidéos, méthode terrain.",
             },
-            unit_amount: 149700, // 1497.00 €
+            unit_amount: unitAmount,
           },
           quantity: 1,
         },

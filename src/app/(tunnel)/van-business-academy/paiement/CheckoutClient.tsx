@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Shield, CheckCircle, Zap, BookOpen, Headphones } from "lucide-react";
+import { Shield, CheckCircle, Zap, BookOpen, Headphones, Tag } from "lucide-react";
 import LiquidButton from "@/components/ui/LiquidButton";
 
 const FEATURES = [
@@ -11,13 +11,46 @@ const FEATURES = [
   { icon: Headphones, text: "Accès à vie, mises à jour incluses" },
 ];
 
+const PROMO_PRICES: Record<string, { price: string; amount: number }> = {
+  LANCEMENT: { price: "997", amount: 99700 },
+};
+
+const DEFAULT_PRICE = "1 497";
+
 export default function CheckoutClient() {
   const [loading, setLoading] = useState(false);
+  const [promoCode, setPromoCode] = useState("");
+  const [appliedCode, setAppliedCode] = useState("");
+  const [promoError, setPromoError] = useState("");
+
+  const promo = PROMO_PRICES[appliedCode];
+  const displayPrice = promo ? promo.price : DEFAULT_PRICE;
+
+  const handleApplyPromo = () => {
+    const code = promoCode.toUpperCase().trim();
+    if (PROMO_PRICES[code]) {
+      setAppliedCode(code);
+      setPromoError("");
+    } else if (code) {
+      setPromoError("Code invalide");
+      setAppliedCode("");
+    }
+  };
+
+  const handleRemovePromo = () => {
+    setAppliedCode("");
+    setPromoCode("");
+    setPromoError("");
+  };
 
   const handleCheckout = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/stripe/checkout", { method: "POST" });
+      const res = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ promoCode: appliedCode }),
+      });
       const data = await res.json();
       if (data.url) {
         window.location.href = data.url;
@@ -79,11 +112,24 @@ export default function CheckoutClient() {
         <div className="px-6 py-8 sm:px-8">
           {/* Price */}
           <div className="text-center mb-8">
-            <div className="flex items-baseline justify-center gap-1">
-              <span className="text-5xl font-black text-slate-900">1 497</span>
+            <div className="flex items-baseline justify-center gap-2">
+              {promo && (
+                <span className="text-2xl font-bold text-slate-300 line-through">
+                  1 497 €
+                </span>
+              )}
+              <span className="text-5xl font-black text-slate-900">{displayPrice}</span>
               <span className="text-xl font-bold text-slate-400">€</span>
             </div>
             <p className="text-sm text-slate-400 mt-2">Paiement unique</p>
+            {promo && (
+              <div className="flex items-center justify-center gap-1.5 mt-2">
+                <Tag className="w-3.5 h-3.5" style={{ color: "#22C55E" }} />
+                <span className="text-sm font-semibold" style={{ color: "#22C55E" }}>
+                  Code {appliedCode} appliqué — 500 € de réduction
+                </span>
+              </div>
+            )}
           </div>
 
           {/* Features */}
@@ -119,6 +165,48 @@ export default function CheckoutClient() {
                 <span className="text-sm text-slate-600">{item}</span>
               </div>
             ))}
+          </div>
+
+          {/* Promo code */}
+          <div className="mb-6">
+            {appliedCode ? (
+              <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-emerald-50 border border-emerald-100">
+                <div className="flex items-center gap-2">
+                  <Tag className="w-4 h-4 text-emerald-600" />
+                  <span className="text-sm font-semibold text-emerald-700">{appliedCode}</span>
+                </div>
+                <button
+                  onClick={handleRemovePromo}
+                  className="text-xs text-slate-400 hover:text-slate-600 transition"
+                >
+                  Retirer
+                </button>
+              </div>
+            ) : (
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={promoCode}
+                  onChange={(e) => { setPromoCode(e.target.value); setPromoError(""); }}
+                  onKeyDown={(e) => e.key === "Enter" && handleApplyPromo()}
+                  placeholder="Code promo"
+                  className="flex-1 px-4 py-3 rounded-xl border text-sm text-slate-800 placeholder:text-slate-400 outline-none transition-all"
+                  style={{ borderColor: promoError ? "#EF4444" : "rgba(0,0,0,0.10)", background: "#FAFAFA" }}
+                  onFocus={(e) => (e.target.style.borderColor = "#B9945F")}
+                  onBlur={(e) => (e.target.style.borderColor = promoError ? "#EF4444" : "rgba(0,0,0,0.10)")}
+                />
+                <button
+                  onClick={handleApplyPromo}
+                  className="px-4 py-3 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90"
+                  style={{ background: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)" }}
+                >
+                  Appliquer
+                </button>
+              </div>
+            )}
+            {promoError && (
+              <p className="text-xs text-red-500 mt-1.5 pl-1">{promoError}</p>
+            )}
           </div>
 
           {/* CTA */}
