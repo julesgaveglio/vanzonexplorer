@@ -76,7 +76,7 @@ export default async function FormationPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(courseJsonLd) }}
       />
 
-      <PixelEvent event="ViewContent" params={{ content_name: "vba-landing" }} />
+      <PixelEvent event="ViewContent" contentName="vba-landing" />
 
       {/* ── HERO ── */}
       <section

@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function PaiementConfirmePage() {
   return (
     <div className="max-w-lg mx-auto px-4 pb-16 text-center">
-      <PixelEvent event="Purchase" params={{ content_name: "vba", value: 1497, currency: "EUR" }} />
+      <PixelEvent event="Purchase" contentName="vba" value={1497} currency="EUR" />
 
       {/* Checkmark */}
       <div className="flex justify-center mb-6">

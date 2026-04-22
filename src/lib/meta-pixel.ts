@@ -14,21 +14,31 @@ export function trackEvent(
 ) {
   if (typeof window === 'undefined') return
 
-  // If fbq is ready, fire immediately
+  const fire = () => {
+    if (window.fbq) {
+      window.fbq('track', eventName, params)
+      console.log(`[Meta Pixel] ✅ ${eventName}`, params)
+    } else {
+      console.warn(`[Meta Pixel] ❌ fbq not available for ${eventName}`)
+    }
+  }
+
+  // If fbq loaded and ready
   if (window.fbq) {
-    window.fbq('track', eventName, params)
+    fire()
     return
   }
 
-  // Otherwise wait for the pixel script to load (retry up to 5s)
+  // Wait for fbevents.js to load (checks every 200ms for up to 10s)
   let attempts = 0
   const interval = setInterval(() => {
     attempts++
     if (window.fbq) {
-      window.fbq('track', eventName, params)
+      fire()
       clearInterval(interval)
     } else if (attempts >= 50) {
+      console.warn(`[Meta Pixel] ❌ fbq never loaded for ${eventName}`)
       clearInterval(interval)
     }
-  }, 100)
+  }, 200)
 }
