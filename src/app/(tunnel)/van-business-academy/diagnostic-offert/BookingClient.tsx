@@ -12,6 +12,9 @@ export default function BookingClient() {
   const [email, setEmail] = useState("");
 
   useEffect(() => {
+    // Track Schedule event regardless of funnel data
+    trackEvent("Schedule", { content_name: "vba-booking" });
+
     const data = getFunnelData();
     if (!data) {
       router.replace("/van-business-academy/inscription");
@@ -19,9 +22,6 @@ export default function BookingClient() {
     }
     setFirstname(data.firstname);
     setEmail(data.email);
-
-    // Track step
-    trackEvent("Schedule", { content_name: "vba-booking" });
     fetch("/api/van-business-academy/inscription/step", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },

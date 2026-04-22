@@ -12,16 +12,15 @@ export default function ConfirmationClient() {
   const [firstname, setFirstname] = useState("");
 
   useEffect(() => {
+    // Track SubmitApplication regardless of funnel data
+    trackEvent("SubmitApplication", { content_name: "vba-appel-confirme" });
+
     const data = getFunnelData();
     if (!data) {
       router.replace("/van-business-academy/inscription");
       return;
     }
     setFirstname(data.firstname);
-
-    // Track pixel (may already have fired from booking page postMessage,
-    // but safe to fire again — Meta deduplicates)
-    trackEvent("SubmitApplication", { content_name: "vba-appel-confirme" });
   }, [router]);
 
   return (
