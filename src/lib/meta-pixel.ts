@@ -12,7 +12,23 @@ export function trackEvent(
   eventName: string,
   params?: Record<string, unknown>
 ) {
-  if (typeof window !== 'undefined' && window.fbq) {
+  if (typeof window === 'undefined') return
+
+  // If fbq is ready, fire immediately
+  if (window.fbq) {
     window.fbq('track', eventName, params)
+    return
   }
+
+  // Otherwise wait for the pixel script to load (retry up to 5s)
+  let attempts = 0
+  const interval = setInterval(() => {
+    attempts++
+    if (window.fbq) {
+      window.fbq('track', eventName, params)
+      clearInterval(interval)
+    } else if (attempts >= 50) {
+      clearInterval(interval)
+    }
+  }, 100)
 }
