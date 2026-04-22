@@ -3,8 +3,6 @@ import Image from "next/image";
 import { Suspense } from "react";
 import OptinForm from "./OptinForm";
 import BeforeAfterSlider from "@/components/ui/BeforeAfterSlider";
-import PixelEvent from "@/components/analytics/PixelEvent";
-
 export const metadata: Metadata = {
   title: "Formation Van Business Academy",
   description:
@@ -63,8 +61,6 @@ const MARQUEE_PHOTOS = [...VAN_PHOTOS, ...VAN_PHOTOS];
 export default function OptinPage() {
   return (
     <div className="flex flex-col items-center min-h-[calc(100vh-80px)] pb-12">
-      <PixelEvent event="ViewContent" contentName="vba-inscription" />
-
       {/* Marquee photos */}
       <div className="w-full overflow-hidden mb-8">
         <div className="flex animate-scroll-banner gap-4 py-2" style={{ width: "max-content" }}>

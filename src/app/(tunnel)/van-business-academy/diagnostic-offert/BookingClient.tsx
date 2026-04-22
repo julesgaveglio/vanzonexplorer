@@ -4,17 +4,12 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import CalendlyInline from "@/components/ui/CalendlyInline";
 import { getFunnelData } from "@/lib/hooks/useUTMParams";
-import { trackEvent } from "@/lib/meta-pixel";
-
 export default function BookingClient() {
   const router = useRouter();
   const [firstname, setFirstname] = useState("");
   const [email, setEmail] = useState("");
 
   useEffect(() => {
-    // Track Schedule event regardless of funnel data
-    trackEvent("Schedule", { content_name: "vba-booking" });
-
     const data = getFunnelData();
     if (!data) {
       router.replace("/van-business-academy/inscription");
@@ -31,14 +26,11 @@ export default function BookingClient() {
     // Listen for Calendly booking completion
     const handleMessage = (e: MessageEvent) => {
       if (e.data?.event === "calendly.event_scheduled") {
-        // Update step to confirmed
         fetch("/api/van-business-academy/inscription/step", {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email: data.email, step: "confirmed" }),
         }).catch(() => {});
-
-        trackEvent("SubmitApplication", { content_name: "vba-appel-confirme" });
         router.push("/van-business-academy/appel-confirme");
       }
     };

@@ -5,16 +5,12 @@ import { useRouter } from "next/navigation";
 import GlassCard from "@/components/ui/GlassCard";
 import LiquidButton from "@/components/ui/LiquidButton";
 import { getFunnelData } from "@/lib/hooks/useUTMParams";
-import { trackEvent } from "@/lib/meta-pixel";
 
 export default function ConfirmationClient() {
   const router = useRouter();
   const [firstname, setFirstname] = useState("");
 
   useEffect(() => {
-    // Track SubmitApplication regardless of funnel data
-    trackEvent("SubmitApplication", { content_name: "vba-appel-confirme" });
-
     const data = getFunnelData();
     if (!data) {
       router.replace("/van-business-academy/inscription");

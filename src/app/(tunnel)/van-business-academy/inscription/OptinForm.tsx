@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import LiquidButton from "@/components/ui/LiquidButton";
 import { useUTMParams, saveFunnelData } from "@/lib/hooks/useUTMParams";
-import { trackEvent } from "@/lib/meta-pixel";
 
 export default function OptinForm() {
   const router = useRouter();
@@ -36,9 +35,6 @@ export default function OptinForm() {
 
       // Save to localStorage for subsequent pages
       saveFunnelData({ firstname, email, ...utmParams });
-
-      // Track Meta Pixel event
-      trackEvent("Lead", { content_name: "vba-funnel" });
 
       // Redirect to VSL
       router.push("/van-business-academy/presentation");

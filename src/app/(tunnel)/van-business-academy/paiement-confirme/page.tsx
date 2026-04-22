@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import PixelEvent from "@/components/analytics/PixelEvent";
 export const metadata: Metadata = {
   title: "Paiement confirmé | Van Business Academy",
   robots: { index: false, follow: false },
@@ -9,8 +8,6 @@ export const metadata: Metadata = {
 export default function PaiementConfirmePage() {
   return (
     <div className="max-w-lg mx-auto px-4 pb-16 text-center">
-      <PixelEvent event="Purchase" contentName="vba" value={1497} currency="EUR" />
-
       {/* Checkmark */}
       <div className="flex justify-center mb-6">
         <div
