@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
 import { sanityFetch } from "@/lib/sanity/client";
 import { getFormationCardsQuery } from "@/lib/sanity/queries";
 import type { FormationCardData } from "@/components/formation/FormationCardStack";
 import FormationCardStack from "@/components/formation/FormationCardStack";
 import ComparisonSection from "@/components/formation/ComparisonSection";
 import PixelEvent from "@/components/analytics/PixelEvent";
+import CTAButton from "@/components/formation/CTAButton";
 
 export const metadata: Metadata = {
   title: "Van Business Academy — Construis ta liberté van par van",
@@ -133,18 +133,7 @@ export default async function FormationPage() {
 
           {/* CTA visible sans scroll */}
           <div className="mt-8">
-            <Link
-              href="/van-business-academy/presentation"
-              className="inline-block font-bold text-white py-4 px-10 rounded-xl text-base sm:text-lg transition-all hover:scale-[1.02] hover:shadow-lg"
-              style={{
-                background:
-                  "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
-                boxShadow:
-                  "0 4px 18px rgba(185, 148, 95, 0.45)",
-              }}
-            >
-              En savoir plus →
-            </Link>
+            <CTAButton>En savoir plus →</CTAButton>
           </div>
         </div>
 
@@ -161,18 +150,7 @@ export default async function FormationPage() {
             Créé par des loueurs en activité au Pays Basque.
           </p>
 
-          <Link
-            href="/van-business-academy/presentation"
-            className="inline-block font-bold text-white py-4 px-10 rounded-xl text-base sm:text-lg transition-all hover:scale-[1.02] hover:shadow-lg"
-            style={{
-              background:
-                "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
-              boxShadow:
-                "0 4px 18px rgba(185, 148, 95, 0.45)",
-            }}
-          >
-            En savoir plus →
-          </Link>
+          <CTAButton>En savoir plus →</CTAButton>
         </div>
       </section>
 
@@ -261,18 +239,7 @@ export default async function FormationPage() {
 
               {/* CTA */}
               <div className="mt-8">
-                <Link
-                  href="/van-business-academy/presentation"
-                  className="block w-full text-center font-bold text-white py-4 rounded-xl text-base sm:text-lg transition-all hover:scale-[1.02] hover:shadow-lg"
-                  style={{
-                    background:
-                      "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
-                    boxShadow:
-                      "0 4px 18px rgba(185, 148, 95, 0.45)",
-                  }}
-                >
-                  En savoir plus →
-                </Link>
+                <CTAButton fullWidth>En savoir plus →</CTAButton>
               </div>
             </div>
           </div>
