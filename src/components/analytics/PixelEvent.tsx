@@ -27,7 +27,7 @@ export default function PixelEvent({ event, contentName, value, currency }: Pixe
             function fire() {
               if (typeof fbq === 'function') {
                 fbq('track', '${event}'${paramsStr});
-                console.log('[Meta Pixel] ✅ ${event}');
+                console.log('[Meta Pixel] fired: ${event}');
               } else {
                 setTimeout(fire, 300);
               }
