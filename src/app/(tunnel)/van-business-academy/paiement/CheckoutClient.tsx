@@ -105,7 +105,7 @@ export default function CheckoutClient() {
         }}
       >
         {/* Image */}
-        <div className="relative aspect-[3/2]">
+        <div className="relative aspect-[3/1] max-h-[180px]">
           <Image
             src="https://cdn.sanity.io/images/lewexa74/production/e8d8a66703e846a5bd916e38bd9a488b663ce433-1920x1080.png?w=600&h=450&fit=crop&auto=format&q=80"
             alt="Van Business Academy — Formation complète"

@@ -125,7 +125,7 @@ export default function VSLClient() {
         body: JSON.stringify({ email: data.email, step: "vsl" }),
       }).catch(() => {});
     }
-    trackEvent("ViewContent", { content_name: "vba-vsl" });
+    // Pixel event removed — ViewContent only on /formation landing
   }, []);
 
   // Load HLS.js for non-Safari browsers + autoplay
