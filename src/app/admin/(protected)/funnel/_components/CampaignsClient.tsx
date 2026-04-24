@@ -86,10 +86,16 @@ export default function CampaignsClient() {
         // Step 2: Upload directly to Supabase Storage (bypasses Vercel 4.5MB limit)
         const uploadRes = await fetch(urlData.uploadUrl, {
           method: "PUT",
-          headers: { "Content-Type": file.type || "video/mp4" },
+          headers: {
+            "Content-Type": file.type || "video/mp4",
+            "Authorization": `Bearer ${urlData.token}`,
+          },
           body: file,
         });
-        if (!uploadRes.ok) throw new Error("Erreur upload vidéo");
+        if (!uploadRes.ok) {
+          const errText = await uploadRes.text().catch(() => "");
+          throw new Error(`Erreur upload (${uploadRes.status}): ${errText.slice(0, 100)}`);
+        }
 
         // Step 3: Transcribe + create ad (small JSON request, no file body)
         const transcribeRes = await fetch("/api/admin/funnel/ads/transcribe", {
