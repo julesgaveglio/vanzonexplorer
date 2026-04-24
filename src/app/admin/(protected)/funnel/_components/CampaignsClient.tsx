@@ -69,115 +69,51 @@ export default function CampaignsClient() {
     }
   }
 
-  // Extract audio from video in browser → small WebM audio file
-  async function extractAudio(videoFile: File): Promise<File> {
-    return new Promise((resolve, reject) => {
-      const video = document.createElement("video");
-      video.muted = true;
-      video.src = URL.createObjectURL(videoFile);
-
-      video.onloadedmetadata = () => {
-        const audioCtx = new AudioContext();
-        const dest = audioCtx.createMediaStreamDestination();
-        const source = audioCtx.createMediaElementSource(video);
-        source.connect(dest);
-
-        const recorder = new MediaRecorder(dest.stream, { mimeType: "audio/webm;codecs=opus" });
-        const chunks: Blob[] = [];
-
-        recorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
-        recorder.onstop = () => {
-          const audioBlob = new Blob(chunks, { type: "audio/webm" });
-          const audioFile = new File([audioBlob], videoFile.name.replace(/\.[^.]+$/, ".webm"), { type: "audio/webm" });
-          URL.revokeObjectURL(video.src);
-          audioCtx.close();
-          resolve(audioFile);
-        };
-        recorder.onerror = () => reject(new Error("Erreur extraction audio"));
-
-        recorder.start();
-        video.play().catch(reject);
-
-        video.onended = () => {
-          recorder.stop();
-          video.pause();
-        };
-
-        // Safety timeout (max 5 min video)
-        setTimeout(() => {
-          if (recorder.state === "recording") {
-            recorder.stop();
-            video.pause();
-          }
-        }, 300000);
-      };
-
-      video.onerror = () => reject(new Error("Impossible de lire la vidéo"));
-    });
-  }
+  const [editingAdId, setEditingAdId] = useState<string | null>(null);
+  const [editTranscript, setEditTranscript] = useState("");
 
   async function handleMultiUpload(files: FileList, campaignId: string) {
     setUploadError("");
     for (const file of Array.from(files)) {
       setUploadQueue((prev) => [...prev, { fileName: file.name, campaignId }]);
       try {
-        // Step 1: Extract audio from video (200MB MOV → 2MB WebM)
-        let audioFile: File;
-        try {
-          audioFile = await extractAudio(file);
-        } catch {
-          // If extraction fails, try sending the original file
-          audioFile = file;
-        }
+        const rawName = file.name.replace(/\.[^.]+$/, "").replace(/[-_]/g, " ");
+        const adName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
 
-        // Step 2: Upload the small audio to Supabase Storage
-        const urlRes = await fetch("/api/admin/funnel/ads/upload-url", {
+        const res = await fetch("/api/admin/funnel/ads", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ fileName: audioFile.name }),
+          body: JSON.stringify({ campaign_id: campaignId, name: adName }),
         });
-        const urlData = await urlRes.json();
-        if (!urlRes.ok) throw new Error(urlData.error || "Erreur URL");
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Erreur");
 
-        const uploadRes = await fetch(urlData.uploadUrl, {
-          method: "PUT",
-          headers: {
-            "Content-Type": audioFile.type || "audio/webm",
-            "Authorization": `Bearer ${urlData.token}`,
-          },
-          body: audioFile,
-        });
-        if (!uploadRes.ok) throw new Error("Erreur upload audio");
-
-        // Step 3: Transcribe + create ad
-        const transcribeRes = await fetch("/api/admin/funnel/ads/transcribe", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            storage_path: urlData.storagePath,
-            public_url: urlData.publicUrl,
-            campaign_id: campaignId,
-            file_name: file.name,
-          }),
-        });
-        const data = await transcribeRes.json();
-        if (!transcribeRes.ok) throw new Error(data.error || "Erreur transcription");
-
-        if (data.ad_id) {
-          setAds((prev) => ({
-            ...prev,
-            [campaignId]: [...(prev[campaignId] ?? []), {
-              id: data.ad_id, name: data.name, hook_type: null,
-              video_url: data.video_url, transcript: data.transcript, notes: null,
-            }],
-          }));
-        }
+        setAds((prev) => ({
+          ...prev,
+          [campaignId]: [...(prev[campaignId] ?? []), data.ad],
+        }));
       } catch (err) {
         setUploadError(`${file.name}: ${err instanceof Error ? err.message : "Erreur"}`);
       } finally {
         setUploadQueue((prev) => prev.filter((q) => q.fileName !== file.name));
       }
     }
+  }
+
+  async function saveTranscript(adId: string, campaignId: string) {
+    await fetch("/api/admin/funnel/ads", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: adId, transcript: editTranscript }),
+    });
+    setAds((prev) => ({
+      ...prev,
+      [campaignId]: (prev[campaignId] ?? []).map((a) =>
+        a.id === adId ? { ...a, transcript: editTranscript } : a
+      ),
+    }));
+    setEditingAdId(null);
+    setEditTranscript("");
   }
 
   async function deleteAd(adId: string, campaignId: string) {
@@ -242,19 +178,42 @@ export default function CampaignsClient() {
                       <div className="flex items-start justify-between">
                         <div className="flex-1 min-w-0">
                           <span className="font-medium text-slate-900 text-sm">{ad.name}</span>
-                          {ad.video_url && (
-                            <a href={ad.video_url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 hover:underline mt-1 block truncate">Voir la vidéo</a>
-                          )}
                         </div>
-                        <button onClick={() => deleteAd(ad.id, c.id)} className="p-1 text-slate-400 hover:text-red-500 flex-shrink-0">
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
+                        <div className="flex items-center gap-1 flex-shrink-0">
+                          <button
+                            onClick={() => { setEditingAdId(ad.id); setEditTranscript(ad.transcript || ""); }}
+                            className="px-2 py-1 rounded-lg text-xs font-medium text-blue-600 hover:bg-blue-50 transition-colors"
+                          >
+                            {ad.transcript ? "Modifier" : "Ajouter script"}
+                          </button>
+                          <button onClick={() => deleteAd(ad.id, c.id)} className="p-1 text-slate-400 hover:text-red-500">
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
                       </div>
-                      {ad.transcript && (
+
+                      {editingAdId === ad.id ? (
+                        <div className="mt-2 space-y-2">
+                          <textarea
+                            value={editTranscript}
+                            onChange={(e) => setEditTranscript(e.target.value)}
+                            placeholder="Colle le script de l'ad ici..."
+                            rows={5}
+                            className="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-400/30"
+                            autoFocus
+                          />
+                          <div className="flex gap-2">
+                            <button onClick={() => saveTranscript(ad.id, c.id)} className="px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-slate-900 hover:bg-slate-700">Enregistrer</button>
+                            <button onClick={() => setEditingAdId(null)} className="px-2 py-1.5 text-xs text-slate-400">Annuler</button>
+                          </div>
+                        </div>
+                      ) : ad.transcript ? (
                         <details className="mt-2">
                           <summary className="text-xs text-slate-500 cursor-pointer hover:text-slate-700">Transcript</summary>
                           <p className="text-xs text-slate-600 mt-2 whitespace-pre-line bg-white rounded-lg p-3 border border-slate-100 max-h-40 overflow-y-auto">{ad.transcript}</p>
                         </details>
+                      ) : (
+                        <p className="text-xs text-slate-400 mt-1 italic">Pas de script — clique &quot;Ajouter script&quot;</p>
                       )}
                     </div>
                   ))}
