@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { sendWhatsAppMessage } from "@/lib/whatsapp";
 
 // Webhook for iPhone Shortcut → parses Yescapa SMS → sends Telegram notification
 // Format SMS: "Milian a confirmé et payé la location du 27 juillet 2026 14:00 au 6 aout 2026 12:00 sur Yescapa.fr. Téléphonez-lui au +33 6 95 07 56 10 pour organiser le départ."
@@ -47,10 +48,16 @@ export async function POST(req: NextRequest) {
     // Notify Telegram
     await notifyTelegram(info);
 
-    // TODO: WhatsApp auto-message (needs WhatsApp Business API)
-    // For now, just log and notify via Telegram
+    // Send WhatsApp auto-message to the client
+    const whatsappMessage =
+      `Bonjour ${info.clientName} ! 🚐\n\n` +
+      `Merci pour votre réservation du ${info.startDate} au ${info.endDate} !\n\n` +
+      `Je suis Jules de Vanzon Explorer. Je vous contacterai très vite pour organiser le départ et répondre à toutes vos questions.\n\n` +
+      `À très bientôt ! 😊`;
 
-    return NextResponse.json({ ok: true, parsed: info });
+    const whatsappSent = await sendWhatsAppMessage(info.phone, whatsappMessage);
+
+    return NextResponse.json({ ok: true, parsed: info, whatsapp_sent: whatsappSent });
   } catch (err) {
     console.error("[yescapa-sms] Error:", err);
     return NextResponse.json({ error: "Erreur" }, { status: 500 });
