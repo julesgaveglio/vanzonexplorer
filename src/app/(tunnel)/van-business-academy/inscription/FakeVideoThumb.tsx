@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 
 const THUMBS = [
-  "https://cdn.sanity.io/images/lewexa74/production/f1762567ba424110250e3562fa24c548cef9ecbb-1915x1069.png",
   "https://cdn.sanity.io/images/lewexa74/production/caea4e7e4de49d405a74e0bcccafb57b095b46e2-1901x1059.png",
+  "https://cdn.sanity.io/images/lewexa74/production/f1762567ba424110250e3562fa24c548cef9ecbb-1915x1069.png",
 ];
 
 export default function FakeVideoThumb() {
@@ -53,7 +53,7 @@ export default function FakeVideoThumb() {
 
       {/* Play button */}
       <div className="absolute inset-0 flex items-center justify-center">
-        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white/90 flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform">
+        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white/50 flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform">
           <svg
             width="24"
             height="24"
