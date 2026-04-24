@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
   if (adminCheck instanceof NextResponse) return adminCheck;
 
   try {
-    const { storage_path, public_url, campaign_id, file_name } = await req.json();
+    const { storage_path, public_url, file_name } = await req.json();
 
     if (!storage_path || !public_url) {
       return NextResponse.json({ error: "storage_path et public_url requis" }, { status: 400 });
@@ -31,9 +31,8 @@ export async function POST(req: NextRequest) {
     // 2. Transcribe with Groq Whisper
     let transcript = "";
     try {
-      const safeName = (file_name || "video.mp4").replace(/\.mov$/i, ".mp4");
-      const audioFile = new File([fileData], safeName, {
-        type: safeName.endsWith(".mp3") ? "audio/mpeg" : "video/mp4",
+      const audioFile = new File([fileData], file_name || "audio.wav", {
+        type: "audio/wav",
       });
 
       const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
@@ -49,27 +48,7 @@ export async function POST(req: NextRequest) {
       transcript = "(Transcription echouee)";
     }
 
-    // 3. Auto-name from filename
-    const rawName = (file_name || "Ad").replace(/\.[^.]+$/, "").replace(/[-_]/g, " ");
-    const adName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
-
-    // 4. Create ad in DB
-    let adId: string | null = null;
-    if (campaign_id) {
-      const { data: ad } = await supabase
-        .from("funnel_ads")
-        .insert({
-          campaign_id,
-          name: adName,
-          video_url: public_url,
-          transcript,
-        })
-        .select("id")
-        .single();
-      adId = ad?.id ?? null;
-    }
-
-    return NextResponse.json({ ad_id: adId, name: adName, video_url: public_url, transcript });
+    return NextResponse.json({ video_url: public_url, transcript });
   } catch (err) {
     console.error("[transcribe] Error:", err);
     return NextResponse.json({ error: "Erreur traitement." }, { status: 500 });

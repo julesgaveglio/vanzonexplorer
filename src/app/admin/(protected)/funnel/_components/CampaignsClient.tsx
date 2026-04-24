@@ -72,18 +72,109 @@ export default function CampaignsClient() {
   const [editingAdId, setEditingAdId] = useState<string | null>(null);
   const [editTranscript, setEditTranscript] = useState("");
 
+  // Extract audio from video using decodeAudioData (instant, no playback)
+  function encodeWAV(audioBuffer: AudioBuffer): ArrayBuffer {
+    const numChannels = 1; // mono
+    const sampleRate = 16000; // 16kHz is enough for speech
+    const length = audioBuffer.length;
+    // Downsample to 16kHz mono
+    const ratio = audioBuffer.sampleRate / sampleRate;
+    const newLength = Math.floor(length / ratio);
+    const samples = new Float32Array(newLength);
+    const channelData = audioBuffer.getChannelData(0);
+    for (let i = 0; i < newLength; i++) {
+      samples[i] = channelData[Math.floor(i * ratio)] ?? 0;
+    }
+    // Encode as 16-bit PCM WAV
+    const buffer = new ArrayBuffer(44 + newLength * 2);
+    const view = new DataView(buffer);
+    const writeStr = (o: number, s: string) => { for (let i = 0; i < s.length; i++) view.setUint8(o + i, s.charCodeAt(i)); };
+    writeStr(0, "RIFF");
+    view.setUint32(4, 36 + newLength * 2, true);
+    writeStr(8, "WAVE");
+    writeStr(12, "fmt ");
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true); // PCM
+    view.setUint16(22, numChannels, true);
+    view.setUint32(24, sampleRate, true);
+    view.setUint32(28, sampleRate * numChannels * 2, true);
+    view.setUint16(32, numChannels * 2, true);
+    view.setUint16(34, 16, true);
+    writeStr(36, "data");
+    view.setUint32(40, newLength * 2, true);
+    for (let i = 0; i < newLength; i++) {
+      const s = Math.max(-1, Math.min(1, samples[i]));
+      view.setInt16(44 + i * 2, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+    }
+    return buffer;
+  }
+
+  async function extractAndTranscribe(videoFile: File): Promise<string> {
+    // Read video as ArrayBuffer
+    const arrayBuffer = await videoFile.arrayBuffer();
+
+    // Decode audio instantly (no playback needed)
+    const audioCtx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+    const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+    audioCtx.close();
+
+    // Encode as 16kHz mono WAV (~500KB for 30s)
+    const wavBuffer = encodeWAV(audioBuffer);
+    const wavFile = new File([wavBuffer], "audio.wav", { type: "audio/wav" });
+
+    // Upload small WAV to Supabase Storage
+    const urlRes = await fetch("/api/admin/funnel/ads/upload-url", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ fileName: "audio.wav" }),
+    });
+    const urlData = await urlRes.json();
+    if (!urlRes.ok) throw new Error("Erreur URL upload");
+
+    const uploadRes = await fetch(urlData.uploadUrl, {
+      method: "PUT",
+      headers: { "Content-Type": "audio/wav", "Authorization": `Bearer ${urlData.token}` },
+      body: wavFile,
+    });
+    if (!uploadRes.ok) throw new Error("Erreur upload audio");
+
+    // Transcribe server-side
+    const transRes = await fetch("/api/admin/funnel/ads/transcribe", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        storage_path: urlData.storagePath,
+        public_url: urlData.publicUrl,
+        file_name: "audio.wav",
+      }),
+    });
+    const transData = await transRes.json();
+    if (!transRes.ok) throw new Error(transData.error || "Erreur transcription");
+    return transData.transcript || "";
+  }
+
   async function handleMultiUpload(files: FileList, campaignId: string) {
     setUploadError("");
     for (const file of Array.from(files)) {
       setUploadQueue((prev) => [...prev, { fileName: file.name, campaignId }]);
       try {
+        // 1. Extract audio + transcribe
+        let transcript = "";
+        try {
+          transcript = await extractAndTranscribe(file);
+        } catch (err) {
+          console.warn("Auto-transcription failed:", err);
+          transcript = "";
+        }
+
+        // 2. Create ad in DB
         const rawName = file.name.replace(/\.[^.]+$/, "").replace(/[-_]/g, " ");
         const adName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
 
         const res = await fetch("/api/admin/funnel/ads", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ campaign_id: campaignId, name: adName }),
+          body: JSON.stringify({ campaign_id: campaignId, name: adName, transcript: transcript || null }),
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Erreur");
