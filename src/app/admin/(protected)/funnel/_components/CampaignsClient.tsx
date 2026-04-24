@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Plus, Trash2, ChevronDown, ChevronRight } from "lucide-react";
+import { Plus, Trash2, ChevronDown, ChevronRight, Upload, Loader2 } from "lucide-react";
 
 interface Ad {
   id: string;
@@ -32,6 +32,8 @@ export default function CampaignsClient() {
   const [form, setForm] = useState({ name: "", start_date: "", end_date: "", budget_euros: "", platform: "meta" });
   const [adForm, setAdForm] = useState({ name: "", hook_type: "emotional", video_url: "", transcript: "", notes: "" });
   const [showAdForm, setShowAdForm] = useState<string | null>(null);
+  const [transcribing, setTranscribing] = useState(false);
+  const [uploadError, setUploadError] = useState("");
 
   useEffect(() => {
     fetch("/api/admin/funnel/campaigns").then((r) => r.json()).then((d) => setCampaigns(d.campaigns ?? []));
@@ -84,6 +86,26 @@ export default function CampaignsClient() {
       setAds((prev) => ({ ...prev, [campaignId]: [...(prev[campaignId] ?? []), d.ad] }));
       setShowAdForm(null);
       setAdForm({ name: "", hook_type: "emotional", video_url: "", transcript: "", notes: "" });
+    }
+  }
+
+  async function handleVideoUpload(file: File) {
+    setTranscribing(true);
+    setUploadError("");
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/admin/funnel/ads/transcribe", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Erreur transcription");
+      setAdForm((prev) => ({ ...prev, transcript: typeof data.transcript === "string" ? data.transcript : JSON.stringify(data.transcript) }));
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : "Erreur");
+    } finally {
+      setTranscribing(false);
     }
   }
 
@@ -204,13 +226,43 @@ export default function CampaignsClient() {
                           <option value="urgency">Urgence</option>
                           <option value="other">Autre</option>
                         </select>
-                        <input type="url" value={adForm.video_url} onChange={(e) => setAdForm({ ...adForm, video_url: e.target.value })} placeholder="URL vidéo" className={inputCls} />
+                        <input type="url" value={adForm.video_url} onChange={(e) => setAdForm({ ...adForm, video_url: e.target.value })} placeholder="URL vidéo (optionnel)" className={inputCls} />
                       </div>
-                      <textarea value={adForm.transcript} onChange={(e) => setAdForm({ ...adForm, transcript: e.target.value })} placeholder="Transcript / script de l'ad..." rows={4} className={inputCls + " w-full resize-none"} />
+
+                      {/* Upload vidéo → auto-transcription */}
+                      <div className="border-2 border-dashed border-slate-200 rounded-xl p-4 text-center">
+                        {transcribing ? (
+                          <div className="flex items-center justify-center gap-2 py-2">
+                            <Loader2 className="w-5 h-5 text-blue-500 animate-spin" />
+                            <span className="text-sm text-slate-600">Transcription en cours...</span>
+                          </div>
+                        ) : (
+                          <>
+                            <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 transition-colors">
+                              <Upload className="w-4 h-4" />
+                              Upload vidéo (auto-transcript)
+                              <input
+                                type="file"
+                                accept="video/mp4,video/webm,audio/mpeg,audio/mp3,audio/wav"
+                                className="hidden"
+                                onChange={(e) => {
+                                  const f = e.target.files?.[0];
+                                  if (f) handleVideoUpload(f);
+                                  e.target.value = "";
+                                }}
+                              />
+                            </label>
+                            <p className="text-xs text-slate-400 mt-2">MP4, WebM, MP3, WAV — max 25MB</p>
+                          </>
+                        )}
+                        {uploadError && <p className="text-xs text-red-500 mt-2">{uploadError}</p>}
+                      </div>
+
+                      <textarea value={adForm.transcript} onChange={(e) => setAdForm({ ...adForm, transcript: e.target.value })} placeholder="Transcript (rempli auto après upload, ou colle-le manuellement)" rows={4} className={inputCls + " w-full resize-none"} />
                       <textarea value={adForm.notes} onChange={(e) => setAdForm({ ...adForm, notes: e.target.value })} placeholder="Notes (optionnel)" rows={2} className={inputCls + " w-full resize-none"} />
                       <div className="flex gap-2">
                         <button onClick={() => createAd(c.id)} disabled={!adForm.name.trim()} className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-slate-900 hover:bg-slate-700 disabled:opacity-50">Ajouter</button>
-                        <button onClick={() => setShowAdForm(null)} className="px-3 py-2 text-sm text-slate-400">Annuler</button>
+                        <button onClick={() => { setShowAdForm(null); setUploadError(""); }} className="px-3 py-2 text-sm text-slate-400">Annuler</button>
                       </div>
                     </div>
                   ) : (
