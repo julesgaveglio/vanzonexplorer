@@ -8,6 +8,7 @@ const ADMIN_EMAIL = "gavegliojules@gmail.com";
 import VBASidebar from "../../_components/VBASidebar";
 import MarkCompleteButton from "../../_components/MarkCompleteButton";
 import VBAPaywall from "../../_components/VBAPaywall";
+import VBAQuiz, { type QuizQuestion } from "../../_components/VBAQuiz";
 
 interface Resource {
   type: "pdf" | "image" | "link";
@@ -24,14 +25,21 @@ export default async function LessonPage({
   const { userId } = await auth();
   if (!userId) redirect("/sign-in");
 
-  // Admin-only access
   const user = await currentUser();
   const email = user?.emailAddresses?.[0]?.emailAddress;
-  if (email !== ADMIN_EMAIL) {
-    return <VBAPaywall />;
-  }
-
   const supabase = createSupabaseAdmin();
+
+  // Check access: admin OR vba_member
+  if (email !== ADMIN_EMAIL) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("plan")
+      .eq("clerk_id", userId)
+      .single();
+    if (profile?.plan !== "vba_member") {
+      return <VBAPaywall />;
+    }
+  }
 
   // Fetch all data in parallel
   const [modulesRes, lessonsRes, progressRes] = await Promise.all([
@@ -98,6 +106,15 @@ export default async function LessonPage({
 
   const resources = (currentLesson.resources ?? []) as Resource[];
 
+  // Detect quiz lesson: description starts with "QUIZ:"
+  const isQuiz = currentLesson.description?.startsWith("QUIZ:");
+  let quizQuestions: QuizQuestion[] = [];
+  if (isQuiz) {
+    try {
+      quizQuestions = JSON.parse(currentLesson.description!.slice(5));
+    } catch { /* invalid JSON — fall through to normal display */ }
+  }
+
   const RESOURCE_ICONS = {
     pdf: FileText,
     image: ImageIcon,
@@ -133,8 +150,12 @@ export default async function LessonPage({
         </div>
 
         <div className="p-6 max-w-4xl">
-          {/* Video player */}
-          {videoId && libraryId ? (
+          {/* Quiz or Video player */}
+          {isQuiz && quizQuestions.length > 0 ? (
+            <div className="mb-6">
+              <VBAQuiz questions={quizQuestions} />
+            </div>
+          ) : videoId && libraryId ? (
             <div className="mb-6">
               <iframe
                 src={`https://iframe.mediadelivery.net/embed/${libraryId}/${videoId}?autoplay=false&loop=false&muted=false&preload=true&responsive=true`}
@@ -162,8 +183,8 @@ export default async function LessonPage({
             />
           </div>
 
-          {/* Description */}
-          {currentLesson.description && (
+          {/* Description (hidden for quiz lessons) */}
+          {currentLesson.description && !isQuiz && (
             <div className="prose prose-sm prose-slate max-w-none mb-6">
               <p className="text-slate-600 whitespace-pre-line">
                 {currentLesson.description}

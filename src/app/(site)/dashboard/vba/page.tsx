@@ -55,14 +55,21 @@ export default async function VBAPage() {
   const { userId } = await auth();
   if (!userId) redirect("/sign-in");
 
-  // Admin-only access
   const user = await currentUser();
   const email = user?.emailAddresses?.[0]?.emailAddress;
-  if (email !== ADMIN_EMAIL) {
-    return <VBAPaywall />;
-  }
-
   const supabase = createSupabaseAdmin();
+
+  // Check access: admin OR vba_member
+  if (email !== ADMIN_EMAIL) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("plan")
+      .eq("clerk_id", userId)
+      .single();
+    if (profile?.plan !== "vba_member") {
+      return <VBAPaywall />;
+    }
+  }
 
   // Fetch modules, lessons, progress
   const [modulesRes, lessonsRes, progressRes] = await Promise.all([
