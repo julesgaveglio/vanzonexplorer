@@ -3,7 +3,6 @@ import { requireAdmin } from "@/lib/auth";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
 import Groq from "groq-sdk";
 
-// Allow up to 120s for large video transcription
 export const maxDuration = 120;
 
 export async function POST(req: NextRequest) {
@@ -11,45 +10,30 @@ export async function POST(req: NextRequest) {
   if (adminCheck instanceof NextResponse) return adminCheck;
 
   try {
-    const formData = await req.formData();
-    const file = formData.get("file") as File | null;
-    const campaignId = formData.get("campaign_id") as string | null;
+    const { storage_path, public_url, campaign_id, file_name } = await req.json();
 
-    if (!file) {
-      return NextResponse.json({ error: "Fichier requis" }, { status: 400 });
-    }
-
-    if (file.size > 50 * 1024 * 1024) {
-      return NextResponse.json({ error: "Max 50MB." }, { status: 400 });
+    if (!storage_path || !public_url) {
+      return NextResponse.json({ error: "storage_path et public_url requis" }, { status: 400 });
     }
 
     const supabase = createSupabaseAdmin();
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
 
-    // 1. Upload to Supabase Storage
-    const ext = file.name.split(".").pop() || "mp4";
-    const storageName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-
-    const { error: uploadError } = await supabase.storage
+    // 1. Download file from Supabase Storage
+    const { data: fileData, error: dlError } = await supabase.storage
       .from("funnel-ads")
-      .upload(storageName, buffer, { contentType: file.type || "video/mp4" });
+      .download(storage_path);
 
-    if (uploadError) {
-      console.error("[ads/transcribe] Storage error:", uploadError);
-      return NextResponse.json({ error: "Erreur upload storage." }, { status: 500 });
+    if (dlError || !fileData) {
+      console.error("[transcribe] Download error:", dlError);
+      return NextResponse.json({ error: "Erreur téléchargement fichier." }, { status: 500 });
     }
-
-    const { data: urlData } = supabase.storage
-      .from("funnel-ads")
-      .getPublicUrl(storageName);
-    const videoUrl = urlData.publicUrl;
 
     // 2. Transcribe with Groq Whisper
     let transcript = "";
     try {
-      const audioFile = new File([buffer], file.name.replace(/\.mov$/i, ".mp4"), {
-        type: file.type === "video/quicktime" ? "video/mp4" : file.type,
+      const safeName = (file_name || "video.mp4").replace(/\.mov$/i, ".mp4");
+      const audioFile = new File([fileData], safeName, {
+        type: safeName.endsWith(".mp3") ? "audio/mpeg" : "video/mp4",
       });
 
       const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
@@ -61,24 +45,23 @@ export async function POST(req: NextRequest) {
       });
       transcript = typeof result === "string" ? result : JSON.stringify(result);
     } catch (err) {
-      console.error("[ads/transcribe] Groq error:", err);
-      transcript = "(Transcription échouée)";
+      console.error("[transcribe] Groq error:", err);
+      transcript = "(Transcription echouee)";
     }
 
-    // 3. Auto-detect ad name from filename
-    const rawName = file.name.replace(/\.[^.]+$/, "").replace(/[-_]/g, " ");
+    // 3. Auto-name from filename
+    const rawName = (file_name || "Ad").replace(/\.[^.]+$/, "").replace(/[-_]/g, " ");
     const adName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
 
-    // 4. Auto-create the ad in DB if campaign_id provided
+    // 4. Create ad in DB
     let adId: string | null = null;
-    if (campaignId) {
+    if (campaign_id) {
       const { data: ad } = await supabase
         .from("funnel_ads")
         .insert({
-          campaign_id: campaignId,
+          campaign_id,
           name: adName,
-          hook_type: null,
-          video_url: videoUrl,
+          video_url: public_url,
           transcript,
         })
         .select("id")
@@ -86,9 +69,9 @@ export async function POST(req: NextRequest) {
       adId = ad?.id ?? null;
     }
 
-    return NextResponse.json({ ad_id: adId, name: adName, video_url: videoUrl, transcript });
+    return NextResponse.json({ ad_id: adId, name: adName, video_url: public_url, transcript });
   } catch (err) {
-    console.error("[ads/transcribe] Error:", err);
+    console.error("[transcribe] Error:", err);
     return NextResponse.json({ error: "Erreur traitement." }, { status: 500 });
   }
 }

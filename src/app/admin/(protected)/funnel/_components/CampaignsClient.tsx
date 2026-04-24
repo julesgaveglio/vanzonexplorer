@@ -74,12 +74,37 @@ export default function CampaignsClient() {
     for (const file of Array.from(files)) {
       setUploadQueue((prev) => [...prev, { fileName: file.name, campaignId }]);
       try {
-        const fd = new FormData();
-        fd.append("file", file);
-        fd.append("campaign_id", campaignId);
-        const res = await fetch("/api/admin/funnel/ads/transcribe", { method: "POST", body: fd });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "Erreur");
+        // Step 1: Get a signed upload URL from our API
+        const urlRes = await fetch("/api/admin/funnel/ads/upload-url", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ fileName: file.name }),
+        });
+        const urlData = await urlRes.json();
+        if (!urlRes.ok) throw new Error(urlData.error || "Erreur URL");
+
+        // Step 2: Upload directly to Supabase Storage (bypasses Vercel 4.5MB limit)
+        const uploadRes = await fetch(urlData.uploadUrl, {
+          method: "PUT",
+          headers: { "Content-Type": file.type || "video/mp4" },
+          body: file,
+        });
+        if (!uploadRes.ok) throw new Error("Erreur upload vidéo");
+
+        // Step 3: Transcribe + create ad (small JSON request, no file body)
+        const transcribeRes = await fetch("/api/admin/funnel/ads/transcribe", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            storage_path: urlData.storagePath,
+            public_url: urlData.publicUrl,
+            campaign_id: campaignId,
+            file_name: file.name,
+          }),
+        });
+        const data = await transcribeRes.json();
+        if (!transcribeRes.ok) throw new Error(data.error || "Erreur transcription");
+
         if (data.ad_id) {
           setAds((prev) => ({
             ...prev,
