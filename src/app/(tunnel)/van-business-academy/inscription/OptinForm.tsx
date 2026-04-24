@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import LiquidButton from "@/components/ui/LiquidButton";
 import { useUTMParams, saveFunnelData } from "@/lib/hooks/useUTMParams";
+import { trackFunnel } from "@/lib/funnel-tracking";
 
 export default function OptinForm() {
   const router = useRouter();
@@ -35,6 +36,13 @@ export default function OptinForm() {
 
       // Save to localStorage for subsequent pages
       saveFunnelData({ firstname, email, ...utmParams });
+
+      // Track: Lead event (Pixel + Supabase)
+      trackFunnel("optin", "/van-business-academy/inscription", {
+        email,
+        firstname,
+        ...utmParams,
+      });
 
       // Redirect to VSL
       router.push("/van-business-academy/presentation");

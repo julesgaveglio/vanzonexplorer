@@ -108,7 +108,7 @@ Sends emails from `jules@vanzonexplorer.com` via Gmail API OAuth2. Automatically
 
 ### Admin panel (`/admin`)
 
-Sections: Dashboard, SEO Analytics, Mots-Clés, Performance (PSI), Blog, Vans, Marques, Produits, Spots, Media, Prospection, Road Trips, Backlinks, Agents, Marketing (CMO), VBA (Formation).
+Sections: Dashboard, SEO Analytics, Mots-Clés, Performance (PSI), Blog, Vans, Marques, Produits, Spots, Media, Prospection, Road Trips, Backlinks, Agents, Marketing (CMO), VBA (Formation), Tunnel VBA (Funnel Analytics).
 
 **Prospection** (`/admin/club/prospection`) — internal CRM for partner brand outreach. Separate `prospects` Supabase table (distinct from `brands`). Three AI-powered API routes using SSE streaming:
 - `/api/admin/club/prospect/discover` — Tavily search + Groq analysis
@@ -127,6 +127,14 @@ Sections: Dashboard, SEO Analytics, Mots-Clés, Performance (PSI), Blog, Vans, M
 - Admin : `/admin/vba` (modules CRUD + réordonnement), `/admin/vba/[moduleId]` (leçons CRUD + ressources)
 - API routes : `/api/admin/vba/modules`, `/api/admin/vba/lessons`
 - Server Actions pour marquage complétion : `src/app/(site)/dashboard/vba/_actions.ts`
+
+**Tunnel VBA (Funnel Analytics)** (`/admin/funnel`) — Dashboard tracking 100% fiable côté serveur. Structure :
+- Table Supabase : `funnel_events` (session_id, email, event, page, UTMs, metadata)
+- Tracking dual : Meta Pixel (client `trackEvent()`) + Supabase (serveur via `/api/funnel/track`)
+- Helper : `src/lib/funnel-tracking.ts` — `trackFunnel(event, page, options)` fire les deux en parallèle
+- Events trackés : optin, vsl_view, vsl_25/50/75/100, booking_start, booking_confirmed, checkout, purchase
+- Tunnel pages : `(tunnel)/van-business-academy/` — inscription → presentation → diagnostic-offert → appel-confirme → paiement → paiement-confirme
+- Admin dashboard : KPIs, funnel visuel, attribution UTM, événements récents
 
 ## VSL Acquisition Strategy (articles Business Van)
 

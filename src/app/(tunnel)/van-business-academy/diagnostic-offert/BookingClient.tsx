@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import CalendlyInline from "@/components/ui/CalendlyInline";
 import { getFunnelData } from "@/lib/hooks/useUTMParams";
+import { trackFunnel } from "@/lib/funnel-tracking";
+
 export default function BookingClient() {
   const router = useRouter();
   const [firstname, setFirstname] = useState("");
@@ -19,6 +21,12 @@ export default function BookingClient() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: data.email, step: "booking" }),
       }).catch(() => {});
+
+      // Track: booking page view (Pixel Schedule + Supabase)
+      trackFunnel("booking_start", "/van-business-academy/diagnostic-offert", {
+        email: data.email,
+        firstname: data.firstname,
+      });
     }
 
     // Listen for Calendly booking completion
@@ -30,6 +38,12 @@ export default function BookingClient() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email: data.email, step: "confirmed" }),
           }).catch(() => {});
+
+          // Track: booking confirmed (Pixel Schedule + Supabase)
+          trackFunnel("booking_confirmed", "/van-business-academy/diagnostic-offert", {
+            email: data.email,
+            firstname: data.firstname,
+          });
         }
         router.push("/van-business-academy/appel-confirme");
       }

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef, useCallback } from "react";
 import { getFunnelData } from "@/lib/hooks/useUTMParams";
+import { trackFunnel } from "@/lib/funnel-tracking";
 import LiquidButton from "@/components/ui/LiquidButton";
 
 const VIDEO_HLS_URL =
@@ -33,6 +34,7 @@ export default function VSLClient() {
   const containerRef = useRef<HTMLDivElement>(null);
   const hlsRef = useRef<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
   const lastAllowedTimeRef = useRef(0);
+  const videoMilestonesRef = useRef(new Set<string>());
   const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // --- Handlers ---
@@ -124,7 +126,11 @@ export default function VSLClient() {
         body: JSON.stringify({ email: data.email, step: "vsl" }),
       }).catch(() => {});
     }
-    // Pixel event removed
+    // Track: VSL page view (Pixel ViewContent + Supabase)
+    trackFunnel("vsl_view", "/van-business-academy/presentation", {
+      email: data?.email,
+      firstname: data?.firstname,
+    });
   }, []);
 
   // Load HLS.js for non-Safari browsers + autoplay
@@ -169,6 +175,31 @@ export default function VSLClient() {
       lastAllowedTimeRef.current = Math.max(lastAllowedTimeRef.current, v.currentTime);
       if (v.currentTime >= CTA_DELAY_SECONDS && !showCTA) {
         setShowCTA(true);
+      }
+
+      // Track video progress milestones
+      if (v.duration > 0) {
+        const pct = (v.currentTime / v.duration) * 100;
+        const funnelData = getFunnelData();
+        const opts = { email: funnelData?.email, firstname: funnelData?.firstname };
+        const milestones = videoMilestonesRef.current;
+
+        if (pct >= 25 && !milestones.has("25")) {
+          milestones.add("25");
+          trackFunnel("vsl_25", "/van-business-academy/presentation", opts);
+        }
+        if (pct >= 50 && !milestones.has("50")) {
+          milestones.add("50");
+          trackFunnel("vsl_50", "/van-business-academy/presentation", opts);
+        }
+        if (pct >= 75 && !milestones.has("75")) {
+          milestones.add("75");
+          trackFunnel("vsl_75", "/van-business-academy/presentation", opts);
+        }
+        if (pct >= 95 && !milestones.has("100")) {
+          milestones.add("100");
+          trackFunnel("vsl_100", "/van-business-academy/presentation", opts);
+        }
       }
     };
     const onSeeking = () => {

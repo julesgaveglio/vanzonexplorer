@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { Shield, CheckCircle, Zap, BookOpen, Headphones, Tag } from "lucide-react";
 import LiquidButton from "@/components/ui/LiquidButton";
+import { getFunnelData } from "@/lib/hooks/useUTMParams";
+import { trackFunnel } from "@/lib/funnel-tracking";
 
 const FEATURES = [
   { icon: BookOpen, text: "8 modules, 60+ videos terrain" },
@@ -24,6 +26,19 @@ export default function CheckoutClient() {
   const [appliedCode, setAppliedCode] = useState("");
   const [promoError, setPromoError] = useState("");
   const [paymentMode, setPaymentMode] = useState<"1x" | "4x">("1x");
+  const tracked = useRef(false);
+
+  useEffect(() => {
+    if (tracked.current) return;
+    tracked.current = true;
+    const data = getFunnelData();
+    trackFunnel("checkout", "/van-business-academy/paiement", {
+      email: data?.email,
+      firstname: data?.firstname,
+      value: 997,
+      currency: "EUR",
+    });
+  }, []);
 
   const promo = PROMO_PRICES[appliedCode];
   const totalAmount = promo ? promo.total : DEFAULT_TOTAL;
