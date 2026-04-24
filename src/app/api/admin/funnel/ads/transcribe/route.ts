@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth";
+import { createSupabaseAdmin } from "@/lib/supabase/server";
 import Groq from "groq-sdk";
 
 export async function POST(req: NextRequest) {
@@ -14,40 +15,60 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Fichier requis" }, { status: 400 });
     }
 
-    // Groq Whisper accepts: mp3, mp4, mpeg, mpga, m4a, wav, webm
-    const allowedTypes = [
-      "video/mp4", "video/webm", "video/mpeg",
-      "audio/mpeg", "audio/mp3", "audio/mp4", "audio/m4a", "audio/wav", "audio/webm",
-    ];
-    if (!allowedTypes.includes(file.type) && !file.name.match(/\.(mp4|mp3|m4a|wav|webm|mpeg)$/i)) {
+    if (file.size > 50 * 1024 * 1024) {
       return NextResponse.json(
-        { error: "Format non supporté. Utilise MP4, MP3, WAV ou WebM." },
+        { error: "Fichier trop lourd (max 50MB)." },
         { status: 400 }
       );
     }
 
-    // Max 25MB (Groq limit)
-    if (file.size > 25 * 1024 * 1024) {
-      return NextResponse.json(
-        { error: "Fichier trop lourd (max 25MB). Compresse la vidéo avant." },
-        { status: 400 }
-      );
+    const supabase = createSupabaseAdmin();
+
+    // 1. Upload to Supabase Storage
+    const ext = file.name.split(".").pop() || "mp4";
+    const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    const { error: uploadError } = await supabase.storage
+      .from("funnel-ads")
+      .upload(fileName, buffer, { contentType: file.type });
+
+    if (uploadError) {
+      console.error("[ads/transcribe] Storage upload error:", uploadError);
+      return NextResponse.json({ error: "Erreur upload." }, { status: 500 });
     }
 
-    const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+    const { data: urlData } = supabase.storage
+      .from("funnel-ads")
+      .getPublicUrl(fileName);
+    const videoUrl = urlData.publicUrl;
 
-    const transcription = await groq.audio.transcriptions.create({
-      file,
-      model: "whisper-large-v3",
-      language: "fr",
-      response_format: "text",
-    });
+    // 2. Transcribe with Groq Whisper
+    let transcript = "";
+    try {
+      // Re-create a File from buffer for Groq
+      const audioFile = new File([buffer], file.name, { type: file.type });
 
-    return NextResponse.json({ transcript: transcription });
+      const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+      const result = await groq.audio.transcriptions.create({
+        file: audioFile,
+        model: "whisper-large-v3",
+        language: "fr",
+        response_format: "text",
+      });
+      transcript = typeof result === "string" ? result : JSON.stringify(result);
+    } catch (err) {
+      console.error("[ads/transcribe] Groq error:", err);
+      transcript = "(Transcription échouée — colle le script manuellement)";
+    }
+
+    return NextResponse.json({ video_url: videoUrl, transcript });
   } catch (err) {
     console.error("[ads/transcribe] Error:", err);
     return NextResponse.json(
-      { error: "Erreur lors de la transcription." },
+      { error: "Erreur lors du traitement." },
       { status: 500 }
     );
   }

@@ -89,9 +89,13 @@ export default function CampaignsClient() {
     }
   }
 
+  const [dragOver, setDragOver] = useState(false);
+  const [uploadedFileName, setUploadedFileName] = useState("");
+
   async function handleVideoUpload(file: File) {
     setTranscribing(true);
     setUploadError("");
+    setUploadedFileName(file.name);
     try {
       const formData = new FormData();
       formData.append("file", file);
@@ -101,12 +105,23 @@ export default function CampaignsClient() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Erreur transcription");
-      setAdForm((prev) => ({ ...prev, transcript: typeof data.transcript === "string" ? data.transcript : JSON.stringify(data.transcript) }));
+      setAdForm((prev) => ({
+        ...prev,
+        transcript: typeof data.transcript === "string" ? data.transcript : JSON.stringify(data.transcript),
+        video_url: data.video_url || prev.video_url,
+      }));
     } catch (err) {
       setUploadError(err instanceof Error ? err.message : "Erreur");
     } finally {
       setTranscribing(false);
     }
+  }
+
+  function handleDrop(e: React.DragEvent) {
+    e.preventDefault();
+    setDragOver(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) handleVideoUpload(file);
   }
 
   async function deleteAd(adId: string, campaignId: string) {
@@ -229,30 +244,40 @@ export default function CampaignsClient() {
                         <input type="url" value={adForm.video_url} onChange={(e) => setAdForm({ ...adForm, video_url: e.target.value })} placeholder="URL vidéo (optionnel)" className={inputCls} />
                       </div>
 
-                      {/* Upload vidéo → auto-transcription */}
-                      <div className="border-2 border-dashed border-slate-200 rounded-xl p-4 text-center">
+                      {/* Upload vidéo → stockage + auto-transcription */}
+                      <div
+                        onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                        onDragLeave={() => setDragOver(false)}
+                        onDrop={handleDrop}
+                        className={`border-2 border-dashed rounded-xl p-6 text-center transition-colors ${
+                          dragOver ? "border-blue-400 bg-blue-50" : "border-slate-200"
+                        }`}
+                      >
                         {transcribing ? (
-                          <div className="flex items-center justify-center gap-2 py-2">
-                            <Loader2 className="w-5 h-5 text-blue-500 animate-spin" />
-                            <span className="text-sm text-slate-600">Transcription en cours...</span>
+                          <div className="flex flex-col items-center gap-2 py-2">
+                            <Loader2 className="w-6 h-6 text-blue-500 animate-spin" />
+                            <span className="text-sm text-slate-600">Upload + transcription de <strong>{uploadedFileName}</strong>...</span>
+                            <span className="text-xs text-slate-400">Ça peut prendre 15-30 secondes</span>
+                          </div>
+                        ) : adForm.video_url ? (
+                          <div className="flex flex-col items-center gap-2">
+                            <span className="text-2xl">✅</span>
+                            <span className="text-sm text-emerald-600 font-medium">Vidéo uploadée + transcrite</span>
+                            <a href={adForm.video_url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 hover:underline truncate max-w-xs">{uploadedFileName || "Voir la vidéo"}</a>
+                            <label className="cursor-pointer text-xs text-slate-400 hover:text-slate-600 mt-1">
+                              Remplacer
+                              <input type="file" accept="video/*,audio/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleVideoUpload(f); e.target.value = ""; }} />
+                            </label>
                           </div>
                         ) : (
                           <>
+                            <Upload className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+                            <p className="text-sm text-slate-500 mb-1">Glisse ta vidéo ici</p>
                             <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 transition-colors">
-                              <Upload className="w-4 h-4" />
-                              Upload vidéo (auto-transcript)
-                              <input
-                                type="file"
-                                accept="video/mp4,video/webm,audio/mpeg,audio/mp3,audio/wav"
-                                className="hidden"
-                                onChange={(e) => {
-                                  const f = e.target.files?.[0];
-                                  if (f) handleVideoUpload(f);
-                                  e.target.value = "";
-                                }}
-                              />
+                              ou clique pour sélectionner
+                              <input type="file" accept="video/*,audio/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleVideoUpload(f); e.target.value = ""; }} />
                             </label>
-                            <p className="text-xs text-slate-400 mt-2">MP4, WebM, MP3, WAV — max 25MB</p>
+                            <p className="text-xs text-slate-400 mt-2">MP4, WebM, MP3, WAV — max 50MB</p>
                           </>
                         )}
                         {uploadError && <p className="text-xs text-red-500 mt-2">{uploadError}</p>}
