@@ -50,12 +50,22 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "tracking failed" }, { status: 500 });
     }
 
-    // Notify Telegram on key events
-    if (event === "page_view" && page.includes("inscription")) {
-      notifyTelegram(`👁 <b>Vue opt-in</b>\n${utm.utm_source ? `Source : ${utm.utm_source}` : "Trafic direct"}`).catch(() => {});
-    } else if (event === "optin") {
-      notifyTelegram(`📧 <b>Nouveau lead VBA !</b>\n${firstname || "—"} — ${email || "—"}\n${utm.utm_source ? `Source : ${utm.utm_source}` : ""}`).catch(() => {});
-    }
+    // Notify Telegram on all funnel events
+    const src = utm.utm_source ? `\nSource : ${utm.utm_source}` : "";
+    const who = email ? `\n${firstname || "—"} — ${email}` : "";
+    const NOTIFS: Record<string, string> = {
+      page_view: `👁 <b>Vue opt-in</b>${src}`,
+      optin: `📧 <b>Nouveau lead VBA !</b>${who}${src}`,
+      vsl_view: `🎥 <b>VSL lancée</b>${who}`,
+      vsl_50: `⏱ <b>VSL 50%</b>${who}`,
+      vsl_100: `✅ <b>VSL terminée !</b>${who}`,
+      booking_start: `📅 <b>Calendly ouvert</b>${who}`,
+      booking_confirmed: `📞 <b>Call booké !</b>${who}`,
+      checkout: `💳 <b>Page paiement ouverte</b>${who}`,
+      purchase: `🎉 <b>ACHAT VBA !</b>${who}\n💰 997€`,
+    };
+    const msg = NOTIFS[event];
+    if (msg) notifyTelegram(msg).catch(() => {});
 
     return NextResponse.json({ ok: true });
   } catch {
