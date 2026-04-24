@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { Suspense } from "react";
 import OptinForm from "./OptinForm";
+import FakeVideoThumb from "./FakeVideoThumb";
 import BeforeAfterSlider from "@/components/ui/BeforeAfterSlider";
 export const metadata: Metadata = {
   title: "Formation Van Business Academy",
@@ -84,6 +85,9 @@ export default function OptinPage() {
       </div>
 
       <div className="w-full max-w-lg px-4">
+        {/* Fake video thumbnail — click scrolls to form */}
+        <FakeVideoThumb />
+
         {/* Badge */}
         <div className="flex justify-center mb-6">
           <span

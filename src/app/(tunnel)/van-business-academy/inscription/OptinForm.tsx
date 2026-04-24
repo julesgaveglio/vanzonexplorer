@@ -53,7 +53,7 @@ export default function OptinForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form id="optin-form" onSubmit={handleSubmit} className="space-y-4">
       <div>
         <input
           type="text"
