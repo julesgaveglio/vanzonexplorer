@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Suspense } from "react";
 import OptinForm from "./OptinForm";
 import FakeVideoThumb from "./FakeVideoThumb";
+import PageViewTracker from "./PageViewTracker";
 import BeforeAfterSlider from "@/components/ui/BeforeAfterSlider";
 export const metadata: Metadata = {
   title: "Formation Van Business Academy",
@@ -62,6 +63,7 @@ const MARQUEE_PHOTOS = [...VAN_PHOTOS, ...VAN_PHOTOS];
 export default function OptinPage() {
   return (
     <div className="flex flex-col items-center min-h-[calc(100vh-80px)] pb-12">
+      <PageViewTracker />
       {/* Marquee photos — hidden on small mobile to keep form above fold */}
       <div className="w-full overflow-hidden mb-8 hidden sm:block">
         <div className="flex animate-scroll-banner gap-4 py-2" style={{ width: "max-content" }}>
