@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { RefreshCw } from "lucide-react";
 
 interface StepCounts {
   [key: string]: number;
@@ -77,15 +78,25 @@ const EVENT_ICONS: Record<string, string> = {
 export default function FunnelDashboardClient() {
   const [data, setData] = useState<FunnelData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [days, setDays] = useState(30);
+  const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  useEffect(() => {
-    setLoading(true);
+  const fetchData = useCallback((silent = false) => {
+    if (!silent) setLoading(true);
+    else setRefreshing(true);
     fetch(`/api/admin/funnel?days=${days}`)
       .then((r) => r.json())
-      .then(setData)
-      .finally(() => setLoading(false));
+      .then((d) => { setData(d); setLastRefresh(new Date()); })
+      .finally(() => { setLoading(false); setRefreshing(false); });
   }, [days]);
+
+  useEffect(() => {
+    fetchData();
+    intervalRef.current = setInterval(() => fetchData(true), 30000);
+    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
+  }, [fetchData]);
 
   if (loading) {
     return (
@@ -118,8 +129,23 @@ export default function FunnelDashboardClient() {
             </button>
           ))}
         </div>
-        <div className="text-right">
-          <p className="text-sm text-slate-400">{data.total_events} événements</p>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => fetchData(true)}
+            disabled={refreshing}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors disabled:opacity-50"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? "animate-spin" : ""}`} />
+            {refreshing ? "" : "Actualiser"}
+          </button>
+          <div className="text-right">
+            <p className="text-sm text-slate-400">{data.total_events} événements</p>
+            {lastRefresh && (
+              <p className="text-xs text-slate-300">
+                MAJ {lastRefresh.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+              </p>
+            )}
+          </div>
         </div>
       </div>
 
