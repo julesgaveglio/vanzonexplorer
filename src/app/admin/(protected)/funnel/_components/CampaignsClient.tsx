@@ -69,35 +69,87 @@ export default function CampaignsClient() {
     }
   }
 
+  // Extract audio from video in browser → small WebM audio file
+  async function extractAudio(videoFile: File): Promise<File> {
+    return new Promise((resolve, reject) => {
+      const video = document.createElement("video");
+      video.muted = true;
+      video.src = URL.createObjectURL(videoFile);
+
+      video.onloadedmetadata = () => {
+        const audioCtx = new AudioContext();
+        const dest = audioCtx.createMediaStreamDestination();
+        const source = audioCtx.createMediaElementSource(video);
+        source.connect(dest);
+
+        const recorder = new MediaRecorder(dest.stream, { mimeType: "audio/webm;codecs=opus" });
+        const chunks: Blob[] = [];
+
+        recorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
+        recorder.onstop = () => {
+          const audioBlob = new Blob(chunks, { type: "audio/webm" });
+          const audioFile = new File([audioBlob], videoFile.name.replace(/\.[^.]+$/, ".webm"), { type: "audio/webm" });
+          URL.revokeObjectURL(video.src);
+          audioCtx.close();
+          resolve(audioFile);
+        };
+        recorder.onerror = () => reject(new Error("Erreur extraction audio"));
+
+        recorder.start();
+        video.play().catch(reject);
+
+        video.onended = () => {
+          recorder.stop();
+          video.pause();
+        };
+
+        // Safety timeout (max 5 min video)
+        setTimeout(() => {
+          if (recorder.state === "recording") {
+            recorder.stop();
+            video.pause();
+          }
+        }, 300000);
+      };
+
+      video.onerror = () => reject(new Error("Impossible de lire la vidéo"));
+    });
+  }
+
   async function handleMultiUpload(files: FileList, campaignId: string) {
     setUploadError("");
     for (const file of Array.from(files)) {
       setUploadQueue((prev) => [...prev, { fileName: file.name, campaignId }]);
       try {
-        // Step 1: Get a signed upload URL from our API
+        // Step 1: Extract audio from video (200MB MOV → 2MB WebM)
+        let audioFile: File;
+        try {
+          audioFile = await extractAudio(file);
+        } catch {
+          // If extraction fails, try sending the original file
+          audioFile = file;
+        }
+
+        // Step 2: Upload the small audio to Supabase Storage
         const urlRes = await fetch("/api/admin/funnel/ads/upload-url", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ fileName: file.name }),
+          body: JSON.stringify({ fileName: audioFile.name }),
         });
         const urlData = await urlRes.json();
         if (!urlRes.ok) throw new Error(urlData.error || "Erreur URL");
 
-        // Step 2: Upload directly to Supabase Storage (bypasses Vercel 4.5MB limit)
         const uploadRes = await fetch(urlData.uploadUrl, {
           method: "PUT",
           headers: {
-            "Content-Type": file.type || "video/mp4",
+            "Content-Type": audioFile.type || "audio/webm",
             "Authorization": `Bearer ${urlData.token}`,
           },
-          body: file,
+          body: audioFile,
         });
-        if (!uploadRes.ok) {
-          const errText = await uploadRes.text().catch(() => "");
-          throw new Error(`Erreur upload (${uploadRes.status}): ${errText.slice(0, 100)}`);
-        }
+        if (!uploadRes.ok) throw new Error("Erreur upload audio");
 
-        // Step 3: Transcribe + create ad (small JSON request, no file body)
+        // Step 3: Transcribe + create ad
         const transcribeRes = await fetch("/api/admin/funnel/ads/transcribe", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
