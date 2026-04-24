@@ -61,8 +61,8 @@ const MARQUEE_PHOTOS = [...VAN_PHOTOS, ...VAN_PHOTOS];
 export default function OptinPage() {
   return (
     <div className="flex flex-col items-center min-h-[calc(100vh-80px)] pb-12">
-      {/* Marquee photos */}
-      <div className="w-full overflow-hidden mb-8">
+      {/* Marquee photos — hidden on small mobile to keep form above fold */}
+      <div className="w-full overflow-hidden mb-8 hidden sm:block">
         <div className="flex animate-scroll-banner gap-4 py-2" style={{ width: "max-content" }}>
           {MARQUEE_PHOTOS.map((photo, i) => (
             <div
@@ -112,8 +112,18 @@ export default function OptinPage() {
           de van aménagé, même <strong className="text-slate-700">sans expérience</strong> en mécanique ou en aménagement.
         </p>
 
-        {/* Bénéfices */}
-        <div className="space-y-3 mb-8">
+        {/* Formulaire — visible sans scroll sur mobile */}
+        <Suspense>
+          <OptinForm />
+        </Suspense>
+
+        {/* Réassurance */}
+        <p className="text-center text-xs text-slate-400 mt-6">
+          Tes informations restent confidentielles. Pas de spam, promis.
+        </p>
+
+        {/* Bénéfices — après le formulaire sur mobile */}
+        <div className="space-y-3 mt-8 mb-8">
           <div className="flex items-start gap-3">
             <span
               className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center mt-0.5"
@@ -168,18 +178,8 @@ export default function OptinPage() {
           </div>
         </div>
 
-        {/* Formulaire */}
-        <Suspense>
-          <OptinForm />
-        </Suspense>
-
-        {/* Réassurance */}
-        <p className="text-center text-xs text-slate-400 mt-6">
-          Tes informations restent confidentielles. Pas de spam, promis.
-        </p>
-
         {/* Before/After Slider */}
-        <div className="mt-10">
+        <div className="mt-2">
           <p className="text-center text-xs font-semibold uppercase tracking-wider text-slate-400 mb-4">
             La transformation
           </p>
