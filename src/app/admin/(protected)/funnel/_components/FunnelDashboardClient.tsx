@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { RefreshCw, Plus, Calendar, TrendingUp, Users, Phone, CreditCard, Eye } from "lucide-react";
+import { RefreshCw, Plus, Calendar, Users, Phone, CreditCard, Eye } from "lucide-react";
 
 /* ─── Types ─────────────────────────────────────────────── */
 
@@ -25,7 +25,6 @@ interface FunnelData {
 const STEP_CONFIG: { key: string; label: string; icon: string; color: string }[] = [
   { key: "page_view", label: "Vues opt-in", icon: "👁", color: "bg-slate-400" },
   { key: "optin", label: "Leads (email)", icon: "📧", color: "bg-blue-500" },
-  { key: "vsl_view", label: "VSL ouverte", icon: "🎥", color: "bg-cyan-500" },
   { key: "vsl_50", label: "VSL 50%+", icon: "⏱", color: "bg-cyan-400" },
   { key: "vsl_100", label: "VSL complète", icon: "✅", color: "bg-teal-500" },
   { key: "booking_start", label: "Calendly ouvert", icon: "📅", color: "bg-amber-400" },
@@ -230,7 +229,6 @@ export default function FunnelDashboardClient() {
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         <KPICard icon={<Eye className="w-4 h-4" />} label="Vues" value={sc.page_view ?? 0} />
         <KPICard icon={<Users className="w-4 h-4" />} label="Leads" value={sc.optin ?? 0} sub={`${data.view_to_optin}% conv.`} />
-        <KPICard icon={<TrendingUp className="w-4 h-4" />} label="VSL vues" value={sc.vsl_view ?? 0} />
         <KPICard icon={<Phone className="w-4 h-4" />} label="Calls bookés" value={sc.booking_confirmed ?? 0} />
         <KPICard icon={<CreditCard className="w-4 h-4" />} label="Achats" value={sc.purchase ?? 0} accent />
         <KPICard icon={<Calendar className="w-4 h-4" />} label="CA estimé" value={`${data.estimated_revenue}€`} accent />

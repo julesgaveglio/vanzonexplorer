@@ -126,11 +126,6 @@ export default function VSLClient() {
         body: JSON.stringify({ email: data.email, step: "vsl" }),
       }).catch(() => {});
     }
-    // Track: VSL page view (Pixel ViewContent + Supabase)
-    trackFunnel("vsl_view", "/van-business-academy/presentation", {
-      email: data?.email,
-      firstname: data?.firstname,
-    });
   }, []);
 
   // Load HLS.js for non-Safari browsers + autoplay

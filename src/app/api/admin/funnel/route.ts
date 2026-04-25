@@ -5,7 +5,6 @@ import { createSupabaseAdmin } from "@/lib/supabase/server";
 const FUNNEL_STEPS = [
   "page_view",
   "optin",
-  "vsl_view",
   "vsl_25",
   "vsl_50",
   "vsl_75",
@@ -63,10 +62,9 @@ export async function GET(req: NextRequest) {
   // Conversion rates between key steps
   const KEY_CONVERSIONS: [string, string][] = [
     ["page_view", "optin"],
-    ["optin", "vsl_view"],
-    ["vsl_view", "vsl_50"],
+    ["optin", "vsl_50"],
     ["vsl_50", "vsl_100"],
-    ["vsl_view", "booking_start"],
+    ["optin", "booking_start"],
     ["booking_start", "booking_confirmed"],
     ["booking_confirmed", "checkout"],
     ["checkout", "purchase"],
