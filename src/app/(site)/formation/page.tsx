@@ -6,7 +6,7 @@ import type { FormationCardData } from "@/components/formation/FormationCardStac
 import FormationCardStack from "@/components/formation/FormationCardStack";
 import ComparisonSection from "@/components/formation/ComparisonSection";
 
-import CTAButton from "@/components/formation/CTAButton";
+import LiquidButton from "@/components/ui/LiquidButton";
 
 export const metadata: Metadata = {
   title: "Van Business Academy — Construis ta liberté van par van",
@@ -31,7 +31,7 @@ const courseJsonLd = {
     "Accompagnement terrain pour réaménager ton van, le mettre en location, le revendre avec plus-value et recommencer. Créé par des loueurs en activité au Pays Basque.",
   url: "https://vanzonexplorer.com/formation",
   image:
-    "https://cdn.sanity.io/images/lewexa74/production/28a2c5acbe2ee16169d4ace1ab0522481c43d356-1170x2080.jpg?auto=format&q=82",
+    "https://cdn.sanity.io/images/lewexa74/production/16f9120e659bdd4bba47e663e9df9a1a9293fe3f-1170x2080.jpg?auto=format&q=82",
   provider: {
     "@type": "Organization",
     name: "Vanzon Explorer",
@@ -41,13 +41,7 @@ const courseJsonLd = {
     {
       "@type": "Person",
       name: "Jules Gaveglio",
-      jobTitle: "Co-fondateur Vanzon Explorer",
-      url: "https://vanzonexplorer.com/a-propos",
-    },
-    {
-      "@type": "Person",
-      name: "Elio Dubernet",
-      jobTitle: "Co-fondateur Vanzon Explorer",
+      jobTitle: "Fondateur Vanzon Explorer",
       url: "https://vanzonexplorer.com/a-propos",
     },
   ],
@@ -131,7 +125,7 @@ export default async function FormationPage() {
 
           {/* CTA visible sans scroll */}
           <div className="mt-8">
-            <CTAButton>En savoir plus →</CTAButton>
+            <LiquidButton variant="gold" size="lg" href="/van-business-academy/presentation">En savoir plus →</LiquidButton>
           </div>
         </div>
 
@@ -148,7 +142,7 @@ export default async function FormationPage() {
             Créé par des loueurs en activité au Pays Basque.
           </p>
 
-          <CTAButton>En savoir plus →</CTAButton>
+          <LiquidButton variant="gold" size="lg" href="/van-business-academy/presentation">En savoir plus →</LiquidButton>
         </div>
       </section>
 
@@ -168,8 +162,8 @@ export default async function FormationPage() {
             {/* Image */}
             <div className="relative aspect-[16/9]">
               <Image
-                src="https://cdn.sanity.io/images/lewexa74/production/28a2c5acbe2ee16169d4ace1ab0522481c43d356-1170x2080.jpg?auto=format&q=82&w=800"
-                alt="Jules et Elio, fondateurs de Van Business Academy"
+                src="https://cdn.sanity.io/images/lewexa74/production/16f9120e659bdd4bba47e663e9df9a1a9293fe3f-1170x2080.jpg?auto=format&q=82&w=800"
+                alt="Jules, fondateur de Van Business Academy"
                 fill
                 className="object-cover"
                 unoptimized
@@ -237,7 +231,7 @@ export default async function FormationPage() {
 
               {/* CTA */}
               <div className="mt-8">
-                <CTAButton fullWidth>En savoir plus →</CTAButton>
+                <LiquidButton variant="gold" size="lg" href="/van-business-academy/presentation" fullWidth>En savoir plus →</LiquidButton>
               </div>
             </div>
           </div>

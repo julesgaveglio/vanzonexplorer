@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import OwnerDashboardClient from "../../proprietaire/dashboard/_components/OwnerDashboardClient";
+import OwnerDashboardClient from "@/components/marketplace/OwnerDashboardClient";
 
 export const metadata: Metadata = {
   title: "Mes annonces — Vanzon Explorer",
