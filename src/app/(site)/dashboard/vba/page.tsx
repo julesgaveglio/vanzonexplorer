@@ -1,23 +1,22 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
-import {
-  CheckCircle2, Circle, Play,
-  Clapperboard, Search, Ruler, Hammer, Zap, ClipboardList, Wallet, FileCheck,
-} from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+import { CheckCircle2, Circle, Play } from "lucide-react";
 import VBAPaywall from "./_components/VBAPaywall";
 
-const MODULE_ICONS: Record<number, LucideIcon> = {
-  1: Clapperboard,
-  2: Search,
-  3: Ruler,
-  4: Hammer,
-  5: Zap,
-  6: ClipboardList,
-  7: Wallet,
-  8: FileCheck,
+const MODULE_GIFS: Record<number, string> = {
+  1: "/icons/vba-module-1-static.png",
+  2: "/icons/vba-module-2-static.png",
+  3: "/icons/vba-module-3-static.png",
+  4: "/icons/vba-module-4-static.png",
+  5: "/icons/vba-module-5-static.png",
+  6: "/icons/vba-module-6-static.png",
+  7: "/icons/vba-module-7-static.png",
+  8: "/icons/vba-module-8-static.png",
+  9: "/icons/vba-module-9-static.png",
+  10: "/icons/vba-module-10-static.png",
 };
 
 const ADMIN_EMAIL = "gavegliojules@gmail.com";
@@ -102,12 +101,12 @@ export default async function VBAPage() {
     totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-4 sm:space-y-8">
       {/* Header + progression globale */}
-      <div className="glass-card p-6">
-        <div className="flex items-center justify-between mb-4">
+      <div className="glass-card p-4 sm:p-6">
+        <div className="flex items-center justify-between mb-3 sm:mb-4">
           <h2
-            className="text-xl font-bold bg-clip-text text-transparent"
+            className="text-lg sm:text-xl font-bold bg-clip-text text-transparent"
             style={{
               backgroundImage:
                 "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
@@ -115,7 +114,7 @@ export default async function VBAPage() {
           >
             Van Business Academy
           </h2>
-          <span className="text-sm text-slate-500">
+          <span className="text-xs sm:text-sm text-slate-500">
             {completedCount}/{totalLessons} leçons
           </span>
         </div>
@@ -136,14 +135,14 @@ export default async function VBAPage() {
 
       {/* Liste des modules */}
       {modules.length === 0 ? (
-        <div className="glass-card p-10 text-center">
+        <div className="glass-card p-8 sm:p-10 text-center">
           <p className="text-slate-500">
             Les modules arrivent bientôt ! Vous serez notifié dès la mise en
             ligne.
           </p>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           {modules.map((mod) => {
             const modLessons = lessons
               .filter((l) => l.module_id === mod.id)
@@ -154,21 +153,26 @@ export default async function VBAPage() {
             const firstIncomplete = modLessons.find(
               (l) => !completedSet.has(l.id)
             );
+            const iconSrc = MODULE_GIFS[mod.order];
 
             return (
               <div key={mod.id} className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
-                <div className="p-5 border-b border-slate-50">
+                <div className="p-4 sm:p-5 border-b border-slate-50">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2.5">
-                      {(() => { const Icon = MODULE_ICONS[mod.order] ?? Clapperboard; return <Icon className="w-5 h-5 flex-shrink-0" style={{ color: "#B9945F" }} />; })()}
-                      <h3 className="font-bold text-slate-900">
+                      {iconSrc && (
+                        <Image
+                          src={iconSrc}
+                          alt=""
+                          width={24}
+                          height={24}
+                          className="w-6 h-6 flex-shrink-0"
+                          unoptimized
+                        />
+                      )}
+                      <h3 className="font-bold text-slate-900 text-sm sm:text-base">
                         {mod.title}
                       </h3>
-                      {mod.description && (
-                        <p className="text-sm text-slate-500 mt-1">
-                          {mod.description}
-                        </p>
-                      )}
                     </div>
                     <span className="text-xs text-slate-400 flex-shrink-0 ml-4">
                       {modCompleted}/{modLessons.length}
@@ -186,7 +190,7 @@ export default async function VBAPage() {
                       <Link
                         key={lesson.id}
                         href={`/dashboard/vba/${mod.slug}/${lesson.slug}`}
-                        className={`flex items-center gap-3 px-5 py-3 hover:bg-slate-50 transition-colors ${
+                        className={`flex items-center gap-3 px-4 sm:px-5 py-3 hover:bg-slate-50 transition-colors active:bg-slate-100 ${
                           isCurrent ? "bg-amber-50/50" : ""
                         }`}
                       >

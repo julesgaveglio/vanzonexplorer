@@ -19,13 +19,13 @@ export default async function DashboardLayout({
     <section className="min-h-screen bg-slate-50">
       {/* Navigation secondaire */}
       <div className="bg-white border-b border-slate-100">
-        <div className="max-w-6xl mx-auto px-6">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <DashboardNav />
         </div>
       </div>
 
       {/* Contenu */}
-      <div className="max-w-6xl mx-auto px-6 py-8">{children}</div>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-8">{children}</div>
     </section>
   );
 }

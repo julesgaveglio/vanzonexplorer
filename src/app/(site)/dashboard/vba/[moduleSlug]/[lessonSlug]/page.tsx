@@ -6,9 +6,11 @@ import { ArrowLeft, ArrowRight, FileText, Image as ImageIcon, ExternalLink } fro
 
 const ADMIN_EMAIL = "gavegliojules@gmail.com";
 import VBASidebar from "../../_components/VBASidebar";
+import VBAMobileDrawer from "../../_components/VBAMobileDrawer";
 import MarkCompleteButton from "../../_components/MarkCompleteButton";
 import VBAPaywall from "../../_components/VBAPaywall";
 import VBAQuiz, { type QuizQuestion } from "../../_components/VBAQuiz";
+import VBAVideoPlayer from "../../_components/VBAVideoPlayer";
 
 interface Resource {
   type: "pdf" | "image" | "link";
@@ -50,7 +52,7 @@ export default async function LessonPage({
       .order("order"),
     supabase
       .from("vba_lessons")
-      .select("id, module_id, title, slug, bunny_video_id, bunny_library_id, duration_seconds, description, resources, order")
+      .select("id, module_id, title, slug, bunny_video_id, bunny_library_id, duration_seconds, description, resources, order, chapters")
       .eq("is_published", true)
       .order("order"),
     supabase
@@ -105,6 +107,7 @@ export default async function LessonPage({
   const videoId = currentLesson.bunny_video_id || "";
 
   const resources = (currentLesson.resources ?? []) as Resource[];
+  const chapters = (currentLesson.chapters ?? []) as Array<{ title: string; time: number }>;
 
   // Detect quiz lesson: description starts with "QUIZ:"
   const isQuiz = currentLesson.description?.startsWith("QUIZ:");
@@ -121,51 +124,57 @@ export default async function LessonPage({
     link: ExternalLink,
   };
 
+  const sidebarProps = {
+    modules,
+    lessons: allLessons,
+    completedLessonIds: completedSet,
+    currentLessonId: currentLesson.id,
+    currentModuleSlug: moduleSlug,
+    totalLessons: allLessons.length,
+    completedCount: completedSet.size,
+  };
+
   return (
-    <div className="flex -mx-6 -my-8 min-h-[calc(100vh-140px)]">
-      {/* Sidebar */}
-      <VBASidebar
-        modules={modules}
-        lessons={allLessons}
-        completedLessonIds={completedSet}
-        currentLessonId={currentLesson.id}
-        currentModuleSlug={moduleSlug}
-        totalLessons={allLessons.length}
-        completedCount={completedSet.size}
-      />
+    <div className="flex -mx-6 -my-8 lg:-mx-6 lg:-my-8 min-h-[calc(100vh-140px)]">
+      {/* Desktop sidebar — hidden on mobile */}
+      <div className="hidden lg:block">
+        <VBASidebar {...sidebarProps} />
+      </div>
+
+      {/* Mobile drawer — hidden on desktop */}
+      <VBAMobileDrawer>
+        <VBASidebar {...sidebarProps} />
+      </VBAMobileDrawer>
 
       {/* Main content */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto min-w-0">
         {/* Top bar */}
-        <div className="flex items-center gap-3 px-6 py-3 border-b border-slate-100 bg-white">
+        <div className="flex items-center gap-3 px-4 sm:px-6 py-3 border-b border-slate-100 bg-white">
           <Link
             href="/dashboard/vba"
             className="text-sm text-slate-500 hover:text-slate-700 transition-colors flex items-center gap-1"
           >
             <ArrowLeft className="w-4 h-4" />
-            Retour
+            <span className="hidden sm:inline">Retour</span>
           </Link>
           <span className="text-slate-300">|</span>
-          <span className="text-sm text-slate-400">{currentModule.title}</span>
+          <span className="text-sm text-slate-400 truncate">{currentModule.title}</span>
         </div>
 
-        <div className="p-6 max-w-4xl">
+        <div className="px-4 sm:px-6 py-4 sm:py-6 max-w-4xl">
           {/* Quiz or Video player */}
           {isQuiz && quizQuestions.length > 0 ? (
-            <div className="mb-6">
+            <div className="mb-4 sm:mb-6">
               <VBAQuiz questions={quizQuestions} />
             </div>
           ) : videoId && libraryId ? (
-            <div className="mb-6">
-              <iframe
-                src={`https://iframe.mediadelivery.net/embed/${libraryId}/${videoId}?autoplay=false&loop=false&muted=false&preload=true&responsive=true`}
-                allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture"
-                allowFullScreen
-                className="w-full aspect-video rounded-xl border border-slate-200"
-              />
-            </div>
+            <VBAVideoPlayer
+              libraryId={libraryId}
+              videoId={videoId}
+              chapters={chapters}
+            />
           ) : (
-            <div className="w-full aspect-video rounded-xl bg-slate-100 flex items-center justify-center mb-6">
+            <div className="w-full aspect-video rounded-xl bg-slate-100 flex items-center justify-center mb-4 sm:mb-6">
               <p className="text-slate-400 text-sm">
                 Vidéo en cours de préparation
               </p>
@@ -173,8 +182,8 @@ export default async function LessonPage({
           )}
 
           {/* Title + mark complete */}
-          <div className="flex items-start justify-between gap-4 mb-4">
-            <h1 className="text-xl font-bold text-slate-900">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
+            <h1 className="text-lg sm:text-xl font-bold text-slate-900">
               {currentLesson.title}
             </h1>
             <MarkCompleteButton
@@ -185,7 +194,7 @@ export default async function LessonPage({
 
           {/* Description (hidden for quiz lessons) */}
           {currentLesson.description && !isQuiz && (
-            <div className="prose prose-sm prose-slate max-w-none mb-6">
+            <div className="prose prose-sm prose-slate max-w-none mb-4 sm:mb-6">
               <p className="text-slate-600 whitespace-pre-line">
                 {currentLesson.description}
               </p>
@@ -194,7 +203,7 @@ export default async function LessonPage({
 
           {/* Resources */}
           {resources.length > 0 && (
-            <div className="border-t border-slate-100 pt-6 mb-6">
+            <div className="border-t border-slate-100 pt-4 sm:pt-6 mb-4 sm:mb-6">
               <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">
                 Ressources
               </h3>
@@ -207,7 +216,7 @@ export default async function LessonPage({
                       href={resource.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-700 hover:bg-slate-100 hover:border-slate-300 transition-colors"
+                      className="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-700 hover:bg-slate-100 hover:border-slate-300 transition-colors active:scale-95"
                     >
                       <Icon className="w-4 h-4 text-slate-400" />
                       {resource.label}
@@ -219,14 +228,15 @@ export default async function LessonPage({
           )}
 
           {/* Prev/Next navigation */}
-          <div className="flex items-center justify-between border-t border-slate-100 pt-6">
+          <div className="flex items-center justify-between gap-3 border-t border-slate-100 pt-4 sm:pt-6 pb-20 lg:pb-6">
             {prevLesson ? (
               <Link
                 href={`/dashboard/vba/${prevLesson.moduleSlug}/${prevLesson.slug}`}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-3 sm:py-2 rounded-xl text-sm font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors active:scale-95"
               >
                 <ArrowLeft className="w-4 h-4" />
-                Précédent
+                <span className="hidden sm:inline">Précédent</span>
+                <span className="sm:hidden">Préc.</span>
               </Link>
             ) : (
               <div />
@@ -234,7 +244,7 @@ export default async function LessonPage({
             {nextLesson ? (
               <Link
                 href={`/dashboard/vba/${nextLesson.moduleSlug}/${nextLesson.slug}`}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white bg-slate-900 hover:bg-slate-700 transition-colors"
+                className="inline-flex items-center gap-2 px-5 py-3 sm:py-2 rounded-xl text-sm font-semibold text-white bg-slate-900 hover:bg-slate-700 transition-colors active:scale-95"
               >
                 Suivant
                 <ArrowRight className="w-4 h-4" />

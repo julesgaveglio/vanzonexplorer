@@ -35,7 +35,7 @@ export default function MarkCompleteButton({
     <button
       onClick={handleToggle}
       disabled={loading}
-      className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all disabled:opacity-50 ${
+      className={`inline-flex items-center justify-center gap-2 w-full sm:w-auto px-4 py-3 sm:py-2 rounded-xl text-sm font-semibold transition-all disabled:opacity-50 active:scale-95 flex-shrink-0 ${
         completed
           ? "bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100"
           : "bg-slate-900 text-white hover:bg-slate-700"
