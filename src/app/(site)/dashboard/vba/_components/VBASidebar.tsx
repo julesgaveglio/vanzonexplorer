@@ -3,21 +3,20 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import {
-  ChevronDown, CheckCircle2, Circle, Play,
-  Clapperboard, Search, Ruler, Hammer, Zap, ClipboardList, Wallet, FileCheck,
-} from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+import { ChevronDown, CheckCircle2, Circle, Play } from "lucide-react";
 
-const MODULE_ICONS: Record<number, LucideIcon> = {
-  1: Clapperboard,
-  2: Search,
-  3: Ruler,
-  4: Hammer,
-  5: Zap,
-  6: ClipboardList,
-  7: Wallet,
-  8: FileCheck,
+/* Animated GIF per module — plays only when module is open */
+const MODULE_GIFS: Record<number, string> = {
+  1: "/icons/vba-module-1.gif",
+  2: "/icons/vba-module-2.gif",
+  3: "/icons/vba-module-3.gif",
+  4: "/icons/vba-module-4.gif",
+  5: "/icons/vba-module-5.gif",
+  6: "/icons/vba-module-6.gif",
+  7: "/icons/vba-module-7.gif",
+  8: "/icons/vba-module-8.gif",
+  9: "/icons/vba-module-9.gif",
+  10: "/icons/vba-module-10.gif",
 };
 
 interface Module {
@@ -115,23 +114,29 @@ export default function VBASidebar({
             .sort((a, b) => a.order - b.order);
           const isOpen = openModules.has(mod.id);
 
-          const Icon = MODULE_ICONS[mod.order] ?? Clapperboard;
+          const gifSrc = MODULE_GIFS[mod.order];
 
           return (
             <div key={mod.id}>
               <button
                 onClick={() => toggleModule(mod.id)}
-                className="w-full flex items-center gap-2.5 px-4 py-3 text-left hover:bg-slate-50 transition-colors"
+                className="w-full flex items-center gap-2.5 px-4 py-3 text-left hover:bg-slate-50/60 transition-colors"
               >
                 <ChevronDown
                   className={`w-4 h-4 text-slate-400 transition-transform flex-shrink-0 ${
                     isOpen ? "" : "-rotate-90"
                   }`}
                 />
-                {mod.order === 1 && isOpen ? (
-                  <Image src="/icons/wave-gold.gif" alt="" width={16} height={16} className="w-4 h-4 flex-shrink-0" unoptimized />
-                ) : (
-                  <Icon className="w-4 h-4 flex-shrink-0" style={{ color: "#B9945F" }} />
+                {gifSrc && (
+                  <Image
+                    key={isOpen ? `${mod.id}-anim` : `${mod.id}-still`}
+                    src={isOpen ? gifSrc : gifSrc.replace(".gif", "-static.png")}
+                    alt=""
+                    width={20}
+                    height={20}
+                    className="w-5 h-5 flex-shrink-0"
+                    unoptimized
+                  />
                 )}
                 <span className="text-sm font-medium text-slate-700 flex-1 leading-snug">
                   {mod.title}
