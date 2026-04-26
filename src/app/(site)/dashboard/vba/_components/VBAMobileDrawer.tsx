@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { List, X } from "lucide-react";
 
 export default function VBAMobileDrawer({
@@ -9,6 +9,16 @@ export default function VBAMobileDrawer({
   children: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
+
+  // Block body scroll when drawer is open
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = "";
+      };
+    }
+  }, [open]);
 
   return (
     <div className="lg:hidden">
@@ -33,21 +43,19 @@ export default function VBAMobileDrawer({
         />
       )}
 
-      {/* Bottom sheet */}
+      {/* Bottom sheet — full width, no gap */}
       <div
         className={`fixed bottom-0 left-0 right-0 z-[60] bg-white rounded-t-2xl shadow-2xl transition-transform duration-300 ease-out ${
-          open ? "translate-y-0" : "translate-y-full"
+          open ? "translate-y-0" : "translate-y-full pointer-events-none"
         }`}
-        style={{ maxHeight: "80vh" }}
+        style={{ maxHeight: "85vh" }}
       >
         {/* Handle + close */}
-        <div className="flex items-center justify-between px-5 pt-4 pb-2 border-b border-slate-100">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-1 rounded-full bg-slate-200" />
-          </div>
+        <div className="flex items-center justify-between px-5 pt-3 pb-2 border-b border-slate-100">
+          <div className="w-10 h-1 rounded-full bg-slate-200 mx-auto" />
           <button
             onClick={() => setOpen(false)}
-            className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 active:bg-slate-200"
+            className="absolute right-4 top-3 w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 active:bg-slate-200"
           >
             <X className="w-4 h-4" />
           </button>
@@ -56,9 +64,8 @@ export default function VBAMobileDrawer({
         {/* Sidebar content — click on a lesson link closes the drawer */}
         <div
           className="overflow-y-auto overscroll-contain"
-          style={{ maxHeight: "calc(80vh - 56px)" }}
+          style={{ maxHeight: "calc(85vh - 48px)" }}
           onClick={(e) => {
-            // Close when user clicks a lesson link
             if ((e.target as HTMLElement).closest("a")) {
               setTimeout(() => setOpen(false), 150);
             }

@@ -83,7 +83,7 @@ export default function VBASidebar({
     totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
 
   return (
-    <aside className="w-[340px] flex-shrink-0 bg-white border-r border-slate-100 overflow-y-auto">
+    <aside className="w-full lg:w-[340px] flex-shrink-0 bg-white lg:border-r border-slate-100 overflow-y-auto">
       {/* Progression globale */}
       <div className="p-4 border-b border-slate-100">
         <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
