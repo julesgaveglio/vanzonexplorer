@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   ChevronDown, CheckCircle2, Circle, Play,
   Clapperboard, Search, Ruler, Hammer, Zap, ClipboardList, Wallet, FileCheck,
@@ -127,7 +128,11 @@ export default function VBASidebar({
                     isOpen ? "" : "-rotate-90"
                   }`}
                 />
-                <Icon className="w-4 h-4 flex-shrink-0" style={{ color: "#B9945F" }} />
+                {mod.order === 1 && isOpen ? (
+                  <Image src="/icons/wave-gold.gif" alt="" width={16} height={16} className="w-4 h-4 flex-shrink-0" unoptimized />
+                ) : (
+                  <Icon className="w-4 h-4 flex-shrink-0" style={{ color: "#B9945F" }} />
+                )}
                 <span className="text-sm font-medium text-slate-700 flex-1 leading-snug">
                   {mod.title}
                 </span>
