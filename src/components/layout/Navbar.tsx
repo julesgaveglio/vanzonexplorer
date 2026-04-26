@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { useUser, UserButton } from "@clerk/nextjs";
+
 
 interface NavLink {
   label: string
@@ -79,7 +79,7 @@ export default function Navbar() {
   const [headerHidden, setHeaderHidden] = useState(false);
   const lastScrollY = useRef(0);
   const pathname  = usePathname();
-  const { isSignedIn } = useUser();
+
   const logoSrc = getNavLogo(pathname);
 
   // Close menus on route change
@@ -282,38 +282,8 @@ export default function Navbar() {
               })}
             </div>
 
-            {/* Drawer auth footer */}
-            <div className="px-3 pb-4 pt-2 border-t border-slate-100">
-              {isSignedIn ? (
-                <div className="flex items-center gap-3 px-4 py-3">
-                  <UserButton />
-                  <Link
-                    href="/dashboard"
-                    onClick={() => setDesktopOpen(false)}
-                    className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
-                  >
-                    Mon espace
-                  </Link>
-                </div>
-              ) : (
-                <div className="flex gap-2">
-                  <Link
-                    href="/sign-in"
-                    onClick={() => setDesktopOpen(false)}
-                    className="flex-1 flex items-center justify-center px-4 py-3 text-sm font-medium text-slate-600 rounded-xl hover:bg-slate-50 transition-colors border border-slate-200"
-                  >
-                    Se connecter
-                  </Link>
-                  <Link
-                    href="/sign-up"
-                    onClick={() => setDesktopOpen(false)}
-                    className="flex-1 btn-primary text-sm text-center active:scale-95 transition-transform"
-                  >
-                    S&apos;inscrire
-                  </Link>
-                </div>
-              )}
-            </div>
+            {/* Drawer footer spacer */}
+            <div className="px-3 pb-4 pt-2" />
           </motion.aside>
         )}
       </AnimatePresence>
@@ -348,14 +318,6 @@ export default function Navbar() {
 
             {/* ── Desktop right side: CTA + Burger ── */}
             <div className="hidden lg:flex items-center gap-3">
-              {isSignedIn && (
-                <Link
-                  href="/dashboard"
-                  className="text-sm font-medium text-text-muted hover:text-text-primary transition-colors px-3 py-2 rounded-lg hover:bg-slate-50"
-                >
-                  Mon espace
-                </Link>
-              )}
               <Link
                 href="/proprietaire/inscription"
                 className="text-sm font-medium text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-300 px-4 py-2 rounded-xl hover:bg-slate-50 transition-all"
@@ -517,34 +479,7 @@ export default function Navbar() {
                   ))}
                 </div>
 
-                <div className="px-2 pb-2 pt-1 border-t border-slate-100">
-                  {isSignedIn ? (
-                    <Link
-                      href="/dashboard"
-                      onClick={() => setMobileOpen(false)}
-                      className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-slate-600 rounded-xl hover:bg-slate-50 active:bg-slate-100 transition-colors"
-                    >
-                      Mon espace
-                    </Link>
-                  ) : (
-                    <div className="flex gap-2">
-                      <Link
-                        href="/sign-in"
-                        onClick={() => setMobileOpen(false)}
-                        className="flex-1 flex items-center justify-center px-4 py-3 text-sm font-medium text-slate-600 rounded-xl hover:bg-slate-50 active:bg-slate-100 transition-colors border border-slate-200"
-                      >
-                        Se connecter
-                      </Link>
-                      <Link
-                        href="/sign-up"
-                        onClick={() => setMobileOpen(false)}
-                        className="flex-1 btn-primary text-sm text-center block active:scale-95 transition-transform"
-                      >
-                        S&apos;inscrire
-                      </Link>
-                    </div>
-                  )}
-                </div>
+                <div className="px-2 pb-2 pt-1" />
               </div>
             </motion.div>
           )}
