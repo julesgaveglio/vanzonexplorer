@@ -132,9 +132,9 @@ export default function VBASidebar({
                     key={isOpen ? `${mod.id}-anim` : `${mod.id}-still`}
                     src={isOpen ? gifSrc : gifSrc.replace(".gif", "-static.png")}
                     alt=""
-                    width={20}
-                    height={20}
-                    className="w-5 h-5 flex-shrink-0"
+                    width={24}
+                    height={24}
+                    className="w-6 h-6 flex-shrink-0"
                     unoptimized
                   />
                 )}
