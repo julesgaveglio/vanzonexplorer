@@ -55,6 +55,26 @@ const ARTICLE_CATEGORY_CTA: Record<string, CTAConfig> = {
 };
 
 function getCTAConfig(pathname: string): CTAConfig | null {
+  // ── Pages sans FloatingCTA (le CTA n'apporte rien ou conflit UX) ──
+  // Dashboard / espace membre — l'utilisateur navigue déjà, conflit avec le FAB VBA mobile
+  if (pathname.startsWith("/dashboard") || pathname.startsWith("/user")) return null;
+  // Auth — ne pas distraire l'utilisateur pendant la connexion
+  if (pathname.startsWith("/sign-in") || pathname.startsWith("/sign-up")) return null;
+  // Tunnel VBA — a ses propres CTAs (VSLStickyBar, boutons tunnel)
+  if (pathname.startsWith("/van-business-academy")) return null;
+  // Marketplace propriétaire
+  if (pathname.startsWith("/proprietaire")) return null;
+  // Contact — l'utilisateur y est déjà, pas besoin de CTA
+  if (pathname.startsWith("/contact")) return null;
+  // Pages légales — pas de vocation commerciale
+  if (pathname.startsWith("/mentions-legales") || pathname.startsWith("/confidentialite")) return null;
+  // Admin & Studio
+  if (pathname.startsWith("/admin") || pathname.startsWith("/studio")) return null;
+  // Road trip confirmation — l'utilisateur a déjà converti
+  if (pathname === "/road-trip-personnalise/confirmation") return null;
+
+  // ── Pages avec FloatingCTA pertinent ──
+
   // Formation — doré
   if (pathname.startsWith("/formation")) {
     return {
@@ -146,50 +166,6 @@ function getCTAConfig(pathname: string): CTAConfig | null {
     return {
       btnLabel: "Nous contacter",
       href: "/contact",
-      ...PALETTE.blue,
-    };
-  }
-
-  // Contact
-  if (pathname.startsWith("/contact")) {
-    return {
-      btnLabel: "Louer un van",
-      href: "/location",
-      ...PALETTE.blue,
-    };
-  }
-
-  // Dashboard / espace perso
-  if (pathname.startsWith("/dashboard") || pathname.startsWith("/user")) {
-    return {
-      btnLabel: "Louer un van",
-      href: "/location",
-      ...PALETTE.blue,
-    };
-  }
-
-  // Pages légales
-  if (
-    pathname.startsWith("/mentions-legales") ||
-    pathname.startsWith("/confidentialite")
-  ) {
-    return {
-      btnLabel: "Retour à l'accueil",
-      href: "/",
-      ...PALETTE.blue,
-    };
-  }
-
-  // Marketplace — pas de floating CTA
-  if (pathname.startsWith("/proprietaire")) {
-    return null;
-  }
-
-  // Auth pages
-  if (pathname.startsWith("/sign-in") || pathname.startsWith("/sign-up")) {
-    return {
-      btnLabel: "Découvrir Vanzon",
-      href: "/",
       ...PALETTE.blue,
     };
   }

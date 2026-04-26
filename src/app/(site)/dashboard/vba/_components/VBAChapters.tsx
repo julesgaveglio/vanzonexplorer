@@ -26,8 +26,13 @@ export default function VBAChapters({ chapters, iframeRef }: VBAChaptersProps) {
   // Listen to Bunny player time updates to highlight active chapter
   useEffect(() => {
     function handleMessage(event: MessageEvent) {
-      if (event.data?.event === "timeupdate" && typeof event.data.data === "number") {
-        const currentTime = event.data.data;
+      // Bunny.net may send data as string or object
+      let msg = event.data;
+      if (typeof msg === "string") {
+        try { msg = JSON.parse(msg); } catch { return; }
+      }
+      if (msg?.event === "timeupdate" && typeof msg.data === "number") {
+        const currentTime = msg.data;
         let idx = 0;
         for (let i = chapters.length - 1; i >= 0; i--) {
           if (currentTime >= chapters[i].time) {
@@ -45,10 +50,18 @@ export default function VBAChapters({ chapters, iframeRef }: VBAChaptersProps) {
   const seekTo = useCallback(
     (time: number, index: number) => {
       if (!iframeRef.current?.contentWindow) return;
+      // Bunny.net player expects stringified JSON for postMessage commands
       iframeRef.current.contentWindow.postMessage(
-        { event: "seek", data: time },
+        JSON.stringify({ event: "seek", data: time }),
         "*"
       );
+      // Also send play command to resume after seeking
+      setTimeout(() => {
+        iframeRef.current?.contentWindow?.postMessage(
+          JSON.stringify({ event: "play" }),
+          "*"
+        );
+      }, 100);
       setActiveIndex(index);
     },
     [iframeRef]
