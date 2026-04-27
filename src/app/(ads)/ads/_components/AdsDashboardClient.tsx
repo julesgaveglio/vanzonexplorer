@@ -248,7 +248,7 @@ export default function AdsDashboardClient() {
       {/* --- Chart --- */}
       <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
         <h3 className="text-slate-900 font-semibold mb-4">Tendances quotidiennes</h3>
-        <div className="h-72">
+        <div className="h-56 sm:h-72">
           {data?.daily_breakdown && data.daily_breakdown.length > 0 ? (
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={data.daily_breakdown} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
