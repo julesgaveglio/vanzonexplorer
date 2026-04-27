@@ -16,6 +16,7 @@ const isOldMarketplaceDashboard = createRouteMatcher(["/proprietaire/dashboard(.
 const isProtectedRoute = createRouteMatcher([
   "/dashboard(.*)",
   "/user(.*)",
+  "/ads(.*)",
 ]);
 
 // Old WordPress paths that no longer exist — return 410 Gone
