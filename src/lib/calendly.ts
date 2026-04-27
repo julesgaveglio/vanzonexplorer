@@ -1,4 +1,4 @@
-export const CALENDLY_URL = "https://calendly.com/vanzonexplorer/accompagnement";
+export const CALENDLY_URL = "https://calendly.com/vanzonexplorer/new-meeting";
 
 export interface CalendlyPrefill {
   name?: string;
