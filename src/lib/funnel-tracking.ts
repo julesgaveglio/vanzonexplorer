@@ -1,7 +1,6 @@
-// Dual tracking: Meta Pixel (client) + Supabase (server)
+// Funnel tracking: Supabase server-side only
+// Meta Pixel events are handled by URL-based rules in Meta Events Manager — no code-side firing.
 // Usage: trackFunnel('optin', '/van-business-academy/inscription', { email, firstname })
-
-import { trackEvent } from "@/lib/meta-pixel";
 
 const SESSION_KEY = "vba_session_id";
 
@@ -14,16 +13,6 @@ function getSessionId(): string {
   }
   return id;
 }
-
-// Maps our events to Meta Pixel standard events
-const META_EVENT_MAP: Record<string, string> = {
-  optin: "Lead",
-  vsl_view: "ViewContent",
-  booking_start: "Schedule",
-  booking_confirmed: "Schedule",
-  checkout: "InitiateCheckout",
-  purchase: "Purchase",
-};
 
 interface TrackOptions {
   email?: string;
@@ -45,18 +34,7 @@ export function trackFunnel(
 ) {
   if (typeof window === "undefined") return;
 
-  // 1. Fire Meta Pixel event (if mapped)
-  const metaEvent = META_EVENT_MAP[event];
-  if (metaEvent) {
-    const pixelParams: Record<string, unknown> = {
-      content_name: event,
-    };
-    if (options.value !== undefined) pixelParams.value = options.value;
-    if (options.currency) pixelParams.currency = options.currency;
-    trackEvent(metaEvent, pixelParams);
-  }
-
-  // 2. Fire server-side event (100% reliable)
+  // Server-side event → Supabase (100% reliable, powers /admin/funnel dashboard)
   const payload = {
     session_id: getSessionId(),
     event,
