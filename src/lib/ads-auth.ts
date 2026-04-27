@@ -9,6 +9,7 @@ const MAX_AGE = 30 * 24 * 60 * 60; // 30 days
 // Pre-computed SHA-256 password hashes
 const USERS: Record<string, string> = {
   "gavegliojules@gmail.com": "ba38d573193a93e95dd51adf4c53b91e59fac058b4d9cc8f32ea9648d4c85693",
+  "mateogb.ads@gmail.com": "912fa39a344628f4500ebef5a73fae7a9d7ee48db7e9796b101f3a86c3f74d0a",
 };
 
 interface SessionPayload {
