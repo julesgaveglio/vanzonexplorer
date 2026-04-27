@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function AdsLoginPage() {
   const router = useRouter();
@@ -37,10 +38,15 @@ export default function AdsLoginPage() {
     <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-slate-900">
-            Vanzon <span className="text-blue-600">Ads</span>
-          </h1>
-          <p className="text-sm text-slate-500 mt-2">Connectez-vous au dashboard</p>
+          <Image
+            src="/icons/vanzon-ads-logo.png"
+            alt="Vanzon Ads"
+            width={200}
+            height={56}
+            className="h-12 w-auto mx-auto mb-3"
+            unoptimized
+          />
+          <p className="text-sm text-slate-500">Connectez-vous au dashboard</p>
         </div>
 
         <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">

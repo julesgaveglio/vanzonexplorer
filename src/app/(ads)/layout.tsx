@@ -4,6 +4,7 @@ import Image from "next/image";
 import { getAdsSession } from "@/lib/ads-auth";
 import AdsNavLinks from "./ads/_components/AdsNavLinks";
 import AdsLogoutButton from "./ads/_components/AdsLogoutButton";
+import AdsMobileMenu from "./ads/_components/AdsMobileMenu";
 
 export const metadata = {
   title: "Vanzon Ads — Media Buyer Dashboard",
@@ -30,11 +31,19 @@ export default async function AdsLayout({ children }: { children: React.ReactNod
                   unoptimized
                 />
               </Link>
-              <AdsNavLinks />
+              {/* Desktop nav */}
+              <div className="hidden sm:block">
+                <AdsNavLinks />
+              </div>
             </div>
             <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+              {/* Desktop: email + logout */}
               <span className="text-xs text-slate-400 hidden sm:block">{session.email}</span>
-              <AdsLogoutButton />
+              <div className="hidden sm:block">
+                <AdsLogoutButton />
+              </div>
+              {/* Mobile: burger menu */}
+              <AdsMobileMenu email={session.email} />
             </div>
           </div>
         </div>
