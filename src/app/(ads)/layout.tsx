@@ -1,9 +1,8 @@
-import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { getAdsSession } from "@/lib/ads-auth";
 import AdsNavLinks from "./ads/_components/AdsNavLinks";
-
-const MEDIA_BUYER_EMAILS = ["gavegliojules@gmail.com", "mateogb.ads@gmail.com"];
+import AdsLogoutButton from "./ads/_components/AdsLogoutButton";
 
 export const metadata = {
   title: "Vanzon Ads — Media Buyer Dashboard",
@@ -11,14 +10,8 @@ export const metadata = {
 };
 
 export default async function AdsLayout({ children }: { children: React.ReactNode }) {
-  const { userId } = await auth();
-  if (!userId) redirect("/sign-in");
-
-  const user = await currentUser();
-  const email = user?.emailAddresses?.[0]?.emailAddress;
-  if (!email || !MEDIA_BUYER_EMAILS.includes(email)) {
-    redirect("/");
-  }
+  const session = await getAdsSession();
+  if (!session) redirect("/ads-login");
 
   return (
     <section className="min-h-screen bg-slate-50">
@@ -30,7 +23,10 @@ export default async function AdsLayout({ children }: { children: React.ReactNod
             </Link>
             <AdsNavLinks />
           </div>
-          <span className="text-xs text-slate-400 hidden sm:block">{email}</span>
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-slate-400 hidden sm:block">{session.email}</span>
+            <AdsLogoutButton />
+          </div>
         </div>
       </nav>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">{children}</div>

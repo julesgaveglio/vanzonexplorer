@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireMediaBuyer } from "@/lib/auth";
+import { requireAdsAuth } from "@/lib/ads-auth";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
 
 const FUNNEL_STEPS = [
@@ -18,7 +18,7 @@ const FUNNEL_STEPS = [
 const DAILY_KEYS = ["page_view", "optin", "booking_confirmed", "purchase"] as const;
 
 export async function GET(req: NextRequest) {
-  const check = await requireMediaBuyer();
+  const check = await requireAdsAuth();
   if (check instanceof NextResponse) return check;
 
   const supabase = createSupabaseAdmin();
@@ -95,6 +95,16 @@ export async function GET(req: NextRequest) {
     utmBreakdown[key].count++;
   }
 
+  // Source breakdown (optins by utm_source, normalized)
+  const sourceBreakdown: Record<string, number> = {};
+  for (const e of allEvents.filter((ev) => ev.event === "optin")) {
+    const src = e.utm_source || "direct";
+    const normalized = src.toLowerCase().includes("instagram") || src === "ig" ? "Instagram"
+      : src.toLowerCase().includes("facebook") || src === "fb" ? "Facebook"
+      : src.charAt(0).toUpperCase() + src.slice(1);
+    sourceBreakdown[normalized] = (sourceBreakdown[normalized] ?? 0) + 1;
+  }
+
   // Recent events (last 50)
   const recentEvents = allEvents.slice(0, 50).map((e) => ({
     event: e.event,
@@ -115,16 +125,20 @@ export async function GET(req: NextRequest) {
 
   const estimatedRevenue = (stepCounts.purchase ?? 0) * 997;
 
-  // Daily breakdown — fill in missing days with zeros
+  // Daily breakdown — fill in missing days with zeros, stop at today
   const sinceDate = new Date(since);
-  const untilDate = until ? new Date(until) : new Date();
+  const today = new Date();
+  today.setUTCHours(0, 0, 0, 0);
+  const endBound = until ? new Date(until) : today;
+  endBound.setUTCHours(0, 0, 0, 0);
+  // Ensure we don't go past today
+  if (endBound > today) endBound.setTime(today.getTime());
+
   const dayMap: Record<string, Record<string, number>> = {};
 
   // Initialize all days
   const cursor = new Date(sinceDate);
   cursor.setUTCHours(0, 0, 0, 0);
-  const endBound = new Date(untilDate);
-  endBound.setUTCHours(0, 0, 0, 0);
 
   while (cursor <= endBound) {
     const key = cursor.toISOString().slice(0, 10);
@@ -156,6 +170,7 @@ export async function GET(req: NextRequest) {
     step_counts: stepCounts,
     conversion_rates: conversionRates,
     utm_breakdown: Object.values(utmBreakdown).sort((a, b) => b.count - a.count),
+    source_breakdown: Object.entries(sourceBreakdown).map(([source, count]) => ({ source, count })).sort((a, b) => b.count - a.count),
     recent_events: recentEvents,
     overall_conversion: overallOptinToPurchase,
     view_to_optin: viewToOptin,

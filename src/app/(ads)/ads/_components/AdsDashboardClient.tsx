@@ -16,6 +16,7 @@ interface FunnelData {
   step_counts: Record<string, number>;
   conversion_rates: { from: string; to: string; rate: number }[];
   utm_breakdown: { source: string; campaign: string; count: number }[];
+  source_breakdown: { source: string; count: number }[];
   recent_events: { event: string; email: string; created_at: string; utm_source: string }[];
   overall_conversion: number;
   view_to_optin: number;
@@ -169,6 +170,28 @@ export default function AdsDashboardClient() {
             ))}
           </select>
 
+          {selectedCampaign !== "all" && (
+            <button
+              onClick={async () => {
+                if (!confirm("Clôturer cette campagne ? Les données seront conservées.")) return;
+                await fetch("/api/ads/campaigns", {
+                  method: "PATCH",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    id: selectedCampaign,
+                    is_active: false,
+                    end_date: new Date().toISOString().slice(0, 10),
+                  }),
+                });
+                setSelectedCampaign("all");
+                fetchData();
+              }}
+              className="px-3 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-xl border border-red-200 hover:bg-red-100 transition-colors"
+            >
+              Clôturer
+            </button>
+          )}
+
           <button
             onClick={() => setShowNewCampaign(!showNewCampaign)}
             className="px-3 py-2 text-sm font-medium bg-blue-50 text-blue-600 rounded-xl border border-blue-200 hover:bg-blue-100 transition-colors"
@@ -216,9 +239,9 @@ export default function AdsDashboardClient() {
 
       {/* --- KPI cards --- */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <KPICard label="Vues opt-in" value={sc.page_view ?? 0} subtitle={`${data?.total_events ?? 0} events totaux`} color="blue" />
+        <KPICard label="Vues opt-in" value={sc.page_view ?? 0} subtitle={`${data?.total_events ?? 0} events totaux`} color="slate" />
         <KPICard label="Leads" value={sc.optin ?? 0} subtitle={`${optinRate}% taux conversion`} color="blue" />
-        <KPICard label="Calls bookés" value={sc.booking_confirmed ?? 0} subtitle={`${data?.conversion_rates?.find((r) => r.from === "optin" && r.to === "booking_start")?.rate ?? 0}% opt-in → call`} color="emerald" />
+        <KPICard label="Calls bookés" value={sc.booking_confirmed ?? 0} subtitle={`${data?.conversion_rates?.find((r) => r.from === "optin" && r.to === "booking_start")?.rate ?? 0}% opt-in → call`} color="amber" />
         <KPICard label="CA estimé" value={`${revenue.toLocaleString("fr-FR")} €`} subtitle={`${sc.purchase ?? 0} vente${(sc.purchase ?? 0) > 1 ? "s" : ""} × 997 €`} color="emerald" />
       </div>
 
@@ -261,6 +284,44 @@ export default function AdsDashboardClient() {
           )}
         </div>
       </div>
+
+      {/* --- Source breakdown --- */}
+      {(data?.source_breakdown ?? []).length > 0 && (
+        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+          <h3 className="text-slate-900 font-semibold mb-4">Sources des leads</h3>
+          <div className="space-y-3">
+            {data!.source_breakdown.map((s, i) => {
+              const total = data!.source_breakdown.reduce((sum, x) => sum + x.count, 0);
+              const pct = total > 0 ? Math.round((s.count / total) * 100) : 0;
+              const colors: Record<string, string> = {
+                Facebook: "bg-blue-500",
+                Instagram: "bg-gradient-to-r from-purple-500 to-pink-500",
+                direct: "bg-slate-400",
+              };
+              const barColor = colors[s.source] ?? "bg-slate-400";
+              const isInsta = s.source === "Instagram";
+              return (
+                <div key={i} className="flex items-center gap-3">
+                  <span className="text-sm font-medium text-slate-700 w-24 shrink-0">{s.source}</span>
+                  <div className="flex-1 h-8 bg-slate-100 rounded-lg overflow-hidden relative">
+                    <div
+                      className={`h-full rounded-lg transition-all duration-500 ${isInsta ? "" : barColor}`}
+                      style={{
+                        width: `${Math.max(pct, 4)}%`,
+                        ...(isInsta ? { background: "linear-gradient(90deg, #8B5CF6, #EC4899)" } : {}),
+                      }}
+                    />
+                    <div className="absolute inset-0 flex items-center px-3 justify-between">
+                      <span className="text-xs font-bold text-white drop-shadow">{s.count}</span>
+                      <span className="text-xs font-semibold text-slate-600">{pct}%</span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* --- Funnel --- */}
       <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
@@ -345,13 +406,18 @@ export default function AdsDashboardClient() {
   );
 }
 
-function KPICard({ label, value, subtitle, color }: { label: string; value: string | number; subtitle: string; color: "blue" | "emerald" }) {
-  const accent = color === "blue" ? "text-blue-600" : "text-emerald-600";
-  const ring = color === "blue" ? "ring-blue-100" : "ring-emerald-100";
+function KPICard({ label, value, subtitle, color }: { label: string; value: string | number; subtitle: string; color: "slate" | "blue" | "amber" | "emerald" }) {
+  const accents = {
+    slate: { text: "text-slate-700", ring: "ring-slate-100", bg: "bg-slate-50" },
+    blue: { text: "text-blue-600", ring: "ring-blue-100", bg: "bg-blue-50" },
+    amber: { text: "text-amber-600", ring: "ring-amber-100", bg: "bg-amber-50" },
+    emerald: { text: "text-emerald-600", ring: "ring-emerald-100", bg: "bg-emerald-50" },
+  };
+  const a = accents[color];
   return (
-    <div className={`bg-white border border-slate-200 rounded-2xl p-5 shadow-sm ring-1 ${ring}`}>
+    <div className={`bg-white border border-slate-200 rounded-2xl p-5 shadow-sm ring-1 ${a.ring}`}>
       <p className="text-xs text-slate-500 uppercase tracking-wider font-medium mb-1">{label}</p>
-      <p className={`text-2xl sm:text-3xl font-bold ${accent}`}>{typeof value === "number" ? value.toLocaleString("fr-FR") : value}</p>
+      <p className={`text-2xl sm:text-3xl font-bold ${a.text}`}>{typeof value === "number" ? value.toLocaleString("fr-FR") : value}</p>
       <p className="text-xs text-slate-400 mt-1">{subtitle}</p>
     </div>
   );

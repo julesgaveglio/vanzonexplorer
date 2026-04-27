@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireMediaBuyer } from "@/lib/auth";
+import { requireAdsAuth } from "@/lib/ads-auth";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
 
 export async function GET(req: NextRequest) {
-  const check = await requireMediaBuyer();
+  const check = await requireAdsAuth();
   if (check instanceof NextResponse) return check;
 
   const supabase = createSupabaseAdmin();

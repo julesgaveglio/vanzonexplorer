@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireMediaBuyer } from "@/lib/auth";
+import { requireAdsAuth } from "@/lib/ads-auth";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
 
 export async function GET() {
-  const check = await requireMediaBuyer();
+  const check = await requireAdsAuth();
   if (check instanceof NextResponse) return check;
 
   const supabase = createSupabaseAdmin();
@@ -16,7 +16,7 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const check = await requireMediaBuyer();
+  const check = await requireAdsAuth();
   if (check instanceof NextResponse) return check;
 
   const body = await req.json();
@@ -42,4 +42,23 @@ export async function POST(req: NextRequest) {
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ campaign: data }, { status: 201 });
+}
+
+export async function PATCH(req: NextRequest) {
+  const check = await requireAdsAuth();
+  if (check instanceof NextResponse) return check;
+
+  const { id, ...fields } = await req.json();
+  if (!id) return NextResponse.json({ error: "id requis" }, { status: 400 });
+
+  const supabase = createSupabaseAdmin();
+  const { data, error } = await supabase
+    .from("funnel_campaigns")
+    .update(fields)
+    .eq("id", id)
+    .select()
+    .single();
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  return NextResponse.json({ campaign: data });
 }
