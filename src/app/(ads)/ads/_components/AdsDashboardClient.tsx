@@ -44,11 +44,11 @@ const PERIODS = [
 
 const STEP_LABELS: Record<string, string> = {
   page_view: "Pages vues",
-  optin: "Inscription",
-  vsl_25: "Vidéo 25%",
-  vsl_50: "Vidéo 50%",
-  vsl_75: "Vidéo 75%",
-  vsl_100: "Vidéo terminée",
+  optin: "Opt-in",
+  vsl_25: "VSL 25%",
+  vsl_50: "VSL 50%",
+  vsl_75: "VSL 75%",
+  vsl_100: "VSL terminée",
   booking_start: "Prise de RDV",
   booking_confirmed: "Appel confirmé",
   checkout: "Paiement",
