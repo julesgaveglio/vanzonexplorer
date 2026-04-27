@@ -49,22 +49,22 @@ const STEP_LABELS: Record<string, string> = {
   vsl_75: "VSL 75%",
   vsl_100: "VSL 100%",
   booking_start: "Booking start",
-  booking_confirmed: "Call booke",
+  booking_confirmed: "Call booké",
   checkout: "Checkout",
   purchase: "Achat",
 };
 
-const EVENT_COLORS: Record<string, string> = {
-  page_view: "text-slate-400",
-  optin: "text-blue-400",
-  vsl_25: "text-indigo-400",
-  vsl_50: "text-indigo-400",
-  vsl_75: "text-violet-400",
-  vsl_100: "text-violet-400",
-  booking_start: "text-amber-400",
-  booking_confirmed: "text-emerald-400",
-  checkout: "text-emerald-400",
-  purchase: "text-green-300",
+const EVENT_DOT: Record<string, string> = {
+  page_view: "bg-slate-300",
+  optin: "bg-blue-500",
+  vsl_25: "bg-indigo-400",
+  vsl_50: "bg-indigo-500",
+  vsl_75: "bg-violet-400",
+  vsl_100: "bg-violet-500",
+  booking_start: "bg-amber-400",
+  booking_confirmed: "bg-emerald-500",
+  checkout: "bg-orange-500",
+  purchase: "bg-green-500",
 };
 
 /* ---------- component ---------- */
@@ -101,7 +101,6 @@ export default function AdsDashboardClient() {
   }, [period, selectedCampaign, campaigns]);
 
   useEffect(() => {
-    // Initial load of campaigns first
     fetch("/api/ads/campaigns")
       .then((r) => r.json())
       .then((json) => setCampaigns(json.campaigns ?? []));
@@ -132,26 +131,26 @@ export default function AdsDashboardClient() {
   const optinRate = data?.view_to_optin ?? 0;
   const revenue = data?.estimated_revenue ?? 0;
 
-  // Funnel bar data
   const FUNNEL_ORDER = ["page_view", "optin", "vsl_25", "vsl_50", "vsl_75", "vsl_100", "booking_start", "booking_confirmed", "checkout", "purchase"];
   const maxStep = Math.max(...FUNNEL_ORDER.map((s) => sc[s] ?? 0), 1);
+
+  const inputCls = "bg-white border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400";
 
   return (
     <div className="space-y-6">
       {/* --- Top bar --- */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <h1 className="text-2xl font-bold text-white">Dashboard Ads</h1>
+        <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
         <div className="flex flex-wrap items-center gap-2">
-          {/* Period selector */}
-          <div className="flex bg-white/5 rounded-xl border border-white/10 p-0.5">
+          <div className="flex bg-white rounded-xl border border-slate-200 p-0.5 shadow-sm">
             {PERIODS.map((p) => (
               <button
                 key={p.days}
                 onClick={() => { setSelectedCampaign("all"); setPeriod(p.days); }}
                 className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-all ${
                   selectedCampaign === "all" && period === p.days
-                    ? "bg-blue-500/20 text-blue-400 shadow-sm"
-                    : "text-slate-400 hover:text-white"
+                    ? "bg-blue-50 text-blue-600 shadow-sm"
+                    : "text-slate-500 hover:text-slate-700"
                 }`}
               >
                 {p.label}
@@ -159,11 +158,10 @@ export default function AdsDashboardClient() {
             ))}
           </div>
 
-          {/* Campaign dropdown */}
           <select
             value={selectedCampaign}
             onChange={(e) => setSelectedCampaign(e.target.value)}
-            className="bg-white/5 border border-white/10 text-sm text-slate-300 rounded-xl px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500/50"
+            className="bg-white border border-slate-200 text-sm text-slate-700 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500/30 shadow-sm"
           >
             <option value="all">Toutes les campagnes</option>
             {campaigns.map((c) => (
@@ -173,7 +171,7 @@ export default function AdsDashboardClient() {
 
           <button
             onClick={() => setShowNewCampaign(!showNewCampaign)}
-            className="px-3 py-2 text-sm font-medium bg-blue-500/20 text-blue-400 rounded-xl border border-blue-500/30 hover:bg-blue-500/30 transition-colors"
+            className="px-3 py-2 text-sm font-medium bg-blue-50 text-blue-600 rounded-xl border border-blue-200 hover:bg-blue-100 transition-colors"
           >
             + Campagne
           </button>
@@ -181,7 +179,7 @@ export default function AdsDashboardClient() {
           <button
             onClick={fetchData}
             disabled={loading}
-            className="px-3 py-2 text-sm text-slate-400 hover:text-white bg-white/5 border border-white/10 rounded-xl transition-colors disabled:opacity-50"
+            className="px-3 py-2 text-sm text-slate-500 hover:text-slate-700 bg-white border border-slate-200 rounded-xl transition-colors disabled:opacity-50 shadow-sm"
           >
             {loading ? (
               <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" fill="none" strokeDasharray="30 70" /></svg>
@@ -194,24 +192,24 @@ export default function AdsDashboardClient() {
 
       {/* --- New campaign form --- */}
       {showNewCampaign && (
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-5 space-y-4">
-          <h3 className="text-white font-semibold">Nouvelle campagne</h3>
+        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
+          <h3 className="text-slate-900 font-semibold">Nouvelle campagne</h3>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <input placeholder="Nom" value={newCampaign.name} onChange={(e) => setNewCampaign({ ...newCampaign, name: e.target.value })} className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500/50" />
-            <input type="date" value={newCampaign.start_date} onChange={(e) => setNewCampaign({ ...newCampaign, start_date: e.target.value })} className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-blue-500/50" />
-            <input type="date" value={newCampaign.end_date} onChange={(e) => setNewCampaign({ ...newCampaign, end_date: e.target.value })} className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-blue-500/50" />
-            <input placeholder="Budget (EUR)" value={newCampaign.budget_euros} onChange={(e) => setNewCampaign({ ...newCampaign, budget_euros: e.target.value })} className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500/50" />
-            <select value={newCampaign.platform} onChange={(e) => setNewCampaign({ ...newCampaign, platform: e.target.value })} className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-blue-500/50">
+            <input placeholder="Nom" value={newCampaign.name} onChange={(e) => setNewCampaign({ ...newCampaign, name: e.target.value })} className={inputCls} />
+            <input type="date" value={newCampaign.start_date} onChange={(e) => setNewCampaign({ ...newCampaign, start_date: e.target.value })} className={inputCls} />
+            <input type="date" value={newCampaign.end_date} onChange={(e) => setNewCampaign({ ...newCampaign, end_date: e.target.value })} className={inputCls} />
+            <input placeholder="Budget (€)" value={newCampaign.budget_euros} onChange={(e) => setNewCampaign({ ...newCampaign, budget_euros: e.target.value })} className={inputCls} />
+            <select value={newCampaign.platform} onChange={(e) => setNewCampaign({ ...newCampaign, platform: e.target.value })} className={inputCls}>
               <option value="meta">Meta</option>
               <option value="google">Google</option>
               <option value="tiktok">TikTok</option>
               <option value="other">Autre</option>
             </select>
-            <input placeholder="Notes" value={newCampaign.notes} onChange={(e) => setNewCampaign({ ...newCampaign, notes: e.target.value })} className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500/50" />
+            <input placeholder="Notes" value={newCampaign.notes} onChange={(e) => setNewCampaign({ ...newCampaign, notes: e.target.value })} className={inputCls} />
           </div>
           <div className="flex gap-2">
-            <button onClick={handleCreateCampaign} className="px-4 py-2 text-sm font-medium bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors">Creer</button>
-            <button onClick={() => setShowNewCampaign(false)} className="px-4 py-2 text-sm font-medium text-slate-400 hover:text-white transition-colors">Annuler</button>
+            <button onClick={handleCreateCampaign} className="px-4 py-2 text-sm font-semibold bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors">Créer</button>
+            <button onClick={() => setShowNewCampaign(false)} className="px-3 py-2 text-sm font-medium text-slate-500 hover:text-slate-700 transition-colors">Annuler</button>
           </div>
         </div>
       )}
@@ -220,53 +218,53 @@ export default function AdsDashboardClient() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <KPICard label="Vues opt-in" value={sc.page_view ?? 0} subtitle={`${data?.total_events ?? 0} events totaux`} color="blue" />
         <KPICard label="Leads" value={sc.optin ?? 0} subtitle={`${optinRate}% taux conversion`} color="blue" />
-        <KPICard label="Calls bookes" value={sc.booking_confirmed ?? 0} subtitle={`${data?.conversion_rates?.find((r) => r.from === "optin" && r.to === "booking_start")?.rate ?? 0}% opt-in -> call`} color="emerald" />
-        <KPICard label="CA estime" value={`${revenue.toLocaleString("fr-FR")} EUR`} subtitle={`${sc.purchase ?? 0} vente${(sc.purchase ?? 0) > 1 ? "s" : ""} x 997 EUR`} color="emerald" />
+        <KPICard label="Calls bookés" value={sc.booking_confirmed ?? 0} subtitle={`${data?.conversion_rates?.find((r) => r.from === "optin" && r.to === "booking_start")?.rate ?? 0}% opt-in → call`} color="emerald" />
+        <KPICard label="CA estimé" value={`${revenue.toLocaleString("fr-FR")} €`} subtitle={`${sc.purchase ?? 0} vente${(sc.purchase ?? 0) > 1 ? "s" : ""} × 997 €`} color="emerald" />
       </div>
 
       {/* --- Chart --- */}
-      <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
-        <h3 className="text-white font-semibold mb-4">Tendances quotidiennes</h3>
+      <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+        <h3 className="text-slate-900 font-semibold mb-4">Tendances quotidiennes</h3>
         <div className="h-72">
           {data?.daily_breakdown && data.daily_breakdown.length > 0 ? (
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={data.daily_breakdown} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
                 <defs>
                   <linearGradient id="gradBlue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.3} />
+                    <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.15} />
                     <stop offset="95%" stopColor="#3B82F6" stopOpacity={0} />
                   </linearGradient>
                   <linearGradient id="gradEmerald" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10B981" stopOpacity={0.3} />
+                    <stop offset="5%" stopColor="#10B981" stopOpacity={0.15} />
                     <stop offset="95%" stopColor="#10B981" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
                 <XAxis
                   dataKey="date"
-                  tick={{ fill: "#64748B", fontSize: 11 }}
+                  tick={{ fill: "#94A3B8", fontSize: 11 }}
                   tickFormatter={(v: string) => { const d = new Date(v); return `${d.getDate()}/${d.getMonth() + 1}`; }}
-                  axisLine={{ stroke: "rgba(255,255,255,0.1)" }}
+                  axisLine={{ stroke: "#E2E8F0" }}
                   tickLine={false}
                 />
-                <YAxis tick={{ fill: "#64748B", fontSize: 11 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: "#94A3B8", fontSize: 11 }} axisLine={false} tickLine={false} />
                 <Tooltip
-                  contentStyle={{ backgroundColor: "#1E293B", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "12px", color: "#fff", fontSize: 13 }}
+                  contentStyle={{ backgroundColor: "#fff", border: "1px solid #E2E8F0", borderRadius: "12px", color: "#1E293B", fontSize: 13, boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}
                   labelFormatter={(v) => new Date(String(v)).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}
                 />
                 <Area type="monotone" dataKey="optin" name="Opt-ins" stroke="#3B82F6" strokeWidth={2} fill="url(#gradBlue)" />
-                <Area type="monotone" dataKey="booking_confirmed" name="Calls bookes" stroke="#10B981" strokeWidth={2} fill="url(#gradEmerald)" />
+                <Area type="monotone" dataKey="booking_confirmed" name="Calls bookés" stroke="#10B981" strokeWidth={2} fill="url(#gradEmerald)" />
               </AreaChart>
             </ResponsiveContainer>
           ) : (
-            <div className="flex items-center justify-center h-full text-slate-500 text-sm">Aucune donnee sur la periode</div>
+            <div className="flex items-center justify-center h-full text-slate-400 text-sm">Aucune donnée sur la période</div>
           )}
         </div>
       </div>
 
       {/* --- Funnel --- */}
-      <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
-        <h3 className="text-white font-semibold mb-4">Funnel de conversion</h3>
+      <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+        <h3 className="text-slate-900 font-semibold mb-4">Funnel de conversion</h3>
         <div className="space-y-2">
           {FUNNEL_ORDER.map((step, i) => {
             const count = sc[step] ?? 0;
@@ -274,12 +272,12 @@ export default function AdsDashboardClient() {
             const convRate = i > 0 ? (sc[FUNNEL_ORDER[i - 1]] > 0 ? Math.round((count / sc[FUNNEL_ORDER[i - 1]]) * 100) : 0) : 100;
             return (
               <div key={step} className="flex items-center gap-3">
-                <span className="text-xs text-slate-400 w-28 shrink-0 text-right">{STEP_LABELS[step] ?? step}</span>
-                <div className="flex-1 h-7 bg-white/5 rounded-lg overflow-hidden relative">
+                <span className="text-xs text-slate-500 w-28 shrink-0 text-right font-medium">{STEP_LABELS[step] ?? step}</span>
+                <div className="flex-1 h-8 bg-slate-100 rounded-lg overflow-hidden relative">
                   <div
                     className="h-full rounded-lg transition-all duration-700"
                     style={{
-                      width: `${Math.max(pct, 2)}%`,
+                      width: `${Math.max(pct, count > 0 ? 2 : 0)}%`,
                       background: step === "purchase"
                         ? "linear-gradient(90deg, #10B981, #34D399)"
                         : step.startsWith("booking") || step === "checkout"
@@ -288,8 +286,8 @@ export default function AdsDashboardClient() {
                     }}
                   />
                   <div className="absolute inset-0 flex items-center px-3 justify-between">
-                    <span className="text-xs font-medium text-white">{count}</span>
-                    {i > 0 && <span className="text-[10px] text-white/60">{convRate}%</span>}
+                    <span className="text-xs font-bold text-white drop-shadow">{count}</span>
+                    {i > 0 && <span className={`text-[10px] font-semibold ${convRate >= 50 ? "text-emerald-600" : convRate >= 20 ? "text-amber-600" : "text-red-500"}`}>{convRate}%</span>}
                   </div>
                 </div>
               </div>
@@ -298,44 +296,43 @@ export default function AdsDashboardClient() {
         </div>
       </div>
 
-      {/* --- Two columns: UTM + Recent Events --- */}
+      {/* --- Two columns --- */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* UTM Attribution */}
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
-          <h3 className="text-white font-semibold mb-4">Attribution UTM</h3>
+        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+          <h3 className="text-slate-900 font-semibold mb-4">Attribution UTM</h3>
           {(data?.utm_breakdown ?? []).length === 0 ? (
-            <p className="text-sm text-slate-500">Aucune attribution</p>
+            <p className="text-sm text-slate-400">Aucune attribution</p>
           ) : (
             <div className="space-y-2">
               {data!.utm_breakdown.map((u, i) => (
-                <div key={i} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
+                <div key={i} className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0">
                   <div>
-                    <span className="text-sm text-white font-medium">{u.source}</span>
-                    <span className="text-xs text-slate-500 ml-2">{u.campaign}</span>
+                    <span className="text-sm text-slate-900 font-medium">{u.source}</span>
+                    <span className="text-xs text-slate-400 ml-2">{u.campaign}</span>
                   </div>
-                  <span className="text-sm font-mono text-blue-400">{u.count} leads</span>
+                  <span className="text-sm font-mono font-semibold text-blue-600">{u.count} leads</span>
                 </div>
               ))}
             </div>
           )}
         </div>
 
-        {/* Recent events */}
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
-          <h3 className="text-white font-semibold mb-4">Evenements recents</h3>
+        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+          <h3 className="text-slate-900 font-semibold mb-4">Événements récents</h3>
           <div className="space-y-1.5 max-h-80 overflow-y-auto pr-1">
             {(data?.recent_events ?? []).length === 0 ? (
-              <p className="text-sm text-slate-500">Aucun evenement</p>
+              <p className="text-sm text-slate-400">Aucun événement</p>
             ) : (
               data!.recent_events.map((e, i) => (
                 <div key={i} className="flex items-center justify-between py-1.5 text-sm">
                   <div className="flex items-center gap-2 min-w-0">
-                    <span className={`font-medium ${EVENT_COLORS[e.event] ?? "text-slate-400"}`}>
+                    <span className={`w-2 h-2 rounded-full flex-shrink-0 ${EVENT_DOT[e.event] ?? "bg-slate-300"}`} />
+                    <span className="text-slate-700 font-medium">
                       {STEP_LABELS[e.event] ?? e.event}
                     </span>
-                    <span className="text-slate-500 truncate">{e.email ?? "anon"}</span>
+                    <span className="text-slate-400 truncate">{e.email ?? "anon"}</span>
                   </div>
-                  <span className="text-xs text-slate-600 shrink-0 ml-2">
+                  <span className="text-xs text-slate-400 shrink-0 ml-2">
                     {timeAgo(e.created_at)}
                   </span>
                 </div>
@@ -348,16 +345,14 @@ export default function AdsDashboardClient() {
   );
 }
 
-/* ---------- sub-components ---------- */
-
 function KPICard({ label, value, subtitle, color }: { label: string; value: string | number; subtitle: string; color: "blue" | "emerald" }) {
-  const ring = color === "blue" ? "ring-blue-500/20" : "ring-emerald-500/20";
-  const valColor = color === "blue" ? "text-blue-400" : "text-emerald-400";
+  const accent = color === "blue" ? "text-blue-600" : "text-emerald-600";
+  const ring = color === "blue" ? "ring-blue-100" : "ring-emerald-100";
   return (
-    <div className={`bg-white/5 border border-white/10 rounded-2xl p-5 ring-1 ${ring} backdrop-blur`}>
-      <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">{label}</p>
-      <p className={`text-2xl sm:text-3xl font-bold ${valColor}`}>{typeof value === "number" ? value.toLocaleString("fr-FR") : value}</p>
-      <p className="text-xs text-slate-500 mt-1">{subtitle}</p>
+    <div className={`bg-white border border-slate-200 rounded-2xl p-5 shadow-sm ring-1 ${ring}`}>
+      <p className="text-xs text-slate-500 uppercase tracking-wider font-medium mb-1">{label}</p>
+      <p className={`text-2xl sm:text-3xl font-bold ${accent}`}>{typeof value === "number" ? value.toLocaleString("fr-FR") : value}</p>
+      <p className="text-xs text-slate-400 mt-1">{subtitle}</p>
     </div>
   );
 }

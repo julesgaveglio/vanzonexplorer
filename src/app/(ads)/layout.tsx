@@ -1,6 +1,7 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import AdsNavLinks from "./ads/_components/AdsNavLinks";
 
 const MEDIA_BUYER_EMAILS = ["gavegliojules@gmail.com", "mateogb.ads@gmail.com"];
 
@@ -20,29 +21,16 @@ export default async function AdsLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <section className="min-h-screen bg-[#0B0F1A]">
-      <nav className="border-b border-white/10 bg-[#0B0F1A]/80 backdrop-blur-xl sticky top-0 z-50">
+    <section className="min-h-screen bg-slate-50">
+      <nav className="border-b border-slate-200 bg-white/80 backdrop-blur-xl sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-14">
-          <div className="flex items-center gap-3">
-            <Link href="/ads" className="text-white font-bold text-lg tracking-tight">
-              Vanzon <span className="text-blue-400">Ads</span>
+          <div className="flex items-center gap-6">
+            <Link href="/ads" className="text-slate-900 font-bold text-lg tracking-tight">
+              Vanzon <span className="text-blue-600">Ads</span>
             </Link>
+            <AdsNavLinks />
           </div>
-          <div className="flex items-center gap-1">
-            <Link
-              href="/ads"
-              className="px-3 py-1.5 text-sm font-medium text-slate-400 hover:text-white rounded-lg hover:bg-white/5 transition-colors"
-            >
-              Dashboard
-            </Link>
-            <Link
-              href="/ads/leads"
-              className="px-3 py-1.5 text-sm font-medium text-slate-400 hover:text-white rounded-lg hover:bg-white/5 transition-colors"
-            >
-              Leads
-            </Link>
-          </div>
-          <span className="text-xs text-slate-500 hidden sm:block">{email}</span>
+          <span className="text-xs text-slate-400 hidden sm:block">{email}</span>
         </div>
       </nav>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">{children}</div>
