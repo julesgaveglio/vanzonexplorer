@@ -217,6 +217,43 @@ export default function VSLClient() {
     };
   }, [showCTA]);
 
+  // Track exact exit time for precise retention analytics
+  useEffect(() => {
+    const sendExitTime = () => {
+      const v = videoRef.current;
+      if (!v || v.currentTime < 2) return; // Don't track if barely watched
+
+      const funnelData = getFunnelData();
+      const seconds = Math.floor(v.currentTime);
+
+      // Use sendBeacon for reliability on page unload
+      const payload = JSON.stringify({
+        session_id: sessionStorage.getItem("vba_session_id") || "",
+        event: "vsl_exit",
+        page: "/van-business-academy/presentation",
+        email: funnelData?.email || null,
+        firstname: funnelData?.firstname || null,
+        metadata: { seconds, duration: v.duration ? Math.floor(v.duration) : null },
+      });
+
+      const blob = new Blob([payload], { type: "application/json" });
+      navigator.sendBeacon("/api/funnel/track", blob);
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "hidden") sendExitTime();
+    };
+
+    // Both events for maximum coverage
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("beforeunload", sendExitTime);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("beforeunload", sendExitTime);
+    };
+  }, []);
+
   // Close settings on outside click (mousedown to avoid same-event conflicts)
   useEffect(() => {
     if (!showSettings) return;

@@ -7,11 +7,13 @@ import {
 } from "recharts";
 
 interface VSLData {
-  retention: { point: string; label: string; viewers: number; pct: number }[];
+  retention: { time: number; label: string; viewers: number; pct: number }[];
+  has_precise_data: boolean;
   daily: { date: string; views: number; completions: number }[];
   dropoffs: { zone: string; lost: number; rate: number }[];
   total_viewers: number;
   completion_rate: number;
+  max_duration: number;
 }
 
 const PERIODS = [
@@ -91,7 +93,12 @@ export default function AdsVSLClient() {
       {/* Retention curve */}
       <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
         <h3 className="text-slate-900 font-semibold mb-1">Courbe de rétention</h3>
-        <p className="text-xs text-slate-400 mb-4">Pourcentage de spectateurs restants à chaque étape de la vidéo</p>
+        <p className="text-xs text-slate-400 mb-4">
+          {data?.has_precise_data
+            ? `Rétention seconde par seconde (durée totale : ${Math.floor((data?.max_duration ?? 0) / 60)}min${Math.floor((data?.max_duration ?? 0) % 60).toString().padStart(2, "0")}s)`
+            : "Rétention par étapes (les données précises se rempliront avec les prochains visionnages)"
+          }
+        </p>
         <div className="h-56 sm:h-72">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={data.retention} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
@@ -102,7 +109,13 @@ export default function AdsVSLClient() {
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
-              <XAxis dataKey="label" tick={{ fill: "#94A3B8", fontSize: 12 }} axisLine={{ stroke: "#E2E8F0" }} tickLine={false} />
+              <XAxis
+                dataKey="label"
+                tick={{ fill: "#94A3B8", fontSize: 10 }}
+                axisLine={{ stroke: "#E2E8F0" }}
+                tickLine={false}
+                interval={data.has_precise_data ? Math.max(Math.floor(data.retention.length / 10), 1) : 0}
+              />
               <YAxis tick={{ fill: "#94A3B8", fontSize: 11 }} axisLine={false} tickLine={false} domain={[0, 100]} tickFormatter={(v: number) => `${v}%`} />
               <Tooltip
                 contentStyle={{ backgroundColor: "#fff", border: "1px solid #E2E8F0", borderRadius: "12px", fontSize: 13, boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}

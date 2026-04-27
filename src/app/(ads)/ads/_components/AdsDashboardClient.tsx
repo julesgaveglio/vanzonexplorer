@@ -68,6 +68,19 @@ const EVENT_DOT: Record<string, string> = {
   purchase: "bg-green-500",
 };
 
+const FUNNEL_COLORS: Record<string, string> = {
+  page_view: "linear-gradient(90deg, #FDE68A, #FCD34D)",
+  optin: "linear-gradient(90deg, #FCD34D, #FBBF24)",
+  vsl_25: "linear-gradient(90deg, #FBBF24, #F59E0B)",
+  vsl_50: "linear-gradient(90deg, #F59E0B, #FB923C)",
+  vsl_75: "linear-gradient(90deg, #FB923C, #F97316)",
+  vsl_100: "linear-gradient(90deg, #F97316, #EA580C)",
+  booking_start: "linear-gradient(90deg, #EA580C, #EF4444)",
+  booking_confirmed: "linear-gradient(90deg, #EF4444, #DC2626)",
+  checkout: "linear-gradient(90deg, #DC2626, #B91C1C)",
+  purchase: "linear-gradient(90deg, #10B981, #34D399)",
+};
+
 /* ---------- component ---------- */
 export default function AdsDashboardClient() {
   const [period, setPeriod] = useState(30);
@@ -339,15 +352,11 @@ export default function AdsDashboardClient() {
                     className="h-full rounded-lg transition-all duration-700"
                     style={{
                       width: `${Math.max(pct, count > 0 ? 2 : 0)}%`,
-                      background: step === "purchase"
-                        ? "linear-gradient(90deg, #10B981, #34D399)"
-                        : step.startsWith("booking") || step === "checkout"
-                        ? "linear-gradient(90deg, #10B981, #6EE7B7)"
-                        : "linear-gradient(90deg, #3B82F6, #60A5FA)",
+                      background: FUNNEL_COLORS[step] ?? "linear-gradient(90deg, #94A3B8, #CBD5E1)",
                     }}
                   />
                   <div className="absolute inset-0 flex items-center px-3 justify-between">
-                    <span className="text-xs font-bold text-white drop-shadow">{count}</span>
+                    <span className={`text-xs font-bold drop-shadow ${["page_view", "optin", "vsl_25"].includes(step) ? "text-slate-800" : "text-white"}`}>{count}</span>
                     {i > 0 && <span className={`text-[10px] font-semibold ${convRate >= 50 ? "text-emerald-600" : convRate >= 20 ? "text-amber-600" : "text-red-500"}`}>{convRate}%</span>}
                   </div>
                 </div>

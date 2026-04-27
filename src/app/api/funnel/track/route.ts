@@ -9,6 +9,7 @@ const VALID_EVENTS = [
   "vsl_50",
   "vsl_75",
   "vsl_100",
+  "vsl_exit",
   "booking_start",
   "booking_confirmed",
   "checkout",
