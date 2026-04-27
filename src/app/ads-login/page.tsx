@@ -46,7 +46,7 @@ export default function AdsLoginPage() {
             className="h-12 w-auto mx-auto mb-3"
             unoptimized
           />
-          <p className="text-sm text-slate-500">Fuck Meta</p>
+          <p className="text-sm text-slate-500">Connectez-vous au dashboard</p>
         </div>
 
         <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
