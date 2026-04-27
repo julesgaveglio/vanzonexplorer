@@ -440,5 +440,39 @@
     "manualCommand": "npx tsx scripts/agents/backlinks-weekly-agent.ts",
     "tags": ["Backlinks", "SEO", "Discovery", "Automatique"],
     "pipeline": "1 → alimente backlinks-daily-outreach"
+  },
+  {
+    "id": "social-trend-scraper",
+    "name": "Social Trend Scraper",
+    "emoji": "🔍",
+    "status": "active",
+    "description": "Analyse les tendances vanlife Instagram et génère 10 idées de Reels. Utilise Groq pour analyser les formats performants et produire des concepts reproductibles avec les clips existants.",
+    "trigger": "cron",
+    "schedule": "Chaque lundi à 9h UTC",
+    "cronExpression": "0 9 * * 1",
+    "file": "scripts/agents/social-trend-scraper.ts",
+    "workflow": null,
+    "apis": ["Groq"],
+    "output": "10 idées ajoutées à Vanzon Memory Database/🌐 PUBLIC/social/📋 Reel Ideas Bank.md",
+    "manualCommand": "npx tsx scripts/agents/social-trend-scraper.ts",
+    "tags": ["Social", "Instagram", "Reels", "Automatique"],
+    "pipeline": "1 → alimente reel-producer"
+  },
+  {
+    "id": "reel-producer",
+    "name": "Reel Producer",
+    "emoji": "🎬",
+    "status": "active",
+    "description": "Produit un Reel Instagram à partir de la banque d'idées. Sélectionne la prochaine idée, planifie le montage via Groq, découpe et assemble les clips avec ffmpeg, ajoute la musique, envoie sur Telegram pour validation.",
+    "trigger": "cron",
+    "schedule": "Lundi, Mercredi, Vendredi à 10h UTC",
+    "cronExpression": "0 10 * * 1,3,5",
+    "file": "scripts/agents/reel-producer.ts",
+    "workflow": null,
+    "apis": ["Groq", "Telegram", "ffmpeg"],
+    "output": "Reel MP4 envoyé sur Telegram + idée marquée 🎬 dans la banque",
+    "manualCommand": "npx tsx scripts/agents/reel-producer.ts",
+    "tags": ["Social", "Instagram", "Reels", "Production", "Automatique"],
+    "pipeline": "2 → consomme les idées du social-trend-scraper"
   }
 ]

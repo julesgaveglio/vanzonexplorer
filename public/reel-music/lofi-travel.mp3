@@ -1,0 +1,50 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Free Music for Creators | Free To Use</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="theme-color" content="#7569DE"/>
+    <!-- og -->
+    <meta property="og:type" content="website"/>
+    <meta property="og:title" content="Free Music for Creators"/>
+    <meta property="og:site_name" content="Free To Use"/>
+    <meta property="og:description" content="Royalty-free background music – completely free, sign-up not even required. Just unlimited free downloads of safe, high-quality music with no copyright issues."/>
+    <meta property="og:url" content="https://freetouse.com"/>
+    <meta property="og:image" content="/static/open-graph.jpg"/>
+    
+    <!-- google -->
+    <meta name="description" content="Royalty-free background music – completely free, sign-up not even required. Just unlimited free downloads of safe, high-quality music with no copyright issues."/>
+    <link rel="icon" href="/static/favicon.png">
+    <link rel="manifest" href="/static/manifest.json">
+    <link rel="apple-touch-icon" sizes="57x57" href="/static/apple-touch-icon-57x57.png"/>
+    <link rel="apple-touch-icon" sizes="72x72" href="/static/apple-touch-icon-72x72.png"/>
+    <link rel="apple-touch-icon" sizes="76x76" href="/static/apple-touch-icon-76x76.png"/>
+    <link rel="apple-touch-icon" sizes="114x114" href="/static/apple-touch-icon-114x114.png"/>
+    <link rel="apple-touch-icon" sizes="120x120" href="/static/apple-touch-icon-120x120.png"/>
+    <link rel="apple-touch-icon" sizes="144x144" href="/static/apple-touch-icon-144x144.png"/>
+    <link rel="apple-touch-icon" sizes="152x152" href="/static/apple-touch-icon-152x152.png"/>
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon-180x180.png"/>
+    <script type="module" crossorigin src="/assets/index.js?v=e123965"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index.css?v=e123965">
+    <link rel="preload" as="image" href="/static/open-graph.jpg"/>
+    <link rel="preload" as="image" href="/static/freetouse.svg"/>
+    <link rel="preload" as="image" href="/static/personal-license.png"/>
+    <link rel="preload" as="image" href="/static/commercial-license.png"/>
+    <meta name="robots" content="index, follow"/>
+    <style>
+        .____indexing_text,
+        .____html {
+            display: none;
+        }
+    </style>
+  </head>
+  <body>
+  <div id="root"></div>
+  <div class="____indexing_text"></div>
+  <div class="____indexing_text"></div>
+  <div class="____indexing_text"></div>
+  <div class="____indexing_text">Royalty-free background music – completely free, sign-up not even required. Just unlimited free downloads of safe, high-quality music with no copyright issues.</div>
+  </body>
+  </html>
