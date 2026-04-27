@@ -83,15 +83,21 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  // If no precise data yet, fall back to milestone-based curve
+  // If no precise data yet, fall back to milestone-based curve converted to real timestamps
+  // VSL duration = 12 minutes (720 seconds)
+  const VSL_DURATION = 720;
   const hasPreciseData = retention.length > 0;
+  if (!hasPreciseData && maxDuration === 0) maxDuration = VSL_DURATION;
+
+  const fmt = (s: number) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, "0")}`;
+
   const fallbackRetention = !hasPreciseData
     ? [
-        { time: 0, label: "Début", viewers: milestoneCounts.vsl_view ?? 0, pct: 100 },
-        { time: 25, label: "25%", viewers: milestoneCounts.vsl_25 ?? 0, pct: totalViewers > 0 ? Math.round(((milestoneCounts.vsl_25 ?? 0) / totalViewers) * 100) : 0 },
-        { time: 50, label: "50%", viewers: milestoneCounts.vsl_50 ?? 0, pct: totalViewers > 0 ? Math.round(((milestoneCounts.vsl_50 ?? 0) / totalViewers) * 100) : 0 },
-        { time: 75, label: "75%", viewers: milestoneCounts.vsl_75 ?? 0, pct: totalViewers > 0 ? Math.round(((milestoneCounts.vsl_75 ?? 0) / totalViewers) * 100) : 0 },
-        { time: 100, label: "Fin", viewers: milestoneCounts.vsl_100 ?? 0, pct: totalViewers > 0 ? Math.round(((milestoneCounts.vsl_100 ?? 0) / totalViewers) * 100) : 0 },
+        { time: 0, label: fmt(0), viewers: milestoneCounts.vsl_view ?? 0, pct: 100 },
+        { time: Math.round(VSL_DURATION * 0.25), label: fmt(Math.round(VSL_DURATION * 0.25)), viewers: milestoneCounts.vsl_25 ?? 0, pct: totalViewers > 0 ? Math.round(((milestoneCounts.vsl_25 ?? 0) / totalViewers) * 100) : 0 },
+        { time: Math.round(VSL_DURATION * 0.50), label: fmt(Math.round(VSL_DURATION * 0.50)), viewers: milestoneCounts.vsl_50 ?? 0, pct: totalViewers > 0 ? Math.round(((milestoneCounts.vsl_50 ?? 0) / totalViewers) * 100) : 0 },
+        { time: Math.round(VSL_DURATION * 0.75), label: fmt(Math.round(VSL_DURATION * 0.75)), viewers: milestoneCounts.vsl_75 ?? 0, pct: totalViewers > 0 ? Math.round(((milestoneCounts.vsl_75 ?? 0) / totalViewers) * 100) : 0 },
+        { time: VSL_DURATION, label: fmt(VSL_DURATION), viewers: milestoneCounts.vsl_100 ?? 0, pct: totalViewers > 0 ? Math.round(((milestoneCounts.vsl_100 ?? 0) / totalViewers) * 100) : 0 },
       ]
     : [];
 
@@ -116,12 +122,12 @@ export async function GET(req: NextRequest) {
 
   const daily = Object.values(dayMap).sort((a, b) => a.date.localeCompare(b.date));
 
-  // Drop-off zones
+  // Drop-off zones with real timestamps
   const dropoffs = [
-    { zone: "0% → 25%", lost: (milestoneCounts.vsl_view ?? 0) - (milestoneCounts.vsl_25 ?? 0), rate: (milestoneCounts.vsl_view ?? 0) > 0 ? Math.round((((milestoneCounts.vsl_view ?? 0) - (milestoneCounts.vsl_25 ?? 0)) / (milestoneCounts.vsl_view ?? 0)) * 100) : 0 },
-    { zone: "25% → 50%", lost: (milestoneCounts.vsl_25 ?? 0) - (milestoneCounts.vsl_50 ?? 0), rate: (milestoneCounts.vsl_25 ?? 0) > 0 ? Math.round((((milestoneCounts.vsl_25 ?? 0) - (milestoneCounts.vsl_50 ?? 0)) / (milestoneCounts.vsl_25 ?? 0)) * 100) : 0 },
-    { zone: "50% → 75%", lost: (milestoneCounts.vsl_50 ?? 0) - (milestoneCounts.vsl_75 ?? 0), rate: (milestoneCounts.vsl_50 ?? 0) > 0 ? Math.round((((milestoneCounts.vsl_50 ?? 0) - (milestoneCounts.vsl_75 ?? 0)) / (milestoneCounts.vsl_50 ?? 0)) * 100) : 0 },
-    { zone: "75% → 100%", lost: (milestoneCounts.vsl_75 ?? 0) - (milestoneCounts.vsl_100 ?? 0), rate: (milestoneCounts.vsl_75 ?? 0) > 0 ? Math.round((((milestoneCounts.vsl_75 ?? 0) - (milestoneCounts.vsl_100 ?? 0)) / (milestoneCounts.vsl_75 ?? 0)) * 100) : 0 },
+    { zone: `${fmt(0)} → ${fmt(Math.round(VSL_DURATION * 0.25))}`, lost: (milestoneCounts.vsl_view ?? 0) - (milestoneCounts.vsl_25 ?? 0), rate: (milestoneCounts.vsl_view ?? 0) > 0 ? Math.round((((milestoneCounts.vsl_view ?? 0) - (milestoneCounts.vsl_25 ?? 0)) / (milestoneCounts.vsl_view ?? 0)) * 100) : 0 },
+    { zone: `${fmt(Math.round(VSL_DURATION * 0.25))} → ${fmt(Math.round(VSL_DURATION * 0.50))}`, lost: (milestoneCounts.vsl_25 ?? 0) - (milestoneCounts.vsl_50 ?? 0), rate: (milestoneCounts.vsl_25 ?? 0) > 0 ? Math.round((((milestoneCounts.vsl_25 ?? 0) - (milestoneCounts.vsl_50 ?? 0)) / (milestoneCounts.vsl_25 ?? 0)) * 100) : 0 },
+    { zone: `${fmt(Math.round(VSL_DURATION * 0.50))} → ${fmt(Math.round(VSL_DURATION * 0.75))}`, lost: (milestoneCounts.vsl_50 ?? 0) - (milestoneCounts.vsl_75 ?? 0), rate: (milestoneCounts.vsl_50 ?? 0) > 0 ? Math.round((((milestoneCounts.vsl_50 ?? 0) - (milestoneCounts.vsl_75 ?? 0)) / (milestoneCounts.vsl_50 ?? 0)) * 100) : 0 },
+    { zone: `${fmt(Math.round(VSL_DURATION * 0.75))} → ${fmt(VSL_DURATION)}`, lost: (milestoneCounts.vsl_75 ?? 0) - (milestoneCounts.vsl_100 ?? 0), rate: (milestoneCounts.vsl_75 ?? 0) > 0 ? Math.round((((milestoneCounts.vsl_75 ?? 0) - (milestoneCounts.vsl_100 ?? 0)) / (milestoneCounts.vsl_75 ?? 0)) * 100) : 0 },
   ];
 
   return NextResponse.json({
