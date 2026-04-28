@@ -20,7 +20,7 @@ function getSessionId(): string {
 const META_EVENT_MAP: Record<string, string> = {
   formation_view: "ViewContent",
   optin: "Lead",
-  booking_confirmed: "Schedule",
+  booking_start: "Schedule",
   appel_confirme: "SubmitApplication",
   checkout: "InitiateCheckout",
   purchase: "Purchase",
