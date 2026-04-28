@@ -19,7 +19,7 @@ function getSessionId(): string {
 // Only REAL conversions are sent to Meta — no page views, no intermediate steps
 const META_EVENT_MAP: Record<string, string> = {
   page_view: "ViewContent",
-  optin: "Lead",
+  vsl_view: "Lead",
   booking_start: "Schedule",
   appel_confirme: "SubmitApplication",
   checkout: "InitiateCheckout",

@@ -125,6 +125,12 @@ export default function VSLClient() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: data.email, step: "vsl" }),
       }).catch(() => {});
+
+      // Track VSL page view → Lead event on Meta
+      trackFunnel("vsl_view", "/van-business-academy/presentation", {
+        email: data.email,
+        firstname: data.firstname,
+      });
     }
   }, []);
 
