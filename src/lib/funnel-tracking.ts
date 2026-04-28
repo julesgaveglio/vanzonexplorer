@@ -1,6 +1,8 @@
-// Funnel tracking: Supabase server-side only
-// Meta Pixel events are handled manually in Meta Events Manager — no code-side firing.
+// Dual tracking: Meta Pixel (deduplicated) + Supabase (server)
+// Meta events fire ONLY on actual conversions with unique eventID.
 // Usage: trackFunnel('optin', '/van-business-academy/inscription', { email, firstname })
+
+import { trackEvent } from "@/lib/meta-pixel";
 
 const SESSION_KEY = "vba_session_id";
 
@@ -13,6 +15,16 @@ function getSessionId(): string {
   }
   return id;
 }
+
+// Only REAL conversions are sent to Meta — no page views, no intermediate steps
+const META_EVENT_MAP: Record<string, string> = {
+  formation_view: "ViewContent",
+  optin: "Lead",
+  booking_confirmed: "Schedule",
+  appel_confirme: "SubmitApplication",
+  checkout: "InitiateCheckout",
+  purchase: "Purchase",
+};
 
 interface TrackOptions {
   email?: string;
@@ -34,7 +46,21 @@ export function trackFunnel(
 ) {
   if (typeof window === "undefined") return;
 
-  // Server-side event → Supabase (100% reliable, powers /admin/funnel dashboard)
+  // Unique event ID for Meta deduplication
+  const eventId = crypto.randomUUID();
+
+  // 1. Meta Pixel — only for mapped conversion events
+  const metaEvent = META_EVENT_MAP[event];
+  if (metaEvent) {
+    const pixelParams: Record<string, unknown> = {
+      content_name: event,
+    };
+    if (options.value !== undefined) pixelParams.value = options.value;
+    if (options.currency) pixelParams.currency = options.currency;
+    trackEvent(metaEvent, pixelParams, eventId);
+  }
+
+  // 2. Supabase — all events (powers /admin/funnel dashboard)
   const payload = {
     session_id: getSessionId(),
     event,

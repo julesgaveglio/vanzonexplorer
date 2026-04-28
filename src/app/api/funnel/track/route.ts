@@ -3,6 +3,7 @@ import { createSupabaseAdmin } from "@/lib/supabase/server";
 
 const VALID_EVENTS = [
   "page_view",
+  "formation_view",
   "optin",
   "vsl_view",
   "vsl_25",
@@ -12,6 +13,7 @@ const VALID_EVENTS = [
   "vsl_exit",
   "booking_start",
   "booking_confirmed",
+  "appel_confirme",
   "checkout",
   "purchase",
 ] as const;

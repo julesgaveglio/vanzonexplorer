@@ -1,17 +1,27 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import GlassCard from "@/components/ui/GlassCard";
 import LiquidButton from "@/components/ui/LiquidButton";
 import { getFunnelData } from "@/lib/hooks/useUTMParams";
+import { trackFunnel } from "@/lib/funnel-tracking";
 
 export default function ConfirmationClient() {
   const [firstname, setFirstname] = useState("");
+  const tracked = useRef(false);
 
   useEffect(() => {
     const data = getFunnelData();
     if (data) {
       setFirstname(data.firstname);
+    }
+    // Track SubmitApplication → Meta
+    if (!tracked.current) {
+      tracked.current = true;
+      trackFunnel("appel_confirme", "/van-business-academy/appel-confirme", {
+        email: data?.email,
+        firstname: data?.firstname,
+      });
     }
   }, []);
 

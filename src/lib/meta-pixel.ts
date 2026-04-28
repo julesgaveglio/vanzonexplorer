@@ -1,6 +1,6 @@
-// Fire Meta Pixel events from client components — with deduplication
+// Fire Meta Pixel events with automatic deduplication via eventID
 // Usage: import { trackEvent } from '@/lib/meta-pixel'
-//        trackEvent('Lead', { content_name: 'vba-optin' })
+//        trackEvent('Lead', { content_name: 'vba-optin' }, 'unique-id')
 
 declare global {
   interface Window {
@@ -8,10 +8,6 @@ declare global {
   }
 }
 
-/**
- * Fire a Meta Pixel event with automatic deduplication.
- * The eventID ensures Meta ignores duplicate events with the same ID.
- */
 export function trackEvent(
   eventName: string,
   params?: Record<string, unknown>,

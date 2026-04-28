@@ -7,6 +7,7 @@ import FormationCardStack from "@/components/formation/FormationCardStack";
 import ComparisonSection from "@/components/formation/ComparisonSection";
 
 import LiquidButton from "@/components/ui/LiquidButton";
+import FormationViewTracker from "@/components/analytics/FormationViewTracker";
 
 export const metadata: Metadata = {
   title: "Van Business Academy — Construis ta liberté van par van",
@@ -65,6 +66,7 @@ export default async function FormationPage() {
 
   return (
     <>
+      <FormationViewTracker />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(courseJsonLd) }}
