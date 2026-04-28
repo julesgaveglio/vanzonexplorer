@@ -6,7 +6,7 @@ import { VANS } from "@/lib/data/vans";
 export const metadata: Metadata = {
   title: "Yoni — Renault Trafic aménagé 2024 à vendre",
   description:
-    "Yoni, Renault Trafic III aménagé par nos soins en 2024. 68 000 km, lit fixe, cuisine coulissante, panneau solaire. Historique complet, 25 000 €. Remise à Cambo-les-Bains.",
+    "Yoni, Renault Trafic III aménagé par nos soins en 2024. 68 000 km, lit fixe, cuisine coulissante, panneau solaire. Historique complet, 23 500 €. Remise à Cambo-les-Bains.",
   keywords: [
     "renault trafic aménagé occasion",
     "van aménagé occasion pays basque",
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     canonical: "https://vanzonexplorer.com/achat/yoni",
   },
   openGraph: {
-    title: "Yoni — Renault Trafic aménagé 2024, 25 000 €",
+    title: "Yoni — Renault Trafic aménagé 2024, 23 500 €",
     description: "Van aménagé par nos soins, issu de notre flotte de location au Pays Basque. Historique complet, remise à Cambo-les-Bains.",
   },
 };

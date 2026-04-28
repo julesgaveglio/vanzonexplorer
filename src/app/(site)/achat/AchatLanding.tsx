@@ -25,7 +25,7 @@ export default function AchatLanding() {
           <p className="text-slate-500 text-lg md:text-xl leading-relaxed max-w-2xl mx-auto mb-3">
             Deux Renault Trafic entièrement aménagés par nos soins, issus de notre flotte de location au Pays Basque. Historique complet, remise en main propre à Cambo-les-Bains.
           </p>
-          <p className="text-slate-400 text-sm">Prix ferme · 25 000 € chaque van</p>
+          <p className="text-slate-400 text-sm">Prix ferme · 23 500 € chaque van</p>
         </div>
       </section>
 

@@ -167,7 +167,7 @@ export default function AchatClient({ vanId }: { vanId?: string }) {
             </div>
             <div className="flex gap-3 flex-shrink-0">
               <div className="bg-white rounded-2xl px-5 py-4 text-center border border-slate-100 shadow-sm">
-                <p className="text-2xl font-black text-slate-900">25k€</p>
+                <p className="text-2xl font-black text-slate-900">23 500€</p>
                 <p className="text-xs text-slate-400 font-medium">prix ferme</p>
               </div>
               <div className="bg-white rounded-2xl px-5 py-4 text-center border border-slate-100 shadow-sm">
