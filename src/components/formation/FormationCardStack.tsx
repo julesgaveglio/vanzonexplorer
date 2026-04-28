@@ -23,9 +23,6 @@ const POSITION_STYLES = [
   { scale: 0.9, y: -44 },
 ];
 
-function scrollToProgramme() {
-  document.getElementById("programme")?.scrollIntoView({ behavior: "smooth" });
-}
 
 export default function FormationCardStack({ cards }: { cards: FormationCardData[] }) {
   const visibleCount = Math.min(cards.length, 3);
