@@ -59,7 +59,6 @@ export async function POST(req: Request) {
       const session = await stripe.checkout.sessions.create({
         mode: "subscription",
         customer: customer.id,
-        payment_method_types: ["card"],
         metadata: {
           clerk_user_id: userId || "anonymous",
           product: "vba",
@@ -84,7 +83,6 @@ export async function POST(req: Request) {
     // Paiement unique
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
-      payment_method_types: ["card"],
       customer_email: email,
       metadata: {
         clerk_user_id: userId || "anonymous",
