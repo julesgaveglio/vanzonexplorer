@@ -36,7 +36,7 @@ async function main() {
         subject: "Partenariat local — location de vans aménagés Vanzon Explorer",
         textBody: `Bonjour,
 
-Je suis Jules Gaveglio, cofondateur de Vanzon Explorer. Nous louons des vans aménagés au départ de Cambo-les-Bains, et nos locataires cherchent régulièrement des campings et aires d'accueil dans le Pays Basque.
+Je suis Jules Gaveglio, fondateur de Vanzon Explorer. Nous louons des vans aménagés au départ de Cambo-les-Bains, et nos locataires cherchent régulièrement des campings et aires d'accueil dans le Pays Basque.
 
 Je vous contacte pour vous proposer un partenariat simple :
 

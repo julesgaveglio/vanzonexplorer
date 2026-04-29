@@ -42,7 +42,7 @@
 
 ### /formation — Van Business Academy
 **Objectif** : Inscrire à la formation (accompagnement achat + aménagement + location rentable)
-**Ancres naturelles** : "formation vanlife", "se lancer dans la location de van", "aménager son fourgon de A à Z", "créer son activité van", "Van Business Academy", "formation de Jules et Elio"
+**Ancres naturelles** : "formation vanlife", "se lancer dans la location de van", "aménager son fourgon de A à Z", "créer son activité van", "Van Business Academy", "formation de Jules"
 **À utiliser quand** : on parle de se lancer dans l'activité van, d'aménager, de rendre un van rentable
 
 ### /road-trip-personnalise — Générateur d'itinéraire IA gratuit
@@ -75,14 +75,14 @@
 **Ancres naturelles** : "proposer votre van sur Vanzon Explorer", "référencer votre van gratuitement", "mettre votre van en ligne sur Vanzon", "rejoindre la plateforme Vanzon"
 **À utiliser quand** : on parle de louer son propre van, de revenus location, d'être propriétaire, de plateformes alternatives à Yescapa — **lien crucial pour les articles Business Van et Marketplace**
 
-### /a-propos — À propos de Jules & Elio
+### /a-propos — À propos de Jules
 **Objectif** : Crédibilité, E-E-A-T
-**Ancres naturelles** : "Jules et Elio", "l'équipe Vanzon Explorer", "les fondateurs de Vanzon"
+**Ancres naturelles** : "Jules Gaveglio", "l'équipe Vanzon Explorer", "le fondateur de Vanzon"
 **À utiliser quand** : on présente l'expertise ou la légitimité de Vanzon
 
 ### /contact — Contact Vanzon Explorer
 **Objectif** : Prise de contact directe
-**Ancres naturelles** : "nous contacter", "poser tes questions à Jules et Elio", "prendre contact"
+**Ancres naturelles** : "nous contacter", "poser tes questions à Jules", "prendre contact"
 **À utiliser quand** : on invite à contacter pour une question spécifique
 
 ---

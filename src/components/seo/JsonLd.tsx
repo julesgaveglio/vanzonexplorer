@@ -99,7 +99,6 @@ const schema = {
   foundingDate: "2024-01-01",
   founder: [
     { "@type": "Person", name: "Jules Gaveglio" },
-    { "@type": "Person", name: "Elio Dubernet" },
   ],
 };
 
@@ -297,13 +296,7 @@ export function ArticleJsonLd({
         "@type": "Person",
         "name": "Jules Gaveglio",
         "url": `${BASE_URL}/a-propos`,
-        "jobTitle": "Co-fondateur Vanzon Explorer",
-      },
-      {
-        "@type": "Person",
-        "name": "Elio Dubernet",
-        "url": `${BASE_URL}/a-propos`,
-        "jobTitle": "Co-fondateur Vanzon Explorer",
+        "jobTitle": "Fondateur Vanzon Explorer",
       },
     ],
     "publisher": {

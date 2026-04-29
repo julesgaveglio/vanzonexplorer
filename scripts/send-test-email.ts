@@ -18,7 +18,7 @@ async function main() {
     subject,
     textBody: `Bonjour,
 
-Je suis Jules Gaveglio, cofondateur de Vanzon Explorer, une entreprise de location de vans aménagés basée à Cambo-les-Bains (64250).
+Je suis Jules Gaveglio, fondateur de Vanzon Explorer, une entreprise de location de vans aménagés basée à Cambo-les-Bains (64250).
 
 Nous proposons deux fourgons tout équipés pour découvrir le Pays Basque et le Sud-Ouest, au départ de Cambo-les-Bains. Nos vans sont disponibles toute l'année, à partir de 65€/nuit.
 

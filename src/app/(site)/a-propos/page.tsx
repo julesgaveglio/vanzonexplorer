@@ -10,7 +10,7 @@ import { getBrands } from "@/lib/club/data";
 export const metadata: Metadata = {
   title: "À propos — Vanzon Explorer | Écosystème Vanlife Pays Basque",
   description:
-    "Vanzon Explorer : l'écosystème vanlife 360° qui rend la liberté accessible à tous. Location, achat, formation et Club au Pays Basque et partout en France. Fondé en 2024 par Jules et Elio.",
+    "Vanzon Explorer : l'écosystème vanlife 360° qui rend la liberté accessible à tous. Location, achat, formation et Club au Pays Basque et partout en France. Fondé en 2024 par Jules Gaveglio.",
   alternates: {
     canonical: "https://vanzonexplorer.com/a-propos",
   },
@@ -182,7 +182,7 @@ export default async function AProposPage() {
                   Tout a commencé en <strong className="text-slate-800">2024</strong>, quand Jules rentre de son tour du monde avec une envie simple : garder cette liberté, ce mode de vie, ce goût du voyage. Il investit ses économies dans un van aménagé.
                 </p>
                 <p>
-                  C&apos;est à ce moment qu&apos;il rencontre <strong className="text-slate-800">Elio</strong>, déjà propriétaire de son propre van. Une passion commune, deux compétences complémentaires. Ensemble, ils investissent dans un second fourgon et posent les bases de Vanzon Explorer.
+                  Après avoir aménagé son premier van en autodidacte, la passion pour le processus de création ne l&apos;a plus quitté. Il investit dans un second fourgon et pose les bases de Vanzon Explorer.
                 </p>
                 <p>
                   <strong className="text-slate-800">Pourquoi Vanzon ?</strong><br />
@@ -199,34 +199,14 @@ export default async function AProposPage() {
               </div>
             </div>
 
-            {/* Visuel — grille de photos */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className="relative aspect-[3/4] rounded-2xl overflow-hidden">
-                <Image
-                  src="https://cdn.sanity.io/images/lewexa74/production/16f9120e659bdd4bba47e663e9df9a1a9293fe3f-1170x2080.jpg?auto=format&q=82"
-                  alt="Jules, fondateur de Vanzon Explorer"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <div className="flex flex-col gap-3">
-                <div className="relative aspect-square rounded-2xl overflow-hidden">
-                  <Image
-                    src="https://cdn.sanity.io/images/lewexa74/production/28a2c5acbe2ee16169d4ace1ab0522481c43d356-1170x2080.jpg?auto=format&q=82"
-                    alt="Jules et Elio, co-fondateurs Vanzon Explorer"
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <div className="relative aspect-square rounded-2xl overflow-hidden">
-                  <Image
-                    src="https://cdn.sanity.io/images/lewexa74/production/325f3ebf1d68fd890487229864c73cc65bef20d3-1186x1654.png?auto=format&q=82"
-                    alt="Elio, co-fondateur Vanzon Explorer"
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-              </div>
+            {/* Visuel — photo Jules */}
+            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden max-w-md mx-auto">
+              <Image
+                src="https://cdn.sanity.io/images/lewexa74/production/16f9120e659bdd4bba47e663e9df9a1a9293fe3f-1170x2080.jpg?auto=format&q=82"
+                alt="Jules Gaveglio, fondateur de Vanzon Explorer"
+                fill
+                className="object-cover"
+              />
             </div>
           </div>
         </div>
@@ -246,56 +226,37 @@ export default async function AProposPage() {
       </div>
 
       {/* ══════════════════════════════════════════════
-          JULES & ELIO
+          JULES — FONDATEUR
       ══════════════════════════════════════════════ */}
 
-      {/* Profils */}
+      {/* Profil */}
       <section className="bg-[#F8FAFC] py-20">
         <div className="max-w-5xl mx-auto px-6">
           <div className="text-center mb-12">
             <span className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-500 mb-4 block">
-              Les fondateurs
+              Le fondateur
             </span>
-            <h2 className="text-3xl md:text-4xl font-black text-slate-900">Jules &amp; Elio</h2>
+            <h2 className="text-3xl md:text-4xl font-black text-slate-900">Jules Gaveglio</h2>
             <p className="mt-4 text-slate-500 max-w-xl mx-auto">
-              Tous les deux animés par la même envie de liberté, de voyage et de vie en van.
+              Animé par l&apos;envie de liberté, de voyage et de vie en van.
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="max-w-2xl mx-auto">
 
             {/* Jules */}
             <div className="bg-white rounded-2xl p-8 border border-slate-100 shadow-sm">
               <div className="mb-6">
                 <h3 className="text-xl font-bold text-slate-900">Jules</h3>
-                <span className="text-sm text-blue-600 font-medium">Président &amp; Co-fondateur</span>
+                <span className="text-sm text-blue-600 font-medium">Président &amp; Fondateur</span>
               </div>
               <p className="text-slate-600 leading-relaxed">
-                Jules est tourné vers la stratégie et l&apos;innovation.{" "}
-                <strong className="text-slate-800">Business model, marketing, mise en location, rentabilité</strong>{" "}
-                — il apporte la vision entrepreneuriale pour transformer un van aménagé en véritable source de revenus. Il maîtrise aussi l&apos;IA pour automatiser les tâches techniques et marketing.
+                Jules a tout appris en autodidacte — de l&apos;aménagement à la mécanique.{" "}
+                <strong className="text-slate-800">Business model, marketing, mise en location, rentabilité, aménagement et mécanique</strong>{" "}
+                — il apporte une vision complète pour transformer un van aménagé en véritable source de revenus. Il maîtrise aussi l&apos;IA pour automatiser les tâches techniques et marketing.
               </p>
               <div className="flex flex-wrap gap-2 mt-6">
-                {["Business", "Marketing", "IA", "Location", "Rentabilité"].map((tag) => (
+                {["Business", "Marketing", "IA", "Aménagement", "Mécanique", "Location"].map((tag) => (
                   <span key={tag} className="text-xs font-medium bg-blue-50 text-blue-700 px-3 py-1 rounded-full">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Elio */}
-            <div className="bg-white rounded-2xl p-8 border border-slate-100 shadow-sm">
-              <div className="mb-6">
-                <h3 className="text-xl font-bold text-slate-900">Elio</h3>
-                <span className="text-sm text-amber-600 font-medium">Directeur Général &amp; Co-fondateur</span>
-              </div>
-              <p className="text-slate-600 leading-relaxed">
-                Elio est le spécialiste du concret et surtout de la mécanique. C&apos;est lui qui vous aide à{" "}
-                <strong className="text-slate-800">choisir le bon fourgon dès le départ</strong>, éviter les erreurs qui coûtent très cher, analyser l&apos;état réel d&apos;un véhicule, négocier au bon prix et viser le meilleur rapport qualité-prix.
-              </p>
-              <div className="flex flex-wrap gap-2 mt-6">
-                {["Mécanique", "Aménagement", "Choix fourgon", "Négociation"].map((tag) => (
-                  <span key={tag} className="text-xs font-medium bg-amber-50 text-amber-700 px-3 py-1 rounded-full">
                     {tag}
                   </span>
                 ))}
@@ -405,7 +366,7 @@ export default async function AProposPage() {
             url: "https://vanzonexplorer.com",
             logo: "https://cdn.sanity.io/images/lewexa74/production/1f483103ef15ee3549eab14ba2801d11b32a9055-313x313.png?auto=format&q=82",
             description:
-              "Écosystème vanlife 360° — location, achat, formation et Club au Pays Basque. Fondé en 2024 par Jules Gaveglio et Elio.",
+              "Écosystème vanlife 360° — location, achat, formation et Club au Pays Basque. Fondé en 2024 par Jules Gaveglio.",
             foundingDate: "2024-01-01",
             foundingLocation: { "@type": "Place", name: "Cambo-les-Bains, Pays Basque, France" },
             areaServed: "FR",
@@ -413,18 +374,9 @@ export default async function AProposPage() {
               {
                 "@type": "Person",
                 name: "Jules Gaveglio",
-                jobTitle: "Président & Co-fondateur",
+                jobTitle: "Président & Fondateur",
                 description:
-                  "Stratégie, business, marketing et mise en location. Retour de tour du monde 2024.",
-                url: "https://vanzonexplorer.com/a-propos",
-                worksFor: { "@type": "Organization", name: "Vanzon Explorer" },
-              },
-              {
-                "@type": "Person",
-                name: "Elio",
-                jobTitle: "Directeur Général & Co-fondateur",
-                description:
-                  "Expert mécanique et aménagement van. Spécialiste sourcing et négociation.",
+                  "Stratégie, business, marketing, aménagement et mise en location. Retour de tour du monde 2024.",
                 url: "https://vanzonexplorer.com/a-propos",
                 worksFor: { "@type": "Organization", name: "Vanzon Explorer" },
               },

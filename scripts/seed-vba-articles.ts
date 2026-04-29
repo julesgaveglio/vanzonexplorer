@@ -34,7 +34,7 @@ const articles = [
 
 <h3>Des revenus réalistes de 5 000 à 9 000€ nets par an</h3>
 
-<p>Les chiffres que Jules et Elio de Vanzon Explorer observent sur leurs propres vans au Pays Basque sont cohérents avec les données du marché : <strong>5 000 à 9 000€ nets par an</strong> pour un van bien positionné, bien photographié et avec un profil optimisé. Ce n'est pas une promesse — c'est ce que les deux fondateurs génèrent avec leurs propres véhicules, et ce qu'ils enseignent à reproduire dans leur <a href="https://vanzonexplorer.com/formation" target="_blank" rel="noopener noreferrer">formation Van Business Academy</a>.</p>
+<p>Les chiffres que Jules Gaveglio de Vanzon Explorer observe sur ses propres vans au Pays Basque sont cohérents avec les données du marché : <strong>5 000 à 9 000€ nets par an</strong> pour un van bien positionné, bien photographié et avec un profil optimisé. Ce n'est pas une promesse — c'est ce que le fondateur génère avec ses propres véhicules, et ce qu'il enseigne à reproduire dans sa <a href="https://vanzonexplorer.com/formation" target="_blank" rel="noopener noreferrer">formation Van Business Academy</a>.</p>
 
 <p>À 65€/jour en basse saison, 75€ en moyenne saison et 95€ en haute saison, les calculs sont transparents. Une cinquantaine de jours loués en haute saison + une vingtaine en moyenne saison suffisent à franchir les 5 000€ nets. L'objectif des propriétaires expérimentés : atteindre 80 à 100 jours de location sur l'année.</p>
 

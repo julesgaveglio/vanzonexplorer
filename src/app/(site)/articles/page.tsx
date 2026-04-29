@@ -35,7 +35,7 @@ export default async function ArticlesPage() {
         <p>
           Tous les guides pratiques pour explorer le Pays Basque en van aménagé : itinéraires road trip,
           spots bivouac, réglementation nuit en van, aménagement fourgon, recettes sans frigo, et conseils
-          pour lancer un business de location. Rédigés par Jules et Elio de Vanzon Explorer, qui louent des
+          pour lancer un business de location. Rédigés par Jules de Vanzon Explorer, qui loue des
           vans depuis Cambo-les-Bains au cœur du Pays Basque.
         </p>
       </div>

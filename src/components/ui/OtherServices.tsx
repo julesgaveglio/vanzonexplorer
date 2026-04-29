@@ -36,7 +36,7 @@ const SERVICES: Record<ServiceKey, {
     emoji: "🎓",
     label: "Formation",
     title: "Van Business Academy",
-    desc: "Aménagement, homologation VASP, mise en location rentable. Un programme complet de A à Z avec Jules & Elio.",
+    desc: "Aménagement, homologation VASP, mise en location rentable. Un programme complet de A à Z avec Jules.",
     zone: "Toute la France",
     href: "/formation",
     gradient: "from-[#CDA77B] to-[#B9945F]",

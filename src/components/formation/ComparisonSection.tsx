@@ -9,7 +9,7 @@ export default function ComparisonSection() {
         className="absolute inset-0 opacity-15 bg-cover bg-center"
         style={{
           backgroundImage:
-            "url('https://cdn.sanity.io/images/lewexa74/production/28a2c5acbe2ee16169d4ace1ab0522481c43d356-1170x2080.jpg?auto=format&q=82')",
+            "url('https://cdn.sanity.io/images/lewexa74/production/16f9120e659bdd4bba47e663e9df9a1a9293fe3f-1170x2080.jpg?auto=format&q=82')",
         }}
       />
       <div className="absolute inset-0 bg-gradient-to-b from-[#0F0A05]/80 via-[#0F0A05]/60 to-[#0F0A05]/90" />

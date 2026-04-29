@@ -9,7 +9,7 @@ const KNOWN_CATEGORIES = [
   { category: "vans",       description: "Maintenance, défauts, astuces techniques sur Yoni ou Xalbat", files: ["🚐 Yoni.md", "🚐 Xalbat.md"] },
   { category: "anecdotes",  description: "Moments marquants, histoires avec les locataires", files: [] },
   { category: "blog",       description: "Idées d'articles, angles, opinions tranchées à publier", files: ["✍️ Angles & Sujets Blog.md"] },
-  { category: "equipe",     description: "Méthodes de travail, leçons collaboratives avec Jules ou Elio", files: ["👤 Jules.md", "👤 Elio.md"] },
+  { category: "equipe",     description: "Méthodes de travail, leçons de Jules", files: ["👤 Jules.md"] },
   { category: "histoire",   description: "Milestones Vanzon, chronologie de l'entreprise", files: [] },
   { category: "territoire", description: "Spots, routes, recommandations Pays Basque", files: ["🗺️ Pays Basque.md"] },
   { category: "vision",     description: "Idées business, tarifs, modèle économique, valeurs, partenariats", files: ["💡 Business Model & Revenus.md"] },
@@ -58,7 +58,7 @@ export async function categorizeMemory(
   const today = new Date().toISOString().split("T")[0];
 
   const systemPrompt =
-    `Tu es l'agent mémoire de Vanzon Explorer, une entreprise de location de vans aménagés au Pays Basque fondée par Jules Gaveglio et Elio.` +
+    `Tu es l'agent mémoire de Vanzon Explorer, une entreprise de location de vans aménagés au Pays Basque fondée par Jules Gaveglio.` +
     `\n\nTu reçois une transcription vocale et dois la catégoriser dans la base de connaissance Vanzon (dossiers Obsidian).` +
     `\n\nCatégories connues :\n${knownContext}${existingContext}` +
     `\n\nRègles :` +

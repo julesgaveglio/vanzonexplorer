@@ -28,7 +28,7 @@ export default function FormationCTA() {
         </h2>
 
         <p className="text-lg text-slate-500 mt-4 max-w-xl mx-auto leading-relaxed">
-          Réserve ton appel gratuit de 30 minutes avec Jules ou Elio.
+          Réserve ton appel gratuit de 30 minutes avec Jules.
           On répond à toutes tes questions. Sans engagement.
         </p>
 

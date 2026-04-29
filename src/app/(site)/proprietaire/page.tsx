@@ -243,7 +243,7 @@ export default function ProposerVotreVanPage() {
             Qui est derrière Vanzon ?
           </span>
           <p className="text-white/70 text-base sm:text-lg leading-relaxed mb-6">
-            Vanzon Explorer, c&apos;est Jules et Elio, deux associés qui opèrent des vans aménagés depuis{" "}
+            Vanzon Explorer, c&apos;est Jules, qui opère des vans aménagés depuis{" "}
             <span className="text-white font-medium">Cambo-les-Bains</span>, au cœur du Pays Basque.
           </p>
           <Link

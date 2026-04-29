@@ -59,7 +59,7 @@ function isBadSeoName(asset: MediaAsset): boolean {
     /^van-ame-nage/,
     /^mockup-de-pesentation/,
     /^formation-vanlife-van-business-academy-vanzon-explorer$/,
-    /^jules-gaveglio-et-elio-dubernet-brainstorming$/,
+    /^jules-gaveglio-et-elio-dubernet-brainstorming$/, // historique, ne pas supprimer
   ]
   if (badPatterns.some(p => p.test(t))) return true
 

@@ -103,7 +103,7 @@ export async function generateMetadata({
       type: "article",
       publishedTime: article.publishedAt,
       ...(article.updatedAt ? { modifiedTime: article.updatedAt } : {}),
-      authors: ["Jules Gaveglio", "Elio"],
+      authors: ["Jules Gaveglio"],
       locale: "fr_FR",
     },
   };
@@ -310,16 +310,7 @@ export default async function ArticleDetailPage({
                   <div className="relative w-11 h-11 rounded-full overflow-hidden border-2 border-white shadow-sm">
                     <Image
                       src="https://cdn.sanity.io/images/lewexa74/production/16f9120e659bdd4bba47e663e9df9a1a9293fe3f-1170x2080.jpg?auto=format&q=82"
-                      alt="Jules Gaveglio — Co-fondateur Vanzon Explorer"
-                      fill
-                      sizes="44px"
-                      className="object-cover"
-                    />
-                  </div>
-                  <div className="relative w-11 h-11 rounded-full overflow-hidden border-2 border-white shadow-sm">
-                    <Image
-                      src="https://cdn.sanity.io/images/lewexa74/production/325f3ebf1d68fd890487229864c73cc65bef20d3-1186x1654.png?auto=format&q=82"
-                      alt="Elio — Co-fondateur Vanzon Explorer"
+                      alt="Jules Gaveglio — Fondateur Vanzon Explorer"
                       fill
                       sizes="44px"
                       className="object-cover"
@@ -327,10 +318,10 @@ export default async function ArticleDetailPage({
                   </div>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-bold text-slate-900 text-sm leading-none mb-1">Jules & Elio</p>
-                  <p className="text-xs text-[#4D5FEC] font-semibold mb-2">Co-fondateurs · Vanzon Explorer</p>
+                  <p className="font-bold text-slate-900 text-sm leading-none mb-1">Jules Gaveglio</p>
+                  <p className="text-xs text-[#4D5FEC] font-semibold mb-2">Fondateur · Vanzon Explorer</p>
                   <p className="text-xs text-slate-500 leading-relaxed">
-                    Passionnés de vanlife et du Pays Basque depuis 2022. Ils ont aménagé leur flotte de vans, lancé la location et créé la Van Business Academy — ils partagent ici tout ce qu&apos;ils ont appris sur le terrain.
+                    Passionné de vanlife et du Pays Basque depuis 2022. Il a aménagé sa flotte de vans en autodidacte, lancé la location et créé la Van Business Academy — il partage ici tout ce qu&apos;il a appris sur le terrain.
                   </p>
                   <Link href="/a-propos" className="text-xs font-semibold text-[#4D5FEC] hover:underline mt-2 inline-block">
                     En savoir plus →

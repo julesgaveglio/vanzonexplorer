@@ -190,7 +190,7 @@ Groq peut :
 | `vans` | 🚐 Yoni.md, 🚐 Xalbat.md | Maintenance, défauts, astuces techniques |
 | `anecdotes` | libre | Moments marquants, histoires locataires |
 | `blog` | ✍️ Angles & Sujets Blog.md | Idées d'articles, angles, opinions |
-| `equipe` | 👤 Jules.md, 👤 Elio.md | Méthodes de travail, leçons collaboratives |
+| `equipe` | 👤 Jules.md | Méthodes de travail, leçons |
 | `histoire` | libre | Milestones Vanzon, chronologie |
 | `territoire` | 🗺️ Pays Basque.md | Spots, routes, recommandations |
 | `vision` | 💡 Business Model & Revenus.md | Idées business, tarifs, modèle économique, valeurs |

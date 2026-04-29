@@ -238,7 +238,7 @@ export const TOOL_DEFINITIONS: Groq.Chat.Completions.ChatCompletionTool[] = [
         properties: {
           query: {
             type: "string",
-            description: "Texte libre de recherche (ex: 'frigo Yoni', 'méthode aménagement Elio')",
+            description: "Texte libre de recherche (ex: 'frigo Yoni', 'méthode aménagement')",
           },
           category: {
             type: "string",

@@ -137,7 +137,7 @@ const article1 = `
 
 <h2>Pour qui c'est fait — et pour qui ça ne l'est pas</h2>
 
-<p>La Van Business Academy n'est pas un programme pour "devenir riche avec un van". Jules Gaveglio, cofondateur de Vanzon Explorer, est clair là-dessus : c'est un projet qui demande un investissement initial, du temps, et une vraie rigueur d'exécution.</p>
+<p>La Van Business Academy n'est pas un programme pour "devenir riche avec un van". Jules Gaveglio, fondateur de Vanzon Explorer, est clair là-dessus : c'est un projet qui demande un investissement initial, du temps, et une vraie rigueur d'exécution.</p>
 
 <p>Le profil qui correspond :</p>
 
@@ -252,7 +252,7 @@ const article3 = `
 
 <h2>Yoni et Xalbat : les vans Vanzon Explorer</h2>
 
-<p>Derrière <a href="https://vanzonexplorer.com/location">Vanzon Explorer</a> se trouvent Jules et Elio, deux fondateurs qui ne font pas semblant de connaître le territoire : Jules a grandi au Pays Basque depuis l'âge de 4 ans. La flotte est à leur image — petite, soignée, authentique.</p>
+<p>Derrière <a href="https://vanzonexplorer.com/location">Vanzon Explorer</a> se trouve Jules Gaveglio, fondateur qui ne fait pas semblant de connaître le territoire : il a grandi au Pays Basque depuis l'âge de 4 ans. La flotte est à son image — petite, soignée, authentique.</p>
 
 <p><strong>Yoni</strong>, le van vert, est le premier né de l'aventure. C'est lui qui a ouvert la route, le van des premières fois. Jules y a lui-même dormi pendant les Fêtes de Bayonne — une expérience qu'il recommande à quiconque veut vivre cet événement à fond, sans stress de logement ni de retour.</p>
 
@@ -301,7 +301,7 @@ const article3 = `
 
 <p>Le Pays Basque est une région qui se mérite. Elle se révèle à ceux qui prennent le temps de s'y perdre, de prendre des chemins de traverse, de s'arrêter là où l'envie les mène. Un van aménagé, c'est précisément cet outil-là : pas un moyen de transport, mais un mode de vie temporaire.</p>
 
-<p>Jules et Elio ont grandi dans ce territoire. Ils l'ont parcouru, vécu, aimé avant de le partager. Yoni et Xalbat portent cette histoire — et ils n'attendent que de vous emmener à votre tour découvrir les crêtes de l'Ursuya, les vagues de Biarritz ou les hêtres centenaires d'Irati.</p>
+<p>Jules a grandi dans ce territoire. Il l'a parcouru, vécu, aimé avant de le partager. Yoni et Xalbat portent cette histoire — et ils n'attendent que de vous emmener à votre tour découvrir les crêtes de l'Ursuya, les vagues de Biarritz ou les hêtres centenaires d'Irati.</p>
 
 <p>Prêt à partir ? Découvrez les disponibilités et réservez votre van sur <a href="https://vanzonexplorer.com/location"><strong>vanzonexplorer.com/location</strong></a>.</p>
 `;

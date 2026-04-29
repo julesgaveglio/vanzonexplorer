@@ -47,7 +47,7 @@ const article = {
 
 <h2>Le Club Privé Vanzon Explorer — qu'est-ce que c'est concrètement ?</h2>
 
-<p>Le <a href="https://vanzonexplorer.com/club">Club Privé Vanzon Explorer</a> est une plateforme d'accès à des tarifs négociés sur l'équipement van. Jules Gaveglio et Elio, les deux fondateurs de Vanzon, ont passé du temps à nouer des partenariats directs avec des marques spécialisées dans l'aménagement de véhicules aménagés — isolation, énergie solaire, mobilier, accessoires.</p>
+<p>Le <a href="https://vanzonexplorer.com/club">Club Privé Vanzon Explorer</a> est une plateforme d'accès à des tarifs négociés sur l'équipement van. Jules Gaveglio, fondateur de Vanzon, a passé du temps à nouer des partenariats directs avec des marques spécialisées dans l'aménagement de véhicules aménagés — isolation, énergie solaire, mobilier, accessoires.</p>
 
 <p>Concrètement, les membres du Club accèdent à :</p>
 

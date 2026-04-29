@@ -22,7 +22,7 @@ const faqs = [
   {
     question: "Combien de temps faut-il pour construire son van ?",
     answer:
-      "Entre 1,5 et 6 mois selon le temps disponible. En travaillant à plein temps, Jules et Elio ont construit un van en 1,5 mois. À côté d'un emploi, comptez 3 à 6 mois. Ça se fait tranquillement.",
+      "Entre 2 et 6 mois selon le temps disponible. En travaillant à plein temps, Jules a construit un van en 2 à 3 mois. À côté d'un emploi, comptez 3 à 6 mois. Ça se fait tranquillement.",
   },
   {
     question: "C'est quoi le processus VASP ? C'est compliqué ?",

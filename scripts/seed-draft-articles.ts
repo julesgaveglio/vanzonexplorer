@@ -168,7 +168,7 @@ Base arrière à Carnac, excursion en kayak de mer dans le Golfe du Morbihan, é
 
 <h2>Yoni et Xalbat : les vans Vanzon Explorer</h2>
 
-<p>Derrière <a href="https://vanzonexplorer.com/location">Vanzon Explorer</a> se trouvent Jules et Elio, deux fondateurs qui ne font pas semblant de connaître le territoire : Jules a grandi au Pays Basque depuis l'âge de 4 ans. La flotte est à leur image — petite, soignée, authentique.</p>
+<p>Derrière <a href="https://vanzonexplorer.com/location">Vanzon Explorer</a> se trouve Jules Gaveglio, fondateur qui ne fait pas semblant de connaître le territoire : il a grandi au Pays Basque depuis l'âge de 4 ans. La flotte est à son image — petite, soignée, authentique.</p>
 
 <p><strong>Yoni</strong>, le van vert, est le premier né de l'aventure. Jules y a lui-même dormi pendant les Fêtes de Bayonne — une expérience qu'il recommande à quiconque veut vivre cet événement à fond, sans stress de logement ni de retour.</p>
 

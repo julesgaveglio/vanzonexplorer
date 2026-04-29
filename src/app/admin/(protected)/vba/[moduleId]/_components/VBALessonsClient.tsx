@@ -31,6 +31,7 @@ interface Lesson {
   order: number;
   is_published: boolean;
   created_at: string;
+  transcript?: string | null;
 }
 
 const inputCls =
@@ -54,6 +55,62 @@ export default function VBALessonsClient({
   const [editingLesson, setEditingLesson] = useState<Lesson | null>(null);
   const [isNew, setIsNew] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [captionLoading, setCaptionLoading] = useState<string | null>(null);
+  const [captionStatus, setCaptionStatus] = useState<string>("");
+
+  async function generateCaptions(lessonId: string) {
+    if (!confirm("Générer les sous-titres et chapitres pour cette leçon ?")) return;
+    setCaptionLoading(lessonId);
+    setCaptionStatus("Démarrage...");
+
+    try {
+      const res = await fetch("/api/admin/vba/generate-captions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ lessonId }),
+      });
+
+      if (!res.ok) throw new Error("Erreur API");
+      const reader = res.body?.getReader();
+      if (!reader) throw new Error("No stream");
+
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+
+        const lines = buffer.split("\n\n");
+        buffer = lines.pop() || "";
+
+        for (const line of lines) {
+          if (!line.startsWith("data: ")) continue;
+          try {
+            const data = JSON.parse(line.slice(6));
+            if (data.type === "progress") setCaptionStatus(data.message);
+            if (data.type === "done") {
+              setCaptionStatus(`Terminé — ${data.chaptersCount} chapitres`);
+              setLessons((prev) =>
+                prev.map((l) =>
+                  l.id === lessonId ? { ...l, transcript: "generated" } : l
+                )
+              );
+            }
+            if (data.type === "error") throw new Error(data.message);
+          } catch { /* skip parse errors */ }
+        }
+      }
+    } catch (err) {
+      setCaptionStatus(`Erreur: ${err instanceof Error ? err.message : "inconnue"}`);
+    } finally {
+      setTimeout(() => {
+        setCaptionLoading(null);
+        setCaptionStatus("");
+      }, 3000);
+    }
+  }
 
   function openNewForm() {
     setEditingLesson({
@@ -514,12 +571,29 @@ export default function VBALessonsClient({
                     {formatDuration(lesson.duration_seconds)}
                   </td>
                   <td className="px-5 py-3 text-center">
-                    {lesson.bunny_video_id ? (
-                      <span className="text-xs text-emerald-600 font-medium">
-                        OK
-                      </span>
-                    ) : (
-                      <span className="text-xs text-slate-400">—</span>
+                    <div className="flex items-center justify-center gap-1">
+                      {lesson.bunny_video_id ? (
+                        <>
+                          <span className="text-xs text-emerald-600 font-medium">OK</span>
+                          {lesson.transcript ? (
+                            <span className="text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded font-medium">CC</span>
+                          ) : (
+                            <button
+                              onClick={() => generateCaptions(lesson.id)}
+                              disabled={captionLoading === lesson.id}
+                              className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded hover:bg-blue-50 hover:text-blue-600 transition-colors font-medium"
+                              title="Générer sous-titres & chapitres"
+                            >
+                              {captionLoading === lesson.id ? "..." : "CC"}
+                            </button>
+                          )}
+                        </>
+                      ) : (
+                        <span className="text-xs text-slate-400">—</span>
+                      )}
+                    </div>
+                    {captionLoading === lesson.id && (
+                      <p className="text-[10px] text-blue-500 mt-1 animate-pulse">{captionStatus}</p>
                     )}
                   </td>
                   <td className="px-5 py-3 text-center">

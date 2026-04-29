@@ -26,6 +26,7 @@ const STEP_CONFIG: { key: string; label: string; icon: string; color: string }[]
   { key: "page_view", label: "Vues opt-in", icon: "👁", color: "bg-slate-400" },
   { key: "optin", label: "Leads (email)", icon: "📧", color: "bg-blue-500" },
   { key: "vsl_50", label: "VSL 50%+", icon: "⏱", color: "bg-cyan-400" },
+  { key: "vsl_75", label: "VSL 75%+", icon: "⏳", color: "bg-cyan-500" },
   { key: "vsl_100", label: "VSL complète", icon: "✅", color: "bg-teal-500" },
   { key: "booking_start", label: "Calendly ouvert", icon: "📅", color: "bg-amber-400" },
   { key: "booking_confirmed", label: "Call booké", icon: "📞", color: "bg-amber-500" },

@@ -33,7 +33,7 @@ export default function FormationHero({ cards = [] }: { cards?: FormationCardDat
         </h1>
 
         <p className="text-xl text-slate-500 mt-6 max-w-2xl mx-auto leading-relaxed">
-          Jules et Elio t&apos;accompagnent de l&apos;achat du fourgon
+          Jules t&apos;accompagne de l&apos;achat du fourgon
           jusqu&apos;au premier euro généré — sans expérience requise.
         </p>
 

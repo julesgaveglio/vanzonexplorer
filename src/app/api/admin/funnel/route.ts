@@ -63,7 +63,8 @@ export async function GET(req: NextRequest) {
   const KEY_CONVERSIONS: [string, string][] = [
     ["page_view", "optin"],
     ["optin", "vsl_50"],
-    ["vsl_50", "vsl_100"],
+    ["vsl_50", "vsl_75"],
+    ["vsl_75", "vsl_100"],
     ["optin", "booking_start"],
     ["booking_start", "booking_confirmed"],
     ["booking_confirmed", "checkout"],

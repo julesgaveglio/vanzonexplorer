@@ -18,7 +18,7 @@ const modules: Module[] = [
     title: "Bienvenue & Vision",
     videoCount: 4,
     lessons: [
-      "Présentation de Jules & Elio — leur parcours, leurs vans",
+      "Présentation de Jules — son parcours, ses vans",
       "Aperçu complet de la formation",
       "Ce qu'un van t'apporte vraiment (bénéfices cachés)",
       "Quel type de projet van est fait pour toi ? (VASP vs non-VASP)",
