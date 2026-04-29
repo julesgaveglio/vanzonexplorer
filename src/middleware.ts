@@ -14,7 +14,7 @@ const isMarketplaceConnexion = createRouteMatcher(["/proprietaire/connexion(.*)"
 const isOldMarketplaceDashboard = createRouteMatcher(["/proprietaire/dashboard(.*)"]);
 
 const isProtectedRoute = createRouteMatcher([
-  "/dashboard(.*)",
+  "/dashboard/vba(.*)",
   "/user(.*)",
 ]);
 

@@ -319,10 +319,10 @@ export default function Navbar() {
             {/* ── Desktop right side: CTA + Burger ── */}
             <div className="hidden lg:flex items-center gap-3">
               <Link
-                href="/proprietaire/inscription"
+                href="/dashboard"
                 className="text-sm font-medium text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-300 px-4 py-2 rounded-xl hover:bg-slate-50 transition-all"
               >
-                Déposer une annonce
+                Espace membre
               </Link>
               <button
                 onClick={() => setDesktopOpen(!desktopOpen)}
