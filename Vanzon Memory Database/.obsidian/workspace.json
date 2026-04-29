@@ -4,11 +4,25 @@
     "type": "split",
     "children": [
       {
-        "id": "f58b2e860eaa957d",
+        "id": "85d9f0b81efe32e1",
         "type": "tabs",
         "children": [
           {
-            "id": "6a7b7ed356fff62c",
+            "id": "1e685e7e8da959e5",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "🔒 INTERNE/references/📚 Médiathèque Vanzon.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "📚 Médiathèque Vanzon"
+            }
+          },
+          {
+            "id": "1b280c1658f866e8",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -21,7 +35,8 @@
               "title": "VSL — Van Business Academy"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -78,8 +93,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "right": {
     "id": "7cf8bacfe1beb71c",
@@ -184,43 +198,45 @@
       "bases:Créer une nouvelle base": false
     }
   },
-  "active": "6a7b7ed356fff62c",
+  "active": "3ff48725c1b98c95",
   "lastOpenFiles": [
-    "🌐 PUBLIC/formation/🎓 VBA — Script complet formation.md",
-    "🌐 PUBLIC/formation/🎓 VBA — Méthode et chiffres clés.md",
+    "vision/🚐 Yoni.md",
     "🔒 INTERNE/VSL — Van Business Academy.md",
-    "🔒 INTERNE/references/📚 Schéma Supabase marketplace.md",
+    "🔒 INTERNE/vision/🔮 Vision produit — Roadmap long terme.md",
+    "🔒 INTERNE/strategie/💰 Objectif 2000 euros mois.md",
+    "vision",
+    "🔒 INTERNE/strategie/💰 Business Model & Objectif Thaïlande.md",
+    "🔒 INTERNE/strategie/📊 État du Projet — Avril 2026.md",
+    "🔒 INTERNE/strategie/🔍 SEO — Infrastructure de trafic.md",
+    "Note media buying.md",
+    "🔒 INTERNE/references/📚 Médiathèque Vanzon.md",
     "🔒 INTERNE/references/📚 Journal quotidien.md",
     "🔒 INTERNE/references/📚 Google Business Profile.md",
-    "🔒 INTERNE/references/📚 Déploiement Vercel.md",
-    "🔒 INTERNE/legal/📄 Juridique marketplace.md",
-    "🔒 INTERNE/legal/📄 KBIS — SAS Vanzon Explorer.md",
-    "🏠 INDEX.md",
-    "🔒 INTERNE/regles-claude/🤖 Admin responsive patterns.md",
-    "📋 README — Utilisation.md",
-    "🔒 INTERNE/references/📚 Médiathèque Vanzon.md",
-    "🌐 PUBLIC/marque/💡 Identité de marque.md",
-    "🌐 PUBLIC/blog/✍️ Contenu blog — Règles agent.md",
-    "🌐 PUBLIC/territoire/📍 Cambo-les-Bains — Point de départ.md",
-    "🌐 PUBLIC/vans/💶 Tarifs officiels.md",
-    "🌐 PUBLIC/vans/🚐 Flotte complète.md",
-    "🔒 INTERNE/regles-claude/🤖 Mode conseiller stratégique.md",
-    "🔒 INTERNE/references/📚 VBA — Veille concurrents.md",
-    "🔒 INTERNE/references/📚 Template article blog.md",
-    "🔒 INTERNE/backlinks/🔗 Infrastructure backlinks.md",
-    "🔒 INTERNE/strategie/💰 Objectif 2000 euros mois.md",
-    "🔒 INTERNE/strategie/🚐 Expansion flotte — 2 vans VASP.md",
-    "🔒 INTERNE/strategie/🎯 Club Privé — Stratégie.md",
     "🔒 INTERNE/regles-claude/🤖 Vercel env sync.md",
-    "🔒 INTERNE/tunnel-vente",
-    "🔒 INTERNE/backlinks",
-    "🔒 INTERNE/references",
-    "🔒 INTERNE/regles-claude",
-    "🔒 INTERNE/journal",
-    "🔒 INTERNE/strategie",
-    "🔒 INTERNE/legal",
-    "🔒 INTERNE/equipe",
-    "🔒 INTERNE",
-    "🌐 PUBLIC/equipe"
+    "🔒 INTERNE/regles-claude/🤖 Upload images.md",
+    "🔒 INTERNE/regles-claude/🤖 Template emails.md",
+    "🔒 INTERNE/regles-claude/🤖 Admin responsive patterns.md",
+    "🔒 INTERNE/regles-claude/🤖 Agents registry.md",
+    "🔒 INTERNE/strategie/🗺️ Stratégie Acquisition & Conversion.canvas",
+    "🔒 INTERNE/strategie/🎬 Campagne 1 — Créatives Meta Ads.md",
+    "Vanzon Memory Database/🔒 INTERNE/strategie/📱 Campagne Meta Ads — Avril 2026.md",
+    "Vanzon Memory Database/🔒 INTERNE/strategie",
+    "Vanzon Memory Database/🌐 PUBLIC/formation/🎯 VBA — Cible & positionnement.md",
+    "Vanzon Memory Database/🌐 PUBLIC/formation",
+    "Vanzon Memory Database/🌐 PUBLIC",
+    "Vanzon Memory Database/🔒 INTERNE/VSL — Van Business Academy.md",
+    "Vanzon Memory Database/🔒 INTERNE",
+    "Vanzon Memory Database",
+    "🔒 INTERNE/strategie/🚐 Expansion flotte — 2 vans VASP.md",
+    "📋 README — Utilisation.md",
+    "🔒 INTERNE/Van Business Academy/Quiz/Quiz Module 6 — Électricité.md",
+    "💡 Ce qui nous enerve dans l'industrie.md",
+    "🔒 INTERNE/Van Business Academy/Quiz/Quiz Module 10 — Business de location.md",
+    "🔒 INTERNE/Van Business Academy/Quiz/Quiz Module 9 — Remplir dossier VASP.md",
+    "Sans titre.canvas",
+    "🔒 INTERNE/vision",
+    "🔒 INTERNE/Van Business Academy/Quiz",
+    "🔒 INTERNE/Van Business Academy",
+    "🔒 INTERNE/formation"
   ]
 }

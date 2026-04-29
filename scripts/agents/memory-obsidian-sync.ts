@@ -14,7 +14,8 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { createClient } from "@supabase/supabase-js";
-import "dotenv/config";
+import dotenv from "dotenv";
+dotenv.config({ path: ".env.local" });
 
 const __filename = fileURLToPath(import.meta.url);
 const PROJECT_ROOT = path.resolve(path.dirname(__filename), "../..");
@@ -46,6 +47,33 @@ function buildNewFileHeader(title: string, date: string): string {
   return `# ${title}\n\n> Créé automatiquement par l'agent mémoire Vanzon — ${date}\n\n---\n`;
 }
 
+/**
+ * Mappe la catégorie Supabase vers le bon chemin Obsidian.
+ * Toutes les notes vocales vont dans 🔒 INTERNE/.
+ * Les catégories connues sont mappées vers leurs dossiers existants.
+ */
+function resolveObsidianDir(category: string): string {
+  const CATEGORY_MAP: Record<string, string> = {
+    // Catégories qui ont un dossier existant dans 🔒 INTERNE/
+    "clients":    "🔒 INTERNE/Van Business Academy/Clients",
+    "formation":  "🔒 INTERNE/Van Business Academy",
+    "vba":        "🔒 INTERNE/Van Business Academy",
+    "vision":     "🔒 INTERNE/vision",
+    "equipe":     "🔒 INTERNE/equipe",
+    "strategie":  "🔒 INTERNE/strategie",
+    "journal":    "🔒 INTERNE/journal",
+    "backlinks":  "🔒 INTERNE/backlinks",
+    // Catégories PUBLIC
+    "vans":       "🌐 PUBLIC/vans",
+    "anecdotes":  "🌐 PUBLIC/anecdotes",
+    "blog":       "🌐 PUBLIC/blog",
+    "histoire":   "🌐 PUBLIC/histoire",
+    "territoire": "🌐 PUBLIC/territorio",
+  };
+
+  return CATEGORY_MAP[category] ?? `🔒 INTERNE/${category}`;
+}
+
 async function syncNote(note: {
   id:            string;
   category:      string;
@@ -55,8 +83,8 @@ async function syncNote(note: {
   tags:          string[];
   created_at:    string;
 }): Promise<void> {
-  // category = dossier, obsidian_file = nom du fichier seul
-  const fileDir  = path.join(OBSIDIAN_ROOT, note.category);
+  const relativeDir = resolveObsidianDir(note.category);
+  const fileDir  = path.join(OBSIDIAN_ROOT, relativeDir);
   const filePath = path.join(fileDir, note.obsidian_file);
 
   fs.mkdirSync(fileDir, { recursive: true });
@@ -70,7 +98,7 @@ async function syncNote(note: {
     fs.writeFileSync(filePath, header + appendBlock, "utf-8");
   }
 
-  console.log(`  ✅ ${note.category}/${note.obsidian_file}`);
+  console.log(`  ✅ ${relativeDir}/${note.obsidian_file}`);
 }
 
 async function main(): Promise<void> {

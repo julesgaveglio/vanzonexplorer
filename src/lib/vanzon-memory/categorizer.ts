@@ -13,8 +13,7 @@ const KNOWN_CATEGORIES = [
   { category: "histoire",   description: "Milestones Vanzon, chronologie de l'entreprise", files: [] },
   { category: "territoire", description: "Spots, routes, recommandations Pays Basque", files: ["🗺️ Pays Basque.md"] },
   { category: "vision",     description: "Idées business, tarifs, modèle économique, valeurs, partenariats", files: ["💡 Business Model & Revenus.md"] },
-  { category: "clients",    description: "Appels clients, ventes, échanges commerciaux, feedback prospects, suivi CRM. Un fichier par client (prénom ou nom).", files: [] },
-  { category: "formation",  description: "Retours élèves VBA, idées de modules, améliorations pédagogiques", files: [] },
+  { category: "clients",    description: "Appels closing VBA, ventes, échanges commerciaux, feedback prospects, retours élèves, suivi CRM. Un fichier par client (prénom). Tout ce qui concerne un échange avec une personne identifiée dans le contexte Van Business Academy.", files: [] },
 ];
 
 /**
