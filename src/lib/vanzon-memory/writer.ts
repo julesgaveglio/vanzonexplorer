@@ -14,6 +14,7 @@ export async function saveMemoryNote(payload: MemorySavePayload): Promise<void> 
     obsidian_file: payload.obsidian_file,
     title:         payload.title,
     content:       payload.content,
+    transcript:    payload.transcript,
     source:        "telegram_voice",
     tags:          payload.tags,
   });

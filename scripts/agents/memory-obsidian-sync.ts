@@ -35,12 +35,16 @@ function formatDate(isoString: string): string {
 function buildAppendBlock(note: {
   title:      string;
   content:    string;
+  transcript?: string | null;
   tags:       string[];
   created_at: string;
 }): string {
   const date     = formatDate(note.created_at);
   const tagsLine = note.tags.length > 0 ? `\n**Tags :** ${note.tags.map(t => `#${t}`).join(" ")}` : "";
-  return `\n---\n\n## 📝 ${date}\n\n${note.content}${tagsLine}\n`;
+  const transcriptBlock = note.transcript
+    ? `\n\n> [!quote]- 🎙️ Transcript original\n> ${note.transcript.replace(/\n/g, "\n> ")}`
+    : "";
+  return `\n---\n\n## 📝 ${date}\n\n${note.content}${tagsLine}${transcriptBlock}\n`;
 }
 
 function buildNewFileHeader(title: string, date: string): string {
@@ -113,7 +117,7 @@ async function main(): Promise<void> {
 
   const { data: notes, error } = await supabase
     .from("vanzon_memory")
-    .select("id, category, obsidian_file, title, content, tags, created_at")
+    .select("id, category, obsidian_file, title, content, transcript, tags, created_at")
     .is("obsidian_synced_at", null)
     .order("created_at", { ascending: true });
 
