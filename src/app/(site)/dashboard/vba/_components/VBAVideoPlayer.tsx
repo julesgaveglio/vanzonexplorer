@@ -29,8 +29,8 @@ export default function VBAVideoPlayer({
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  // Smaller captions on mobile
-  const captionSize = isMobile ? 14 : 22;
+  // Keep captions to 1-2 lines max
+  const captionSize = isMobile ? 12 : 16;
 
   return (
     <div className="mb-4 sm:mb-6">

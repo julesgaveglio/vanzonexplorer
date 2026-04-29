@@ -5,12 +5,14 @@ import { createSupabaseAdmin } from "@/lib/supabase/server";
 import { ArrowLeft, ArrowRight, FileText, Image as ImageIcon, ExternalLink } from "lucide-react";
 
 const ADMIN_EMAIL = "gavegliojules@gmail.com";
+const VBA_ADMIN_EMAIL = "vanzonexplorer@gmail.com";
 import VBASidebar from "../../_components/VBASidebar";
 import VBAMobileDrawer from "../../_components/VBAMobileDrawer";
 import MarkCompleteButton from "../../_components/MarkCompleteButton";
 import VBAPaywall from "../../_components/VBAPaywall";
 import VBAQuiz, { type QuizQuestion } from "../../_components/VBAQuiz";
 import VBAVideoPlayer from "../../_components/VBAVideoPlayer";
+import VBALessonContent from "../../_components/VBALessonContent";
 
 interface Resource {
   type: "pdf" | "image" | "link";
@@ -31,8 +33,9 @@ export default async function LessonPage({
   const email = user?.emailAddresses?.[0]?.emailAddress;
   const supabase = createSupabaseAdmin();
 
-  // Check access: admin OR vba_member
-  if (email !== ADMIN_EMAIL) {
+  // Check access: admin OR vba_admin OR vba_member
+  const isVBAAdmin = email === VBA_ADMIN_EMAIL;
+  if (email !== ADMIN_EMAIL && !isVBAAdmin) {
     const { data: profile } = await supabase
       .from("profiles")
       .select("plan")
@@ -52,7 +55,7 @@ export default async function LessonPage({
       .order("order"),
     supabase
       .from("vba_lessons")
-      .select("id, module_id, title, slug, bunny_video_id, bunny_library_id, duration_seconds, description, resources, order, chapters")
+      .select("id, module_id, title, slug, bunny_video_id, bunny_library_id, duration_seconds, description, resources, order, chapters, lesson_content")
       .eq("is_published", true)
       .order("order"),
     supabase
@@ -201,6 +204,15 @@ export default async function LessonPage({
             </div>
           )}
 
+          {/* Lesson content — editable by VBA admin */}
+          <div className="mb-4 sm:mb-6">
+            <VBALessonContent
+              lessonId={currentLesson.id}
+              initialContent={currentLesson.lesson_content ?? null}
+              isAdmin={isVBAAdmin}
+            />
+          </div>
+
           {/* Resources */}
           {resources.length > 0 && (
             <div className="border-t border-slate-100 pt-4 sm:pt-6 mb-4 sm:mb-6">
@@ -244,7 +256,7 @@ export default async function LessonPage({
             {nextLesson ? (
               <Link
                 href={`/dashboard/vba/${nextLesson.moduleSlug}/${nextLesson.slug}`}
-                className="inline-flex items-center gap-2 px-5 py-3 sm:py-2 rounded-xl text-sm font-semibold text-white bg-slate-900 hover:bg-slate-700 transition-colors active:scale-95"
+                className="btn-gold inline-flex items-center gap-2 px-5 py-3 sm:py-2 rounded-xl text-sm font-semibold transition-all active:scale-95"
               >
                 Suivant
                 <ArrowRight className="w-4 h-4" />
