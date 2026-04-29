@@ -10,20 +10,23 @@ const BASE_URL = "https://vanzonexplorer.com";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const vanSlugs = await sanityFetch<{ slug: string; updatedAt?: string }[]>(getAllVanSlugsQuery) ?? [];
   const articleSlugs = await sanityFetch<{ slug: string; updatedAt?: string }[]>(getAllArticleSlugsQuery) ?? [];
+  // Date dynamique : dernier déploiement ou build
+  const now = new Date();
+
   const staticPages: MetadataRoute.Sitemap = [
-    { url: BASE_URL, lastModified: new Date("2026-01-01"), changeFrequency: "weekly", priority: 1 },
-    { url: `${BASE_URL}/location`, lastModified: new Date("2026-01-01"), changeFrequency: "weekly", priority: 0.9 },
-    { url: `${BASE_URL}/location/biarritz`, lastModified: new Date("2025-06-01"), changeFrequency: "monthly", priority: 0.8 },
-    { url: `${BASE_URL}/location/hossegor`, lastModified: new Date("2025-06-01"), changeFrequency: "monthly", priority: 0.8 },
-    { url: `${BASE_URL}/location/bayonne`, lastModified: new Date("2025-06-01"), changeFrequency: "monthly", priority: 0.8 },
-    { url: `${BASE_URL}/location/saint-jean-de-luz`, lastModified: new Date("2025-06-01"), changeFrequency: "monthly", priority: 0.8 },
-    { url: `${BASE_URL}/location/week-end`, lastModified: new Date("2025-06-01"), changeFrequency: "monthly", priority: 0.7 },
-    { url: `${BASE_URL}/location/foret-irati`, lastModified: new Date("2025-06-01"), changeFrequency: "monthly", priority: 0.8 },
-    { url: `${BASE_URL}/formation`, lastModified: new Date("2026-01-01"), changeFrequency: "monthly", priority: 0.9 },
-    { url: `${BASE_URL}/achat`, lastModified: new Date("2025-09-01"), changeFrequency: "weekly", priority: 0.8 },
-    ...VANS.map((v) => ({ url: `${BASE_URL}/achat/${v.id}`, lastModified: new Date("2025-09-01"), changeFrequency: "weekly" as const, priority: 0.8 })),
-    { url: `${BASE_URL}/club`, lastModified: new Date("2025-06-01"), changeFrequency: "monthly", priority: 0.7 },
-    { url: `${BASE_URL}/pays-basque`, lastModified: new Date("2025-12-01"), changeFrequency: "monthly", priority: 0.7 },
+    { url: BASE_URL, lastModified: now, changeFrequency: "weekly", priority: 1 },
+    { url: `${BASE_URL}/location`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
+    { url: `${BASE_URL}/location/biarritz`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${BASE_URL}/location/hossegor`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${BASE_URL}/location/bayonne`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${BASE_URL}/location/saint-jean-de-luz`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${BASE_URL}/location/week-end`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    { url: `${BASE_URL}/location/foret-irati`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${BASE_URL}/formation`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
+    { url: `${BASE_URL}/achat`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
+    ...VANS.map((v) => ({ url: `${BASE_URL}/achat/${v.id}`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.8 })),
+    { url: `${BASE_URL}/club`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    { url: `${BASE_URL}/pays-basque`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     // Road Trip Pays Basque refonte — 16 URLs indexables (hub + 3 duration + 12 finales)
     { url: `${BASE_URL}/road-trip-pays-basque-van`, lastModified: new Date("2026-04-11"), changeFrequency: "weekly", priority: 0.9 },
     { url: `${BASE_URL}/road-trip-pays-basque-van/weekend`, lastModified: new Date("2026-04-11"), changeFrequency: "weekly", priority: 0.85 },
@@ -41,11 +44,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/road-trip-pays-basque-van/1-semaine/couple`, lastModified: new Date("2026-04-11"), changeFrequency: "weekly", priority: 0.85 },
     { url: `${BASE_URL}/road-trip-pays-basque-van/1-semaine/amis`, lastModified: new Date("2026-04-11"), changeFrequency: "weekly", priority: 0.85 },
     { url: `${BASE_URL}/road-trip-pays-basque-van/1-semaine/famille`, lastModified: new Date("2026-04-11"), changeFrequency: "weekly", priority: 0.85 },
-    { url: `${BASE_URL}/articles`, lastModified: new Date("2026-01-01"), changeFrequency: "weekly", priority: 0.6 },
-    { url: `${BASE_URL}/road-trip-personnalise`, lastModified: new Date("2026-04-12"), changeFrequency: "monthly", priority: 0.8 },
-    { url: `${BASE_URL}/proprietaire`, lastModified: new Date("2026-04-09"), changeFrequency: "monthly", priority: 0.7 },
-    { url: `${BASE_URL}/contact`, lastModified: new Date("2025-01-01"), changeFrequency: "yearly", priority: 0.5 },
-    { url: `${BASE_URL}/a-propos`, lastModified: new Date("2025-06-01"), changeFrequency: "yearly", priority: 0.5 },
+    { url: `${BASE_URL}/articles`, lastModified: now, changeFrequency: "weekly", priority: 0.6 },
+    { url: `${BASE_URL}/road-trip-personnalise`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${BASE_URL}/proprietaire`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    { url: `${BASE_URL}/contact`, lastModified: now, changeFrequency: "yearly", priority: 0.5 },
+    { url: `${BASE_URL}/a-propos`, lastModified: now, changeFrequency: "yearly", priority: 0.5 },
   ];
 
   const vanPages: MetadataRoute.Sitemap = vanSlugs.map(({ slug, updatedAt }) => ({

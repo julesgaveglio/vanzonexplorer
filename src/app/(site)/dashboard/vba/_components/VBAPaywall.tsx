@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { GraduationCap } from "lucide-react";
+import { VSL_URL } from "@/lib/constants/vsl";
 
 export default function VBAPaywall() {
   return (
@@ -37,10 +38,10 @@ export default function VBAPaywall() {
         </p>
 
         <Link
-          href="/formation-van-business"
+          href={VSL_URL}
           className="btn-gold inline-flex items-center gap-2 px-8 py-3 rounded-xl text-sm font-semibold transition-all"
         >
-          Accéder à la formation
+          En savoir plus
         </Link>
       </div>
     </div>

@@ -28,6 +28,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@sanity/client";
 import { searchPexelsPhoto, downloadPexelsPhoto, buildPexelsCredit } from "../../src/lib/pexels";
 import { notifyTelegram } from "../lib/telegram";
+import { notifySearchEngines } from "../../src/lib/search-indexing";
 import { claimPendingArticle, updateQueueItem, getQueueItems, type ArticleQueueItem } from "../lib/queue";
 import { startRun, finishRun, logDfsCall } from "../lib/agent-runs";
 import { createCostTracker } from "../lib/ai-costs";
@@ -888,7 +889,7 @@ Réponds UNIQUEMENT avec ce JSON valide (aucune explication, aucune balise markd
   const internalLinksBlock = loadAgentPrompt("internal-links");
   // Priorité : base Obsidian complète > fallback vanzon-brand-voice.md condensé
   const vanzonDB = loadVanzonKnowledgeBase() ?? loadAgentPrompt("vanzon-brand-voice");
-  const styleBlock = loadAgentPrompt("blog-writer") ?? `Tu es Jules Gaveglio, co-fondateur de Vanzon Explorer — expert vanlife au Pays Basque depuis 5 ans. Tu rédiges des articles de blog SEO qui classent sur Google et convertissent des lecteurs en clients.
+  const styleBlock = loadAgentPrompt("blog-writer") ?? `Tu es Jules Gaveglio, fondateur de Vanzon Explorer — expert vanlife au Pays Basque depuis 5 ans. Tu rédiges des articles de blog SEO qui classent sur Google et convertissent des lecteurs en clients.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 MISE EN FORME (obligatoire, pas optionnel)
@@ -930,7 +931,7 @@ RÈGLES ABSOLUES :
 • Maximum 1 à 2 touches personnelles par article — au-delà c'est forcé
 • Si tu dois "placer" quelque chose, c'est que ça ne va pas — n'écris pas
 • Varie : ne cite pas toujours les mêmes anecdotes d'un article à l'autre
-• Un article purement technique (isolation, homologation, équipement) n'a pas besoin de Jules ni d'Elio
+• Un article purement technique (isolation, homologation, équipement) n'a pas besoin d'anecdotes personnelles
 • Un article sur "se lancer en location" peut naturellement citer le rétroviseur ou la première location
 • Cite les verbatim de Jules entre guillemets quand tu les utilises — jamais paraphrasés
 • N'invente rien. N'extrais que ce qui est explicitement dans la mémoire ci-dessous.
@@ -1514,7 +1515,8 @@ async function main(): Promise<void> {
     console.log("=".repeat(60));
     console.log(`\nView in Studio: https://vanzon.sanity.studio/desk/article`);
 
-    // Step 10: Submit sitemap to Google Search Console (non-blocking)
+    // Step 10: Notify search engines (IndexNow + Google Ping + GSC)
+    await notifySearchEngines([`https://vanzonexplorer.com/articles/${article.slug}`]);
     await submitSitemapToGSC();
 
     await notifyTelegram(`✍️ *Blog Writer* — Article publié : "${generatedContent.title}"\n🔗 vanzonexplorer.com/articles/${article.slug}`);

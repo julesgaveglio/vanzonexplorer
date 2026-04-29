@@ -28,6 +28,7 @@ import { startRun, finishRun } from "../lib/agent-runs";
 import { createCostTracker } from "../lib/ai-costs";
 import { fetchSpotImage } from "../lib/image-pipeline";
 import { buildGeoJSON, type SpotGeo } from "../lib/geojson-builder";
+import { notifySearchEngines } from "../../src/lib/search-indexing";
 import { calculateQualityScore } from "../lib/quality-score";
 import { slugify } from "../../src/lib/slugify";
 
@@ -355,6 +356,12 @@ Génère l'article en JSON valide comme spécifié dans les instructions.`;
       qualityScore: scoreResult.total,
       cost: cost.toRunResult().costEur,
     });
+
+    // 14. Notify search engines (IndexNow + Google Ping)
+    await notifySearchEngines([
+      `https://vanzonexplorer.com/road-trip/${regionSlug}/${articleSlug}`,
+      `https://vanzonexplorer.com/road-trip/${regionSlug}`,
+    ]);
 
     console.log(`\n🎉 Road trip publié avec succès !`);
     console.log(`   Slug : ${articleSlug}`);

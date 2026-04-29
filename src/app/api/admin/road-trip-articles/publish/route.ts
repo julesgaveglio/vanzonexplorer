@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth";
 import { createClient } from "@sanity/client";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
-import { pingIndexNow } from "@/lib/indexnow";
+import { notifySearchEngines } from "@/lib/search-indexing";
 
 const sanity = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "lewexa74",
@@ -41,9 +41,9 @@ export async function POST(req: NextRequest) {
       .update({ status: "published" })
       .eq("id", supabaseId);
 
-    // 3. Ping IndexNow
+    // 3. Notify search engines (IndexNow + Google Ping)
     const articleUrl = `https://vanzonexplorer.com/road-trip/${regionSlug}/${articleSlug}`;
-    await pingIndexNow([
+    await notifySearchEngines([
       articleUrl,
       `https://vanzonexplorer.com/road-trip/${regionSlug}`,
       "https://vanzonexplorer.com/road-trip",
