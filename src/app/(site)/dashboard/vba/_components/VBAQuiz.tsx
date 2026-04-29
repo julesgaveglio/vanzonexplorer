@@ -83,7 +83,7 @@ export default function VBAQuiz({ questions }: VBAQuizProps) {
         </p>
         <button
           onClick={restart}
-          className="inline-flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-xl text-sm font-medium hover:bg-slate-800 transition-colors"
+          className="btn-gold inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-medium transition-colors"
         >
           <RotateCcw className="w-4 h-4" />
           Recommencer
@@ -97,8 +97,8 @@ export default function VBAQuiz({ questions }: VBAQuizProps) {
       {/* Progress bar */}
       <div className="h-1.5 bg-slate-100">
         <div
-          className="h-full bg-slate-900 transition-all duration-300"
-          style={{ width: `${((current + 1) / questions.length) * 100}%` }}
+          className="h-full transition-all duration-300"
+          style={{ width: `${((current + 1) / questions.length) * 100}%`, background: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)" }}
         />
       </div>
 
@@ -137,14 +137,20 @@ export default function VBAQuiz({ questions }: VBAQuizProps) {
                 cls += "border-slate-200 bg-slate-50 text-slate-400";
               }
             } else if (isSelected) {
-              cls += "border-slate-900 bg-slate-900 text-white";
+              cls += "border-[#B9945F] text-white ";
+              // gold gradient applied via inline style below
             } else {
               cls +=
                 "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50";
             }
 
             return (
-              <button key={i} onClick={() => toggle(i)} className={cls}>
+              <button
+                key={i}
+                onClick={() => toggle(i)}
+                className={cls}
+                style={!submitted && isSelected ? { background: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)" } : undefined}
+              >
                 <div className="flex items-center gap-3">
                   <span className="w-6 h-6 flex-shrink-0 rounded-full border border-current flex items-center justify-center text-xs font-medium">
                     {String.fromCharCode(65 + i)}
@@ -168,14 +174,14 @@ export default function VBAQuiz({ questions }: VBAQuizProps) {
             <button
               onClick={submit}
               disabled={selected.length === 0}
-              className="px-6 py-2.5 bg-slate-900 text-white rounded-xl text-sm font-medium hover:bg-slate-800 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+              className="btn-gold px-6 py-2.5 rounded-xl text-sm font-medium transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
             >
               Valider
             </button>
           ) : (
             <button
               onClick={next}
-              className="px-6 py-2.5 bg-slate-900 text-white rounded-xl text-sm font-medium hover:bg-slate-800 transition-colors"
+              className="btn-gold px-6 py-2.5 rounded-xl text-sm font-medium transition-colors"
             >
               {current < questions.length - 1 ? "Suivant →" : "Voir le score"}
             </button>

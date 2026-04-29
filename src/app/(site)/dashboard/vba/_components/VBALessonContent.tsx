@@ -212,7 +212,7 @@ export default function VBALessonContent({
           <button
             onClick={handleSave}
             disabled={saving}
-            className="inline-flex items-center gap-1 px-4 py-1.5 text-sm font-medium text-white bg-slate-900 rounded-lg hover:bg-slate-700 transition-colors disabled:opacity-50"
+            className="btn-gold inline-flex items-center gap-1 px-4 py-1.5 text-sm font-medium rounded-lg transition-colors disabled:opacity-50"
           >
             {saving ? (
               <Loader2 className="w-4 h-4 animate-spin" />
