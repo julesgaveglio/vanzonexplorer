@@ -96,30 +96,24 @@ export async function POST(req: NextRequest) {
       await sendTelegram(String(chatId), "🎙 Transcription en cours...");
       const transcript = await transcribeVoice(body.message.voice.file_id);
 
-      // Détecter si c'est une action (agent) ou une note (mémoire)
-      // Mots-clés qui indiquent une demande d'action adressée à l'assistant
-      const ACTION_KEYWORDS = [
-        "réponds", "répond", "répondre",
-        "envoie", "envoyer", "envoyer un email",
-        "cherche", "chercher", "trouve", "trouver",
-        "dis", "dire", "dit",
-        "demande", "demander",
-        "liste", "lister", "montre", "montrer",
-        "regarde", "regarder",
-        "génère", "générer", "crée", "créer",
-        "aide", "aider",
+      // Voice = mémoire par DÉFAUT.
+      // On ne route vers l'assistant que si le message commence par un ordre
+      // explicite adressé au bot (dans les ~80 premiers caractères).
+      const PREFIX_COMMANDS = [
+        "réponds", "répond",
+        "envoie", "envoyer un email", "envoyer un mail",
+        "cherche", "trouve",
+        "liste", "montre",
+        "génère", "crée",
         "est-ce que tu peux", "est ce que tu peux",
         "tu peux", "peux-tu",
-        "quel", "quelle", "combien", "comment", "quand", "où",
       ];
-      const lower = transcript.toLowerCase();
-      const isAction = ACTION_KEYWORDS.some(kw => lower.includes(kw));
+      const lowerStart = transcript.toLowerCase().slice(0, 80);
+      const isCommand = PREFIX_COMMANDS.some(cmd => lowerStart.includes(cmd));
 
-      if (isAction) {
-        // Traiter comme un message texte → agent principal
+      if (isCommand) {
         await handleAssistantMessage(transcript, chatId);
       } else {
-        // Traiter comme une note vocale → mémoire Vanzon
         await handleVoiceMemory(transcript, chatId);
       }
     } catch (err) {

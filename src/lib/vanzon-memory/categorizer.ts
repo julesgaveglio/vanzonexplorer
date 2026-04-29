@@ -60,20 +60,31 @@ export async function categorizeMemory(
   const today = new Date().toISOString().split("T")[0];
 
   const systemPrompt =
-    `Tu es l'agent mémoire de Vanzon Explorer, une entreprise de location de vans aménagés au Pays Basque fondée par Jules Gaveglio.` +
-    `\n\nTu reçois une transcription vocale et dois la catégoriser dans la base de connaissance Vanzon (dossiers Obsidian).` +
+    `Tu es l'agent mémoire CRM de Vanzon Explorer, une entreprise de location de vans aménagés et de formation (VBA) au Pays Basque fondée par Jules Gaveglio.` +
+    `\n\nTu reçois une transcription vocale de Jules et dois la catégoriser et structurer dans la base de connaissance Vanzon (dossiers Obsidian).` +
     `\n\nCatégories connues :\n${knownContext}${existingContext}` +
-    `\n\nRègles :` +
+    `\n\n## Règles générales` +
     `\n- Choisis la catégorie la plus pertinente parmi celles connues` +
-    `\n- Si le sujet est genuinement nouveau (ex: recettes, formation, partenaires), crée une nouvelle catégorie et un nouveau fichier` +
-    `\n- obsidian_file = nom du fichier seul dans la catégorie, ex: "🚐 Yoni.md" (conserve les emojis des fichiers existants)` +
-    `\n- Pour un nouveau fichier, choisis un nom clair sans emoji (sauf si cohérent avec la convention existante)` +
-    `\n- content = note formatée en markdown, 2-4 phrases concises, à la troisième personne ou impersonnelle` +
-    `\n- content DOIT commencer par "**Date :** ${today}" sur la première ligne` +
+    `\n- Si le sujet est genuinement nouveau, crée une nouvelle catégorie et un nouveau fichier` +
+    `\n- obsidian_file = nom du fichier seul, ex: "🚐 Yoni.md" (conserve les emojis des fichiers existants)` +
     `\n- tags = 2-4 mots-clés en minuscule sans #` +
     `\n- title = titre court en français (5-8 mots max)` +
     `\n- La date du jour est : ${today}` +
-    `\n- Pour la catégorie "clients" : obsidian_file = "👤 Prénom.md" (un fichier par client, les notes s'accumulent dans le même fichier)` +
+    `\n\n## Règles CRM (catégorie "clients")` +
+    `\nQuand Jules parle d'un échange, appel, vente ou interaction avec une personne :` +
+    `\n- category = "clients"` +
+    `\n- obsidian_file = "👤 Prénom.md" (TOUJOURS réutiliser le même fichier si ce prénom existe déjà dans les fichiers existants)` +
+    `\n- content DOIT être structuré ainsi :` +
+    `\n  **Date :** ${today}` +
+    `\n  **Type :** [appel / message / vente / relance / feedback]` +
+    `\n  **Résumé :** [2-3 phrases sur ce qui s'est passé]` +
+    `\n  **Résultat :** [closé / en cours / à relancer / perdu]` +
+    `\n  **Prochaine action :** [si mentionnée]` +
+    `\n  **Détails :** [infos clés extraites : montant, produit, objections, contexte personnel]` +
+    `\n- tags doit inclure le prénom du client en minuscule` +
+    `\n\n## Autres catégories` +
+    `\n- content = note formatée en markdown, 2-4 phrases concises` +
+    `\n- content DOIT commencer par "**Date :** ${today}" sur la première ligne` +
     `\n\nRéponds UNIQUEMENT avec un JSON valide, aucun texte autour.`;
 
   const userPrompt = correction
@@ -84,7 +95,7 @@ export async function categorizeMemory(
     model:           "llama-3.3-70b-versatile",
     response_format: { type: "json_object" },
     temperature:     0.3,
-    max_tokens:      500,
+    max_tokens:      700,
     messages: [
       { role: "system", content: systemPrompt },
       { role: "user",   content: userPrompt },
