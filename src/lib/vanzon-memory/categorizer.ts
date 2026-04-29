@@ -13,6 +13,8 @@ const KNOWN_CATEGORIES = [
   { category: "histoire",   description: "Milestones Vanzon, chronologie de l'entreprise", files: [] },
   { category: "territoire", description: "Spots, routes, recommandations Pays Basque", files: ["🗺️ Pays Basque.md"] },
   { category: "vision",     description: "Idées business, tarifs, modèle économique, valeurs, partenariats", files: ["💡 Business Model & Revenus.md"] },
+  { category: "clients",    description: "Appels clients, ventes, échanges commerciaux, feedback prospects, suivi CRM. Un fichier par client (prénom ou nom).", files: [] },
+  { category: "formation",  description: "Retours élèves VBA, idées de modules, améliorations pédagogiques", files: [] },
 ];
 
 /**
@@ -67,9 +69,11 @@ export async function categorizeMemory(
     `\n- obsidian_file = nom du fichier seul dans la catégorie, ex: "🚐 Yoni.md" (conserve les emojis des fichiers existants)` +
     `\n- Pour un nouveau fichier, choisis un nom clair sans emoji (sauf si cohérent avec la convention existante)` +
     `\n- content = note formatée en markdown, 2-4 phrases concises, à la troisième personne ou impersonnelle` +
+    `\n- content DOIT commencer par "**Date :** ${today}" sur la première ligne` +
     `\n- tags = 2-4 mots-clés en minuscule sans #` +
     `\n- title = titre court en français (5-8 mots max)` +
     `\n- La date du jour est : ${today}` +
+    `\n- Pour la catégorie "clients" : obsidian_file = "👤 Prénom.md" (un fichier par client, les notes s'accumulent dans le même fichier)` +
     `\n\nRéponds UNIQUEMENT avec un JSON valide, aucun texte autour.`;
 
   const userPrompt = correction

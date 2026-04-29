@@ -191,7 +191,9 @@ async function sendWelcomeViaResend(
       "Bienvenue dans la Van Business Academy — Crée ton mot de passe",
     html: `
       <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 520px; margin: 0 auto; padding: 32px 24px;">
-        <img src="https://cdn.sanity.io/images/lewexa74/production/1f483103ef15ee3549eab14ba2801d11b32a9055-313x313.png" width="48" height="48" alt="Vanzon" style="border-radius: 12px; margin-bottom: 24px;" />
+        <div style="text-align: center; margin-bottom: 24px;">
+          <img src="https://cdn.sanity.io/images/lewexa74/production/e8d8a66703e846a5bd916e38bd9a488b663ce433-1920x1080.png?auto=format&fit=max&q=82" width="480" alt="Van Business Academy" style="border-radius: 12px; width: 100%; max-width: 480px; height: auto;" />
+        </div>
         <h1 style="font-size: 22px; color: #0F172A; margin: 0 0 16px;">
           Bienvenue ${firstname ? firstname + " " : ""}!
         </h1>
