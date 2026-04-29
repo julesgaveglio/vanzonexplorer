@@ -256,7 +256,7 @@ export default async function LessonPage({
             {nextLesson ? (
               <Link
                 href={`/dashboard/vba/${nextLesson.moduleSlug}/${nextLesson.slug}`}
-                className="btn-gold inline-flex items-center gap-2 px-5 py-3 sm:py-2 rounded-xl text-sm font-semibold transition-all active:scale-95"
+                className="btn-gold inline-flex items-center gap-2 px-5 py-3 sm:py-2 rounded-xl text-sm font-semibold text-white transition-all active:scale-95"
               >
                 Suivant
                 <ArrowRight className="w-4 h-4" />

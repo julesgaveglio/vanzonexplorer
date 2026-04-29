@@ -84,10 +84,9 @@ export default function VBAChapters({ chapters, iframeRef }: VBAChaptersProps) {
             onClick={() => seekTo(chapter.time, i)}
             className={`flex-shrink-0 flex items-center gap-2 px-3 py-2 rounded-xl text-sm transition-all ${
               i === activeIndex
-                ? "text-white shadow-sm"
+                ? "bg-slate-800 text-white shadow-sm"
                 : "bg-slate-100 text-slate-600 hover:bg-slate-200"
             }`}
-            style={i === activeIndex ? { background: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)" } : undefined}
           >
             <span className="text-xs font-mono opacity-70">
               {formatTime(chapter.time)}

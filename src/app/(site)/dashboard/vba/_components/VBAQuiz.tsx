@@ -83,7 +83,7 @@ export default function VBAQuiz({ questions }: VBAQuizProps) {
         </p>
         <button
           onClick={restart}
-          className="btn-gold inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-medium transition-colors"
+          className="inline-flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-xl text-sm font-medium hover:bg-slate-800 transition-colors"
         >
           <RotateCcw className="w-4 h-4" />
           Recommencer
@@ -174,14 +174,14 @@ export default function VBAQuiz({ questions }: VBAQuizProps) {
             <button
               onClick={submit}
               disabled={selected.length === 0}
-              className="btn-gold px-6 py-2.5 rounded-xl text-sm font-medium transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+              className="px-6 py-2.5 bg-slate-900 text-white rounded-xl text-sm font-medium hover:bg-slate-800 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
             >
               Valider
             </button>
           ) : (
             <button
               onClick={next}
-              className="btn-gold px-6 py-2.5 rounded-xl text-sm font-medium transition-colors"
+              className="px-6 py-2.5 bg-slate-900 text-white rounded-xl text-sm font-medium hover:bg-slate-800 transition-colors"
             >
               {current < questions.length - 1 ? "Suivant →" : "Voir le score"}
             </button>
