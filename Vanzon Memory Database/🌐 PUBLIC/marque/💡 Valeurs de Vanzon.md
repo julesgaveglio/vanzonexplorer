@@ -10,7 +10,7 @@
 
 ## La liberté — concrètement
 
-Ce mot revient constamment. Mais qu'est-ce qu'il signifie pour Jules et Elio ?
+Ce mot revient constamment. Mais qu'est-ce qu'il signifie pour Vanzon ?
 
 - Liberté de temps : ne pas être prisonnier d'un emploi classique
 - Liberté de mouvement : se poser où on veut, quand on veut
@@ -23,9 +23,9 @@ Ce mot revient constamment. Mais qu'est-ce qu'il signifie pour Jules et Elio ?
 
 ## Le respect de la nature
 
-Ce qui énerve Jules et Elio dans l'industrie du vanlife :
+Ce qui énerve Jules dans l'industrie du vanlife :
 
-> *"Ce qui nous dérange le plus dans l'industrie et dans le monde de la van life, ce sont les personnes qui ne respectent pas la nature, qui la salissent et qui laissent leurs déchets derrière elles."*
+> *"Ce qui me dérange le plus dans l'industrie et dans le monde de la van life, ce sont les personnes qui ne respectent pas la nature, qui la salissent et qui laissent leurs déchets derrière elles."*
 
 **Exemple concret** : La forêt d'Irati a subi une augmentation massive de fréquentation avec des campeurs qui laissent des déchets dans des lieux qui étaient auparavant très calmes.
 
@@ -49,7 +49,6 @@ L'objectif : **transmettre** les compétences et **éviter aux autres de reprodu
 
 - Les locataires sont des gens, pas des risques
 - Les partenariats se construisent dans la confiance
-- L'équipe Vanzon, c'est deux amis avant d'être deux associés
 
 ---
 
@@ -57,3 +56,5 @@ L'objectif : **transmettre** les compétences et **éviter aux autres de reprodu
 - [[💡 Ce qui nous énerve dans l'industrie]]
 - [[✍️ Idées reçues sur le vanlife]]
 - [[💡 Business Model & Revenus]]
+- [[💡 Identité de marque]]
+- [[🎯 Positionnement & 3 piliers]]

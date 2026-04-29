@@ -17,3 +17,8 @@ Système backlinks automatisé déployé le 2026-04-04 :
 **Why:** L'indexation Google de Vanzon est freinée par un manque d'autorité de domaine. Les backlinks sont le levier principal pour améliorer le DA et accélérer l'indexation des 40+ articles blog.
 
 **How to apply:** L'agent tourne automatiquement. Vérifier le Kanban `/admin/backlinks` pour suivre l'avancement. Les prospects score 9 (ur-bizia, en-pays-basque, sudouest.fr) sont contactés en priorité.
+
+---
+
+## Liens
+- [[🔍 SEO — Infrastructure de trafic]]

@@ -1,5 +1,5 @@
 ---
-name: Profil Jules — Co-fondateur Vanzon Explorer
+name: Profil Jules — Fondateur Vanzon Explorer
 description: Identité, parcours, valeurs et vision de Jules — à utiliser pour personnaliser les réponses et le contenu
 type: user
 ---
@@ -7,7 +7,7 @@ type: user
 ## Identité
 
 - Né à **Bordeaux**, grandi au **Pays Basque depuis l'âge de 4 ans**
-- Rôle chez Vanzon : vision, location, relation clients, contenu, développement tech
+- Rôle chez Vanzon : vision, location, relation clients, contenu, développement tech, aménagement
 - **Activité parallèle** : consultant en automatisation et intégration d'intelligence artificielle au sein des entreprises. Vanzon est un projet complémentaire, pas son unique source de revenus.
 - Trait dominant : chercheur de liberté, entrepreneur par conviction
 - Biais connu : surinvestir dans la technique, sous-investir dans la monétisation directe
@@ -29,7 +29,7 @@ Inde → Bali → Indonésie → Thaïlande → Vietnam → Philippines → Japo
 
 ## Après le voyage → Vanzon
 
-Rentré avec des économies et une page blanche. Décision : investir dans un van, apprendre à l'aménager, le louer. Rencontre Elio en mai 2024. Reste, c'est l'histoire de Vanzon.
+Rentré avec des économies et une page blanche. Décision : investir dans un van, apprendre à l'aménager en autodidacte, le louer. Le reste, c'est l'histoire de Vanzon.
 
 ---
 
@@ -48,3 +48,10 @@ La Thaïlande n'est pas un hasard — c'est un des pays du tour du monde qui l'a
 > *"Heureusement, je n'ai pas écouté ces discours remplis de peurs, souvent exprimés par des personnes qui n'avaient elles-mêmes jamais vécu l'expérience."*
 
 > *"Tu te gares, tu coupes le moteur, et tu es déjà chez toi, en pleine nature."*
+
+---
+
+## Liens
+- [[📖 Naissance de Vanzon]]
+- [[📖 Tour du monde de Jules]]
+- [[🎯 Positionnement & 3 piliers]]

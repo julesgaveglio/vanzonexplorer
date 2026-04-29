@@ -1,6 +1,6 @@
 # 🚐 Xalbat — Le Van Blanc
 
-> Le deuxième. Construit en équipe, dédié à un compagnon disparu.
+> Le deuxième. Construit avec l'expérience, dédié à un compagnon disparu.
 
 ---
 
@@ -27,9 +27,9 @@ Xalbat était le **chat de Jules**, décédé à la fin des travaux d'aménageme
 
 ## L'histoire de sa construction
 
-Après avoir terminé Yoni, Jules et Elio ont réalisé que ce qui les passionnait vraiment, c'était le processus de création lui-même, pas juste le résultat.
+Après avoir terminé Yoni, Jules a réalisé que ce qui le passionnait vraiment, c'était le processus de création lui-même, pas juste le résultat.
 
-Ils ont donc décidé de construire Xalbat ensemble, avec l'ambition de :
+Il a donc décidé de construire Xalbat, avec l'ambition de :
 - Mettre à profit toutes les compétences acquises sur Yoni
 - Aller plus loin dans la qualité de l'aménagement
 - Avoir deux vans pour la location
@@ -47,6 +47,7 @@ Le nom Xalbat porte une histoire personnelle touchante. Un van nommé en hommage
 
 ## Liens
 - [[👤 Jules]]
-- [[👤 Elio]]
 - [[📖 Naissance de Vanzon]]
-- [[🎭 Les nuits d'aménagement]]
+- [[🚐 Yoni]]
+- [[🚐 Flotte complète]]
+- [[💶 Tarifs officiels]]

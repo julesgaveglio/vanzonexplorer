@@ -13,7 +13,7 @@ Dossier `🌐 PUBLIC/` — contenu utilisable par le blog agent, les LLM externe
 | Sous-dossier  | Contenu                                                   |
 | ------------- | --------------------------------------------------------- |
 | `marque/`     | Valeurs, vision, ce qui nous énerve, Van Business Academy |
-| `equipe/`     | Profils Jules & Elio (publics)                            |
+| `equipe/`     | Profil Jules (public)                                     |
 | `vans/`       | Fiches Yoni & Xalbat                                      |
 | `histoire/`   | Naissance de Vanzon, tour du monde de Jules               |
 | `anecdotes/`  | Anecdotes locataires et moments fondateurs                |

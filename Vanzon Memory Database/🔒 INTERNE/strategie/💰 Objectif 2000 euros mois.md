@@ -27,17 +27,16 @@ Timeline : 12-18 mois à partir d'avril 2026, soit fin 2027 au plus tard.
 
 ## Structure SAS "Van Zone Explorer"
 
-- Jules : 40%
-- Elio : 40%
+- Jules : 80%
 - Mario : 20%
 - 1 van appartient au SAS, 1 van en co-propriété avec le père de Jules (hors SAS)
 - Location via Yescapa (16% commission) + début de réservations directes
 
 ---
 
-## Délégation physique — rôle d'Elio
+## Délégation physique — gestion terrain
 
-Elio (salarié, terrain France) gère en prestataire :
+Nécessité de trouver un prestataire terrain fiable pour gérer :
 - Préparation des vans
 - Remise de clés
 - État des lieux
@@ -45,7 +44,7 @@ Elio (salarié, terrain France) gère en prestataire :
 
 Cela permet à Jules de gérer la plateforme depuis la Thaïlande.
 
-**Risque opérationnel** : dépendance à une seule personne physique. Si Elio se blesse ou part, le terrain s'arrête.
+**Risque opérationnel** : trouver et garder une personne fiable pour le terrain.
 
 ---
 
@@ -74,3 +73,9 @@ Tout l'investissement technique actuel (blog automatisé, road trip IA, Le Club,
 ## How to apply
 
 Dans toute discussion stratégique, rappeler l'objectif réel (Thaïlande 2027) et évaluer chaque décision à l'aune de : est-ce que ça rapproche ou éloigne Jules de 2 000€/mois récurrents avant fin 2027 ?
+
+---
+
+## Liens
+- [[💰 Business Model & Objectif Thaïlande]]
+- [[🏪 Marketplace — Vision & MVP]]

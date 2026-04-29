@@ -10,8 +10,8 @@ Mario n'est pas seulement impliqué dans la formation — il est aussi le **fina
 
 ## Structure (formation)
 
-- **Co-créateurs** : Jules + Elio (contenu), Mario (vente et funnel)
-- **Capital SAS** : Jules 40%, Elio 40%, Mario 20%
+- **Co-créateurs** : Jules (contenu), Mario (vente et funnel)
+- **Capital SAS** : Jules 80%, Mario 20%
 - **Contenu** : ~50 vidéos hébergées sur le compte Podia de Mario
 - **Contrat écrit** : AUCUN au 2026-04-04
 
@@ -54,3 +54,10 @@ Mario a déjà monté ce type de système pour une formation immobilière avec s
 ## How to apply
 
 Quand Jules parle de la formation ou de Mario : rappeler l'urgence du contrat écrit. Ne jamais intégrer les revenus formation dans les projections de sécurité de Jules. Ce n'est pas un revenu garanti.
+
+---
+
+## Liens
+- [[👤 Jules]]
+- [[💰 Business Model & Objectif Thaïlande]]
+- [[🚐 Expansion flotte — 2 vans VASP]]

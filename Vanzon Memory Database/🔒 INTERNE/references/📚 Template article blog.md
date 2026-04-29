@@ -20,7 +20,7 @@ Modifier ce fichier met à jour instantanément toutes les pages de preview admi
 - Sidebar TOC sticky (desktop)
 - Blockquotes : `border-[#4D5FEC]`, fond `bg-blue-50/50`, italique
 - Tableaux : bordures `#e2e8f0`, header `bg-slate-50`, hover rows
-- Section auteurs : Jules & Elio avec photos Sanity CDN
+- Section auteur : Jules avec photo Sanity CDN
 - Footer CTAs : "Louer un van" + "Tous les articles"
 
 ## Utilisation

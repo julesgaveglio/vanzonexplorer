@@ -63,3 +63,10 @@ Calendrier disponibilités + Stripe Connect + dashboard propriétaire + messager
 2. **Assurance** — clause propriétaire obligatoire (assurance "location à des tiers" ~300-500€/an)
 3. **Déclaration fiscale** — collecter SIRET propriétaires (art. 242 bis CGI)
 4. **CGU** — plateforme = intermédiaire, pas loueur. Faire relire par avocat (~500-1 000€)
+
+---
+
+## Liens
+- [[💰 Objectif 2000 euros mois]]
+- [[📄 Juridique marketplace]]
+- [[🔮 Vision produit — Roadmap long terme]]

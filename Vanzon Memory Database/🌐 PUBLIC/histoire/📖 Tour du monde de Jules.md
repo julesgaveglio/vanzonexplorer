@@ -60,7 +60,7 @@ Jules rentre avec :
 - Une page blanche
 - La conviction que la liberté se construit, elle ne se subit pas
 
-→ Il rencontre Elio. Le reste appartient à [[📖 Naissance de Vanzon]].
+→ Il décide d'investir dans un van et de tout apprendre en autodidacte. Le reste appartient à [[📖 Naissance de Vanzon]].
 
 ---
 
@@ -71,3 +71,9 @@ Jules rentre avec :
 - *"Pourquoi j'ai choisi le vanlife après un tour du monde"*
 - *"Le voyage qui m'a convaincu de tout quitter pour l'entrepreneuriat"*
 - La comparaison entre voyager le monde et vivre en van — deux formes de liberté différentes
+
+---
+
+## Liens
+- [[📖 Naissance de Vanzon]]
+- [[👤 Jules]]

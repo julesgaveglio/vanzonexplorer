@@ -48,3 +48,4 @@ Le locataire, **très gêné**, a proposé de lui-même de laisser 50€ sur la 
 - [[🎭 Première location]]
 - [[✍️ Idées reçues sur le vanlife]]
 - [[💡 Business Model & Revenus]]
+- [[💡 Identité de marque]]

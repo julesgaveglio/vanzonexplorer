@@ -21,21 +21,23 @@
 
 ## Structure SAS "Van Zone Explorer"
 
-- Jules : 40%
-- Elio : 40%
+- Jules : 80%
 - Mario : 20%
 - 1 van SAS, 1 van co-propriété père de Jules (hors SAS)
 - Location Yescapa (16% commission) + début direct
 
 ---
 
-## Rôle d'Elio (terrain France)
+## Gestion terrain France
 
-Contrat de prestation à la tâche : préparation vans, remise de clés, état des lieux.
-Déclenché uniquement quand il y a des réservations → pas de charges fixes.
-Permet à Jules de gérer depuis la Thaïlande.
+Nécessité de trouver un prestataire terrain pour gérer :
+- Préparation des vans
+- Remise de clés
+- État des lieux
 
-**Risque :** dépendance à une seule personne physique.
+Facturation à la tâche (pas de charges fixes) pour permettre à Jules de gérer depuis la Thaïlande.
+
+**Risque opérationnel** : trouver une personne fiable pour le terrain.
 
 ---
 
@@ -43,3 +45,10 @@ Permet à Jules de gérer depuis la Thaïlande.
 
 Pays Basque : pic avril-septembre, creux octobre-mars.
 Taux d'occupation réaliste : **7 jours/mois en moyenne annualisée** (pas 10).
+
+---
+
+## Liens
+- [[👤 Jules]]
+- [[👤 Mario]]
+- [[💰 Objectif 2000 euros mois]]

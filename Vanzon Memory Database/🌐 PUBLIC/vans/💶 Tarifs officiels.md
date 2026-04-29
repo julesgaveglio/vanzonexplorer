@@ -24,3 +24,10 @@ type: project
 
 Toujours écrire "dès 65€/nuit" dans les titres/metadata/CTAs (prix basse saison).
 Ne jamais afficher un tarif fixe sans mentionner "dès" pour tenir compte des variations.
+
+---
+
+## Liens
+- [[🚐 Flotte complète]]
+- [[🚐 Yoni]]
+- [[🚐 Xalbat]]

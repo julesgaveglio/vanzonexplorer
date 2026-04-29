@@ -130,3 +130,6 @@ C'est là que le modèle devient scalable :
 - Road trip personnalisé : https://vanzonexplorer.com/road-trip-personnalise
 - [[💡 Business Model & Revenus]]
 - [[💡 Valeurs de Vanzon]]
+- [[🎯 VBA — Cible & positionnement]]
+- [[🎓 VBA — Script complet formation]]
+- [[🎓 VBA — Méthode et chiffres clés]]

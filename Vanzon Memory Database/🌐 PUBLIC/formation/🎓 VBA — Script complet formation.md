@@ -8,17 +8,14 @@ type: project
 
 ## Structure globale
 
-6 modules, 50+ vidéos, hébergé sur Podia. Présentateurs : Jules (fondateur, contenu principal) et Elio (mécanique, terrain). Ton : tutoiement, énergie, authenticité, humour.
+6 modules, 50+ vidéos, hébergé sur Podia. Présentateur : Jules (fondateur, contenu complet — aménagement, mécanique, terrain, business). Ton : tutoiement, énergie, authenticité, humour.
 
 ## Module 1 — Présentation (3 vidéos)
 
-### Vidéo 1 : Présentation Jules & Elio
+### Vidéo 1 : Présentation Jules
 - **Jules** : grandi en France, mère décédée d'un cancer en 2017, tour du monde en sac à dos en hommage avec père + sœur (14 pays), bac+3 communication ("ça sert à rien"), passion voyage/liberté, aucune compétence bricolage au départ
-- **Elio** : né à Madagascar, adopté à 12 ans, arrivé en France 2014, décalage culturel l'a forgé, formation mécanique, a acheté un Mercedes qu'il a aménagé avec son ex, période de rupture quand il a rencontré Jules
-- **Rencontre** : pendant l'aménagement du 1er van de Jules, nuits blanches de travaux + bières + musique, amitié née de là
-- **Création Vanzon** : après avoir profité chacun de leur van, déclic qu'ils voulaient recommencer → investissement commun dans un nouveau van → Vanzon (nom de famille de la mère de Jules, signifie "du soleil" en hollandais)
+- **Création Vanzon** : après avoir aménagé son premier van en autodidacte, déclic qu'il voulait recommencer → investissement dans un deuxième van → Vanzon (nom de famille de la mère de Jules, signifie "du soleil" en hollandais)
 - **Mario** (Sigma Factory) : rencontré pendant les travaux, a cru au projet, accompagne sur la formation, fondateur de son propre accompagnement immobilier
-- Citation finale d'Elio : "Tout seul, on va plus vite. À deux, on va plus loin."
 
 ### Vidéo 2 : Aperçu complet
 - Module 2 : Sourcing & Achat (modèle, recherche, mécanique, négociation)
@@ -48,7 +45,7 @@ type: project
 - LeBoncoin + LaCentrale, filtres utilitaire, sauvegarder la recherche, notifs sur l'app
 - Message de contact via prompt ChatGPT (fourni) : professionnel, demande photos + factures + carte grise
 
-### Vérifications mécaniques (par Elio)
+### Vérifications mécaniques
 - Papiers : contrôle technique < 6 mois, factures d'entretien, carte grise au nom du vendeur
 - Photos à demander : pneus (intérieur/extérieur), habitacle avant/arrière, propreté moteur
 - Question clé : usage pro (charges lourdes, usure prématurée) vs perso (meilleur entretien)
@@ -83,8 +80,8 @@ type: project
 - Duplicable par les élèves
 
 ### Timing des travaux
-- À deux (Elio au boulot + Jules temps plein) : **2 mois** rythme chill
-- Seul avec travail à côté : **3 à 6 mois** réaliste
+- Temps plein : **2 à 3 mois** rythme chill
+- Avec travail à côté : **3 à 6 mois** réaliste
 - Étape la plus longue : construction meubles + électricité
 
 ### Outils recommandés
@@ -210,3 +207,9 @@ type: project
 ---
 
 **Ton de la formation** : tutoiement ("tu"), énergie, humour, anecdotes vraies, pas de jargon inutile, on montre les erreurs, transparence totale sur les chiffres. Outils IA (ChatGPT) intégrés naturellement. Boxio, Ryobi, Dispano comme recommandations produits.
+
+---
+
+## Liens
+- [[🎓 VBA — Méthode et chiffres clés]]
+- [[🎯 VBA — Cible & positionnement]]

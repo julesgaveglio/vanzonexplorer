@@ -7,15 +7,15 @@
 
 ## PUBLIC — Contenu agents IA & site
 
-### Marque & Vision
-- [[💡 Valeurs de Vanzon]]
-- [[💡 Ce qui nous enerve dans l'industrie]]
-- [[💡 Business Model & Revenus]]
-- [[💡 Identite de marque]]
+### Marque & Positionnement
+- [[🎯 Positionnement & 3 piliers]] — Location, revente, formation + ton de communication
+- [[💡 Identite de marque]] — Valeurs, slogan, anecdotes de marque
+- [[💡 Valeurs de Vanzon]] — Respect nature, accessibilite, transmission
+- [[💡 Ce qui nous enerve dans l'industrie]] — Dechets, discours de peur, amenagements bacles
+- [[💡 Business Model & Revenus]] — Cycle van, chiffres, idees recues
 
 ### Equipe
-- [[👤 Jules]] — Co-fondateur, vision & location
-- [[👤 Elio]] — Co-fondateur, mecanique & amenagement
+- [[👤 Jules]] — Fondateur, vision, amenagement & location
 
 ### Vans & Tarifs
 - [[🚐 Yoni]] — Le van vert, le premier
@@ -24,8 +24,10 @@
 - [[💶 Tarifs officiels]] — 65/75/95 EUR selon saison
 
 ### Formation VBA
+- [[🎯 VBA — Cible & positionnement]] — Persona, ton, arguments de vente, differenciation
 - [[🎓 VBA — Methode et chiffres cles]] — Positionnement, cycle, 3 erreurs classiques
 - [[🎓 VBA — Script complet formation]] — 6 modules, 50+ videos, tout le contenu detaille
+- [[🎓 Van Business Academy - Methode Complete]] — Vue d'ensemble positionnement
 
 ### Histoire & Genese
 - [[📖 Naissance de Vanzon]]
@@ -35,17 +37,16 @@
 - [[🎭 Premiere nuit dans le van]]
 - [[🎭 Premiere location]]
 - [[🎭 L'incident du retroviseur]]
-- [[🎭 Les nuits d'amenagement]]
 
 ### Territoire
 - [[🗺️ Pays Basque — Notre terrain]]
 - [[📍 Cambo-les-Bains — Point de depart]]
 
 ### Blog
-- [[✍️ Idees recues sur le vanlife]]
+- [[✍️ Contenu blog — Regles agent]] — Ton vouvoiement, anecdotes obligatoires
+- [[✍️ Angles & Sujets Blog]] — Titres et themes potentiels
+- [[✍️ Idees recues sur le vanlife]] — Arguments de demolition
 - [[✍️ Opinions tranchees]]
-- [[✍️ Angles & Sujets Blog]]
-- [[✍️ Contenu blog — Regles agent]]
 
 ---
 
@@ -60,8 +61,26 @@
 - [[🎯 Club Prive — Strategie]] — 100% gratuit, pas de Stripe
 - [[🚐 Expansion flotte — 2 vans VASP]] — Budget 38k, bloque (Mario)
 
+### Acquisition & Conversion
+- **🗺️ Strategie Acquisition & Conversion.canvas** — Vue canvas complete : funnels, mecanismes, tracking
+- [[📱 Campagne Meta Ads — Avril 2026]] — Matteo, 600 EUR/mois, 3 creatives, tunnel VSL → call → vente VBA
+- [[🎬 Campagne 1 — Creatives Meta Ads]] — Transcripts des 3 hooks (emotionnel, chiffres, urgence) + analyse structure
+
+### Vision (document vivant)
+- [[🔮 Vision produit — Roadmap long terme]] — Idees futures : vans eleves sur le site, marketplace selective
+
 ### Tunnel de vente
 - [[VSL — Van Business Academy]] — Script VSL, strategie media buyer
+
+### Formation VBA — Contenu detaille (modules)
+- [[📋 Structure complete]] — Vue d'ensemble des 6 modules
+- [[Module 1 — Presentation]]
+- [[Module 2 — Sourcing & Achat]]
+- [[Module 3 — Conception & Budget]]
+- [[Module 4 — Les travaux]]
+- [[Module 5 — Electricite]]
+- [[Module 6 — Business de location]]
+- [[Quiz Module 2 — Sourcing & Achat]]
 
 ### Associes (confidentiel)
 - [[👤 Mario]] — Associe 20%, formation VBA, risque contrat absent
@@ -102,4 +121,5 @@
 - Nouvelles anecdotes locataires → `PUBLIC/anecdotes/`
 - Nouveaux spots decouverts → `PUBLIC/territoire/`
 - Decisions strategiques → `INTERNE/strategie/`
+- Idees produit/vision → `INTERNE/vision/`
 - Lecons terrain → `PUBLIC/` ou `INTERNE/` selon le niveau

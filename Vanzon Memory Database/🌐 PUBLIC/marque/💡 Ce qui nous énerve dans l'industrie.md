@@ -6,9 +6,9 @@
 
 ## Le problème principal : les déchets et le manque de respect
 
-Ce qui choque Jules et Elio le plus dans la croissance du vanlife :
+Ce qui choque Jules le plus dans la croissance du vanlife :
 
-> *"Ce qui nous dérange le plus dans l'industrie et dans le monde de la van life, ce sont les personnes qui ne respectent pas la nature, qui la salissent et qui laissent leurs déchets derrière elles."*
+> *"Ce qui me dérange le plus dans l'industrie et dans le monde de la van life, ce sont les personnes qui ne respectent pas la nature, qui la salissent et qui laissent leurs déchets derrière elles."*
 
 ---
 
@@ -50,3 +50,5 @@ Le message aux locataires :
 ## Liens
 - [[💡 Valeurs de Vanzon]]
 - [[🗺️ Pays Basque — Notre terrain]]
+- [[✍️ Opinions tranchées]]
+- [[✍️ Idées reçues sur le vanlife]]

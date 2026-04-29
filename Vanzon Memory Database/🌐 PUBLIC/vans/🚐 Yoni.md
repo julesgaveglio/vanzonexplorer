@@ -56,3 +56,6 @@ Faire directement un aménagement **homologué VASP** :
 - [[📖 Naissance de Vanzon]]
 - [[🎭 Première nuit dans le van]]
 - [[🎭 Première location]]
+- [[🚐 Xalbat]]
+- [[🚐 Flotte complète]]
+- [[💶 Tarifs officiels]]

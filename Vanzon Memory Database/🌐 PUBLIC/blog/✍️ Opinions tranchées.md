@@ -1,10 +1,10 @@
-# ✍️ Opinions Tranchées de Jules & Elio
+# ✍️ Opinions Tranchées de Jules
 
-> Ce qu'ils pensent vraiment — et qu'ils n'osent pas toujours dire.
+> Ce qu'il pense vraiment — et qu'il n'ose pas toujours dire.
 
 ---
 
-## Sur les gens qui soutiennent sans expérience
+## Sur les gens qui découragent sans expérience
 
 Jules est très clair là-dessus :
 
@@ -67,3 +67,4 @@ Ces opinions permettent des articles à forte personnalité, qui se démarquent 
 - [[✍️ Idées reçues sur le vanlife]]
 - [[💡 Valeurs de Vanzon]]
 - [[📖 Tour du monde de Jules]]
+- [[💡 Ce qui nous énerve dans l'industrie]]

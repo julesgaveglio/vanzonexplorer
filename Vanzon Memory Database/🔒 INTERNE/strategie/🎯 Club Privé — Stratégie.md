@@ -27,3 +27,9 @@ Lors du refactoring architecture (branche `refactor/architecture-2020`, commit 2
 - `src/lib/club/stripe.ts` — supprimé
 - `src/app/api/club/stripe/` — routes API supprimées (checkout, webhook, portal)
 - Aucun résidu Stripe dans le codebase pour le Club
+
+---
+
+## Liens
+- [[🏪 Marketplace — Vision & MVP]]
+- [[🔍 SEO — Infrastructure de trafic]]

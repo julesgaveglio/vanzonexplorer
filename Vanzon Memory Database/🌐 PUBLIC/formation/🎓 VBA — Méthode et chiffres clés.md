@@ -72,3 +72,10 @@ Lien : https://vanzonexplorer.com/formation
 ## Situation commerciale (avril 2026)
 
 Formation pilotée par Mario (20% capital SAS). Pas encore lancée commercialement. Contrat non signé. Voir `project_formation_mario.md`.
+
+---
+
+## Liens
+- [[🎓 VBA — Script complet formation]]
+- [[🎯 VBA — Cible & positionnement]]
+- [[💡 Business Model & Revenus]]

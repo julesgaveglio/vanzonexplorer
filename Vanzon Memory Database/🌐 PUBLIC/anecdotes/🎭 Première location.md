@@ -52,3 +52,5 @@ Après 2 ou 3 locations : l'aisance s'installe, la confiance aussi. C'est devenu
 - [[👤 Jules]]
 - [[🎭 L'incident du rétroviseur]]
 - [[✍️ Idées reçues sur le vanlife]]
+- [[💡 Identité de marque]]
+- [[💡 Business Model & Revenus]]

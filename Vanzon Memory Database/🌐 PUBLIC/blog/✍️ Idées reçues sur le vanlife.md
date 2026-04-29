@@ -16,7 +16,7 @@
 
 ### ❌ "L'aménagement, c'est trop compliqué"
 
-**La réalité** : Jules n'avait aucune compétence en bricolage quand il a démarré Yoni. Il a appris sur le tas, avec l'aide d'Elio.
+**La réalité** : Jules n'avait aucune compétence en bricolage quand il a démarré Yoni. Il a tout appris en autodidacte, à force de recherches et d'essais.
 
 > *"Au début, quand j'ai commencé les vans, je n'avais aucune compétence en bricolage."*
 
@@ -26,7 +26,7 @@ C'est précisément pour ça que Vanzon a créé une formation.
 
 ### ❌ "Sans compétences, ce n'est pas fait pour moi"
 
-**La réalité** : Tout s'apprend. Elio a fait des études de mécanique en alternance. Jules a tout appris avec lui. Le but de Vanzon : transmettre ces compétences.
+**La réalité** : Tout s'apprend. Jules a tout appris en autodidacte. Le but de Vanzon : transmettre ces compétences pour que les autres n'aient pas à galérer autant.
 
 ---
 
@@ -78,3 +78,5 @@ Cet article peut s'appuyer directement sur les anecdotes personnelles :
 - [[💡 Business Model & Revenus]]
 - [[💡 Valeurs de Vanzon]]
 - [[🎭 Première location]]
+- [[💡 Ce qui nous énerve dans l'industrie]]
+- [[✍️ Opinions tranchées]]

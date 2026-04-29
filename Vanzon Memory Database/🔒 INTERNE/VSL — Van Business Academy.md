@@ -19,7 +19,7 @@
 | ------------------------------ | ----------------------------- | -------------------------------------- |
 | Aversion a la perte            | Kahneman & Tversky, 1979      | Bloc 2 (cout de l'inaction)            |
 | Effet IKEA                     | Norton, Mochon & Ariely, 2012 | Bloc 4 (construire soi-meme)           |
-| Transport narratif             | Green & Brock, 2000           | Bloc 3 (histoire Jules & Elio)         |
+| Transport narratif             | Green & Brock, 2000           | Bloc 3 (histoire Jules)                |
 | Identite                       | James Clear, 2018             | Bloc 4 (devenir le type de personne)   |
 | Effet Zeigarnik                | Zeigarnik, 1927               | Open loops tout au long                |
 | Preuve sociale multicouche     | Cialdini, 1984                | Bloc 5 (chiffres reels + temoignage)   |
@@ -90,11 +90,11 @@
 
 > "Ce voyage a litteralement change ma vision. En rentrant au Pays Basque, j'etais sur d'une chose : je voulais la liberte. Et je voulais me lancer un defi — retaper un van de A a Z, sans aucune competence. Je ne savais meme pas planter un clou."
 
-> "C'est a ce moment-la que je rencontre Elio. Elio, il vient de Madagascar. Adopte a 12 ans. Arrive en France en 2014. Un mental d'acier et un vrai savoir-faire mecanique. Il m'a aide, il m'a montre. On a passe des nuits blanches dans le garage. De la musique, des bieres, du poncage a 2h du matin."
+> "J'ai passe des nuits blanches dans le garage. De la musique, du poncage a 2h du matin. J'ai tout appris en autodidacte — a force de recherches, d'essais et surtout d'erreurs."
 
-🎬 *B-roll : photos Jules & Elio au travail, van en chantier, nuits dans le garage*
+🎬 *B-roll : van en chantier, nuits dans le garage*
 
-> "Et on a fait TOUTES les erreurs possibles."
+> "Et j'ai fait TOUTES les erreurs possibles."
 
 > "Ma premiere gaziniere pas chere ? Le gaz fuyait. J'ai allume, ca a pris feu sur le bois de l'amenagement. J'ai shoote dans la bonbonne de gaz en paniquant. J'ai cru que tout allait exploser."
 
@@ -104,9 +104,9 @@
 
 > [Ton qui change — plus positif]
 
-> "Mais erreur apres erreur, on a construit une methode. On a compris ce qui marchait et ce qui ne marchait pas. On a amenage un deuxieme van — Xalbat, le van blanc. Celui-la, zero erreur. Tout optimise."
+> "Mais erreur apres erreur, j'ai construit une methode. J'ai compris ce qui marchait et ce qui ne marchait pas. J'ai amenage un deuxieme van — Xalbat, le van blanc. Celui-la, zero erreur. Tout optimise."
 
-> "Et puis on les a mis en location tous les deux. Et la... tout a change."
+> "Et puis je les ai mis en location tous les deux. Et la... tout a change."
 
 🎬 *B-roll : Yoni et Xalbat finis, interieur cuisine, clients qui partent en voyage*
 
@@ -118,7 +118,7 @@
 
 > [Face camera, energie, structure claire]
 
-> "Ce qu'on a decouvert apres 2 vans amenages, des dizaines d'erreurs et des milliers d'euros gaspilles, c'est qu'il y a 3 piliers pour reussir dans le business de van amenage."
+> "Ce que j'ai decouvert apres 2 vans amenages, des dizaines d'erreurs et des milliers d'euros gaspilles, c'est qu'il y a 3 piliers pour reussir dans le business de van amenage."
 
 ### Pilier 1 — L'achat intelligent
 
@@ -126,13 +126,13 @@
 
 > "La difference entre un bon et un mauvais achat ? 3 000 a 5 000 euros."
 
-> "On te montre comment te positionner en premier sur LeBoncoin, comment analyser une annonce, et Elio t'apprend les verifications mecaniques a faire sur place — la technique de la piece de 2 euros pour les pneus, le test d'embrayage. Tout est dans la formation."
+> "Je te montre comment te positionner en premier sur LeBoncoin, comment analyser une annonce, et je t'apprends les verifications mecaniques a faire sur place — la technique de la piece de 2 euros pour les pneus, le test d'embrayage. Tout est dans la formation."
 
 ### Pilier 2 — L'amenagement structure
 
 > "Pas besoin d'etre menuisier. 80% de l'amenagement, c'est de la logique et de la methode. Avec la bonne trame, en 3 mois, t'as un van amenage, propre, aux normes, pret a rouler."
 
-> "On te donne un tableau Airtable complet avec TOUS les produits a commander, les prix au centime pres — 5 430 euros et 72 centimes exactement pour l'amenagement complet. Chaque produit a un lien, une description, et un suivi de commande."
+> "Je te donne un tableau Airtable complet avec TOUS les produits a commander, les prix au centime pres — 5 430 euros et 72 centimes exactement pour l'amenagement complet. Chaque produit a un lien, une description, et un suivi de commande."
 
 > "Tu ne perds plus de temps a chercher le bon raccord electrique en plein travaux parce qu'il te manque une piece."
 
@@ -239,7 +239,7 @@
 
 ### "Je n'y connais rien en mecanique"
 
-> "C'est exactement ce que pensait Sylvain. C'est exactement ce que JE pensais. Je ne savais meme pas planter un clou. 80% de l'amenagement, c'est de la logique, de la methode, et un bon tableau Airtable. Le reste, Elio te l'explique en video — les verifications mecaniques, les raccords electriques, tout."
+> "C'est exactement ce que pensait Sylvain. C'est exactement ce que JE pensais. Je ne savais meme pas planter un clou. 80% de l'amenagement, c'est de la logique, de la methode, et un bon tableau Airtable. Le reste, je te l'explique en video — les verifications mecaniques, les raccords electriques, tout."
 
 ### "C'est trop risque"
 
@@ -253,7 +253,7 @@
 
 > "Avec notre methode et le tableau Airtable, compte 3 mois. Sans methode ? 8 mois minimum. Et encore, sans garantie que ca passe au controle technique."
 
-> "On etait deux avec Elio, et on a mis 2 mois a un rythme chill. Seul avec un travail a cote, 3 a 6 mois. C'est un projet du week-end, pas un temps plein."
+> "A temps plein, j'ai mis 2 a 3 mois a un rythme chill. Avec un travail a cote, 3 a 6 mois. C'est un projet du week-end, pas un temps plein."
 
 ### "Les vans ne se louent pas bien"
 
@@ -297,7 +297,7 @@
 
 ### L'offre
 
-> "On a condense tout ce qu'on a appris — les erreurs, les raccourcis, la methode complete — dans la Van Business Academy. 9 modules, plus de 50 videos, un accompagnement personnalise. Plus un tableau Airtable complet avec tous les produits, les prix, les liens, le suivi."
+> "J'ai condense tout ce que j'ai appris — les erreurs, les raccourcis, la methode complete — dans la Van Business Academy. 9 modules, plus de 50 videos, un accompagnement personnalise. Plus un tableau Airtable complet avec tous les produits, les prix, les liens, le suivi."
 
 > "Mais je ne vais pas te detailler le programme ici. Ce que je vais te proposer, c'est plus simple et plus concret."
 
@@ -353,7 +353,7 @@
 - **Sous-titres** : obligatoires (80% regardent sans son au debut)
 - **Regard** : toujours face camera, comme si tu parlais a UNE personne
 - **Energie** : ancree, pas surjouee. Tu parles comme a un pote, pas comme un vendeur
-- **B-roll prioritaire** : interieur vans finis, cuisine coulissante en action, vue depuis le van ouvert, notification Yescapa sur telephone, Jules et Elio au travail, van gare face a la mer
+- **B-roll prioritaire** : interieur vans finis, cuisine coulissante en action, vue depuis le van ouvert, notification Yescapa sur telephone, Jules au travail, van gare face a la mer
 
 
 
@@ -370,3 +370,9 @@ Et non pas de revenu miracle, c'est du concret un vrai projet sur long terme des
 
 -----
 
+
+---
+
+## Liens
+- [[🎯 VBA — Cible & positionnement]]
+- [[🎓 VBA — Script complet formation]]

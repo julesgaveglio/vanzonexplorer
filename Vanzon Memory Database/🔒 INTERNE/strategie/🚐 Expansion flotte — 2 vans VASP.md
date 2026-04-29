@@ -38,7 +38,7 @@ Pas de timeline engagée à ce jour.
 1. **Dépendance à Mario** : tout le projet d'expansion est conditionné à sa disponibilité et sa capacité financière. Si SigmaFactory traverse une mauvaise passe prolongée, l'expansion est reportée indéfiniment.
 2. **Endettement + retard** = pression financière si les vans ne tournent pas rapidement après acquisition.
 3. **Revente VASP** = marché plus étroit que location. Liquidité réduite si besoin de sortir rapidement.
-4. **Calendrier vs expatriation** : Si les vans arrivent en fin 2026, ils auront ~1 an d'exploitation avant le départ de Jules en Thaïlande. Dépendance accrue à Elio sur le terrain.
+4. **Calendrier vs expatriation** : Si les vans arrivent en fin 2026, ils auront ~1 an d'exploitation avant le départ de Jules en Thaïlande. Nécessité de trouver un prestataire terrain fiable.
 
 ---
 
@@ -47,3 +47,10 @@ Pas de timeline engagée à ce jour.
 **Pourquoi c'est important** : si ces 2 vans supplémentaires entrent en service, ils doublent quasiment la capacité de location directe → impact significatif sur les 800€/mois actuels.
 
 **Comment l'appliquer** : Ne pas compter ces vans dans les projections financières tant que Mario n'a pas injecté. C'est un upside potentiel, pas une base. Évaluer toute décision de dépense actuelle indépendamment de cet apport.
+
+---
+
+## Liens
+- [[👤 Mario]]
+- [[🚐 Flotte complète]]
+- [[💰 Business Model & Objectif Thaïlande]]

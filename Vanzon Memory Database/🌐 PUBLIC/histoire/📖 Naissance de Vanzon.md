@@ -1,30 +1,28 @@
 # 📖 La Naissance de Vanzon Explorer
 
-> Pas un plan de business. Une passion qui a pris forme dans un garage, entre deux bières, un pinceau et de la musique.
+> Pas un plan de business. Une passion qui a pris forme dans un garage, entre de la musique, un pinceau et de la détermination.
 
 ---
 
 ## Le point de départ : Yoni (le van vert)
 
-Tout commence avec le projet d'aménagement de **Yoni**, le premier van de Jules (un Renault Trafic vert). Jules n'avait aucune compétence en bricolage à l'époque.
-
-Elio — qui avait de l'expérience — s'est investi pour l'aider.
+Tout commence avec le projet d'aménagement de **Yoni**, le premier van de Jules (un Renault Trafic vert). Jules n'avait aucune compétence en bricolage à l'époque — il a tout appris en autodidacte, à force de recherches, d'essais et d'erreurs.
 
 ### Les soirées d'aménagement
 
-> *"On a passé énormément de soirées ensemble, souvent jusqu'au bout de la nuit, à travailler sur le van. Entre la musique, les bières, la peinture des murs et des plafonds, le ponçage, la découpe des planches… on a énormément travaillé, mais surtout partagé de très bons moments."*
+> *"J'ai passé énormément de soirées à travailler sur le van, souvent jusqu'au bout de la nuit. Entre la musique, la peinture des murs et des plafonds, le ponçage, la découpe des planches… j'ai énormément travaillé, mais surtout vécu une aventure incroyable."*
 
-C'est dans ces soirées de travail que le **vrai lien** s'est créé entre Jules et Elio.
+C'est dans ces soirées de travail que Jules a développé de vraies compétences en aménagement — en partant de zéro.
 
 ---
 
 ## Le déclic : pas le van terminé, mais le processus
 
-À la fin de l'aménagement du premier van, ils réalisent quelque chose d'important :
+À la fin de l'aménagement du premier van, Jules réalise quelque chose d'important :
 
-> *"Ce qui nous passionnait vraiment, ce n'était pas seulement le fait d'avoir un van terminé, mais surtout tout le processus de création et de construction."*
+> *"Ce qui me passionnait vraiment, ce n'était pas seulement le fait d'avoir un van terminé, mais surtout tout le processus de création et de construction."*
 
-**Décision** : construire un deuxième van ensemble — **Xalbat** — en mettant à profit toutes les compétences acquises.
+**Décision** : construire un deuxième van — **Xalbat** — en mettant à profit toutes les compétences acquises.
 
 ---
 
@@ -41,8 +39,7 @@ Avec deux vans et une activité qui se développait, l'idée s'est naturellement
 
 | Période | Événement |
 |---|---|
-| Mai 2024 | Rencontre Jules / Elio |
-| 2024 | Aménagement de Yoni (le van vert) ensemble |
+| 2024 | Aménagement de Yoni (le van vert) en autodidacte |
 | 2024 | Achat et aménagement de Xalbat (le van blanc) |
 | Fin 2024 | Création officielle de Vanzon Explorer |
 | 2024-2025 | Premières locations, premières rencontres |
@@ -51,7 +48,6 @@ Avec deux vans et une activité qui se développait, l'idée s'est naturellement
 
 ## Liens
 - [[👤 Jules]]
-- [[👤 Elio]]
 - [[🚐 Yoni]]
 - [[🚐 Xalbat]]
-- [[🎭 Les nuits d'aménagement]]
+- [[📖 Tour du monde de Jules]]

@@ -48,3 +48,9 @@ Réservation location OU formation OU marketplace propriétaire
 
 Le blog agent génère des articles SANS markdown tables (bug rendu).
 Utiliser des bullet lists à la place.
+
+---
+
+## Liens
+- [[✍️ Contenu blog — Règles agent]]
+- [[🔗 Infrastructure backlinks]]

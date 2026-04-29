@@ -51,7 +51,7 @@
 2. **Financement flotte** — bloqué tant que Mario n'injecte pas les fonds
 3. **Marketplace MVP** — Jules seul sur le dev, pas de deadline fixée
 4. **Pinterest poster** — compte Trial, upgrade Standard nécessaire
-5. **Dépendance Elio** — seule personne terrain pour la logistique vans
+5. **Terrain France** — besoin de trouver un prestataire fiable pour la logistique vans
 
 ## ✅ Décisions récentes
 - [2026-03] Club Privé 100% gratuit (abandon 9,99€/mois + Stripe)
@@ -84,3 +84,9 @@
 - Taux d'occupation vans (jours/mois)
 - Membres Club inscrits
 - Road trips générés
+
+---
+
+## Liens
+- [[💰 Business Model & Objectif Thaïlande]]
+- [[💰 Objectif 2000 euros mois]]

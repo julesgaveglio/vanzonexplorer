@@ -4,11 +4,9 @@
 
 ---
 
-## Ancrage géographique de l'équipe
+## Ancrage géographique
 
 **Jules** : Né à Bordeaux, arrivé au Pays Basque à 4 ans. A grandi dans cet environnement de randonnées. Ses parents adorent se promener, ils s'y sont installés par amour de la région.
-
-**Elio** : Grandi à Madagascar → adopté à 12 ans → Bretagne → Pays Basque à 17 ans. Un parcours atypique qui l'a mené jusqu'ici.
 
 ---
 
@@ -50,7 +48,7 @@ Forêt emblématique du Pays Basque. A connu une forte hausse de fréquentation 
 
 ## Pour le blog
 
-Le Pays Basque n'est pas qu'un décor pour Vanzon — c'est leur quotidien, leur terrain d'expertise.
+Le Pays Basque n'est pas qu'un décor pour Vanzon — c'est le quotidien de Jules, son terrain d'expertise.
 
 **Angles potentiels** :
 - Guides de spots van au Pays Basque
@@ -63,6 +61,7 @@ Le Pays Basque n'est pas qu'un décor pour Vanzon — c'est leur quotidien, leur
 
 ## Liens
 - [[👤 Jules]]
-- [[👤 Elio]]
 - [[🎭 Première nuit dans le van]]
 - [[💡 Ce qui nous énerve dans l'industrie]]
+- [[📍 Cambo-les-Bains — Point de départ]]
+- [[🎯 Positionnement & 3 piliers]]

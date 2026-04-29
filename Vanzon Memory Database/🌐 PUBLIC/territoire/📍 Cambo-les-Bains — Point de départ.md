@@ -14,3 +14,8 @@ Distances depuis Cambo-les-Bains :
 - Forêt d'Irati : ~45 min (55 km)
 
 Toutes les mentions "Départ Bayonne" dans les pages location doivent être remplacées par "Départ Cambo-les-Bains".
+
+---
+
+## Liens
+- [[🗺️ Pays Basque — Notre terrain]]

@@ -18,7 +18,8 @@ type: project
 
 **Dirigeants :**
 - **Président** : GAVEGLIO Jules (né 21/08/2002 à Bordeaux)
-- **Directeur général** : DUBERNET SENNE Elio, Fleurice (né 08/08/2002 à Vatomandry, Madagascar)
+
+> **Note** : mise à jour en cours — ancien DG retiré, structure 80% Jules / 20% Mario
 
 **Why:** Ces infos sont nécessaires pour tous les documents officiels (devis, factures, contrats, CGV).
 **How to apply:** Utiliser ces données pour pré-remplir les mentions légales sur tout document commercial.

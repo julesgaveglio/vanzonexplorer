@@ -6,7 +6,7 @@ type: project
 
 ## Règles d'écriture pour l'agent blog
 
-1. **Ancrer dans le réel** : chaque article doit contenir au moins une anecdote concrète de Jules ou Elio
+1. **Ancrer dans le réel** : chaque article doit contenir au moins une anecdote concrète de Jules
 2. **Voix humaine** : utiliser "je" ou "nous" quand pertinent, pas "on peut" générique
 3. **Éviter le générique** : pas d'intro "Le vanlife est une tendance qui…"
 4. **Citer les lieux précis** : Ursuya, Irati, Cambo, Bayonne — pas "dans les Pyrénées"
@@ -21,7 +21,7 @@ type: project
 | "Ma première nuit en van : tout ce que j'aurais dû savoir" | Ursuya, pottoks, arrache totale |
 | "Louer son van pour la première fois : retour honnête" | Première location Lyon, stress puis naturel |
 | "J'ai eu un accrochage sur ma location de van. Voici ce qui s'est passé." | Rétroviseur 15€, locataire qui propose 50€ |
-| "Comment un van m'a permis de trouver mon associé" | Nuits de ponçage et de bières avec Elio |
+| "Comment j'ai appris à aménager un van en partant de zéro" | Autodidacte, soirées de travail |
 | "Pourquoi j'ai nommé mon van d'après mon chat disparu" | Xalbat renversé par une voiture |
 | "Ce que 14 pays en 1 an m'ont appris sur la liberté" | Tour du monde de Jules |
 
@@ -56,8 +56,8 @@ type: project
 | Titre potentiel | Source |
 |---|---|
 | "Aménager son van sans compétences en bricolage : retour d'expérience" | Jules débutant |
-| "Le lit peigne dans un van : pourquoi on l'adore (et comment on l'a fait)" | Yoni |
-| "Optimiser l'espace dans un van aménagé : nos meilleurs conseils" | Yoni |
+| "Le lit peigne dans un van : pourquoi je l'adore (et comment je l'ai fait)" | Yoni |
+| "Optimiser l'espace dans un van aménagé : mes meilleurs conseils" | Yoni |
 | "Location de van sur Yescapa : guide pour propriétaires débutants" | Expérience Vanzon |
 
 ---
@@ -68,3 +68,9 @@ type: project
 - "L'aménagement c'est trop compliqué" → Jules a tout appris sans compétences
 - "Les locataires vont tout casser" → incident le plus grave = rétroviseur 15€
 - "Ce ne sera pas rentable" → deux vans, une entreprise, une formation deux ans plus tard
+
+---
+
+## Liens
+- [[💡 Identité de marque]]
+- [[✍️ Opinions tranchées]]
