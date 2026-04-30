@@ -5,18 +5,17 @@ import Link from "next/link";
 import Image from "next/image";
 import { ChevronDown, CheckCircle2, Circle, Play } from "lucide-react";
 
-/* Animated GIF per module — plays only when module is open */
-const MODULE_GIFS: Record<number, string> = {
-  1: "/icons/vba-module-1.gif",
-  2: "/icons/vba-module-2.gif",
-  3: "/icons/vba-module-3.gif",
-  4: "/icons/vba-module-4.gif",
-  5: "/icons/vba-module-5.gif",
-  6: "/icons/vba-module-6.gif",
-  7: "/icons/vba-module-7.gif",
-  8: "/icons/vba-module-8.gif",
-  9: "/icons/vba-module-9.gif",
-  10: "/icons/vba-module-10.gif",
+const MODULE_ICONS: Record<number, string> = {
+  1: "/icons/vba-emoji-1.png",
+  2: "/icons/vba-emoji-2.png",
+  3: "/icons/vba-emoji-3.png",
+  4: "/icons/vba-emoji-4.png",
+  5: "/icons/vba-emoji-5.png",
+  6: "/icons/vba-emoji-6.png",
+  7: "/icons/vba-emoji-7.png",
+  8: "/icons/vba-emoji-8.png",
+  9: "/icons/vba-emoji-9.png",
+  10: "/icons/vba-emoji-10.png",
 };
 
 interface Module {
@@ -114,7 +113,7 @@ export default function VBASidebar({
             .sort((a, b) => a.order - b.order);
           const isOpen = openModules.has(mod.id);
 
-          const gifSrc = MODULE_GIFS[mod.order];
+          const iconSrc = MODULE_ICONS[mod.order];
 
           return (
             <div key={mod.id}>
@@ -127,10 +126,9 @@ export default function VBASidebar({
                     isOpen ? "" : "-rotate-90"
                   }`}
                 />
-                {gifSrc && (
+                {iconSrc && (
                   <Image
-                    key={isOpen ? `${mod.id}-anim` : `${mod.id}-still`}
-                    src={isOpen ? gifSrc : gifSrc.replace(".gif", "-static.png")}
+                    src={iconSrc}
                     alt=""
                     width={24}
                     height={24}

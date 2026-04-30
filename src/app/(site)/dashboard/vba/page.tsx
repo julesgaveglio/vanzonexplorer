@@ -6,17 +6,17 @@ import { createSupabaseAdmin } from "@/lib/supabase/server";
 import { CheckCircle2, Circle, Play } from "lucide-react";
 import VBAPaywall from "./_components/VBAPaywall";
 
-const MODULE_GIFS: Record<number, string> = {
-  1: "/icons/vba-module-1-static.png",
-  2: "/icons/vba-module-2-static.png",
-  3: "/icons/vba-module-3-static.png",
-  4: "/icons/vba-module-4-static.png",
-  5: "/icons/vba-module-5-static.png",
-  6: "/icons/vba-module-6-static.png",
-  7: "/icons/vba-module-7-static.png",
-  8: "/icons/vba-module-8-static.png",
-  9: "/icons/vba-module-9-static.png",
-  10: "/icons/vba-module-10-static.png",
+const MODULE_ICONS: Record<number, string> = {
+  1: "/icons/vba-emoji-1.png",
+  2: "/icons/vba-emoji-2.png",
+  3: "/icons/vba-emoji-3.png",
+  4: "/icons/vba-emoji-4.png",
+  5: "/icons/vba-emoji-5.png",
+  6: "/icons/vba-emoji-6.png",
+  7: "/icons/vba-emoji-7.png",
+  8: "/icons/vba-emoji-8.png",
+  9: "/icons/vba-emoji-9.png",
+  10: "/icons/vba-emoji-10.png",
 };
 
 const ADMIN_EMAIL = "gavegliojules@gmail.com";
@@ -153,7 +153,7 @@ export default async function VBAPage() {
             const firstIncomplete = modLessons.find(
               (l) => !completedSet.has(l.id)
             );
-            const iconSrc = MODULE_GIFS[mod.order];
+            const iconSrc = MODULE_ICONS[mod.order];
 
             return (
               <div key={mod.id} className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
