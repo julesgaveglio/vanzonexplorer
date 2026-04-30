@@ -170,11 +170,11 @@ export default async function VBAPage() {
                           unoptimized
                         />
                       )}
-                      <div className="leading-tight">
-                        <h3 className="font-bold text-slate-900 text-sm">
+                      <div className="leading-snug">
+                        <h3 className="font-bold text-slate-900 text-sm sm:text-base">
                           Module {mod.order}
                         </h3>
-                        <p className="text-slate-500 text-xs sm:text-sm">
+                        <p className="text-slate-500 text-sm">
                           {mod.title.replace(/^Module \d+\s*[—–-]\s*/, "")}
                         </p>
                       </div>

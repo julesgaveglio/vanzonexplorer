@@ -136,8 +136,8 @@ export default function VBASidebar({
                     unoptimized
                   />
                 )}
-                <div className="flex-1 leading-tight">
-                  <span className="text-xs font-bold text-slate-800 block">
+                <div className="flex-1 leading-snug">
+                  <span className="text-sm font-bold text-slate-800 block">
                     Module {mod.order}
                   </span>
                   <span className="text-xs text-slate-500">
