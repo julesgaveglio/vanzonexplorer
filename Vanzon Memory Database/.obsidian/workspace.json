@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "🔒 INTERNE/VSL — Van Business Academy.md",
+                "file": "🔒 INTERNE/Van Business Academy/Clients/👤 Amine.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "VSL — Van Business Academy"
+              "title": "👤 Amine"
             }
           }
         ],
@@ -198,10 +198,23 @@
       "bases:Créer une nouvelle base": false
     }
   },
-  "active": "3ff48725c1b98c95",
+  "active": "1b280c1658f866e8",
   "lastOpenFiles": [
-    "vision/🚐 Yoni.md",
+    "🔒 INTERNE/boss/Common_Problems.md",
+    "🔒 INTERNE/boss/Journal.md",
+    "🔒 INTERNE/boss/Actions.md",
+    "🔒 INTERNE/boss/Diagnosis.md",
+    "🔒 INTERNE/boss/Goal.md",
+    "🔒 INTERNE/boss/Business.md",
+    "🔒 INTERNE/boss/Profile.md",
+    "🔒 INTERNE/boss",
+    "🔒 INTERNE/Van Business Academy/Transcript/📋 Structure complète.md",
+    "🔒 INTERNE/Van Business Academy/Clients/👤 Amine.md",
+    "🔒 INTERNE/Van Business Academy/Quiz/Quiz Module 2 — Sourcing & Achat.md",
+    "🔒 INTERNE/Van Business Academy/Transcript",
     "🔒 INTERNE/VSL — Van Business Academy.md",
+    "🔒 INTERNE/Van Business Academy/Clients",
+    "vision/🚐 Yoni.md",
     "🔒 INTERNE/vision/🔮 Vision produit — Roadmap long terme.md",
     "🔒 INTERNE/strategie/💰 Objectif 2000 euros mois.md",
     "vision",
@@ -218,25 +231,12 @@
     "🔒 INTERNE/regles-claude/🤖 Admin responsive patterns.md",
     "🔒 INTERNE/regles-claude/🤖 Agents registry.md",
     "🔒 INTERNE/strategie/🗺️ Stratégie Acquisition & Conversion.canvas",
-    "🔒 INTERNE/strategie/🎬 Campagne 1 — Créatives Meta Ads.md",
-    "Vanzon Memory Database/🔒 INTERNE/strategie/📱 Campagne Meta Ads — Avril 2026.md",
     "Vanzon Memory Database/🔒 INTERNE/strategie",
-    "Vanzon Memory Database/🌐 PUBLIC/formation/🎯 VBA — Cible & positionnement.md",
     "Vanzon Memory Database/🌐 PUBLIC/formation",
     "Vanzon Memory Database/🌐 PUBLIC",
-    "Vanzon Memory Database/🔒 INTERNE/VSL — Van Business Academy.md",
     "Vanzon Memory Database/🔒 INTERNE",
     "Vanzon Memory Database",
-    "🔒 INTERNE/strategie/🚐 Expansion flotte — 2 vans VASP.md",
-    "📋 README — Utilisation.md",
-    "🔒 INTERNE/Van Business Academy/Quiz/Quiz Module 6 — Électricité.md",
-    "💡 Ce qui nous enerve dans l'industrie.md",
-    "🔒 INTERNE/Van Business Academy/Quiz/Quiz Module 10 — Business de location.md",
-    "🔒 INTERNE/Van Business Academy/Quiz/Quiz Module 9 — Remplir dossier VASP.md",
     "Sans titre.canvas",
-    "🔒 INTERNE/vision",
-    "🔒 INTERNE/Van Business Academy/Quiz",
-    "🔒 INTERNE/Van Business Academy",
-    "🔒 INTERNE/formation"
+    "🔒 INTERNE/vision"
   ]
 }

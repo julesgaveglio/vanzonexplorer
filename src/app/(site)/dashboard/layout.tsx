@@ -16,7 +16,7 @@ export default async function DashboardLayout({
   if (!userId) redirect("/sign-in");
 
   return (
-    <section className="min-h-screen bg-slate-50">
+    <section className="min-h-screen bg-white">
       {/* Navigation secondaire */}
       <div className="bg-white border-b border-slate-100">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
