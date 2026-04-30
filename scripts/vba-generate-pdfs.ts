@@ -382,101 +382,103 @@ function generatePDF(mod: ModulePDF) {
   doc.fontSize(22).fillColor("#ffffff").opacity(1)
     .text(`Module ${mod.moduleNum} -${mod.title}`, 50, 48, { width: pageWidth });
 
-  doc.moveDown(2);
-  let y = 110;
+  let y = 105;
+  const MAX_Y = 760; // seuil unique : nouvelle page seulement quand on est vraiment en bas
 
   // ── Summary ──
-  doc.fillColor(GOLD).fontSize(14).text("Resume du module", 50, y);
-  y += 22;
-  doc.fillColor(DARK).fontSize(10).text(mod.summary, 50, y, {
+  doc.fillColor(GOLD).fontSize(12).text("Resume du module", 50, y);
+  y += 18;
+  doc.fillColor(DARK).fontSize(9).text(mod.summary, 50, y, {
     width: pageWidth,
-    lineGap: 4,
+    lineGap: 3,
   });
-  y = doc.y + 20;
+  y = doc.y + 14;
 
   // ── Key Takeaways ──
-  doc.fillColor(GOLD).fontSize(14).text("Points cles a retenir", 50, y);
-  y += 22;
+  if (y > MAX_Y) { doc.addPage(); y = 50; }
+  doc.fillColor(GOLD).fontSize(12).text("Points cles a retenir", 50, y);
+  y += 18;
   for (const point of mod.keyTakeaways) {
-    if (y > 720) { doc.addPage(); y = 50; }
-    doc.fillColor(GOLD).fontSize(10).text(">", 50, y);
-    doc.fillColor(DARK).fontSize(10).text(point, 65, y, {
-      width: pageWidth - 15,
-      lineGap: 3,
+    if (y > MAX_Y) { doc.addPage(); y = 50; }
+    doc.fillColor(GOLD).fontSize(9).text(">", 50, y);
+    doc.fillColor(DARK).fontSize(9).text(point, 62, y, {
+      width: pageWidth - 12,
+      lineGap: 2,
     });
-    y = doc.y + 8;
+    y = doc.y + 5;
   }
-  y += 10;
+  y += 8;
 
   // ── Key Numbers (if any) ──
   if (mod.keyNumbers && mod.keyNumbers.length > 0) {
-    if (y > 650) { doc.addPage(); y = 50; }
-    doc.fillColor(GOLD).fontSize(14).text("Chiffres cles", 50, y);
-    y += 22;
+    if (y > MAX_Y) { doc.addPage(); y = 50; }
+    doc.fillColor(GOLD).fontSize(12).text("Chiffres cles", 50, y);
+    y += 18;
     for (const num of mod.keyNumbers) {
-      if (y > 720) { doc.addPage(); y = 50; }
-      doc.fillColor(GOLD).fontSize(11).text(num.value, 50, y, { continued: true });
-      doc.fillColor(GRAY).fontSize(10).text(`  ${num.label}`, { lineGap: 3 });
-      y = doc.y + 6;
+      if (y > MAX_Y) { doc.addPage(); y = 50; }
+      doc.fillColor(GOLD).fontSize(10).text(num.value, 50, y, { continued: true });
+      doc.fillColor(GRAY).fontSize(9).text(`  ${num.label}`, { lineGap: 2 });
+      y = doc.y + 4;
     }
-    y += 10;
+    y += 8;
   }
 
   // ── Checklist ──
-  if (y > 600) { doc.addPage(); y = 50; }
-  doc.fillColor(GOLD).fontSize(14).text("Checklist -A faire", 50, y);
-  y += 22;
+  if (y > MAX_Y) { doc.addPage(); y = 50; }
+  doc.fillColor(GOLD).fontSize(12).text("Checklist - A faire", 50, y);
+  y += 18;
   for (const item of mod.checklist) {
-    if (y > 720) { doc.addPage(); y = 50; }
-    doc.fillColor(GRAY).fontSize(10).text("[ ]", 50, y);
-    doc.fillColor(DARK).fontSize(10).text(item, 68, y, {
-      width: pageWidth - 18,
-      lineGap: 3,
+    if (y > MAX_Y) { doc.addPage(); y = 50; }
+    doc.fillColor(GRAY).fontSize(9).text("[ ]", 50, y);
+    doc.fillColor(DARK).fontSize(9).text(item, 66, y, {
+      width: pageWidth - 16,
+      lineGap: 2,
     });
-    y = doc.y + 8;
+    y = doc.y + 5;
   }
-  y += 10;
+  y += 8;
 
   // ── Pro Tips ──
-  if (y > 600) { doc.addPage(); y = 50; }
-  doc.fillColor(GOLD).fontSize(14).text("Astuces de pro", 50, y);
-  y += 22;
+  if (y > MAX_Y) { doc.addPage(); y = 50; }
+  doc.fillColor(GOLD).fontSize(12).text("Astuces de pro", 50, y);
+  y += 18;
   for (const tip of mod.proTips) {
-    if (y > 720) { doc.addPage(); y = 50; }
-    doc.fillColor(GOLD).fontSize(10).text("*", 50, y);
-    doc.fillColor(DARK).fontSize(10).text(tip, 68, y, {
-      width: pageWidth - 18,
-      lineGap: 3,
+    if (y > MAX_Y) { doc.addPage(); y = 50; }
+    doc.fillColor(GOLD).fontSize(9).text("*", 50, y);
+    doc.fillColor(DARK).fontSize(9).text(tip, 62, y, {
+      width: pageWidth - 12,
+      lineGap: 2,
     });
-    y = doc.y + 10;
+    y = doc.y + 6;
   }
-  y += 10;
+  y += 8;
 
   // ── Tools ──
   if (mod.tools && mod.tools.length > 0) {
-    if (y > 680) { doc.addPage(); y = 50; }
-    doc.fillColor(GOLD).fontSize(14).text("Outils & liens utiles", 50, y);
-    y += 22;
+    if (y > MAX_Y) { doc.addPage(); y = 50; }
+    doc.fillColor(GOLD).fontSize(12).text("Outils & liens utiles", 50, y);
+    y += 18;
     for (const tool of mod.tools) {
-      if (y > 720) { doc.addPage(); y = 50; }
-      doc.fillColor(DARK).fontSize(10).text(`${tool.name}`, 50, y, { continued: true });
-      doc.fillColor(GRAY).fontSize(9).text(`  -${tool.url}`, { lineGap: 3 });
-      y = doc.y + 6;
+      if (y > MAX_Y) { doc.addPage(); y = 50; }
+      doc.fillColor(DARK).fontSize(9).text(`${tool.name}`, 50, y, { continued: true });
+      doc.fillColor(GRAY).fontSize(8).text(`  - ${tool.url}`, { lineGap: 2 });
+      y = doc.y + 4;
     }
   }
 
-  // ── Footer ──
+  // ── Footer (no auto-pagination) ──
   const pages = doc.bufferedPageRange();
   for (let i = 0; i < pages.count; i++) {
     doc.switchToPage(i);
     doc.fillColor(GRAY).opacity(0.5).fontSize(8)
       .text(
-        `vanzonexplorer.com -Van Business Academy -Module ${mod.moduleNum}`,
+        `vanzonexplorer.com - Van Business Academy - Module ${mod.moduleNum}`,
         50,
         doc.page.height - 35,
-        { width: pageWidth, align: "center" }
+        { width: pageWidth, align: "center", lineBreak: false }
       );
   }
+  doc.opacity(1);
 
   doc.end();
 
