@@ -48,7 +48,17 @@
 - Modules 7, 9, 10 deja verifies par Jules → ne plus proposer
 - Prochaine action concrete : tourner la video sommaire mise a jour (M1)
 
+**Projet Guide IKEA 3D :**
+- Objectif : generer des guides d'assemblage style IKEA a partir du modele 3D Blender de l'amenagement van
+- Les eleves pourront imprimer les guides papier pour avoir les plans pendant leurs travaux
+- MCP Blender installe (claude mcp add blender -- uvx blender-mcp)
+- Addon Blender installe et connecte (port 9876)
+- Modele 3D existant : amenagement complet (cuisine fixe, evier, meubles, lit/coffre, parois)
+- Prochaine etape : relancer Claude Code pour activer le MCP, scanner la scene, renommer les objets, generer les renders etape par etape
+- Note : les objets sont nommes "Mesh28" etc → a renommer (cuisine, lit, meuble_droit, etc.)
+
 **A faire au prochain /boss :**
+- Relancer Claude Code avec MCP Blender actif → scanner la scene 3D
 - Tourner la video sommaire M1 (10 modules + 2 parcours VASP/non-VASP)
 - Verifier pourquoi le tracking purchase ne fire pas (webhook Stripe?)
 - Attendre paiement Amine (debut mai)
