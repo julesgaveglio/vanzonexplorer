@@ -466,18 +466,13 @@ function generatePDF(mod: ModulePDF) {
     }
   }
 
-  // ── Footer (no auto-pagination) ──
-  const pages = doc.bufferedPageRange();
-  for (let i = 0; i < pages.count; i++) {
-    doc.switchToPage(i);
-    doc.fillColor(GRAY).opacity(0.5).fontSize(8)
-      .text(
-        `vanzonexplorer.com - Van Business Academy - Module ${mod.moduleNum}`,
-        50,
-        doc.page.height - 35,
-        { width: pageWidth, align: "center", lineBreak: false }
-      );
-  }
+  // ── Footer en bas du contenu ──
+  y += 20;
+  doc.fillColor(GRAY).opacity(0.5).fontSize(8)
+    .text(
+      `vanzonexplorer.com - Van Business Academy - Module ${mod.moduleNum}`,
+      50, y, { width: pageWidth, align: "center", lineBreak: false }
+    );
   doc.opacity(1);
 
   doc.end();
