@@ -34,6 +34,15 @@
 
 **Lien paiement Amine :** envoye, paiement prevu debut mai 2026.
 
+**Session 2 (meme jour) :**
+- M6 : Introduction electricite uploadee + transcrite
+- M5 : La pose de la fenetre transcrite (re-upload reussi)
+- 18 titres de lecons corriges (fautes d'orthographe, accents, casses)
+- Sequence email complete deployee : E2 (J+1), E3 (J+3), E4 (post-VSL 100% sans booking)
+- Page optin V2 creee pour A/B test Matteo
+- Cron Vercel daily 10h Paris pour les emails automatiques
+- 73/73 transcrits complets
+
 **A faire au prochain /boss :**
 - Finir sync VBA modules 5-10
 - Implementer la sequence email automatique (cron + Resend)
