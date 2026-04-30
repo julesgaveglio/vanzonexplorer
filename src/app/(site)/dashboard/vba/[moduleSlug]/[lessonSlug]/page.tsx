@@ -110,7 +110,7 @@ export default async function LessonPage({
   const videoId = currentLesson.bunny_video_id || "";
 
   const resources = (currentLesson.resources ?? []) as Resource[];
-  const chapters = (currentLesson.chapters ?? []) as Array<{ title: string; time: number }>;
+  // chapters data kept in DB but not displayed
 
   // Detect quiz lesson: description starts with "QUIZ:"
   const isQuiz = currentLesson.description?.startsWith("QUIZ:");
@@ -174,7 +174,6 @@ export default async function LessonPage({
             <VBAVideoPlayer
               libraryId={libraryId}
               videoId={videoId}
-              chapters={chapters}
             />
           ) : (
             <div className="w-full aspect-video rounded-xl bg-slate-100 flex items-center justify-center mb-4 sm:mb-6">

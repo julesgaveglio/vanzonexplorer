@@ -1,23 +1,14 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import VBAChapters from "./VBAChapters";
-
-interface Chapter {
-  title: string;
-  time: number;
-}
-
 interface VBAVideoPlayerProps {
   libraryId: string;
   videoId: string;
-  chapters: Chapter[];
 }
 
 export default function VBAVideoPlayer({
   libraryId,
   videoId,
-  chapters,
 }: VBAVideoPlayerProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [isMobile, setIsMobile] = useState(false);
@@ -41,7 +32,6 @@ export default function VBAVideoPlayer({
         allowFullScreen
         className="w-full aspect-video rounded-xl border border-slate-200"
       />
-      <VBAChapters chapters={chapters} iframeRef={iframeRef} />
     </div>
   );
 }
