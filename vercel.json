@@ -3,6 +3,10 @@
     {
       "path": "/api/cron/gmail-style-learning",
       "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/cron/vba-followup",
+      "schedule": "0 8 * * *"
     }
   ]
 }
