@@ -32,6 +32,8 @@
 - Client enchante de rejoindre le programme
 - Statut : en cours de processing
 
+**Lien paiement Amine :** envoye, paiement prevu debut mai 2026.
+
 **A faire au prochain /boss :**
 - Finir sync VBA modules 5-10
 - Implementer la sequence email automatique (cron + Resend)
