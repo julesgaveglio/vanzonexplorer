@@ -10,10 +10,16 @@
     "cronExpression": null,
     "file": "scripts/lib/telegram.ts",
     "workflow": null,
-    "apis": ["Telegram Bot API"],
+    "apis": [
+      "Telegram Bot API"
+    ],
     "output": "Notification push sur Telegram",
     "manualCommand": "— (utilitaire partagé, non exécutable seul)",
-    "tags": ["Notifications", "Automatique", "Transversal"],
+    "tags": [
+      "Notifications",
+      "Automatique",
+      "Transversal"
+    ],
     "pipeline": "Transversal — appelé par tous les agents"
   },
   {
@@ -27,10 +33,23 @@
     "cronExpression": "30 7 * * 2-5",
     "file": "scripts/agents/backlinks-daily-outreach.ts",
     "workflow": ".github/workflows/backlinks-daily-outreach.yml",
-    "apis": ["Supabase", "Gmail API", "Jina AI", "Hunter.io", "ZeroBounce", "Groq", "Telegram"],
+    "apis": [
+      "Supabase",
+      "Gmail API",
+      "Jina AI",
+      "Hunter.io",
+      "ZeroBounce",
+      "Groq",
+      "Telegram"
+    ],
     "output": "5 emails/jour + relances J+4 + détection réponses + label BACKLINKS + Telegram",
     "manualCommand": "npx tsx scripts/agents/backlinks-daily-outreach.ts",
-    "tags": ["Backlinks", "SEO", "Outreach", "Automatique"],
+    "tags": [
+      "Backlinks",
+      "SEO",
+      "Outreach",
+      "Automatique"
+    ],
     "pipeline": "Standalone — alimenté par backlinks-weekly-agent"
   },
   {
@@ -44,10 +63,16 @@
     "cronExpression": "0 6 1 1,4,7,10 *",
     "file": "scripts/agents/keyword-research-quarterly.ts",
     "workflow": ".github/workflows/quarterly-keyword-research.yml",
-    "apis": ["DataForSEO"],
+    "apis": [
+      "DataForSEO"
+    ],
     "output": "scripts/data/keywords-research.json",
     "manualCommand": "npx tsx scripts/agents/keyword-research-quarterly.ts",
-    "tags": ["SEO", "Analyse", "Automatique"],
+    "tags": [
+      "SEO",
+      "Analyse",
+      "Automatique"
+    ],
     "pipeline": "1 → alimente queue-builder-monthly"
   },
   {
@@ -61,10 +86,16 @@
     "cronExpression": "0 8 1 * *",
     "file": "scripts/agents/queue-builder-monthly.ts",
     "workflow": ".github/workflows/monthly-queue-builder.yml",
-    "apis": ["Gemini AI"],
+    "apis": [
+      "Gemini AI"
+    ],
     "output": "scripts/data/article-queue.json (enrichi)",
     "manualCommand": "npx tsx scripts/agents/queue-builder-monthly.ts --dry-run",
-    "tags": ["SEO", "Contenu", "Automatique"],
+    "tags": [
+      "SEO",
+      "Contenu",
+      "Automatique"
+    ],
     "pipeline": "2 → alimente blog-writer"
   },
   {
@@ -78,10 +109,19 @@
     "cronExpression": "0 7 * * 1,3,5",
     "file": "scripts/agents/blog-writer-agent.ts",
     "workflow": ".github/workflows/auto-publish-articles.yml",
-    "apis": ["Gemini AI", "Pexels", "Sanity", "DataForSEO"],
+    "apis": [
+      "Gemini AI",
+      "Pexels",
+      "Sanity",
+      "DataForSEO"
+    ],
     "output": "Article publié dans Sanity CMS",
     "manualCommand": "npx tsx scripts/agents/blog-writer-agent.ts",
-    "tags": ["SEO", "Contenu", "Automatique"],
+    "tags": [
+      "SEO",
+      "Contenu",
+      "Automatique"
+    ],
     "pipeline": "3 → articles publiés → article-optimizer"
   },
   {
@@ -95,10 +135,18 @@
     "cronExpression": "0 7 15 2,5,8,11 *",
     "file": "scripts/agents/article-optimizer-quarterly.ts",
     "workflow": ".github/workflows/quarterly-article-optimizer.yml",
-    "apis": ["Gemini AI", "Google Search Console", "Sanity"],
+    "apis": [
+      "Gemini AI",
+      "Google Search Console",
+      "Sanity"
+    ],
     "output": "Articles mis à jour dans Sanity CMS",
     "manualCommand": "npx tsx scripts/agents/article-optimizer-quarterly.ts --dry-run",
-    "tags": ["SEO", "Optimisation", "Automatique"],
+    "tags": [
+      "SEO",
+      "Optimisation",
+      "Automatique"
+    ],
     "pipeline": "4 → bouclage du pipeline"
   },
   {
@@ -112,10 +160,17 @@
     "cronExpression": null,
     "file": "scripts/agents/keyword-researcher.ts",
     "workflow": null,
-    "apis": ["DataForSEO", "Gemini AI"],
+    "apis": [
+      "DataForSEO",
+      "Gemini AI"
+    ],
     "output": "scripts/data/article-queue.json (direct)",
     "manualCommand": "npx tsx scripts/agents/keyword-researcher.ts",
-    "tags": ["SEO", "Analyse", "Manuel"],
+    "tags": [
+      "SEO",
+      "Analyse",
+      "Manuel"
+    ],
     "pipeline": "Standalone"
   },
   {
@@ -129,10 +184,17 @@
     "cronExpression": "0 9 * * 1",
     "file": "scripts/agents/seo-checker.ts",
     "workflow": ".github/workflows/weekly-seo-check.yml",
-    "apis": ["DataForSEO", "Google Search Console"],
+    "apis": [
+      "DataForSEO",
+      "Google Search Console"
+    ],
     "output": "Rapport visible dans /admin/seo",
     "manualCommand": "npx tsx scripts/agents/seo-checker.ts",
-    "tags": ["SEO", "Audit", "Automatique"],
+    "tags": [
+      "SEO",
+      "Audit",
+      "Automatique"
+    ],
     "pipeline": "Standalone"
   },
   {
@@ -146,10 +208,19 @@
     "cronExpression": null,
     "file": "scripts/agents/pinterest-research-agent.ts",
     "workflow": null,
-    "apis": ["Pinterest API v5", "Groq", "Supabase"],
+    "apis": [
+      "Pinterest API v5",
+      "Groq",
+      "Supabase"
+    ],
     "output": "Données dans pinterest_boards, pinterest_keyword_opportunities, pinterest_board_recommendations, pinterest_content_queue",
     "manualCommand": "npx tsx scripts/agents/pinterest-research-agent.ts",
-    "tags": ["Pinterest", "Social", "Recherche", "Manuel"],
+    "tags": [
+      "Pinterest",
+      "Social",
+      "Recherche",
+      "Manuel"
+    ],
     "pipeline": "Standalone"
   },
   {
@@ -163,10 +234,16 @@
     "cronExpression": "0 10 1 * *",
     "file": "scripts/agents/link-optimizer-monthly.ts",
     "workflow": ".github/workflows/monthly-link-optimizer.yml",
-    "apis": ["Sanity"],
+    "apis": [
+      "Sanity"
+    ],
     "output": "Articles mis à jour dans Sanity CMS + lastLinkCheck dans article-queue.json",
     "manualCommand": "npx tsx scripts/agents/link-optimizer-monthly.ts --dry-run",
-    "tags": ["SEO", "Maillage", "Automatique"],
+    "tags": [
+      "SEO",
+      "Maillage",
+      "Automatique"
+    ],
     "pipeline": "5 → post-publication (après blog-writer)"
   },
   {
@@ -180,10 +257,19 @@
     "cronExpression": null,
     "file": "scripts/agents/title-optimizer-agent.ts",
     "workflow": null,
-    "apis": ["Supabase", "Groq", "Telegram"],
+    "apis": [
+      "Supabase",
+      "Groq",
+      "Telegram"
+    ],
     "output": "Titres optimisés + scores dans article_queue",
     "manualCommand": "npx tsx scripts/agents/title-optimizer-agent.ts",
-    "tags": ["SEO", "Blog", "Optimisation", "VBA"],
+    "tags": [
+      "SEO",
+      "Blog",
+      "Optimisation",
+      "VBA"
+    ],
     "pipeline": "Lit article_queue → score Groq → réécrit si <8 → update Supabase"
   },
   {
@@ -197,10 +283,18 @@
     "cronExpression": "0 11 1 * *",
     "file": "scripts/agents/cluster-updater.ts",
     "workflow": ".github/workflows/monthly-link-optimizer.yml",
-    "apis": ["Supabase", "Sanity"],
+    "apis": [
+      "Supabase",
+      "Sanity"
+    ],
     "output": "Articles Sanity mis à jour + pillar_slug/cluster_topic dans article_queue",
     "manualCommand": "npx tsx scripts/agents/cluster-updater.ts --dry-run",
-    "tags": ["SEO", "Maillage", "Cluster", "Automatique"],
+    "tags": [
+      "SEO",
+      "Maillage",
+      "Cluster",
+      "Automatique"
+    ],
     "pipeline": "5b → post link-optimizer, après chaque blog-writer"
   },
   {
@@ -214,10 +308,19 @@
     "cronExpression": "0 * * * *",
     "file": "scripts/agents/road-trip-feedback-agent.ts",
     "workflow": ".github/workflows/road-trip-feedback.yml",
-    "apis": ["Supabase", "Resend", "Telegram"],
+    "apis": [
+      "Supabase",
+      "Resend",
+      "Telegram"
+    ],
     "output": "Email de feedback envoyé + feedback_sent_at mis à jour dans road_trip_requests",
     "manualCommand": "npx tsx scripts/agents/road-trip-feedback-agent.ts",
-    "tags": ["Email", "Road Trip", "Feedback", "Automatique"],
+    "tags": [
+      "Email",
+      "Road Trip",
+      "Feedback",
+      "Automatique"
+    ],
     "pipeline": "Standalone — déclenché 24h après road-trip/generate"
   },
   {
@@ -231,10 +334,22 @@
     "cronExpression": "0 */4 * * *",
     "file": "scripts/agents/road-trip-publisher-agent.ts",
     "workflow": ".github/workflows/road-trip-publisher.yml",
-    "apis": ["Anthropic Claude", "Pixabay", "SerpApi", "Supabase", "Sanity", "Telegram"],
+    "apis": [
+      "Anthropic Claude",
+      "Pixabay",
+      "SerpApi",
+      "Supabase",
+      "Sanity",
+      "Telegram"
+    ],
     "output": "Article roadTripArticle créé dans Sanity CMS avec status=review",
     "manualCommand": "npx tsx scripts/agents/road-trip-publisher-agent.ts",
-    "tags": ["SEO", "Road Trip", "Contenu", "Automatique"],
+    "tags": [
+      "SEO",
+      "Road Trip",
+      "Contenu",
+      "Automatique"
+    ],
     "pipeline": "road_trip_requests (sent) → enrichissement → Sanity (review)"
   },
   {
@@ -248,10 +363,21 @@
     "cronExpression": null,
     "file": "scripts/agents/seed-poi-pays-basque.ts",
     "workflow": null,
-    "apis": ["Tavily", "Groq", "Gemini", "Supabase"],
+    "apis": [
+      "Tavily",
+      "Groq",
+      "Gemini",
+      "Supabase"
+    ],
     "output": "Table poi_cache pré-remplie (spots de nuit + POI Pays Basque)",
     "manualCommand": "npx tsx scripts/agents/seed-poi-pays-basque.ts",
-    "tags": ["Road Trip", "Seed", "POI", "Pays Basque", "Manuel"],
+    "tags": [
+      "Road Trip",
+      "Seed",
+      "POI",
+      "Pays Basque",
+      "Manuel"
+    ],
     "pipeline": "Standalone — alimente le wizard /road-trip-personnalise (cache-first)"
   },
   {
@@ -265,10 +391,18 @@
     "cronExpression": null,
     "file": "scripts/agents/road-trip-seed-agent.ts",
     "workflow": null,
-    "apis": ["Anthropic Claude Haiku", "Supabase", "Telegram"],
+    "apis": [
+      "Anthropic Claude Haiku",
+      "Supabase",
+      "Telegram"
+    ],
     "output": "road_trip_requests (45+ rows status=sent) + road_trip_regions descriptions",
     "manualCommand": "npx tsx scripts/agents/road-trip-seed-agent.ts --dry-run",
-    "tags": ["Road Trip", "Seed", "Manuel"],
+    "tags": [
+      "Road Trip",
+      "Seed",
+      "Manuel"
+    ],
     "pipeline": "Standalone — alimente road-trip-publisher"
   },
   {
@@ -282,10 +416,19 @@
     "cronExpression": "0 2 * * *",
     "file": "scripts/agents/seo-image-renamer.ts",
     "workflow": ".github/workflows/nightly-seo-image-renamer.yml",
-    "apis": ["Gemini AI", "Sanity", "Telegram"],
+    "apis": [
+      "Gemini AI",
+      "Sanity",
+      "Telegram"
+    ],
     "output": "mediaAssets Sanity mis à jour (alt, title, tags SEO)",
     "manualCommand": "npx tsx scripts/agents/seo-image-renamer.ts --dry-run",
-    "tags": ["SEO", "Images", "Médiathèque", "Automatique"],
+    "tags": [
+      "SEO",
+      "Images",
+      "Médiathèque",
+      "Automatique"
+    ],
     "pipeline": "Standalone — rattrapage nocturne + webhook temps réel"
   },
   {
@@ -299,10 +442,16 @@
     "cronExpression": null,
     "file": "scripts/agents/memory-obsidian-sync.ts",
     "workflow": null,
-    "apis": ["Supabase"],
+    "apis": [
+      "Supabase"
+    ],
     "output": "Fichiers Markdown dans Vanzon Memory Database/",
     "manualCommand": "npx tsx scripts/agents/memory-obsidian-sync.ts",
-    "tags": ["Mémoire", "Obsidian", "Manuel"],
+    "tags": [
+      "Mémoire",
+      "Obsidian",
+      "Manuel"
+    ],
     "pipeline": "Standalone"
   },
   {
@@ -316,10 +465,17 @@
     "cronExpression": null,
     "file": "scripts/agents/generate-facebook-schedule.ts",
     "workflow": null,
-    "apis": ["Supabase"],
+    "apis": [
+      "Supabase"
+    ],
     "output": "Slots insérés dans facebook_outreach_schedule (status=pending)",
     "manualCommand": "npx tsx scripts/agents/generate-facebook-schedule.ts [--days 28]",
-    "tags": ["Facebook", "Social", "Planning", "Manuel"],
+    "tags": [
+      "Facebook",
+      "Social",
+      "Planning",
+      "Manuel"
+    ],
     "pipeline": "Standalone — à lancer avant facebook-outreach-poster"
   },
   {
@@ -333,10 +489,17 @@
     "cronExpression": null,
     "file": "scripts/agents/seed-facebook-groups.ts",
     "workflow": null,
-    "apis": ["Supabase"],
+    "apis": [
+      "Supabase"
+    ],
     "output": "12 groupes insérés dans facebook_groups",
     "manualCommand": "npx tsx scripts/agents/seed-facebook-groups.ts",
-    "tags": ["Facebook", "Social", "Seed", "Manuel"],
+    "tags": [
+      "Facebook",
+      "Social",
+      "Seed",
+      "Manuel"
+    ],
     "pipeline": "Standalone — seed initial requis avant generate-facebook-schedule"
   },
   {
@@ -350,10 +513,19 @@
     "cronExpression": "0 7 * * 1",
     "file": "scripts/agents/cmo-weekly-agent.ts",
     "workflow": ".github/workflows/cmo-weekly.yml",
-    "apis": ["Groq", "Supabase", "Telegram"],
+    "apis": [
+      "Groq",
+      "Supabase",
+      "Telegram"
+    ],
     "output": "Rapport hebdomadaire stocké dans cmo_reports (visible sur /admin/marketing)",
     "manualCommand": "npx tsx scripts/agents/cmo-weekly-agent.ts",
-    "tags": ["Marketing", "CMO", "Rapport", "Automatique"],
+    "tags": [
+      "Marketing",
+      "CMO",
+      "Rapport",
+      "Automatique"
+    ],
     "pipeline": "Standalone"
   },
   {
@@ -367,10 +539,19 @@
     "cronExpression": "0 7 1 * *",
     "file": "scripts/agents/cmo-monthly-agent.ts",
     "workflow": ".github/workflows/cmo-monthly.yml",
-    "apis": ["Groq", "Supabase", "Telegram"],
+    "apis": [
+      "Groq",
+      "Supabase",
+      "Telegram"
+    ],
     "output": "Audit mensuel stocké dans cmo_reports avec health_score (visible sur /admin/marketing)",
     "manualCommand": "npx tsx scripts/agents/cmo-monthly-agent.ts",
-    "tags": ["Marketing", "CMO", "Audit", "Automatique"],
+    "tags": [
+      "Marketing",
+      "CMO",
+      "Audit",
+      "Automatique"
+    ],
     "pipeline": "Standalone"
   },
   {
@@ -384,10 +565,18 @@
     "cronExpression": null,
     "file": "scripts/agents/pinterest-poster-agent.ts",
     "workflow": null,
-    "apis": ["Pinterest API v5", "Supabase"],
+    "apis": [
+      "Pinterest API v5",
+      "Supabase"
+    ],
     "output": "Pins publiés sur Pinterest + status=published dans pinterest_content_queue",
     "manualCommand": "PINTEREST_WRITE_ENABLED=true npx tsx scripts/agents/pinterest-poster-agent.ts",
-    "tags": ["Pinterest", "Social", "Phase2", "Inactif"],
+    "tags": [
+      "Pinterest",
+      "Social",
+      "Phase2",
+      "Inactif"
+    ],
     "pipeline": "Standalone — suite de pinterest-research"
   },
   {
@@ -404,24 +593,38 @@
     "apis": [],
     "output": "Conseil stratégique structuré (verdict, angles morts, plan d'action)",
     "manualCommand": "/strategie [question]",
-    "tags": ["Stratégie", "Conseil", "Manuel"],
+    "tags": [
+      "Stratégie",
+      "Conseil",
+      "Manuel"
+    ],
     "pipeline": "Standalone — lit Vanzon Memory Database/🔒 INTERNE/strategie/"
   },
   {
     "id": "strategic-review-daily",
     "name": "Agent Review Stratégique Quotidien",
     "emoji": "📋",
-    "status": "active",
-    "description": "Tous les jours à 7h Paris : collecte contexte (git log 24h + stats Supabase + état projet), analyse Groq, nettoie les tâches Todoist obsolètes, crée 5 nouvelles tâches priorisées par impact, envoie un récap Telegram.",
+    "status": "paused",
+    "description": "[REMPLACE PAR /boss] Tous les jours à 7h Paris : collecte contexte (git log 24h + stats Supabase + état projet), analyse Groq, nettoie les tâches Todoist obsolètes, crée 5 nouvelles tâches priorisées par impact, envoie un récap Telegram.",
     "trigger": "cron",
     "schedule": "Tous les jours à 7h Paris (5h UTC)",
     "cronExpression": "0 5 * * *",
     "file": "scripts/agents/strategic-review-daily.ts",
     "workflow": ".github/workflows/strategic-review-daily.yml",
-    "apis": ["Supabase", "Groq", "Todoist", "Telegram"],
+    "apis": [
+      "Supabase",
+      "Groq",
+      "Todoist",
+      "Telegram"
+    ],
     "output": "5 tâches Todoist priorisées + nettoyage + Telegram récap",
     "manualCommand": "npx tsx scripts/agents/strategic-review-daily.ts",
-    "tags": ["Stratégie", "Todoist", "Automatique", "Quotidien"],
+    "tags": [
+      "Stratégie",
+      "Todoist",
+      "Automatique",
+      "Quotidien"
+    ],
     "pipeline": "Standalone — lit état projet + stats + git log → Groq → Todoist"
   },
   {
@@ -435,10 +638,21 @@
     "cronExpression": "0 8 * * 1",
     "file": "scripts/agents/backlinks-weekly-agent.ts",
     "workflow": ".github/workflows/backlinks-weekly.yml",
-    "apis": ["Tavily", "Jina AI", "Groq", "Supabase", "Telegram"],
+    "apis": [
+      "Tavily",
+      "Jina AI",
+      "Groq",
+      "Supabase",
+      "Telegram"
+    ],
     "output": "Nouveaux prospects dans backlink_prospects + session dans backlink_scrape_sessions",
     "manualCommand": "npx tsx scripts/agents/backlinks-weekly-agent.ts",
-    "tags": ["Backlinks", "SEO", "Discovery", "Automatique"],
+    "tags": [
+      "Backlinks",
+      "SEO",
+      "Discovery",
+      "Automatique"
+    ],
     "pipeline": "1 → alimente backlinks-daily-outreach"
   },
   {
@@ -452,10 +666,17 @@
     "cronExpression": "0 9 * * 1",
     "file": "scripts/agents/social-trend-scraper.ts",
     "workflow": null,
-    "apis": ["Groq"],
+    "apis": [
+      "Groq"
+    ],
     "output": "10 idées ajoutées à Vanzon Memory Database/🌐 PUBLIC/social/📋 Reel Ideas Bank.md",
     "manualCommand": "npx tsx scripts/agents/social-trend-scraper.ts",
-    "tags": ["Social", "Instagram", "Reels", "Automatique"],
+    "tags": [
+      "Social",
+      "Instagram",
+      "Reels",
+      "Automatique"
+    ],
     "pipeline": "1 → alimente reel-producer"
   },
   {
@@ -469,10 +690,45 @@
     "cronExpression": "0 10 * * 1,3,5",
     "file": "scripts/agents/reel-producer.ts",
     "workflow": null,
-    "apis": ["Groq", "Telegram", "ffmpeg"],
+    "apis": [
+      "Groq",
+      "Telegram",
+      "ffmpeg"
+    ],
     "output": "Reel MP4 envoyé sur Telegram + idée marquée 🎬 dans la banque",
     "manualCommand": "npx tsx scripts/agents/reel-producer.ts",
-    "tags": ["Social", "Instagram", "Reels", "Production", "Automatique"],
+    "tags": [
+      "Social",
+      "Instagram",
+      "Reels",
+      "Production",
+      "Automatique"
+    ],
     "pipeline": "2 → consomme les idées du social-trend-scraper"
+  },
+  {
+    "id": "boss",
+    "name": "Boss — Business Operating System",
+    "emoji": "🧠",
+    "status": "active",
+    "description": "COO IA personnel de Jules. Diagnostique le bottleneck business, propose des actions priorisees, collecte les donnees dynamiques (funnel VBA, GSC, backlinks, CMO). Base sur le framework BOS de Yomi Denzel, adapte pour Vanzon Explorer. Remplace strategic-director et strategic-review-daily.",
+    "trigger": "manual",
+    "schedule": "A la demande via /boss",
+    "cronExpression": null,
+    "file": "agents/boss.md",
+    "workflow": null,
+    "apis": [
+      "Supabase",
+      "Google Search Console"
+    ],
+    "output": "Diagnostic business, plan d action priorise, mise a jour Core files",
+    "manualCommand": "/boss [question ou contexte]",
+    "tags": [
+      "Strategie",
+      "Business",
+      "Diagnostic",
+      "Manuel"
+    ],
+    "pipeline": "Lit les Core files (boss/) + donnees dynamiques Supabase + GSC"
   }
 ]

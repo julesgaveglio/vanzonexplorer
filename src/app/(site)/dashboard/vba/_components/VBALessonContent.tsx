@@ -4,6 +4,9 @@ import { useState, useCallback } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
+import Link from "@tiptap/extension-link";
+import { TextStyle } from "@tiptap/extension-text-style";
+import { Color } from "@tiptap/extension-color";
 import {
   Pencil,
   X,
@@ -14,6 +17,8 @@ import {
   List,
   ImagePlus,
   Loader2,
+  LinkIcon,
+  Palette,
 } from "lucide-react";
 
 interface Props {
@@ -40,6 +45,16 @@ export default function VBALessonContent({
       Image.configure({
         HTMLAttributes: { class: "rounded-xl max-w-full" },
       }),
+      Link.configure({
+        openOnClick: false,
+        HTMLAttributes: {
+          class: "text-blue-600 underline hover:text-blue-800",
+          target: "_blank",
+          rel: "noopener noreferrer",
+        },
+      }),
+      TextStyle,
+      Color,
     ],
     content: content || "",
     editorProps: {
@@ -189,6 +204,30 @@ export default function VBALessonContent({
         <div className="w-px h-5 bg-slate-200 mx-1" />
 
         <ToolbarButton
+          onClick={() => {
+            if (editor?.isActive("link")) {
+              editor.chain().focus().unsetLink().run();
+            } else {
+              const url = window.prompt("URL du lien :");
+              if (url) {
+                editor?.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
+              }
+            }
+          }}
+          active={editor?.isActive("link")}
+          title="Lien"
+        >
+          <LinkIcon className="w-4 h-4" />
+        </ToolbarButton>
+
+        <ColorPicker
+          onSelect={(color) => editor?.chain().focus().setColor(color).run()}
+          onReset={() => editor?.chain().focus().unsetColor().run()}
+        />
+
+        <div className="w-px h-5 bg-slate-200 mx-1" />
+
+        <ToolbarButton
           onClick={handleImageUpload}
           disabled={uploading}
           title="Ajouter une image"
@@ -226,6 +265,52 @@ export default function VBALessonContent({
 
       {/* Editor */}
       <EditorContent editor={editor} />
+    </div>
+  );
+}
+
+const COLORS = [
+  { label: "Or", value: "#B9945F" },
+  { label: "Bleu", value: "#2563eb" },
+  { label: "Vert", value: "#16a34a" },
+  { label: "Rouge", value: "#dc2626" },
+  { label: "Violet", value: "#7c3aed" },
+  { label: "Orange", value: "#ea580c" },
+];
+
+function ColorPicker({
+  onSelect,
+  onReset,
+}: {
+  onSelect: (color: string) => void;
+  onReset: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="relative">
+      <ToolbarButton onClick={() => setOpen(!open)} title="Couleur du texte">
+        <Palette className="w-4 h-4" />
+      </ToolbarButton>
+      {open && (
+        <div className="absolute top-full left-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg p-2 flex gap-1.5 z-50">
+          {COLORS.map((c) => (
+            <button
+              key={c.value}
+              onClick={() => { onSelect(c.value); setOpen(false); }}
+              title={c.label}
+              className="w-6 h-6 rounded-full border-2 border-white shadow-sm hover:scale-110 transition-transform"
+              style={{ backgroundColor: c.value }}
+            />
+          ))}
+          <button
+            onClick={() => { onReset(); setOpen(false); }}
+            title="Réinitialiser"
+            className="w-6 h-6 rounded-full border-2 border-slate-300 bg-white text-xs flex items-center justify-center hover:bg-slate-100"
+          >
+            ×
+          </button>
+        </div>
+      )}
     </div>
   );
 }
