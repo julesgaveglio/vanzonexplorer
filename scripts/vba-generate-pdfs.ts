@@ -1,5 +1,5 @@
 /**
- * VBA — Generate recap PDFs for each module
+ * VBA -Generate recap PDFs for each module
  * Usage: npx tsx scripts/vba-generate-pdfs.ts
  *
  * Generates branded PDF recaps with:
@@ -57,7 +57,7 @@ const MODULES: ModulePDF[] = [
     proTips: [
       "Si tu hesites entre VASP et non-VASP, commence par non-VASP. Tu pourras toujours homologuer plus tard.",
       "Le VASP se justifie surtout si ton objectif est l'achat-revente avec plus-value maximale.",
-      "Garde Airtable ouvert en permanence pendant tout le projet — c'est ton tableau de bord central.",
+      "Garde Airtable ouvert en permanence pendant tout le projet -c'est ton tableau de bord central.",
     ],
   },
   {
@@ -119,9 +119,9 @@ const MODULES: ModulePDF[] = [
     ],
     proTips: [
       "Boxio = la marque recommandee pour la cuisine (rechaud gaz + lavabo + toilettes portatives). Code promo : 20ZONES.",
-      "Vernir le contreplaque des 2 cotes — il est sensible a l'eau.",
+      "Vernir le contreplaque des 2 cotes -il est sensible a l'eau.",
       "Ne construis JAMAIS de meubles sans verifier la hauteur du plafond d'abord.",
-      "Appelle Dispano plutot que de commander en ligne — les prix varient entre agences.",
+      "Appelle Dispano plutot que de commander en ligne -les prix varient entre agences.",
     ],
     tools: [
       { name: "Airtable (budget & suivi)", url: "https://airtable.com" },
@@ -156,9 +156,9 @@ const MODULES: ModulePDF[] = [
       "Prevoir le budget supplementaire VASP (600-1 500 EUR homologation)",
     ],
     proTips: [
-      "Prends des photos a CHAQUE etape des travaux — tu en auras besoin pour le dossier VASP.",
-      "Achete uniquement des equipements avec des certificats de conformite — ca simplifie le dossier.",
-      "Le L1H1 est moins intimidant pour les locataires qu'un grand fourgon — avantage commercial.",
+      "Prends des photos a CHAQUE etape des travaux -tu en auras besoin pour le dossier VASP.",
+      "Achete uniquement des equipements avec des certificats de conformite -ca simplifie le dossier.",
+      "Le L1H1 est moins intimidant pour les locataires qu'un grand fourgon -avantage commercial.",
     ],
   },
   {
@@ -186,10 +186,10 @@ const MODULES: ModulePDF[] = [
       "Construire les meubles (pre-percer les tasseaux !)",
     ],
     proTips: [
-      "Utilise l'ancien sol comme patron pour decouper le nouveau — gain de temps enorme.",
+      "Utilise l'ancien sol comme patron pour decouper le nouveau -gain de temps enorme.",
       "Framéto anti-rouille + primaire d'accroche sur TOUTES les decoupes dans la carrosserie.",
       "Pense en 4D quand tu construis tes meubles : verifie TOUJOURS la hauteur plafond avant.",
-      "Nettoyeur 450W max — au-dela tu risques de faire sauter le circuit electrique du van.",
+      "Nettoyeur 450W max -au-dela tu risques de faire sauter le circuit electrique du van.",
     ],
   },
   {
@@ -216,7 +216,7 @@ const MODULES: ModulePDF[] = [
     ],
     proTips: [
       "Utilise ChatGPT pour calculer les sections de cable exactes (longueur + amperage + voltage).",
-      "Le regulateur solaire a 2 prises USB integrees — branche-les directement dessus pour les telephones.",
+      "Le regulateur solaire a 2 prises USB integrees -branche-les directement dessus pour les telephones.",
       "Mets un interrupteur ON/OFF entre la batterie et les multiprises pour preserver la batterie quand le van est stocke.",
     ],
     keyNumbers: [
@@ -279,9 +279,9 @@ const MODULES: ModulePDF[] = [
       "Lister les objets obligatoires (extincteur, triangle, gilet, etc.)",
     ],
     proTips: [
-      "Achete TOUS les equipements avec certificats de conformite des le depart — ca t'evitera de tout racheter.",
+      "Achete TOUS les equipements avec certificats de conformite des le depart -ca t'evitera de tout racheter.",
       "Fais la pesee AVANT le depot de dossier, pas apres. Si tu es trop lourd, tu devras alleguer.",
-      "Prends des photos de CHAQUE norme respectee — elles iront dans le dossier DREAL.",
+      "Prends des photos de CHAQUE norme respectee -elles iront dans le dossier DREAL.",
     ],
   },
   {
@@ -306,7 +306,7 @@ const MODULES: ModulePDF[] = [
     ],
     proTips: [
       "Fais une copie numerique de TOUT le dossier avant de le deposer.",
-      "Appelle la DREAL avant de deposer pour verifier qu'il ne manque rien — ca evite les allers-retours.",
+      "Appelle la DREAL avant de deposer pour verifier qu'il ne manque rien -ca evite les allers-retours.",
       "Les delais varient de 2 semaines a 2 mois selon les regions.",
     ],
   },
@@ -315,7 +315,7 @@ const MODULES: ModulePDF[] = [
     title: "Business de Location",
     emoji: "💰",
     summary:
-      "Le module le plus complet : comment transformer ton van en source de revenus recurrents. Business model, etude de marche, pricing, gestion client, automatisation, fiscalite — tout est couvert avec les vrais chiffres de Vanzon.",
+      "Le module le plus complet : comment transformer ton van en source de revenus recurrents. Business model, etude de marche, pricing, gestion client, automatisation, fiscalite -tout est couvert avec les vrais chiffres de Vanzon.",
     keyTakeaways: [
       "3 piliers du modele : revenus locatifs + plus-value revente + capital reutilisable",
       "Plateformes : Yescapa (principale) + Wikicampers, elles gerent paiements + assurance + contrats",
@@ -337,9 +337,9 @@ const MODULES: ModulePDF[] = [
     ],
     proTips: [
       "L'astuce caution : dis au locataire 'si le van est propre au retour, caution restituee integralement'. Ils rendent TOUJOURS propre.",
-      "Bloque des dates pour toi aussi — le van est un actif mais aussi un vehicule de plaisir.",
+      "Bloque des dates pour toi aussi -le van est un actif mais aussi un vehicule de plaisir.",
       "La video YouTube de presentation du van peut remplacer la visite en personne.",
-      "Ne commence PAS a > 8 200 EUR/an — reste en declaration particulier le plus longtemps possible.",
+      "Ne commence PAS a > 8 200 EUR/an -reste en declaration particulier le plus longtemps possible.",
     ],
     tools: [
       { name: "Yescapa", url: "https://www.yescapa.com" },
@@ -364,7 +364,7 @@ function generatePDF(mod: ModulePDF) {
     bufferPages: true,
     margins: { top: 50, bottom: 50, left: 50, right: 50 },
     info: {
-      Title: `VBA — Module ${mod.moduleNum} : ${mod.title}`,
+      Title: `VBA -Module ${mod.moduleNum} : ${mod.title}`,
       Author: "Vanzon Explorer",
     },
   });
@@ -380,7 +380,7 @@ function generatePDF(mod: ModulePDF) {
   doc.fontSize(11).fillColor("#ffffff").opacity(0.6)
     .text("VAN BUSINESS ACADEMY", 50, 25, { width: pageWidth });
   doc.fontSize(22).fillColor("#ffffff").opacity(1)
-    .text(`Module ${mod.moduleNum} — ${mod.title}`, 50, 48, { width: pageWidth });
+    .text(`Module ${mod.moduleNum} -${mod.title}`, 50, 48, { width: pageWidth });
 
   doc.moveDown(2);
   let y = 110;
@@ -399,7 +399,7 @@ function generatePDF(mod: ModulePDF) {
   y += 22;
   for (const point of mod.keyTakeaways) {
     if (y > 720) { doc.addPage(); y = 50; }
-    doc.fillColor(GOLD).fontSize(10).text("▸", 50, y);
+    doc.fillColor(GOLD).fontSize(10).text(">", 50, y);
     doc.fillColor(DARK).fontSize(10).text(point, 65, y, {
       width: pageWidth - 15,
       lineGap: 3,
@@ -424,11 +424,11 @@ function generatePDF(mod: ModulePDF) {
 
   // ── Checklist ──
   if (y > 600) { doc.addPage(); y = 50; }
-  doc.fillColor(GOLD).fontSize(14).text("Checklist — A faire", 50, y);
+  doc.fillColor(GOLD).fontSize(14).text("Checklist -A faire", 50, y);
   y += 22;
   for (const item of mod.checklist) {
     if (y > 720) { doc.addPage(); y = 50; }
-    doc.fillColor(GRAY).fontSize(10).text("☐", 50, y);
+    doc.fillColor(GRAY).fontSize(10).text("[ ]", 50, y);
     doc.fillColor(DARK).fontSize(10).text(item, 68, y, {
       width: pageWidth - 18,
       lineGap: 3,
@@ -443,7 +443,7 @@ function generatePDF(mod: ModulePDF) {
   y += 22;
   for (const tip of mod.proTips) {
     if (y > 720) { doc.addPage(); y = 50; }
-    doc.fillColor(GOLD).fontSize(10).text("💡", 50, y);
+    doc.fillColor(GOLD).fontSize(10).text("*", 50, y);
     doc.fillColor(DARK).fontSize(10).text(tip, 68, y, {
       width: pageWidth - 18,
       lineGap: 3,
@@ -460,7 +460,7 @@ function generatePDF(mod: ModulePDF) {
     for (const tool of mod.tools) {
       if (y > 720) { doc.addPage(); y = 50; }
       doc.fillColor(DARK).fontSize(10).text(`${tool.name}`, 50, y, { continued: true });
-      doc.fillColor(GRAY).fontSize(9).text(`  — ${tool.url}`, { lineGap: 3 });
+      doc.fillColor(GRAY).fontSize(9).text(`  -${tool.url}`, { lineGap: 3 });
       y = doc.y + 6;
     }
   }
@@ -471,7 +471,7 @@ function generatePDF(mod: ModulePDF) {
     doc.switchToPage(i);
     doc.fillColor(GRAY).opacity(0.5).fontSize(8)
       .text(
-        `vanzonexplorer.com — Van Business Academy — Module ${mod.moduleNum}`,
+        `vanzonexplorer.com -Van Business Academy -Module ${mod.moduleNum}`,
         50,
         doc.page.height - 35,
         { width: pageWidth, align: "center" }
@@ -483,7 +483,7 @@ function generatePDF(mod: ModulePDF) {
   return new Promise<string>((resolve) => {
     stream.on("finish", () => {
       const size = fs.statSync(filePath).size;
-      console.log(`  ✅ Module ${mod.moduleNum} — ${(size / 1024).toFixed(0)} KB`);
+      console.log(`  ✅ Module ${mod.moduleNum} -${(size / 1024).toFixed(0)} KB`);
       resolve(filePath);
     });
   });
