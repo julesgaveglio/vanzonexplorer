@@ -130,15 +130,20 @@ export default function VBASidebar({
                   <Image
                     src={iconSrc}
                     alt=""
-                    width={24}
-                    height={24}
-                    className="w-6 h-6 flex-shrink-0"
+                    width={18}
+                    height={18}
+                    className="w-[18px] h-[18px] flex-shrink-0"
                     unoptimized
                   />
                 )}
-                <span className="text-sm font-medium text-slate-700 flex-1 leading-snug">
-                  {mod.title}
-                </span>
+                <div className="flex-1 leading-tight">
+                  <span className="text-xs font-bold text-slate-800 block">
+                    Module {mod.order}
+                  </span>
+                  <span className="text-xs text-slate-500">
+                    {mod.title.replace(/^Module \d+\s*[—–-]\s*/, "")}
+                  </span>
+                </div>
               </button>
 
               {isOpen && (

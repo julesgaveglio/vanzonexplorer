@@ -159,20 +159,25 @@ export default async function VBAPage() {
               <div key={mod.id} className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
                 <div className="p-4 sm:p-5 border-b border-slate-50">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2.5">
+                    <div className="flex items-center gap-3">
                       {iconSrc && (
                         <Image
                           src={iconSrc}
                           alt=""
-                          width={24}
-                          height={24}
-                          className="w-6 h-6 flex-shrink-0"
+                          width={20}
+                          height={20}
+                          className="w-5 h-5 flex-shrink-0"
                           unoptimized
                         />
                       )}
-                      <h3 className="font-bold text-slate-900 text-sm sm:text-base">
-                        {mod.title}
-                      </h3>
+                      <div className="leading-tight">
+                        <h3 className="font-bold text-slate-900 text-sm">
+                          Module {mod.order}
+                        </h3>
+                        <p className="text-slate-500 text-xs sm:text-sm">
+                          {mod.title.replace(/^Module \d+\s*[—–-]\s*/, "")}
+                        </p>
+                      </div>
                     </div>
                     <span className="text-xs text-slate-400 flex-shrink-0 ml-4">
                       {modCompleted}/{modLessons.length}
