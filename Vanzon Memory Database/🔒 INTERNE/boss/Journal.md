@@ -43,9 +43,12 @@
 - Cron Vercel daily 10h Paris pour les emails automatiques
 - 73/73 transcrits complets
 
+**Corrections Jules :**
+- Amine n'a PAS encore paye → pas d'acces formation → pas de message WhatsApp
+- Modules 7, 9, 10 deja verifies par Jules → ne plus proposer
+- Prochaine action concrete : tourner la video sommaire mise a jour (M1)
+
 **A faire au prochain /boss :**
-- Finir sync VBA modules 5-10
-- Implementer la sequence email automatique (cron + Resend)
+- Tourner la video sommaire M1 (10 modules + 2 parcours VASP/non-VASP)
 - Verifier pourquoi le tracking purchase ne fire pas (webhook Stripe?)
-- Generer les transcrits des 5 nouvelles videos (Bunny encode)
-- Vision mise a jour : plus de plafond 2000 EUR, roadmap 5 phases documentee
+- Attendre paiement Amine (debut mai)
