@@ -1,9 +1,12 @@
 /**
- * VBA Funnel follow-up emails (E2 J+1 & E3 J+3)
- * Sent only if the lead has NOT triggered a vsl_view event
+ * VBA Funnel follow-up emails
+ * E2 J+1 — "Tu n'as pas encore regardé la vidéo ?" (si pas de vsl_view)
+ * E3 J+3 — "Dernière chance de voir ça" (si toujours pas de vsl_view)
+ * E4 J+1 post-VSL — "Tu as regardé la vidéo jusqu'au bout" (si vsl_100 mais pas booking_start)
  */
 
 const VSL_BASE = "https://vanzonexplorer.com/van-business-academy/presentation";
+const CALENDLY_URL = "https://calendly.com/vanzonexplorer/new-meeting?utm_source=email&utm_medium=sequence&utm_campaign=post-vsl";
 
 function simpleEmail(body: string): string {
   return `<!DOCTYPE html>
@@ -53,6 +56,26 @@ export function buildFollowupE3(firstname: string): { subject: string; html: str
 <p>Dans cette vidéo de 15 minutes, je t'explique exactement comment j'ai fait et comment tu peux faire pareil.</p>
 ${ctaButton("followup-j3")}
 <p>Si c'est pas pour toi, aucun souci. Mais au moins tu auras les infos pour décider.</p>
+<p>Jules</p>
+`),
+  };
+}
+
+export function buildFollowupE4(firstname: string): { subject: string; html: string } {
+  return {
+    subject: `Tu as regardé la vidéo jusqu'au bout`,
+    html: simpleEmail(`
+<p>Salut ${firstname},</p>
+<p>Tu as regardé ma vidéo en entier, et ça me fait plaisir.</p>
+<p>Je vais être honnête avec toi : je suis en train de lancer cet accompagnement. C'est tout nouveau. Et j'ai besoin de 10 personnes motivées qui veulent se lancer dans le business de location de van et qui sont prêtes à me faire des retours honnêtes pour que je puisse améliorer le contenu.</p>
+<p>En échange, je t'offre un tarif de lancement que je ne proposerai plus jamais, et surtout un accompagnement personnalisé sur WhatsApp où je réponds à toutes tes questions, du choix du véhicule jusqu'à ta première réservation.</p>
+<p>Il reste 4 places sur 10.</p>
+<p style="margin:24px 0;">
+  <a href="${CALENDLY_URL}" target="_blank" style="display:inline-block;background:linear-gradient(135deg,#B9945F 0%,#E4D398 100%);color:#FFFFFF;text-decoration:none;padding:14px 32px;border-radius:10px;font-size:15px;font-weight:600;">
+    Réserver un appel de 30 min &rarr;
+  </a>
+</p>
+<p>C'est un appel de 30 minutes, sans engagement. On discute de ton projet, je te dis si c'est adapté à ta situation, et tu décides après.</p>
 <p>Jules</p>
 `),
   };
