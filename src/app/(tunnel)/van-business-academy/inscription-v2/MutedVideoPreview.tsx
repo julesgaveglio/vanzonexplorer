@@ -1,59 +1,58 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import Image from "next/image";
 
-const VIDEO_HLS_URL =
-  "https://vz-bac05373-d10.b-cdn.net/7739a3f1-ad32-4839-ba56-e4dc60a27a47/playlist.m3u8";
 const VIDEO_POSTER =
   "https://vz-bac05373-d10.b-cdn.net/7739a3f1-ad32-4839-ba56-e4dc60a27a47/thumbnail.jpg";
 
 export default function MutedVideoPreview() {
-  const videoRef = useRef<HTMLVideoElement>(null);
-
-  useEffect(() => {
-    const v = videoRef.current;
-    if (!v) return;
-
-    // Disable all text tracks (subtitles/captions)
-    const disableTracks = () => {
-      for (let i = 0; i < v.textTracks.length; i++) {
-        v.textTracks[i].mode = "disabled";
-      }
-    };
-
-    if (v.canPlayType("application/vnd.apple.mpegurl")) {
-      v.src = VIDEO_HLS_URL;
-      v.muted = true;
-      disableTracks();
-      v.play().catch(() => {});
-    } else {
-      import("hls.js").then(({ default: Hls }) => {
-        if (!Hls.isSupported()) return;
-        const hls = new Hls({ startLevel: 0, enableWebVTT: false, enableCEA708Captions: false });
-        hls.loadSource(VIDEO_HLS_URL);
-        hls.attachMedia(v);
-        hls.on(Hls.Events.MANIFEST_PARSED, () => {
-          v.muted = true;
-          disableTracks();
-          v.play().catch(() => {});
-        });
-        hls.on(Hls.Events.SUBTITLE_TRACKS_UPDATED, disableTracks);
-      });
+  const handleClick = () => {
+    const form = document.getElementById("optin-form-v2");
+    if (form) {
+      form.scrollIntoView({ behavior: "smooth", block: "center" });
+      const firstInput = form.querySelector("input");
+      if (firstInput) setTimeout(() => firstInput.focus(), 500);
     }
-
-    v.addEventListener("loadedmetadata", disableTracks);
-    return () => v.removeEventListener("loadedmetadata", disableTracks);
-  }, []);
+  };
 
   return (
-    <video
-      ref={videoRef}
-      poster={VIDEO_POSTER}
-      muted
-      autoPlay
-      playsInline
-      loop
-      className="w-full aspect-video object-cover"
-    />
+    <button
+      onClick={handleClick}
+      className="relative w-full block rounded-2xl overflow-hidden group cursor-pointer"
+      style={{ aspectRatio: "16/9" }}
+      aria-label="Voir la vidéo gratuite"
+    >
+      <Image
+        src={VIDEO_POSTER}
+        alt="Aperçu vidéo Van Business Academy"
+        fill
+        unoptimized
+        className="object-cover"
+        priority
+      />
+
+      {/* Dark overlay */}
+      <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors" />
+
+      {/* Play button */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div
+          className="w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform"
+          style={{
+            background: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
+          }}
+        >
+          <svg
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            fill="#fff"
+            className="ml-1"
+          >
+            <polygon points="6,3 20,12 6,21" />
+          </svg>
+        </div>
+      </div>
+    </button>
   );
 }

@@ -62,6 +62,7 @@ export default function OptinPageV2() {
               business rentable
             </span>{" "}
             de van aménagé{" "}
+            de{" "}
             <span
               style={{
                 background: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
@@ -69,7 +70,7 @@ export default function OptinPageV2() {
                 WebkitTextFillColor: "transparent",
               }}
             >
-              de A à Z
+              A à Z
             </span>
             , même{" "}
             <span
