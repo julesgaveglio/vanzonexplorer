@@ -3,10 +3,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, LayoutDashboard, Users, Play, LogOut } from "lucide-react";
+import { Menu, X, LayoutDashboard, MousePointerClick, Users, Play, LogOut } from "lucide-react";
 
 const LINKS = [
   { href: "/ads", label: "Dashboard", icon: LayoutDashboard, exact: true },
+  { href: "/ads/optin", label: "Opt-in", icon: MousePointerClick },
   { href: "/ads/leads", label: "Leads", icon: Users },
   { href: "/ads/vsl", label: "VSL", icon: Play },
 ];

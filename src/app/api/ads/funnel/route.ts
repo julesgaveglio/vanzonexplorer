@@ -42,7 +42,8 @@ export async function GET(req: NextRequest) {
     .select("event, email, session_id, created_at, utm_source, utm_campaign, utm_content")
     .gte("created_at", since)
     .or(`email.is.null,email.not.in.(${EXCLUDED_EMAILS.join(",")})`)
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .limit(10000);
 
   if (until) {
     query = query.lte("created_at", until);

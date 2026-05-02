@@ -24,7 +24,8 @@ export async function GET(req: NextRequest) {
     .in("event", ["page_view", "optin"])
     .gte("created_at", since)
     .or(`email.is.null,email.not.in.(${EXCLUDED_EMAILS.join(",")})`)
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .limit(10000);
 
   const allEvents = events ?? [];
 
