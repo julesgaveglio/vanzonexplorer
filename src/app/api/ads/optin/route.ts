@@ -65,12 +65,9 @@ export async function GET(req: NextRequest) {
     },
   ];
 
-  // Total — global uniques
-  const allOptinEvents = allEvents.filter(
-    (e) => e.page === INSCRIPTION_PAGE || e.page === INSCRIPTION_V2_PAGE
-  );
-  const totalViews = countUnique(allOptinEvents, "page_view");
-  const totalOptins = countUnique(allOptinEvents, "optin");
+  // Total — même comptage que le dashboard principal (pas de filtre par page)
+  const totalViews = countUnique(allEvents, "page_view");
+  const totalOptins = countUnique(allEvents, "optin");
   const totalRate = totalViews > 0 ? Math.round((totalOptins / totalViews) * 100 * 10) / 10 : 0;
 
   // Daily breakdown
