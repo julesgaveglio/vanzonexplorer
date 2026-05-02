@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { Suspense } from "react";
+import Image from "next/image";
 import OptinForm from "./OptinForm";
-import FakeVideoThumb from "./FakeVideoThumb";
 import PageViewTracker from "./PageViewTracker";
-import BeforeAfterSlider from "@/components/ui/BeforeAfterSlider";
+import VideoThumb from "./VideoThumb";
+
 export const metadata: Metadata = {
   title: "Formation Van Business Academy",
   description:
@@ -12,194 +12,256 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-const VAN_PHOTOS = [
-  // 6 nouvelles photos (dans l'ordre)
-  {
-    src: "https://cdn.sanity.io/images/lewexa74/production/b9e17e130b0c26af16b1feb8748d21612e722a64-1920x1080.png",
-    alt: "Van aménagé Vanzon — construction meuble atelier",
-  },
-  {
-    src: "https://cdn.sanity.io/images/lewexa74/production/c70a917e07fc97ffa4fb1fb7b934442a34b909c7-1920x1080.png",
-    alt: "Van aménagé Vanzon — intérieur bois et rangements",
-  },
-  {
-    src: "https://cdn.sanity.io/images/lewexa74/production/85d7e9705921806e4b4e0f2c3de444766b849bc4-1920x1080.png",
-    alt: "Van aménagé Vanzon — meuble arrière filets",
-  },
-  {
-    src: "https://cdn.sanity.io/images/lewexa74/production/068918fd837d35adbd9bb9d618d8cee11c8d7487-1920x1080.png",
-    alt: "Van aménagé Vanzon — tournage vidéo lit",
-  },
-  {
-    src: "https://cdn.sanity.io/images/lewexa74/production/500a017dd30a6edcdc13bada3bd93cee215d9ff4-1920x1080.png",
-    alt: "Van aménagé Vanzon — cuisine extérieure coucher de soleil",
-  },
-  {
-    src: "https://cdn.sanity.io/images/lewexa74/production/4bf0c179cde8e3e6101b0e4ee2b8638a56de9839-1920x1080.png",
-    alt: "Van aménagé Vanzon — cuisine coulissante avec table",
-  },
-  // Photos existantes
-  {
-    src: "https://cdn.sanity.io/images/lewexa74/production/9da403575f5e7fa290ec4c8a65e1705e0182c95a-2182x1362.png?auto=format&fit=max&q=82",
-    alt: "Van aménagé Vanzon — extérieur",
-  },
-  {
-    src: "https://cdn.sanity.io/images/lewexa74/production/0dce51f1f42fde5dd51529fe1c61b74221edcb4e-4032x3024.jpg?auto=format&fit=max&q=82",
-    alt: "Van aménagé Vanzon — intérieur cuisine",
-  },
-  {
-    src: "https://cdn.sanity.io/images/lewexa74/production/0ae4827be0c39318cca4f43ff1febb903a3541c1-4032x3024.jpg?auto=format&fit=max&q=82",
-    alt: "Van aménagé Vanzon — intérieur espace de vie",
-  },
-  {
-    src: "https://cdn.sanity.io/images/lewexa74/production/95175bcfd8540286b18ec3b7484e23f490bcf5dd-2000x1500.webp?auto=format&fit=max&q=82",
-    alt: "Van aménagé Vanzon — vue d'ensemble",
-  },
-];
-
-// Double the array for seamless infinite scroll
-const MARQUEE_PHOTOS = [...VAN_PHOTOS, ...VAN_PHOTOS];
-
 export default function OptinPage() {
   return (
-    <div className="flex flex-col items-center min-h-[calc(100vh-80px)] pb-12">
-      <PageViewTracker />
-      {/* Marquee photos — hidden on small mobile to keep form above fold */}
-      <div className="w-full overflow-hidden mb-8 hidden sm:block">
-        <div className="flex animate-scroll-banner gap-4 py-2" style={{ width: "max-content" }}>
-          {MARQUEE_PHOTOS.map((photo, i) => (
-            <div
-              key={i}
-              className="flex-shrink-0 rounded-2xl overflow-hidden shadow-md"
-              style={{ width: 280, height: 190 }}
-            >
-              <Image
-                src={photo.src}
-                alt={photo.alt}
-                width={280}
-                height={190}
-                unoptimized
-                className="w-full h-full object-cover"
-              />
-            </div>
-          ))}
-        </div>
-      </div>
+    <div
+      className="min-h-screen relative overflow-hidden"
+      style={{ background: "#0A0A0A" }}
+    >
+      {/* Gradient glow effect behind content */}
+      <div
+        className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(185,148,95,0.22) 0%, rgba(228,211,152,0.12) 40%, transparent 70%)",
+          filter: "blur(80px)",
+        }}
+      />
 
-      <div className="w-full max-w-lg px-4">
-        {/* Fake video thumbnail — click scrolls to form */}
-        <FakeVideoThumb />
+      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 py-10">
+        <PageViewTracker />
 
-        {/* Badge */}
-        <div className="flex justify-center mb-6">
-          <span
-            className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider px-4 py-1.5 rounded-full"
+        <div className="w-full max-w-lg mx-auto flex flex-col items-center">
+          {/* Badge cible */}
+          <div
+            className="inline-flex px-5 py-2.5 rounded-full text-center mb-8"
             style={{
-              background: "rgba(185,148,95,0.10)",
-              color: "#B9945F",
-              border: "1px solid rgba(185,148,95,0.20)",
+              border: "1px solid rgba(185,148,95,0.4)",
+              background: "rgba(185,148,95,0.08)",
             }}
           >
-            Van Business Academy
-          </span>
-        </div>
-
-        {/* Titre */}
-        <h1
-          className="font-display text-3xl sm:text-4xl text-center leading-tight mb-4"
-          style={{ color: "#0F172A" }}
-        >
-          Découvre comment créer un <strong>business rentable</strong> de van aménagé de A à Z
-        </h1>
-
-        {/* Sous-titre */}
-        <p className="text-center text-slate-500 text-base sm:text-lg mb-8 leading-relaxed">
-          La <strong className="text-slate-700">vidéo gratuite</strong> qui t&apos;explique exactement comment lancer ta propre activité
-          de van aménagé, même <strong className="text-slate-700">sans expérience</strong> en mécanique ou en aménagement.
-        </p>
-
-        {/* Formulaire — visible sans scroll sur mobile */}
-        <Suspense>
-          <OptinForm />
-        </Suspense>
-
-        {/* Réassurance */}
-        <p className="text-center text-xs text-slate-400 mt-6">
-          Tes informations restent confidentielles. Pas de spam, promis.
-        </p>
-
-        {/* Bénéfices — après le formulaire sur mobile */}
-        <div className="space-y-3 mt-8 mb-8">
-          <div className="flex items-start gap-3">
             <span
-              className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center mt-0.5"
-              style={{ background: "#10B981" }}
+              className="text-xs sm:text-sm font-semibold uppercase tracking-wider leading-snug"
+              style={{ color: "#B9945F" }}
             >
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M20 6L9 17l-5-5" />
-              </svg>
+              Pour les passionnés de vans qui veulent plus
+              <br className="sm:hidden" /> de liberté et créer un business rentable
             </span>
-            <p className="text-slate-600 text-sm leading-relaxed">
-              Comment <strong className="text-slate-800">acheter, aménager et rentabiliser</strong> un van en partant de zéro
-            </p>
           </div>
-          <div className="flex items-start gap-3">
-            <span
-              className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center mt-0.5"
-              style={{ background: "#10B981" }}
-            >
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M20 6L9 17l-5-5" />
-              </svg>
-            </span>
-            <p className="text-slate-600 text-sm leading-relaxed">
-              La méthode pour générer des <strong className="text-slate-800">revenus récurrents</strong> avec la location
-            </p>
-          </div>
-          <div className="flex items-start gap-3">
-            <span
-              className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center mt-0.5"
-              style={{ background: "#10B981" }}
-            >
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M20 6L9 17l-5-5" />
-              </svg>
-            </span>
-            <p className="text-slate-600 text-sm leading-relaxed">
-              Les <strong className="text-slate-800">erreurs qui coûtent des milliers d&apos;euros</strong> (et comment les éviter)
-            </p>
-          </div>
-          <div className="flex items-start gap-3">
-            <span
-              className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center mt-0.5"
-              style={{ background: "#10B981" }}
-            >
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M20 6L9 17l-5-5" />
-              </svg>
-            </span>
-            <p className="text-slate-600 text-sm leading-relaxed">
-              Comment revendre ton van avec <strong className="text-slate-800">plusieurs milliers d&apos;euros de plus-value</strong>
-            </p>
-          </div>
-        </div>
 
-        {/* Before/After Slider */}
-        <div className="mt-2">
-          <p className="text-center text-xs font-semibold uppercase tracking-wider text-slate-400 mb-4">
-            La transformation
-          </p>
-          <BeforeAfterSlider
-            beforeSrc="https://cdn.sanity.io/images/lewexa74/production/c255ea909e53ab9253932c9924e9b22ad8657bfe-600x668.png"
-            afterSrc="https://cdn.sanity.io/images/lewexa74/production/957901ef27061c890d5bc8876c2aae09e708d13e-600x668.png"
-            beforeAlt="Renault Trafic 3 — intérieur vide"
-            afterAlt="Renault Trafic 3 — van entièrement aménagé"
-            width={600}
-            height={668}
-          />
+          {/* Headline */}
+          <h1 className="font-display text-[1.7rem] sm:text-4xl lg:text-[2.6rem] leading-[1.15] text-center text-white mb-6">
+            La méthode complète pour créer un{" "}
+            <span
+              style={{
+                background: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
+              business rentable
+            </span>{" "}
+            de van aménagé{" "}
+            de{" "}
+            <span
+              style={{
+                background: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
+              A à Z
+            </span>
+          </h1>
+
+          {/* Bullet points */}
+          <ul className="flex flex-col gap-3 mb-8 w-full">
+            {[
+              "Sans expérience en bricolage ou en mécanique",
+              "En moins de 2h/jour, même si tu pars de zéro",
+              "Méthode testée et prouvée avec des chiffres réels",
+            ].map((text) => (
+              <li key={text} className="flex items-start gap-3">
+                <span
+                  className="mt-0.5 text-lg flex-shrink-0"
+                  style={{ color: "#B9945F" }}
+                >
+                  ✓
+                </span>
+                <span className="text-white/70 text-sm sm:text-base">
+                  {text}
+                </span>
+              </li>
+            ))}
+          </ul>
+
+          {/* Video preview — thumbnail + play button */}
+          <div className="w-full mb-8 rounded-2xl overflow-hidden relative">
+            <div
+              className="absolute inset-0 rounded-2xl pointer-events-none z-10"
+              style={{ boxShadow: "inset 0 0 30px rgba(0,0,0,0.5)" }}
+            />
+            <VideoThumb />
+          </div>
+
+          {/* Form card */}
+          <div
+            className="w-full rounded-2xl p-6 sm:p-8"
+            style={{
+              background: "rgba(255,255,255,0.04)",
+              border: "1px solid rgba(185,148,95,0.25)",
+            }}
+          >
+            <p className="text-white/80 text-sm sm:text-base text-center mb-6">
+              Entre simplement tes informations pour
+              <br />
+              accéder à la <strong className="text-white">vidéo gratuite</strong> :
+            </p>
+
+            <Suspense>
+              <OptinForm />
+            </Suspense>
+          </div>
+
+          <div className="mb-10" />
+
+          {/* Trustpilot reviews */}
+          <div className="w-full flex flex-col gap-5">
+            {/* Sylvain */}
+            <div
+              className="rounded-2xl p-5 sm:p-6"
+              style={{
+                background: "rgba(255,255,255,0.04)",
+                border: "1px solid rgba(255,255,255,0.08)",
+              }}
+            >
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-3">
+                  <div
+                    className="w-9 h-9 rounded-full flex items-center justify-center text-white text-sm font-bold"
+                    style={{ background: "#00B67A" }}
+                  >
+                    S
+                  </div>
+                  <div>
+                    <p className="text-white text-sm font-semibold">
+                      sylvain delonca
+                    </p>
+                    <p className="text-white/40 text-xs">FR · 1 avis</p>
+                  </div>
+                </div>
+                <p className="text-white/40 text-xs">2 déc. 2025</p>
+              </div>
+              <div className="flex gap-0.5 mb-3">
+                {[...Array(5)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="w-5 h-5 flex items-center justify-center"
+                    style={{ background: "#00B67A" }}
+                  >
+                    <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 text-white" fill="currentColor">
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                    </svg>
+                  </div>
+                ))}
+              </div>
+              <p className="text-white/90 text-sm font-semibold mb-2">
+                Avis Accompagnement Vanzon Explorer
+              </p>
+              <p className="text-white/60 text-sm leading-relaxed">
+                Je tiens à remercier Jules pour sa formation dédiée à
+                l&apos;aménagement de van. Depuis longtemps, j&apos;avais le rêve de
+                partir explorer les massifs montagneux et plusieurs pays
+                d&apos;Europe en van. Mais entre le prix d&apos;un véhicule et le coût
+                d&apos;un aménagement professionnel, je savais que je devais
+                apprendre à le faire moi-même.
+              </p>
+              <p className="text-white/60 text-sm leading-relaxed mt-2">
+                Aujourd&apos;hui, je suis fier d&apos;avoir commencé mon propre
+                aménagement, et je sais déjà que je ressentirai une immense
+                gratitude le jour où je me réveillerai dans un van que
+                j&apos;aurai construit de mes propres mains.
+              </p>
+              <p className="text-white/60 text-sm leading-relaxed mt-2 italic">
+                Merci Vanzon pour cet accompagnement qui m&apos;a réellement aidé
+                à transformer un rêve flou en un projet concret.
+              </p>
+            </div>
+
+            {/* DA COSTA */}
+            <div
+              className="rounded-2xl p-5 sm:p-6"
+              style={{
+                background: "rgba(255,255,255,0.04)",
+                border: "1px solid rgba(255,255,255,0.08)",
+              }}
+            >
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-3">
+                  <div
+                    className="w-9 h-9 rounded-full flex items-center justify-center text-white text-sm font-bold"
+                    style={{ background: "#00B67A" }}
+                  >
+                    DC
+                  </div>
+                  <div>
+                    <p className="text-white text-sm font-semibold">DA COSTA</p>
+                    <p className="text-white/40 text-xs">FR · 2 avis</p>
+                  </div>
+                </div>
+                <p className="text-white/40 text-xs">2 déc. 2025</p>
+              </div>
+              <div className="flex gap-0.5 mb-3">
+                {[...Array(5)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="w-5 h-5 flex items-center justify-center"
+                    style={{ background: "#00B67A" }}
+                  >
+                    <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 text-white" fill="currentColor">
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                    </svg>
+                  </div>
+                ))}
+              </div>
+              <p className="text-white/90 text-sm font-semibold mb-2">
+                Formation complète et accompagnement au top !
+              </p>
+              <p className="text-white/60 text-sm leading-relaxed">
+                La structure est hyper intuitive, tout s&apos;emboîte
+                parfaitement. J&apos;ai gagné un temps précieux et évité plein de
+                tracas grâce aux supports prêts à l&apos;emploi. Les vidéos sont
+                super bien faites et l&apos;accompagnement est vraiment
+                bienveillant.
+              </p>
+              <p className="text-white/60 text-sm leading-relaxed mt-2">
+                Aujourd&apos;hui, notre van est bien plus qu&apos;un véhicule :
+                c&apos;est notre espace à nous, on se retrouve, on voyage, on
+                profite... un vrai changement de vie ! Mille mercis !
+              </p>
+              <div className="mt-3 flex items-center gap-2">
+                <span className="text-xs px-2 py-0.5 rounded" style={{ background: "rgba(0,182,122,0.15)", color: "#00B67A" }}>
+                  Avis spontané
+                </span>
+                <span className="text-white/30 text-xs">26 septembre 2025</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Trustpilot 5/5 */}
+          <div className="flex flex-col items-center gap-3 mt-10">
+            <Image
+              src="/images/trustpilot-logo.png"
+              alt="Trustpilot"
+              width={280}
+              height={40}
+              unoptimized
+              className="opacity-70"
+            />
+            <span className="text-white/50 text-sm font-medium">5 sur 5</span>
+          </div>
         </div>
       </div>
     </div>
   );
 }
-
