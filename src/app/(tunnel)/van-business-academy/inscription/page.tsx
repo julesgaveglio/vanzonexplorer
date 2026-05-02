@@ -44,8 +44,7 @@ export default function OptinPage() {
               className="text-xs sm:text-sm font-semibold uppercase tracking-wider leading-snug"
               style={{ color: "#B9945F" }}
             >
-              Pour les passionnés de vans qui veulent plus
-              <br className="sm:hidden" /> de liberté
+              Pour les passionnés de vans qui veulent plus de liberté
             </span>
           </div>
 
