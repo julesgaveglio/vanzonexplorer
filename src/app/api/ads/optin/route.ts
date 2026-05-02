@@ -4,10 +4,11 @@ import { createSupabaseAdmin } from "@/lib/supabase/server";
 
 const EXCLUDED_EMAILS = ["gavegliojules@gmail.com"];
 
-const OPTIN_PAGES = [
-  { slug: "v1", page: "/van-business-academy/inscription", label: "Opt-in V1" },
-  { slug: "v2", page: "/van-business-academy/inscription-v2", label: "Opt-in V2" },
-];
+// V1 = ancien design (light), V2 = nouveau design (dark) déployé le 2 mai 2026
+const V2_CUTOFF = "2026-05-02T18:00:00.000Z";
+
+const INSCRIPTION_PAGE = "/van-business-academy/inscription";
+const INSCRIPTION_V2_PAGE = "/van-business-academy/inscription-v2";
 
 export async function GET(req: NextRequest) {
   const check = await requireAdsAuth();
@@ -29,40 +30,50 @@ export async function GET(req: NextRequest) {
 
   const allEvents = events ?? [];
 
-  // Per-page stats
-  const pages = OPTIN_PAGES.map(({ slug, page, label }) => {
-    const views = new Set(
-      allEvents
-        .filter((e) => e.event === "page_view" && e.page === page)
-        .map((e) => e.email || e.session_id || "anon")
-    ).size;
+  // Split events into V1 (before cutoff on /inscription) and V2 (after cutoff on /inscription + all /inscription-v2)
+  const v1Events = allEvents.filter(
+    (e) => e.page === INSCRIPTION_PAGE && e.created_at && e.created_at < V2_CUTOFF
+  );
+  const v2Events = allEvents.filter(
+    (e) =>
+      e.page === INSCRIPTION_V2_PAGE ||
+      (e.page === INSCRIPTION_PAGE && e.created_at && e.created_at >= V2_CUTOFF)
+  );
 
-    const optins = new Set(
-      allEvents
-        .filter((e) => e.event === "optin" && e.page === page)
-        .map((e) => e.email || e.session_id || "anon")
-    ).size;
+  const countUnique = (evts: typeof allEvents, event: string) =>
+    new Set(evts.filter((e) => e.event === event).map((e) => e.email || e.session_id || "anon")).size;
 
-    const rate = views > 0 ? Math.round((optins / views) * 100 * 10) / 10 : 0;
+  const v1Views = countUnique(v1Events, "page_view");
+  const v1Optins = countUnique(v1Events, "optin");
+  const v2Views = countUnique(v2Events, "page_view");
+  const v2Optins = countUnique(v2Events, "optin");
 
-    return { slug, label, views, optins, rate };
-  });
+  const pages = [
+    {
+      slug: "v1",
+      label: "Opt-in V1 (ancien design)",
+      views: v1Views,
+      optins: v1Optins,
+      rate: v1Views > 0 ? Math.round((v1Optins / v1Views) * 100 * 10) / 10 : 0,
+    },
+    {
+      slug: "v2",
+      label: "Opt-in V2 (dark theme)",
+      views: v2Views,
+      optins: v2Optins,
+      rate: v2Views > 0 ? Math.round((v2Optins / v2Views) * 100 * 10) / 10 : 0,
+    },
+  ];
 
-  // Total — global uniques (pas la somme par page, pour éviter les doublons cross-page)
-  const allPages = OPTIN_PAGES.map((p) => p.page);
-  const totalViews = new Set(
-    allEvents
-      .filter((e) => e.event === "page_view" && allPages.includes(e.page ?? ""))
-      .map((e) => e.email || e.session_id || "anon")
-  ).size;
-  const totalOptins = new Set(
-    allEvents
-      .filter((e) => e.event === "optin" && allPages.includes(e.page ?? ""))
-      .map((e) => e.email || e.session_id || "anon")
-  ).size;
+  // Total — global uniques
+  const allOptinEvents = allEvents.filter(
+    (e) => e.page === INSCRIPTION_PAGE || e.page === INSCRIPTION_V2_PAGE
+  );
+  const totalViews = countUnique(allOptinEvents, "page_view");
+  const totalOptins = countUnique(allOptinEvents, "optin");
   const totalRate = totalViews > 0 ? Math.round((totalOptins / totalViews) * 100 * 10) / 10 : 0;
 
-  // Daily breakdown per page
+  // Daily breakdown
   const today = new Date();
   today.setUTCHours(0, 0, 0, 0);
   const dayMap: Record<string, Record<string, { views: number; optins: number }>> = {};
@@ -70,20 +81,17 @@ export async function GET(req: NextRequest) {
   cursor.setUTCHours(0, 0, 0, 0);
   while (cursor <= today) {
     const key = cursor.toISOString().slice(0, 10);
-    dayMap[key] = {};
-    for (const { slug } of OPTIN_PAGES) {
-      dayMap[key][slug] = { views: 0, optins: 0 };
-    }
+    dayMap[key] = { v1: { views: 0, optins: 0 }, v2: { views: 0, optins: 0 } };
     cursor.setUTCDate(cursor.getUTCDate() + 1);
   }
 
-  for (const e of allEvents) {
+  for (const e of allOptinEvents) {
     const day = e.created_at?.slice(0, 10);
     if (!day || !dayMap[day]) continue;
-    const match = OPTIN_PAGES.find((p) => p.page === e.page);
-    if (!match) continue;
-    if (e.event === "page_view") dayMap[day][match.slug].views++;
-    if (e.event === "optin") dayMap[day][match.slug].optins++;
+    const isV2 = e.page === INSCRIPTION_V2_PAGE || (e.created_at && e.created_at >= V2_CUTOFF);
+    const slug = isV2 ? "v2" : "v1";
+    if (e.event === "page_view") dayMap[day][slug].views++;
+    if (e.event === "optin") dayMap[day][slug].optins++;
   }
 
   const daily = Object.entries(dayMap)

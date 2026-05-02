@@ -90,6 +90,7 @@ export default function AdsLeadsClient() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-slate-100 bg-slate-50/50">
+                  <th className="text-center text-xs text-slate-500 uppercase tracking-wider px-3 py-3 font-medium w-10">#</th>
                   <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-5 py-3 font-medium">Email</th>
                   <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-5 py-3 font-medium">Prénom</th>
                   <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-5 py-3 font-medium hidden md:table-cell">Source</th>
@@ -101,6 +102,7 @@ export default function AdsLeadsClient() {
               <tbody>
                 {filtered.map((lead, i) => (
                   <tr key={i} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
+                    <td className="px-3 py-3 text-center text-slate-400 text-xs font-mono">{filtered.length - i}</td>
                     <td className="px-5 py-3 text-slate-900 font-medium">{lead.email}</td>
                     <td className="px-5 py-3 text-slate-600">{lead.firstname ?? "—"}</td>
                     <td className="px-5 py-3 hidden md:table-cell">
