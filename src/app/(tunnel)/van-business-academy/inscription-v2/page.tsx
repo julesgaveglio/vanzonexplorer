@@ -72,16 +72,6 @@ export default function OptinPageV2() {
             >
               A à Z
             </span>
-            , même{" "}
-            <span
-              style={{
-                background: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
-            >
-              sans expérience
-            </span>
           </h1>
 
           {/* Bullet points */}
