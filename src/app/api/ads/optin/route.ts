@@ -82,7 +82,10 @@ export async function GET(req: NextRequest) {
     cursor.setUTCDate(cursor.getUTCDate() + 1);
   }
 
-  for (const e of allOptinEvents) {
+  const optinPageEvents = allEvents.filter(
+    (e) => e.page === INSCRIPTION_PAGE || e.page === INSCRIPTION_V2_PAGE
+  );
+  for (const e of optinPageEvents) {
     const day = e.created_at?.slice(0, 10);
     if (!day || !dayMap[day]) continue;
     const isV2 = e.page === INSCRIPTION_V2_PAGE || (e.created_at && e.created_at >= V2_CUTOFF);
