@@ -19,12 +19,16 @@ export async function GET(req: NextRequest) {
     ? new Date(new Date(endDate).getTime() + 86400000).toISOString()
     : undefined;
 
+  const EXCLUDED_EMAILS = ["gavegliojules@gmail.com"];
+
   let query = supabase
     .from("funnel_events")
     .select("email, metadata, utm_source, utm_campaign, utm_content, created_at")
     .eq("event", "optin")
     .gte("created_at", since)
-    .order("created_at", { ascending: false });
+    .not("email", "in", `(${EXCLUDED_EMAILS.join(",")})`)
+    .order("created_at", { ascending: false })
+    .limit(10000);
 
   if (until) {
     query = query.lte("created_at", until);
