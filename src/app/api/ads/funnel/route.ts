@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
     .from("funnel_events")
     .select("event, email, session_id, created_at, utm_source, utm_campaign, utm_content")
     .gte("created_at", since)
-    .not("email", "in", `(${EXCLUDED_EMAILS.join(",")})`)
+    .or(`email.is.null,email.not.in.(${EXCLUDED_EMAILS.join(",")})`)
     .order("created_at", { ascending: false });
 
   if (until) {
