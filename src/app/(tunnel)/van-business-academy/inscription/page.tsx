@@ -45,7 +45,7 @@ export default function OptinPage() {
               style={{ color: "#B9945F" }}
             >
               Pour les passionnés de vans qui veulent plus
-              <br className="sm:hidden" /> de liberté et créer un business rentable
+              <br className="sm:hidden" /> de liberté
             </span>
           </div>
 
