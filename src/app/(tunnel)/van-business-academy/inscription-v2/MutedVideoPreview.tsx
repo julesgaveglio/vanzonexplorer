@@ -37,7 +37,7 @@ export default function MutedVideoPreview() {
       {/* Play button */}
       <div className="absolute inset-0 flex items-center justify-center">
         <div
-          className="w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform"
+          className="w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform opacity-70"
           style={{
             background: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
           }}
