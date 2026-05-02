@@ -62,9 +62,9 @@ export default function AdsOptinClient() {
     return {
       date: date?.slice(5),
       "V1 vues": v1?.views ?? 0,
-      "V1 optins": v1?.optins ?? 0,
+      "V1 leads": v1?.optins ?? 0,
       "V2 vues": v2?.views ?? 0,
-      "V2 optins": v2?.optins ?? 0,
+      "V2 leads": v2?.optins ?? 0,
     };
   });
 
@@ -99,12 +99,12 @@ export default function AdsOptinClient() {
           {/* KPIs globaux */}
           <div className="grid grid-cols-3 gap-4">
             <KPICard
-              label="Pages vues"
+              label="Opt-in vues"
               value={data?.total.views ?? 0}
               color="sky"
             />
             <KPICard
-              label="Opt-ins"
+              label="Leads"
               value={data?.total.optins ?? 0}
               color="blue"
             />
@@ -138,13 +138,13 @@ export default function AdsOptinClient() {
                   </div>
                   <div className="flex items-center gap-6 text-right">
                     <div>
-                      <p className="text-xs text-slate-400">Vues</p>
+                      <p className="text-xs text-slate-400">Opt-in vues</p>
                       <p className="text-lg font-bold text-slate-900">
                         {p.views}
                       </p>
                     </div>
                     <div>
-                      <p className="text-xs text-slate-400">Opt-ins</p>
+                      <p className="text-xs text-slate-400">Leads</p>
                       <p className="text-lg font-bold text-blue-600">
                         {p.optins}
                       </p>
@@ -173,7 +173,7 @@ export default function AdsOptinClient() {
           {daily.length > 0 && (
             <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
               <h2 className="text-base font-semibold text-slate-900 mb-4">
-                Vues & opt-ins par jour
+                Opt-in vues & leads par jour
               </h2>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
@@ -198,7 +198,7 @@ export default function AdsOptinClient() {
                       radius={[4, 4, 0, 0]}
                     />
                     <Bar
-                      dataKey="V1 optins"
+                      dataKey="V1 leads"
                       fill="#0284c7"
                       radius={[4, 4, 0, 0]}
                     />
@@ -208,7 +208,7 @@ export default function AdsOptinClient() {
                       radius={[4, 4, 0, 0]}
                     />
                     <Bar
-                      dataKey="V2 optins"
+                      dataKey="V2 leads"
                       fill="#b9945f"
                       radius={[4, 4, 0, 0]}
                     />

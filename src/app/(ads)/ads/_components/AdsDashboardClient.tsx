@@ -43,8 +43,8 @@ const PERIODS = [
 ] as const;
 
 const STEP_LABELS: Record<string, string> = {
-  page_view: "Pages vues",
-  optin: "Opt-in",
+  page_view: "Opt-in vues",
+  optin: "Leads",
   vsl_25: "VSL 25%",
   vsl_50: "VSL 50%",
   vsl_75: "VSL 75%",
@@ -288,7 +288,7 @@ export default function AdsDashboardClient() {
                   contentStyle={{ backgroundColor: "#fff", border: "1px solid #E2E8F0", borderRadius: "12px", color: "#1E293B", fontSize: 13, boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}
                   labelFormatter={(v) => new Date(String(v)).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}
                 />
-                <Area type="monotone" dataKey="optin" name="Opt-ins" stroke="#3B82F6" strokeWidth={2} fill="url(#gradBlue)" />
+                <Area type="monotone" dataKey="optin" name="Leads" stroke="#3B82F6" strokeWidth={2} fill="url(#gradBlue)" />
                 <Area type="monotone" dataKey="booking_confirmed" name="Calls bookés" stroke="#10B981" strokeWidth={2} fill="url(#gradEmerald)" />
               </AreaChart>
             </ResponsiveContainer>

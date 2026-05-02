@@ -47,9 +47,18 @@ export async function GET(req: NextRequest) {
     return { slug, label, views, optins, rate };
   });
 
-  // Total
-  const totalViews = pages.reduce((s, p) => s + p.views, 0);
-  const totalOptins = pages.reduce((s, p) => s + p.optins, 0);
+  // Total — global uniques (pas la somme par page, pour éviter les doublons cross-page)
+  const allPages = OPTIN_PAGES.map((p) => p.page);
+  const totalViews = new Set(
+    allEvents
+      .filter((e) => e.event === "page_view" && allPages.includes(e.page ?? ""))
+      .map((e) => e.email || e.session_id || "anon")
+  ).size;
+  const totalOptins = new Set(
+    allEvents
+      .filter((e) => e.event === "optin" && allPages.includes(e.page ?? ""))
+      .map((e) => e.email || e.session_id || "anon")
+  ).size;
   const totalRate = totalViews > 0 ? Math.round((totalOptins / totalViews) * 100 * 10) / 10 : 0;
 
   // Daily breakdown per page
