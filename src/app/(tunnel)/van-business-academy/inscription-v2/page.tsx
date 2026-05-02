@@ -133,10 +133,7 @@ export default function OptinPageV2() {
             </Suspense>
           </div>
 
-          {/* Reassurance */}
-          <p className="text-white/30 text-xs mt-4 text-center mb-10">
-            Accès immédiat — pas de spam. Tes données restent confidentielles.
-          </p>
+          <div className="mb-10" />
 
           {/* Trustpilot reviews */}
           <div className="w-full flex flex-col gap-5">
