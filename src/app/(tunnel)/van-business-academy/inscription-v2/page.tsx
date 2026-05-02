@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { Suspense } from "react";
+import Image from "next/image";
 import OptinFormV2 from "./OptinFormV2";
 import PageViewTrackerV2 from "./PageViewTrackerV2";
+import MutedVideoPreview from "./MutedVideoPreview";
 
 export const metadata: Metadata = {
   title: "Formation Van Business Academy",
@@ -13,297 +14,276 @@ export const metadata: Metadata = {
 
 export default function OptinPageV2() {
   return (
-    <div className="min-h-[calc(100vh-80px)] flex flex-col">
-      <PageViewTrackerV2 />
+    <div
+      className="min-h-screen relative overflow-hidden"
+      style={{ background: "#0A0A0A" }}
+    >
+      {/* Gradient glow effect behind content */}
+      <div
+        className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(185,148,95,0.22) 0%, rgba(228,211,152,0.12) 40%, transparent 70%)",
+          filter: "blur(80px)",
+        }}
+      />
 
-      {/* ── HERO — tout au-dessus de la ligne de flottaison ── */}
-      <section className="flex-1 flex items-center justify-center px-4 py-8 sm:py-12">
-        <div className="w-full max-w-5xl mx-auto">
-          <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-14">
+      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 py-10">
+        <PageViewTrackerV2 />
 
-            {/* Colonne gauche — Copy + Form */}
-            <div className="flex-1 max-w-lg w-full">
-              {/* Badge */}
-              <div className="flex items-center gap-2 mb-5">
-                <span
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-full"
-                  style={{
-                    background: "rgba(185,148,95,0.10)",
-                    color: "#B9945F",
-                    border: "1px solid rgba(185,148,95,0.20)",
-                  }}
-                >
-                  Video gratuite — 15 min
-                </span>
-              </div>
-
-              {/* Headline */}
-              <h1
-                className="font-display text-3xl sm:text-4xl lg:text-[2.6rem] leading-[1.15] mb-4"
-                style={{ color: "#0F172A" }}
-              >
-                Transforme un utilitaire a{" "}
-                <span style={{ color: "#B9945F" }}>8 000 EUR</span> en source de
-                revenus{" "}
-                <span className="underline decoration-[#B9945F] decoration-2 underline-offset-4">
-                  recurrents
-                </span>
-              </h1>
-
-              {/* Sous-titre */}
-              <p className="text-slate-500 text-base sm:text-lg mb-6 leading-relaxed">
-                La methode complete pour acheter, amenager et mettre en location
-                un van — meme{" "}
-                <strong className="text-slate-700">
-                  sans experience en bricolage
-                </strong>
-                .
-              </p>
-
-              {/* Chiffre-preuve */}
-              <div
-                className="flex items-center gap-3 mb-7 px-4 py-3 rounded-xl"
-                style={{
-                  background:
-                    "linear-gradient(135deg, rgba(185,148,95,0.08) 0%, rgba(228,211,152,0.08) 100%)",
-                  border: "1px solid rgba(185,148,95,0.15)",
-                }}
-              >
-                <span
-                  className="text-2xl font-bold"
-                  style={{ color: "#B9945F" }}
-                >
-                  5 575 EUR
-                </span>
-                <span className="text-sm text-slate-500 leading-tight">
-                  generes en 8 mois avec
-                  <br />
-                  un seul van — chiffres reels
-                </span>
-              </div>
-
-              {/* Formulaire */}
-              <Suspense>
-                <OptinFormV2 />
-              </Suspense>
-
-              {/* Reassurance */}
-              <p className="text-xs text-slate-400 mt-3 text-center lg:text-left">
-                Acces immediat — la video est disponible tout de suite apres
-                inscription. Pas de spam.
-              </p>
-            </div>
-
-            {/* Colonne droite — Visual proof */}
-            <div className="flex-1 max-w-md w-full hidden lg:block">
-              {/* Photo principale du van */}
-              <div className="relative rounded-2xl overflow-hidden shadow-xl">
-                <Image
-                  src="https://cdn.sanity.io/images/lewexa74/production/c70a917e07fc97ffa4fb1fb7b934442a34b909c7-1920x1080.png"
-                  alt="Van amenage Vanzon — interieur bois et rangements"
-                  width={560}
-                  height={315}
-                  unoptimized
-                  className="w-full h-auto"
-                  priority
-                />
-                {/* Overlay stats */}
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-5">
-                  <div className="flex items-center gap-4">
-                    <div>
-                      <p className="text-white/70 text-xs uppercase tracking-wider">
-                        Cout amenagement
-                      </p>
-                      <p className="text-white text-lg font-bold">5 430 EUR</p>
-                    </div>
-                    <div
-                      className="w-px h-8"
-                      style={{ background: "rgba(255,255,255,0.3)" }}
-                    />
-                    <div>
-                      <p className="text-white/70 text-xs uppercase tracking-wider">
-                        Valeur revente
-                      </p>
-                      <p className="text-white text-lg font-bold">
-                        20 000+ EUR
-                      </p>
-                    </div>
-                    <div
-                      className="w-px h-8"
-                      style={{ background: "rgba(255,255,255,0.3)" }}
-                    />
-                    <div>
-                      <p className="text-white/70 text-xs uppercase tracking-wider">
-                        Avis locataires
-                      </p>
-                      <p className="text-white text-lg font-bold">5/5 ★</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Mini temoignage */}
-              <div
-                className="mt-4 px-5 py-4 rounded-xl"
-                style={{
-                  background: "#FAFAFA",
-                  border: "1px solid rgba(0,0,0,0.06)",
-                }}
-              >
-                <p className="text-slate-600 text-sm italic leading-relaxed">
-                  &ldquo;J&apos;ai commence sans savoir planter un clou.
-                  Aujourd&apos;hui j&apos;ai 2 vans en location qui me
-                  rapportent chaque mois.&rdquo;
-                </p>
-                <div className="flex items-center gap-2 mt-3">
-                  <div
-                    className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold"
-                    style={{ background: "#B9945F" }}
-                  >
-                    J
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-slate-800">
-                      Jules
-                    </p>
-                    <p className="text-xs text-slate-400">
-                      Fondateur Vanzon Explorer
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── SECTION 2 — Benefices (pour les scrolleurs) ── */}
-      <section
-        className="py-10 sm:py-14 px-4"
-        style={{ background: "#FAFAFA" }}
-      >
-        <div className="max-w-3xl mx-auto">
-          <h2
-            className="text-center font-display text-xl sm:text-2xl mb-8"
-            style={{ color: "#0F172A" }}
+        <div className="w-full max-w-lg mx-auto flex flex-col items-center">
+          {/* Badge cible */}
+          <div
+            className="inline-flex px-5 py-2.5 rounded-full text-center mb-8"
+            style={{
+              border: "1px solid rgba(185,148,95,0.4)",
+              background: "rgba(185,148,95,0.08)",
+            }}
           >
-            Ce que tu vas decouvrir dans cette video
-          </h2>
-
-          <div className="grid sm:grid-cols-2 gap-4 sm:gap-5">
-            {[
-              {
-                icon: "🔧",
-                title: "Acheter le bon vehicule",
-                desc: "Le modele exact, le budget max, et les verifications mecaniques pour eviter les arnaques",
-              },
-              {
-                icon: "📐",
-                title: "Amenager sans competence",
-                desc: "La methode etape par etape — meme si tu n'as jamais touche un tournevis",
-              },
-              {
-                icon: "💰",
-                title: "Rentabiliser avec la location",
-                desc: "Les plateformes, les prix, l'assurance — tout est gere pour toi",
-              },
-              {
-                icon: "📈",
-                title: "Revendre avec plus-value",
-                desc: "Comment un van a 15 000 EUR se revend 25 000 EUR apres 2 ans de location",
-              },
-            ].map((item) => (
-              <div
-                key={item.title}
-                className="flex gap-4 p-4 bg-white rounded-xl"
-                style={{ border: "1px solid rgba(0,0,0,0.06)" }}
-              >
-                <span className="text-2xl flex-shrink-0">{item.icon}</span>
-                <div>
-                  <p className="font-semibold text-slate-800 text-sm mb-1">
-                    {item.title}
-                  </p>
-                  <p className="text-slate-500 text-xs leading-relaxed">
-                    {item.desc}
-                  </p>
-                </div>
-              </div>
-            ))}
+            <span
+              className="text-xs sm:text-sm font-semibold uppercase tracking-wider leading-snug"
+              style={{ color: "#B9945F" }}
+            >
+              Pour les passionnés de vans qui veulent plus
+              <br className="sm:hidden" /> de liberté et créer un business rentable
+            </span>
           </div>
 
-          {/* Mobile photo — visible uniquement sur mobile */}
-          <div className="mt-8 lg:hidden">
-            <div className="relative rounded-2xl overflow-hidden shadow-lg">
-              <Image
-                src="https://cdn.sanity.io/images/lewexa74/production/c70a917e07fc97ffa4fb1fb7b934442a34b909c7-1920x1080.png"
-                alt="Van amenage Vanzon"
-                width={560}
-                height={315}
-                unoptimized
-                className="w-full h-auto"
-              />
-            </div>
-          </div>
-
-          {/* CTA repetition pour mobile */}
-          <div className="mt-8 text-center lg:hidden">
-            <a
-              href="#optin-form-v2"
-              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-white font-semibold text-sm transition-all hover:scale-[1.02] active:scale-[0.98]"
+          {/* Headline */}
+          <h1 className="font-display text-[1.7rem] sm:text-4xl lg:text-[2.6rem] leading-[1.15] text-center text-white mb-6">
+            La méthode complète pour créer un{" "}
+            <span
               style={{
-                background:
-                  "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
+                background: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
               }}
             >
-              Voir la video gratuite →
-            </a>
-          </div>
-        </div>
-      </section>
+              business rentable
+            </span>{" "}
+            de van aménagé{" "}
+            <span
+              style={{
+                background: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
+              de A à Z
+            </span>
+            , même{" "}
+            <span
+              style={{
+                background: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
+              sans expérience
+            </span>
+          </h1>
 
-      {/* ── SECTION 3 — Chiffres reels ── */}
-      <section className="py-10 sm:py-14 px-4">
-        <div className="max-w-3xl mx-auto text-center">
-          <p className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-6">
-            Resultats reels — 1 van, 8 mois
+          {/* Bullet points */}
+          <ul className="flex flex-col gap-3 mb-8 w-full">
+            {[
+              "Sans expérience en bricolage ou en mécanique",
+              "En moins de 2h/jour, même si tu pars de zéro",
+              "Méthode testée et prouvée avec des chiffres réels",
+            ].map((text) => (
+              <li key={text} className="flex items-start gap-3">
+                <span
+                  className="mt-0.5 text-lg flex-shrink-0"
+                  style={{ color: "#B9945F" }}
+                >
+                  ✓
+                </span>
+                <span className="text-white/70 text-sm sm:text-base">
+                  {text}
+                </span>
+              </li>
+            ))}
+          </ul>
+
+          {/* Video preview — muted, no controls */}
+          <div className="w-full mb-8 rounded-2xl overflow-hidden relative">
+            <div
+              className="absolute inset-0 rounded-2xl pointer-events-none z-10"
+              style={{ boxShadow: "inset 0 0 30px rgba(0,0,0,0.5)" }}
+            />
+            <MutedVideoPreview />
+          </div>
+
+          {/* Form card */}
+          <div
+            className="w-full rounded-2xl p-6 sm:p-8"
+            style={{
+              background: "rgba(255,255,255,0.04)",
+              border: "1px solid rgba(185,148,95,0.25)",
+            }}
+          >
+            <p className="text-white/80 text-sm sm:text-base text-center mb-6">
+              Entre simplement tes informations pour
+              <br />
+              accéder à la <strong className="text-white">vidéo gratuite</strong> :
+            </p>
+
+            <Suspense>
+              <OptinFormV2 />
+            </Suspense>
+          </div>
+
+          {/* Reassurance */}
+          <p className="text-white/30 text-xs mt-4 text-center mb-10">
+            Accès immédiat — pas de spam. Tes données restent confidentielles.
           </p>
-          <div className="grid grid-cols-3 gap-4 sm:gap-8">
-            <div>
-              <p
-                className="text-2xl sm:text-3xl font-bold"
-                style={{ color: "#B9945F" }}
-              >
-                12
+
+          {/* Trustpilot reviews */}
+          <div className="w-full flex flex-col gap-5">
+            {/* Sylvain */}
+            <div
+              className="rounded-2xl p-5 sm:p-6"
+              style={{
+                background: "rgba(255,255,255,0.04)",
+                border: "1px solid rgba(255,255,255,0.08)",
+              }}
+            >
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-3">
+                  <div
+                    className="w-9 h-9 rounded-full flex items-center justify-center text-white text-sm font-bold"
+                    style={{ background: "#00B67A" }}
+                  >
+                    S
+                  </div>
+                  <div>
+                    <p className="text-white text-sm font-semibold">
+                      sylvain delonca
+                    </p>
+                    <p className="text-white/40 text-xs">FR · 1 avis</p>
+                  </div>
+                </div>
+                <p className="text-white/40 text-xs">2 déc. 2025</p>
+              </div>
+              {/* Trustpilot stars */}
+              <div className="flex gap-0.5 mb-3">
+                {[...Array(5)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="w-5 h-5 flex items-center justify-center"
+                    style={{ background: "#00B67A" }}
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      className="w-3.5 h-3.5 text-white"
+                      fill="currentColor"
+                    >
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                    </svg>
+                  </div>
+                ))}
+              </div>
+              <p className="text-white/90 text-sm font-semibold mb-2">
+                Avis Accompagnement Vanzon Explorer
               </p>
-              <p className="text-xs sm:text-sm text-slate-500 mt-1">
-                reservations
+              <p className="text-white/60 text-sm leading-relaxed">
+                Je tiens à remercier Jules pour sa formation dédiée à
+                l&apos;aménagement de van. Depuis longtemps, j&apos;avais le rêve de
+                partir explorer les massifs montagneux et plusieurs pays
+                d&apos;Europe en van. Mais entre le prix d&apos;un véhicule et le coût
+                d&apos;un aménagement professionnel, je savais que je devais
+                apprendre à le faire moi-même.
+              </p>
+              <p className="text-white/60 text-sm leading-relaxed mt-2">
+                Aujourd&apos;hui, je suis fier d&apos;avoir commencé mon propre
+                aménagement, et je sais déjà que je ressentirai une immense
+                gratitude le jour où je me réveillerai dans un van que
+                j&apos;aurai construit de mes propres mains.
+              </p>
+              <p className="text-white/60 text-sm leading-relaxed mt-2 italic">
+                Merci Vanzon pour cet accompagnement qui m&apos;a réellement aidé
+                à transformer un rêve flou en un projet concret.
               </p>
             </div>
-            <div>
-              <p
-                className="text-2xl sm:text-3xl font-bold"
-                style={{ color: "#B9945F" }}
-              >
-                5 575 EUR
+
+            {/* DA COSTA */}
+            <div
+              className="rounded-2xl p-5 sm:p-6"
+              style={{
+                background: "rgba(255,255,255,0.04)",
+                border: "1px solid rgba(255,255,255,0.08)",
+              }}
+            >
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-3">
+                  <div
+                    className="w-9 h-9 rounded-full flex items-center justify-center text-white text-sm font-bold"
+                    style={{ background: "#00B67A" }}
+                  >
+                    DC
+                  </div>
+                  <div>
+                    <p className="text-white text-sm font-semibold">DA COSTA</p>
+                    <p className="text-white/40 text-xs">FR · 2 avis</p>
+                  </div>
+                </div>
+                <p className="text-white/40 text-xs">2 déc. 2025</p>
+              </div>
+              {/* Trustpilot stars */}
+              <div className="flex gap-0.5 mb-3">
+                {[...Array(5)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="w-5 h-5 flex items-center justify-center"
+                    style={{ background: "#00B67A" }}
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      className="w-3.5 h-3.5 text-white"
+                      fill="currentColor"
+                    >
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                    </svg>
+                  </div>
+                ))}
+              </div>
+              <p className="text-white/90 text-sm font-semibold mb-2">
+                Formation complète et accompagnement au top !
               </p>
-              <p className="text-xs sm:text-sm text-slate-500 mt-1">
-                de revenus bruts
+              <p className="text-white/60 text-sm leading-relaxed">
+                La structure est hyper intuitive, tout s&apos;emboîte
+                parfaitement. J&apos;ai gagné un temps précieux et évité plein de
+                tracas grâce aux supports prêts à l&apos;emploi. Les vidéos sont
+                super bien faites et l&apos;accompagnement est vraiment
+                bienveillant.
               </p>
-            </div>
-            <div>
-              <p
-                className="text-2xl sm:text-3xl font-bold"
-                style={{ color: "#B9945F" }}
-              >
-                100%
+              <p className="text-white/60 text-sm leading-relaxed mt-2">
+                Aujourd&apos;hui, notre van est bien plus qu&apos;un véhicule :
+                c&apos;est notre espace à nous, on se retrouve, on voyage, on
+                profite... un vrai changement de vie ! Mille mercis !
               </p>
-              <p className="text-xs sm:text-sm text-slate-500 mt-1">
-                avis 5 etoiles
-              </p>
+              <div className="mt-3 flex items-center gap-2">
+                <span className="text-xs px-2 py-0.5 rounded" style={{ background: "rgba(0,182,122,0.15)", color: "#00B67A" }}>
+                  Avis spontané
+                </span>
+                <span className="text-white/30 text-xs">26 septembre 2025</span>
+              </div>
             </div>
           </div>
+
+          {/* Trustpilot 5/5 */}
+          <div className="flex flex-col items-center gap-3 mt-10">
+            <Image
+              src="/images/trustpilot-logo.png"
+              alt="Trustpilot"
+              width={280}
+              height={40}
+              unoptimized
+              className="opacity-70"
+            />
+            <span className="text-white/50 text-sm font-medium">5 sur 5</span>
+          </div>
         </div>
-      </section>
+      </div>
     </div>
   );
 }

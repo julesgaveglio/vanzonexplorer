@@ -43,53 +43,51 @@ export default function OptinFormV2() {
 
       router.push("/van-business-academy/presentation");
     } catch {
-      setError("Une erreur est survenue. Veuillez reessayer.");
+      setError("Une erreur est survenue. Veuillez réessayer.");
       setLoading(false);
     }
   };
 
   return (
-    <form id="optin-form-v2" onSubmit={handleSubmit}>
-      <div className="flex flex-col sm:flex-row gap-2.5">
-        <input
-          type="text"
-          placeholder="Ton prenom"
-          value={firstname}
-          onChange={(e) => setFirstname(e.target.value)}
-          required
-          minLength={2}
-          maxLength={50}
-          className="flex-1 px-4 py-3.5 rounded-xl border text-slate-800 text-sm placeholder:text-slate-400 transition-all outline-none focus:ring-2 focus:ring-[#B9945F]/30"
-          style={{
-            borderColor: "rgba(0,0,0,0.10)",
-            background: "#FAFAFA",
-          }}
-        />
-        <input
-          type="email"
-          placeholder="Ton email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          className="flex-1 px-4 py-3.5 rounded-xl border text-slate-800 text-sm placeholder:text-slate-400 transition-all outline-none focus:ring-2 focus:ring-[#B9945F]/30"
-          style={{
-            borderColor: "rgba(0,0,0,0.10)",
-            background: "#FAFAFA",
-          }}
-        />
-      </div>
+    <form id="optin-form-v2" onSubmit={handleSubmit} className="flex flex-col gap-3">
+      <input
+        type="text"
+        placeholder="Votre prénom"
+        value={firstname}
+        onChange={(e) => setFirstname(e.target.value)}
+        required
+        minLength={2}
+        maxLength={50}
+        className="w-full px-4 py-4 rounded-xl text-white text-sm placeholder:text-white/40 transition-all outline-none focus:ring-2 focus:ring-[#B9945F]/40"
+        style={{
+          background: "rgba(255,255,255,0.06)",
+          border: "1px solid rgba(255,255,255,0.10)",
+        }}
+      />
+      <input
+        type="email"
+        placeholder="Votre mail"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        required
+        className="w-full px-4 py-4 rounded-xl text-white text-sm placeholder:text-white/40 transition-all outline-none focus:ring-2 focus:ring-[#B9945F]/40"
+        style={{
+          background: "rgba(255,255,255,0.06)",
+          border: "1px solid rgba(255,255,255,0.10)",
+        }}
+      />
 
       {error && (
-        <p className="text-red-500 text-sm text-center mt-2">{error}</p>
+        <p className="text-red-400 text-sm text-center">{error}</p>
       )}
 
       <button
         type="submit"
         disabled={loading}
-        className="w-full mt-3 px-6 py-4 rounded-xl text-white font-semibold text-sm sm:text-base transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed"
+        className="w-full mt-1 px-6 py-4 rounded-xl text-white font-bold text-sm sm:text-base uppercase tracking-wide transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
         style={{
-          background: "linear-gradient(135deg, #B9945F 0%, #D4B878 100%)",
-          boxShadow: "0 4px 14px rgba(185,148,95,0.35)",
+          background: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
+          boxShadow: "0 4px 20px rgba(185,148,95,0.4)",
         }}
       >
         {loading ? (
@@ -101,7 +99,12 @@ export default function OptinFormV2() {
             Chargement...
           </span>
         ) : (
-          "Acceder a la video gratuite →"
+          <span className="flex flex-col items-center">
+            <span>JE DÉCOUVRE LA MÉTHODE GRATUITE !</span>
+            <span className="text-xs font-normal normal-case tracking-normal opacity-80 mt-0.5">
+              (places limitées)
+            </span>
+          </span>
         )}
       </button>
     </form>
