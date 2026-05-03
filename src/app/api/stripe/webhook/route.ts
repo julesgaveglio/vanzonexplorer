@@ -86,6 +86,18 @@ export async function POST(req: Request) {
             .from("vba_funnel_leads")
             .update({ step_reached: "purchased" })
             .eq("email", email);
+
+          // Track purchase in funnel_events (alimente le dashboard /ads)
+          await supabase.from("funnel_events").insert({
+            event: "purchase",
+            email,
+            page: "/van-business-academy/paiement-confirme",
+            metadata: {
+              amount: session.amount_total ? session.amount_total / 100 : 0,
+              stripe_session_id: session.id,
+              payment_status: session.payment_status,
+            },
+          });
         }
 
         // Notify Telegram
