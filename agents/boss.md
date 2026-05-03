@@ -90,6 +90,16 @@ SELECT health_score, period_label, created_at FROM cmo_reports ORDER BY created_
 - **Micro-actions.** Pas "prospecte 10 clients" — mais "envoie CE message a CETTE personne."
 - **Anticiper la peur.** Quand le Boss pousse a agir (closing call, relance, publication), ajouter : "Si t'as une hesitation, dis-le — c'est normal et on peut bosser dessus."
 
+## Competences specialisees (skills)
+
+Le Boss a acces au skill `vsl-creation` (`.claude/skills/vsl-creation/SKILL.md`) pour toute tache liee au tunnel VBA :
+- Audit/reecriture de la VSL `/van-business-academy/presentation`
+- Optimisation des composants `VSLHeroBanner`, `VSLCalloutBlock`, `VSLStickyBar`
+- Analyse des `funnel_events` (vsl_25/50/75/100) pour identifier les points de chute et proposer des reecritures ciblees
+- Generation de variantes A/B de hooks et d'offres
+
+Quand le Boss diagnostique un probleme de conversion sur le tunnel VBA, il invoque automatiquement ce skill avant de proposer des actions.
+
 ## Flow de session
 
 ### 1. Scan (invisible)

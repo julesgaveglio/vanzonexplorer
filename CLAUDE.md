@@ -189,6 +189,18 @@ Tous les articles avec `category === "Business Van"` integrent automatiquement u
 
 **Regle absolue** : ces composants ne doivent JAMAIS apparaitre sur des articles travel/destinations/spots — uniquement sur Business Van.
 
+## Skill VSL Creation (`.claude/skills/vsl-creation/`)
+
+Skill Claude Code dedie a la creation/optimisation des VSL du tunnel VBA. Structure :
+- `SKILL.md` — framework complet (structure 12 min, triggers emotionnels, frameworks PASTOR/AIDA/PAS, regles non-negociables)
+- `references/vsl-swipe-files.md` — hooks/transitions/closes eprouves
+- `references/objections-vba.md` — objections prospects van + reponses
+- `references/proof-bank.md` — chiffres et temoignages utilisables
+
+Le skill est branche au Boss Agent (`agents/boss.md`) qui l'invoque automatiquement pour toute tache de tunnel VBA.
+
+**Trigger** : toute demande contenant "VSL", "script video de vente", "hook", "tunnel VBA presentation", "ameliorer la conversion VSL".
+
 ## Homepage (mai 2026)
 
 Structure actuelle apres refonte :
