@@ -23,14 +23,32 @@ export default function AdsLeadsClient() {
   const [period, setPeriod] = useState(30);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState<string | null>(null);
 
-  useEffect(() => {
+  const fetchLeads = () => {
     setLoading(true);
     fetch(`/api/ads/leads?days=${period}`)
       .then((r) => r.json())
       .then((json) => setLeads(json.leads ?? []))
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchLeads();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [period]);
+
+  const handleDelete = async (email: string) => {
+    if (!confirm(`Supprimer le lead ${email} et tous ses événements ?`)) return;
+    setDeleting(email);
+    await fetch("/api/ads/leads", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+    setDeleting(null);
+    fetchLeads();
+  };
 
   const filtered = leads.filter((l) => {
     if (!search) return true;
@@ -97,6 +115,7 @@ export default function AdsLeadsClient() {
                   <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-5 py-3 font-medium hidden lg:table-cell">Campagne</th>
                   <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-5 py-3 font-medium hidden lg:table-cell">Contenu</th>
                   <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-5 py-3 font-medium">Date</th>
+                  <th className="px-3 py-3 w-10"></th>
                 </tr>
               </thead>
               <tbody>
@@ -118,6 +137,20 @@ export default function AdsLeadsClient() {
                     <td className="px-5 py-3 text-slate-500 hidden lg:table-cell">{lead.utm_content ?? "—"}</td>
                     <td className="px-5 py-3 text-slate-400">
                       {new Date(lead.created_at).toLocaleDateString("fr-FR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
+                    </td>
+                    <td className="px-3 py-3">
+                      <button
+                        onClick={() => lead.email && handleDelete(lead.email)}
+                        disabled={deleting === lead.email}
+                        className="text-slate-300 hover:text-red-500 transition-colors disabled:opacity-50"
+                        title="Supprimer ce lead"
+                      >
+                        {deleting === lead.email ? (
+                          <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" fill="none" strokeDasharray="30 70" /></svg>
+                        ) : (
+                          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2m2 0v14a2 2 0 01-2 2H8a2 2 0 01-2-2V6h12z" /></svg>
+                        )}
+                      </button>
                     </td>
                   </tr>
                 ))}

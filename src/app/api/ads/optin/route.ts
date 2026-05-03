@@ -19,16 +19,24 @@ export async function GET(req: NextRequest) {
   const days = parseInt(params.get("days") ?? "30");
   const since = new Date(Date.now() - days * 86400000).toISOString();
 
-  const { data: events } = await supabase
-    .from("funnel_events")
-    .select("event, page, email, session_id, created_at")
-    .in("event", ["page_view", "optin"])
-    .gte("created_at", since)
-    .or(`email.is.null,email.not.in.(${EXCLUDED_EMAILS.join(",")})`)
-    .order("created_at", { ascending: false })
-    .limit(10000);
-
-  const allEvents = events ?? [];
+  // Paginate — Supabase caps at 1000 rows per request
+  const PAGE = 1000;
+  const allEvents: { event: string; page: string | null; email: string | null; session_id: string | null; created_at: string | null }[] = [];
+  let offset = 0;
+  while (true) {
+    const { data } = await supabase
+      .from("funnel_events")
+      .select("event, page, email, session_id, created_at")
+      .in("event", ["page_view", "optin"])
+      .gte("created_at", since)
+      .or(`email.is.null,email.not.in.(${EXCLUDED_EMAILS.join(",")})`)
+      .order("created_at", { ascending: false })
+      .range(offset, offset + PAGE - 1);
+    if (!data || data.length === 0) break;
+    allEvents.push(...data);
+    if (data.length < PAGE) break;
+    offset += PAGE;
+  }
 
   // Split events into V1 (before cutoff on /inscription) and V2 (after cutoff on /inscription + all /inscription-v2)
   const v1Events = allEvents.filter(

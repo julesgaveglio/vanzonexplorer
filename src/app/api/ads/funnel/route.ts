@@ -37,20 +37,25 @@ export async function GET(req: NextRequest) {
 
   const EXCLUDED_EMAILS = ["gavegliojules@gmail.com"];
 
-  let query = supabase
-    .from("funnel_events")
-    .select("event, email, session_id, created_at, utm_source, utm_campaign, utm_content")
-    .gte("created_at", since)
-    .or(`email.is.null,email.not.in.(${EXCLUDED_EMAILS.join(",")})`)
-    .order("created_at", { ascending: false })
-    .limit(10000);
-
-  if (until) {
-    query = query.lte("created_at", until);
+  // Paginate — Supabase caps at 1000 rows per request
+  const PAGE = 1000;
+  const allEvents: { event: string; email: string | null; session_id: string | null; created_at: string | null; utm_source: string | null; utm_campaign: string | null; utm_content: string | null }[] = [];
+  let offset = 0;
+  while (true) {
+    let q = supabase
+      .from("funnel_events")
+      .select("event, email, session_id, created_at, utm_source, utm_campaign, utm_content")
+      .gte("created_at", since)
+      .or(`email.is.null,email.not.in.(${EXCLUDED_EMAILS.join(",")})`)
+      .order("created_at", { ascending: false })
+      .range(offset, offset + PAGE - 1);
+    if (until) q = q.lte("created_at", until);
+    const { data } = await q;
+    if (!data || data.length === 0) break;
+    allEvents.push(...data);
+    if (data.length < PAGE) break;
+    offset += PAGE;
   }
-
-  const { data: events } = await query;
-  const allEvents = events ?? [];
 
   // Count unique sessions/emails per step
   const stepCounts: Record<string, number> = {};
