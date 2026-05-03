@@ -168,17 +168,6 @@ export default async function FormationPage() {
                 className="object-cover"
                 unoptimized
               />
-              {/* Badge overlay */}
-              <div className="absolute bottom-4 left-4">
-                <span
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-bold text-white backdrop-blur-sm"
-                  style={{
-                    background: "rgba(0,0,0,0.60)",
-                  }}
-                >
-                  🎓 Van Business Academy™
-                </span>
-              </div>
             </div>
 
             {/* Contenu */}

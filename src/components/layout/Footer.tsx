@@ -1,5 +1,13 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
+
+const FOOTER_LOGOS: { path: string; src: string }[] = [
+  { path: "/formation", src: "https://cdn.sanity.io/images/lewexa74/production/6def39a22812318d764df11a677e5c5260e5a224-1042x417.png?auto=format&q=82" },
+];
+const DEFAULT_FOOTER_LOGO = "https://cdn.sanity.io/images/lewexa74/production/9de5b0e768fa1fcc5ea5aa6f41ac816c249af9b0-1042x417.png?auto=format&q=82";
 
 const footerLinks = {
   offres: [
@@ -50,6 +58,8 @@ const socials = [
 ];
 
 export default function Footer() {
+  const pathname = usePathname();
+  const footerLogo = FOOTER_LOGOS.find((l) => pathname.startsWith(l.path))?.src ?? DEFAULT_FOOTER_LOGO;
   const now = new Date();
   const currentYear = now.getFullYear();
   const lastUpdated = now.toLocaleDateString("fr-FR", {
@@ -69,7 +79,7 @@ export default function Footer() {
           <div className="md:col-span-2">
             <Link href="/" className="inline-flex items-center group">
               <Image
-                src="https://cdn.sanity.io/images/lewexa74/production/9de5b0e768fa1fcc5ea5aa6f41ac816c249af9b0-1042x417.png?auto=format&q=82"
+                src={footerLogo}
                 alt="Vanzon Explorer"
                 width={160}
                 height={48}
