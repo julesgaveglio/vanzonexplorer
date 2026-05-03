@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { fetchPexelsPhoto } from "@/lib/pexels";
-import { getGooglePlaceStats } from "@/lib/google-places";
 import { LocationRentalJsonLd } from "@/components/seo/JsonLd";
 import VanSelectionSection from "@/components/location/VanSelectionSection";
 import PracticalInfoSection from "@/components/location/PracticalInfoSection";
@@ -25,54 +24,32 @@ const YONI_IMG =
   "https://cdn.sanity.io/images/lewexa74/production/660105a28e577c33f642a8fdff528d88925642e3-1080x750.png?auto=format&q=82";
 
 export default async function LocationBiarritzPage() {
-  const [heroPhoto, photoCoteBasques, photoMilady, photoHalles, photoRuePort, photoRocher, photoPhare, placeStats] =
+  const [heroPhoto, photoCoteBasques, photoHalles, photoRocher] =
     await Promise.all([
       fetchPexelsPhoto("biarritz grande plage ocean sunset", FALLBACK_IMG),
       fetchPexelsPhoto("surfer wave atlantic coast france", FALLBACK_IMG),
-      fetchPexelsPhoto("calm sandy beach family swimming ocean", FALLBACK_IMG),
       fetchPexelsPhoto("french food market cheese ham tapas", FALLBACK_IMG),
-      fetchPexelsPhoto("narrow street restaurant terrace evening lights", FALLBACK_IMG),
       fetchPexelsPhoto("rocky cliff ocean walkway dramatic coast", FALLBACK_IMG),
-      fetchPexelsPhoto("white lighthouse cliff ocean panorama", FALLBACK_IMG),
-      getGooglePlaceStats(),
     ]);
 
   const activities = [
     {
       icon: "🌊",
       title: "Côte des Basques",
-      desc: "Le spot de surf le plus iconique de France. Lever tôt, waves parfaites, et le parking gratuit hors saison.",
+      desc: "Le spot de surf le plus iconique de France. Waves parfaites et parking gratuit hors saison.",
       photo: photoCoteBasques,
-    },
-    {
-      icon: "🏄",
-      title: "Plage Milady",
-      desc: "Plus calme que la Côte des Basques, idéale pour débuter le surf ou se baigner en famille.",
-      photo: photoMilady,
     },
     {
       icon: "🏛️",
       title: "Marché des Halles",
-      desc: "Pintxos, jambon de Bayonne, fromages basques. Le meilleur petit-déjeuner avant de partir surfer.",
+      desc: "Pintxos, jambon de Bayonne, fromages basques. Le meilleur petit-déjeuner avant de surfer.",
       photo: photoHalles,
-    },
-    {
-      icon: "🍽️",
-      title: "Rue du Port",
-      desc: "Tapas, txakoli et ambiance basque garantie. Le soir, l'animation est dans les rues.",
-      photo: photoRuePort,
     },
     {
       icon: "🗿",
       title: "Rocher de la Vierge",
       desc: "Vue à 360° sur l'Atlantique depuis la passerelle. Incontournable au coucher de soleil.",
       photo: photoRocher,
-    },
-    {
-      icon: "💡",
-      title: "Phare de Biarritz",
-      desc: "Par temps clair, vue sur les Pyrénées et l'Espagne. À 10 min à pied du centre.",
-      photo: photoPhare,
     },
   ];
 
@@ -137,15 +114,43 @@ export default async function LocationBiarritzPage() {
     },
   ];
 
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faq.map((item) => ({
+      "@type": "Question",
+      name: item.q,
+      acceptedAnswer: { "@type": "Answer", text: item.a },
+    })),
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Accueil", item: "https://vanzonexplorer.com/" },
+      { "@type": "ListItem", position: 2, name: "Location", item: "https://vanzonexplorer.com/location" },
+      { "@type": "ListItem", position: 3, name: "Biarritz", item: "https://vanzonexplorer.com/location/biarritz" },
+    ],
+  };
+
   return (
     <>
       <LocationRentalJsonLd
         destination="Biarritz"
         url="https://vanzonexplorer.com/location/biarritz"
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
 
-      {/* ── HERO ──────────────────────────────────────────────────── */}
-      <section className="relative -mt-16 min-h-screen flex items-end overflow-hidden">
+      {/* ── HERO (compact) ───────────────────────────────────────── */}
+      <section className="relative -mt-16 min-h-[480px] lg:min-h-[60vh] flex items-end overflow-hidden">
         <div className="absolute inset-0">
           <Image
             src={heroPhoto?.url ?? FALLBACK_IMG}
@@ -159,20 +164,12 @@ export default async function LocationBiarritzPage() {
           <div className="absolute inset-0 bg-gradient-to-r from-blue-950/30 via-transparent to-transparent" />
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-6 pb-20 pt-32 w-full">
-          <nav aria-label="Fil d'Ariane" className="mb-6">
+        <div className="relative z-10 max-w-7xl mx-auto px-6 pb-14 pt-28 w-full">
+          <nav aria-label="Fil d'Ariane" className="mb-5">
             <ol className="flex items-center gap-2 text-white/50 text-xs font-medium">
-              <li>
-                <Link href="/" className="hover:text-white/80 transition-colors">
-                  Accueil
-                </Link>
-              </li>
+              <li><Link href="/" className="hover:text-white/80 transition-colors">Accueil</Link></li>
               <li>›</li>
-              <li>
-                <Link href="/location" className="hover:text-white/80 transition-colors">
-                  Location
-                </Link>
-              </li>
+              <li><Link href="/location" className="hover:text-white/80 transition-colors">Location</Link></li>
               <li>›</li>
               <li className="text-white/80">Biarritz</li>
             </ol>
@@ -183,15 +180,13 @@ export default async function LocationBiarritzPage() {
               href="https://www.google.com/maps/place/?q=place_id:ChIJ7-3ASe0oTyQR6vNHg7YRicA"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-2 mb-6 transition-transform hover:scale-105 cursor-pointer"
+              className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-2 mb-5 transition-transform hover:scale-105 cursor-pointer"
             >
               <span className="text-amber-400">★★★★★</span>
-              <span className="text-white/90 text-sm font-medium">
-                {placeStats.reviewCount} avis Google
-              </span>
+              <span className="text-white/90 text-sm font-medium">5/5 sur Google</span>
             </a>
 
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[1.05] mb-6">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-white leading-[1.05] mb-5">
               Location van aménagé
               <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4BC3E3] to-[#4D5FEC]">
@@ -199,48 +194,16 @@ export default async function LocationBiarritzPage() {
               </span>
             </h1>
 
-            <p className="text-xl text-white/75 leading-relaxed mb-8 max-w-xl">
-              Côte des Basques, Grande Plage, phare... Biarritz s&apos;explore autrement en van.
-              Récupération à Cambo-les-Bains — 25 min de la côte.
+            <p className="text-lg text-white/75 leading-relaxed mb-8 max-w-xl">
+              Côte des Basques, Grande Plage, phare — Biarritz s&apos;explore en van. Départ Cambo-les-Bains, 25 min de la côte.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Link
-                href="/location#nos-vans"
-                className="btn-shine inline-flex items-center justify-center gap-2 bg-white text-slate-900 font-bold px-8 py-4 rounded-xl hover:bg-blue-50 transition-colors text-lg shadow-2xl"
-              >
-                Voir nos vans disponibles
-              </Link>
-              <a
-                href="https://www.yescapa.fr/campers/89215"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-md border border-white/30 text-white font-bold px-8 py-4 rounded-xl hover:bg-white/20 transition-colors text-lg"
-              >
-                Réserver maintenant →
-              </a>
-            </div>
-          </div>
-
-          <div className="hidden lg:flex gap-4 absolute bottom-20 right-6">
-            {[
-              { value: "65€", label: "/ nuit", sub: "à partir de" },
-              { value: "2", label: "vans", sub: "exclusifs" },
-              {
-                value: `${placeStats.ratingDisplay}★`,
-                label: "Google",
-                sub: `${placeStats.reviewCount} avis`,
-              },
-            ].map((stat) => (
-              <div
-                key={stat.label}
-                className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-5 py-4 text-center min-w-[100px]"
-              >
-                <div className="text-xs text-white/60 font-medium mb-0.5">{stat.sub}</div>
-                <div className="text-2xl font-black text-white">{stat.value}</div>
-                <div className="text-xs text-white/70 font-medium">{stat.label}</div>
-              </div>
-            ))}
+            <Link
+              href="#nos-vans"
+              className="btn-shine inline-flex items-center justify-center gap-2 bg-white text-slate-900 font-bold px-8 py-4 rounded-xl hover:bg-blue-50 transition-colors text-lg shadow-2xl"
+            >
+              Voir nos vans disponibles
+            </Link>
           </div>
         </div>
 
@@ -249,48 +212,34 @@ export default async function LocationBiarritzPage() {
             Photo: {heroPhoto.photographer} / Pexels
           </p>
         )}
-
-        <a
-          href="#activites"
-          className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 text-white/50 hover:text-white/80 transition-colors animate-bounce"
-        >
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-          </svg>
-        </a>
       </section>
 
-      {/* ── TRUST BAR ─────────────────────────────────────────────── */}
-      <section className="bg-slate-950 py-5 border-t border-white/5">
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="flex flex-wrap justify-center md:justify-between items-center gap-y-4 gap-x-8 text-white/60 text-sm font-medium">
-            {[
-              { icon: "📍", text: "Départ Cambo-les-Bains — 25 min de Biarritz" },
-              { icon: "🛡️", text: "Assurance tous risques incluse" },
-              { icon: "💰", text: "Dès 65€/nuit" },
-              {
-                icon: "⭐",
-                text: `${placeStats.ratingDisplay}/5 sur ${placeStats.reviewCount} avis Google`,
-              },
-              { icon: "🔑", text: "Départ depuis Cambo-les-Bains" },
-            ].map((item) => (
-              <div key={item.text} className="flex items-center gap-2">
-                <span>{item.icon}</span>
-                <span>{item.text}</span>
+      {/* ── VANS DISPONIBLES (position 2 — immédiat) ─────────────── */}
+      <VanSelectionSection destination="Biarritz" />
+
+      {/* ── TÉMOIGNAGE ────────────────────────────────────────────── */}
+      <section className="py-12 bg-slate-50">
+        <div className="max-w-2xl mx-auto px-6">
+          <div className="glass-card p-6 text-center">
+            <div className="flex justify-center gap-1 text-amber-400 mb-3">
+              {[...Array(5)].map((_, i) => <span key={i}>★</span>)}
+            </div>
+            <p className="text-slate-700 font-medium text-sm leading-relaxed mb-4">
+              &ldquo;Van super bien équipé, exactement comme décrit. Jules est disponible et de bons conseils. On recommande !&rdquo;
+            </p>
+            <div className="flex items-center justify-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-sm">J</div>
+              <div className="text-left">
+                <div className="font-semibold text-slate-800 text-sm">Joris Darnanville</div>
+                <div className="text-xs text-slate-400">Client Google Maps</div>
               </div>
-            ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ── ACTIVITÉS AVEC PHOTOS ─────────────────────────────────── */}
-      <section id="activites" className="py-20 bg-white scroll-mt-20">
+      {/* ── ACTIVITÉS (3 cards) ───────────────────────────────────── */}
+      <section className="py-20 bg-white">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-14">
             <span
@@ -300,15 +249,14 @@ export default async function LocationBiarritzPage() {
               À faire à Biarritz
             </span>
             <h2 className="text-4xl font-black text-slate-900 mb-3">
-              Pourquoi louer un van à Biarritz ?
+              Que faire à Biarritz en van ?
             </h2>
             <p className="text-slate-500 text-lg max-w-xl mx-auto">
-              Biarritz est la capitale du surf français et l&apos;un des spots les plus
-              photogéniques du Pays Basque. En van, vous dormez à 500 m des meilleures plages.
+              Biarritz est la capitale du surf français. En van, vous dormez à 500 m des meilleures plages.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {activities.map((activity) => (
               <div
                 key={activity.title}
@@ -333,7 +281,7 @@ export default async function LocationBiarritzPage() {
         </div>
       </section>
 
-      {/* ── ITINÉRAIRE WEEK-END ───────────────────────────────────── */}
+      {/* ── ITINÉRAIRE WEEK-END ──────────────────────────────────── */}
       <section className="py-20 bg-slate-50">
         <div className="max-w-4xl mx-auto px-6">
           <div className="text-center mb-14">
@@ -347,27 +295,21 @@ export default async function LocationBiarritzPage() {
               Itinéraire week-end à Biarritz en van
             </h2>
             <p className="text-slate-500 text-lg max-w-xl mx-auto">
-              Deux nuits, trois jours — le programme parfait pour découvrir Biarritz et la Côte
-              Basque depuis votre van.
+              Deux nuits, trois jours — le programme parfait pour découvrir Biarritz et la Côte Basque depuis votre van.
             </p>
           </div>
 
           <div className="space-y-8">
             {itinerary.map((day, idx) => (
               <div key={day.day} className="flex gap-6">
-                {/* Timeline */}
                 <div className="flex flex-col items-center flex-shrink-0">
-                  <div
-                    className={`w-12 h-12 rounded-full ${day.color} flex items-center justify-center text-xl shadow-md`}
-                  >
+                  <div className={`w-12 h-12 rounded-full ${day.color} flex items-center justify-center text-xl shadow-md`}>
                     {day.emoji}
                   </div>
                   {idx < itinerary.length - 1 && (
                     <div className="w-0.5 flex-1 bg-slate-200 mt-3" />
                   )}
                 </div>
-
-                {/* Content */}
                 <div className="pb-8 flex-1">
                   <h3 className="font-black text-slate-900 text-xl mb-4">{day.day}</h3>
                   <ul className="space-y-2">
@@ -385,53 +327,34 @@ export default async function LocationBiarritzPage() {
         </div>
       </section>
 
-      {/* ── INFOS PRATIQUES ───────────────────────────────────────── */}
+      {/* ── INFOS PRATIQUES + CARTE ──────────────────────────────── */}
       <PracticalInfoSection
         title="Infos pratiques — Biarritz en van"
         image={YONI_IMG}
         imageAlt="Van Yoni Vanzon Explorer ouvert près de Biarritz"
         rows={[
-          {
-            label: "Récupération",
-            value: "Cambo-les-Bains (25 min de Biarritz)",
-          },
-          {
-            label: "Durée recommandée",
-            value: "2 nuits minimum — idéal 4–5 jours pour profiter",
-          },
-          {
-            label: "Tarif",
-            value: "Dès 65€/nuit tout inclus (assurance, équipements, cuisine)",
-          },
-          {
-            label: "Spot nuit",
-            value: "Parking Côte des Basques — gratuit hors juillet/août",
-          },
-          {
-            label: "Meilleure saison",
-            value: "Mai–Juin et Septembre–Octobre — vagues et météo parfaites",
-          },
-          {
-            label: "Accès surf",
-            value: "Côte des Basques, Milady, Les Cavaliers (Anglet) — toutes à 10 min",
-          },
+          { label: "Récupération", value: "Cambo-les-Bains (25 min de Biarritz)" },
+          { label: "Durée recommandée", value: "2 nuits minimum — idéal 4–5 jours pour profiter" },
+          { label: "Tarif", value: "Dès 65€/nuit tout inclus (assurance, équipements, cuisine)" },
+          { label: "Spot nuit", value: "Parking Côte des Basques — gratuit hors juillet/août" },
+          { label: "Meilleure saison", value: "Mai–Juin et Septembre–Octobre — vagues et météo parfaites" },
+          { label: "Accès surf", value: "Côte des Basques, Milady, Les Cavaliers (Anglet) — toutes à 10 min" },
         ]}
       />
 
-      {/* ── GOOGLE MAPS ───────────────────────────────────────────── */}
-      <section className="py-16 bg-white">
+      <section className="py-12 bg-white">
         <div className="max-w-5xl mx-auto px-6">
-          <h2 className="text-2xl font-black text-slate-900 mb-2 text-center">
+          <h3 className="text-xl font-black text-slate-900 mb-2 text-center">
             Votre point de départ : Cambo-les-Bains
-          </h2>
-          <p className="text-slate-500 text-center mb-8">
+          </h3>
+          <p className="text-slate-500 text-center text-sm mb-6">
             À 25 min de Biarritz. Remise des clés sur place, parking gratuit.
           </p>
           <div className="rounded-3xl overflow-hidden shadow-lg border border-slate-100">
             <iframe
               src="https://maps.google.com/maps?q=Cambo-les-Bains,64250,France&t=&z=13&ie=UTF8&iwloc=&output=embed"
               width="100%"
-              height="350"
+              height="300"
               style={{ border: 0 }}
               allowFullScreen
               loading="lazy"
@@ -442,10 +365,7 @@ export default async function LocationBiarritzPage() {
         </div>
       </section>
 
-      {/* ── VAN SELECTION ─────────────────────────────────────────── */}
-      <VanSelectionSection destination="Biarritz" />
-
-      {/* ── FAQ ───────────────────────────────────────────────────── */}
+      {/* ── FAQ ──────────────────────────────────────────────────── */}
       <section className="py-20 bg-slate-50">
         <div className="max-w-3xl mx-auto px-6">
           <div className="text-center mb-12">
@@ -481,7 +401,7 @@ export default async function LocationBiarritzPage() {
         </div>
       </section>
 
-      {/* ── FINAL CTA ─────────────────────────────────────────────── */}
+      {/* ── CTA FINAL ────────────────────────────────────────────── */}
       <section className="relative py-24 overflow-hidden">
         <div
           className="absolute inset-0"
