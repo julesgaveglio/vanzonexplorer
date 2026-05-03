@@ -3,6 +3,7 @@ import { sanityFetch } from "@/lib/sanity/client";
 import { getAllLocationVansQuery } from "@/lib/sanity/queries";
 import type { VanCard as VanCardType } from "@/lib/sanity/types";
 import VanCard from "@/components/van/VanCard";
+import CamboMapSection from "./CamboMapSection";
 
 interface VanSelectionSectionProps {
   destination: string;
@@ -53,6 +54,8 @@ export default async function VanSelectionSection({ destination }: VanSelectionS
           </Link>
         </div>
       </div>
+
+      <CamboMapSection destination={destination} />
     </section>
   );
 }

@@ -62,20 +62,6 @@ const destMeta = [
     desc: "Village basque face à l'océan",
     img: "https://www.saint-jean-de-luz.com/wp-content/uploads/2021/04/p1190705-1600x690.jpg",
   },
-  {
-    href: "/location/week-end",
-    label: "Week-end",
-    emoji: "🗓️",
-    desc: "2 nuits au minimum, idée d'itinéraire incluse",
-    img: "https://www.vanlifemag.fr/wp-content/uploads/2020/12/AdobeStock_369527107.jpg",
-  },
-  {
-    href: "/location/foret-irati",
-    label: "Forêt d'Irati",
-    emoji: "🌲",
-    desc: "Bivouac, randonnée et nature sauvage",
-    img: "https://media.sudouest.fr/16227503/1000x625/sudouest-photo-1-3807448-1600.jpg?v=1754848800",
-  },
 ];
 
 function getSeasonLabel(): string {

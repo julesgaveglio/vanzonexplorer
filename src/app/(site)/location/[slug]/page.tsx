@@ -10,6 +10,7 @@ import BookingButton from "@/components/van/BookingButton";
 import PriceDisplay from "@/components/van/PriceDisplay";
 import Badge from "@/components/ui/Badge";
 import BookingReassurance from "@/components/van/BookingReassurance";
+import CamboMapSection from "@/components/location/CamboMapSection";
 
 export const revalidate = 3600;
 
@@ -225,6 +226,8 @@ export default async function LocationVanPage({
           </div>
         </div>
       </div>
+
+      <CamboMapSection />
     </>
   );
 }
