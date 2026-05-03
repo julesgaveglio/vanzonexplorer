@@ -162,8 +162,8 @@ export default async function FormationPage() {
             {/* Image */}
             <div className="relative aspect-[16/9]">
               <Image
-                src="https://cdn.sanity.io/images/lewexa74/production/16f9120e659bdd4bba47e663e9df9a1a9293fe3f-1170x2080.jpg?auto=format&q=82&w=800"
-                alt="Jules, fondateur de Van Business Academy"
+                src="/images/construis-ta-liberte.jpg"
+                alt="Vue depuis un van aménagé au coucher de soleil — Construis ta liberté"
                 fill
                 className="object-cover"
                 unoptimized
