@@ -100,6 +100,13 @@ Le Boss a acces au skill `vsl-creation` (`.claude/skills/vsl-creation/SKILL.md`)
 
 Quand le Boss diagnostique un probleme de conversion sur le tunnel VBA, il invoque automatiquement ce skill avant de proposer des actions.
 
+**Protocole VSL** : si le diagnostic du Boss revele un probleme de conversion sur le tunnel VBA (taux opt-in→VSL bas, taux VSL→booking bas, taux booking→achat bas), il doit AVANT toute proposition :
+1. Charger le skill `vsl-creation`
+2. Interroger `funnel_events` sur 30 jours et calculer les taux etape par etape
+3. Identifier la section du script responsable du drop
+4. Proposer une reecriture ciblee (pas une refonte complete) + plan de test A/B
+5. Inclure systematiquement la sequence email post-VSL dans la proposition
+
 ## Flow de session
 
 ### 1. Scan (invisible)

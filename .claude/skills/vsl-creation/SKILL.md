@@ -45,18 +45,62 @@ Voix de marque : direct, terrain, anti-bullshit, preuves chiffrées, vocabulaire
 - **PAS** pour les sections agitation
 - **Eugene Schwartz — Awareness levels** : adapter selon trafic Meta Ads (most cible = "problem aware")
 
-## Workflow recommandé quand l'utilisateur demande une VSL
-1. Demander : niveau d'awareness de la cible ? (cold / problem aware / solution aware)
-2. Demander : angle principal du hook ? (sinon proposer 3 angles)
-3. Générer outline section par section avec timings
-4. Écrire le script complet en respectant les timings
-5. Auditer : checklist (hook < 30s, 1 chiffre/section, objections nommées, CTA unique)
-6. Proposer 2 variantes pour le hook et l'offre
+## Checklist d'audit (scoring obligatoire avant livraison)
+
+Avant de livrer une VSL, scorer chaque critère sur 2 points (0 = absent, 1 = partiel, 2 = solide). Score minimum acceptable : 26/34. En dessous, réécrire les sections faibles.
+
+| # | Critère | Score |
+|---|---|---|
+| 1 | Hook < 30s lu à voix haute, promesse spécifique mesurable | /2 |
+| 2 | Crédibilité posée en 1 min max avec 1 chiffre vérifiable | /2 |
+| 3 | Problème agité avec 3 douleurs concrètes nommées | /2 |
+| 4 | Big Idea contre-intuitive explicitée (le "ah oui c'est vrai") | /2 |
+| 5 | Mécanisme unique nommé en 3-5 piliers labellisés | /2 |
+| 6 | Au moins 2 preuves chiffrées + 1 témoignage nominatif | /2 |
+| 7 | Offre stackée avec ancrage prix puis 997€ | /2 |
+| 8 | Au moins 3 objections nommées avant qu'elles naissent | /2 |
+| 9 | Garantie + scarcity réelle (pas inventée) | /2 |
+| 10 | UN SEUL CTA final, formulé verbe d'action | /2 |
+| 11 | Phrases courtes (< 20 mots majoritairement), test lecture orale | /2 |
+| 12 | Vocabulaire van life précis (pas de marketing US plaqué) | /2 |
+| 13 | Future pacing présent (le "dans 6 mois...") | /2 |
+| 14 | Identity shift activé (loueur → opérateur) | /2 |
+| 15 | Aucun mot creux (révolutionnaire, secret, miracle, transformer ta vie) | /2 |
+| 16 | Cohérence ton de marque Vanzon (direct, terrain, anti-bullshit) | /2 |
+| 17 | Timings respectés (±15s par section) | /2 |
+
+**Format de livraison obligatoire** : script complet + tableau de scoring rempli + 2 variantes de hook + 2 variantes d'offre.
+
+## Workflow opérationnel
+
+### Si tâche = créer une VSL from scratch
+1. Demander niveau d'awareness cible (cold / problem / solution aware)
+2. Demander angle hook ou en proposer 3
+3. Outline section par section avec timings
+4. Script complet
+5. Audit checklist scorée
+6. 2 variantes hook + 2 variantes offre
+
+### Si tâche = améliorer une VSL existante (cas le plus fréquent)
+1. **Toujours commencer par lire la data** : interroger Supabase `funnel_events` sur les 30 derniers jours :
+   - Calculer taux de passage vsl_view → vsl_25 → vsl_50 → vsl_75 → vsl_100 → booking_start
+   - Identifier le plus gros point de chute (>30% de drop entre deux étapes = critique)
+2. Mapper le drop à une section du script (chute à 25% = problème hook/intro, chute à 50% = bridge faible, chute à 75% = offre/preuve faible, chute à 100% = CTA mou)
+3. Réécrire UNIQUEMENT la section identifiée + 2 variantes A/B
+4. Audit checklist sur la nouvelle version
+
+### Si tâche = audit pur
+Appliquer la checklist scorée, retourner score + top 3 faiblesses + recos par ordre d'impact.
 
 ## Fichiers de référence à consulter
-- `references/vsl-swipe-files.md` — exemples de hooks gagnants
-- `references/objections-vba.md` — objections récurrentes des prospects van
-- `references/proof-bank.md` — chiffres et stats Vanzon utilisables
+
+- `references/vsl-swipe-files.md` — hooks/transitions/closes éprouvés
+- `references/objections-vba.md` — objections récurrentes prospects van
+- `references/proof-bank.md` — chiffres et témoignages utilisables
+- `references/voice-vanzon.md` — calibration ton de marque (LIRE EN PREMIER avant toute écriture)
+- `references/post-vsl-sequence.md` — séquence email post-VSL associée
+
+**Ordre de lecture obligatoire avant d'écrire** : voice-vanzon.md → proof-bank.md → objections-vba.md → swipe-files.md.
 
 ## Intégration tunnel (technique)
 Le script final est destiné à `/van-business-academy/presentation`. Events trackés dans `funnel_events` : vsl_view, vsl_25/50/75/100, booking_start. Une bonne VSL doit avoir un pic à 75% (l'offre) et un funnel propre vers booking_confirmed.
