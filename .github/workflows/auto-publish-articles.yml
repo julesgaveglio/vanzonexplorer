@@ -1,12 +1,12 @@
 name: Auto-publish blog articles
 
 on:
-  schedule:
-    # Lundi, mercredi, vendredi à 8h00 (Paris, heure d'hiver)
-    - cron: "0 7 * * 1"   # Lundi
-    - cron: "0 7 * * 3"   # Mercredi
-    - cron: "0 7 * * 5"   # Vendredi
-  workflow_dispatch: # Déclenchement manuel depuis l'UI GitHub
+  # PAUSED — En attente indexation Google (mai 2026)
+  # schedule:
+  #   - cron: "0 7 * * 1"   # Lundi
+  #   - cron: "0 7 * * 3"   # Mercredi
+  #   - cron: "0 7 * * 5"   # Vendredi
+  workflow_dispatch: # Déclenchement manuel uniquement
 
 jobs:
   publish:

@@ -102,7 +102,7 @@
     "id": "blog-writer",
     "name": "Agent Rédaction SEO",
     "emoji": "✍️",
-    "status": "active",
+    "status": "paused",
     "description": "Rédige automatiquement 3 articles SEO par semaine (lundi, mercredi, vendredi). Prend le prochain article en queue, génère le contenu avec Gemini AI, récupère une image via Pexels et publie directement dans Sanity CMS.",
     "trigger": "cron",
     "schedule": "Lundi, Mercredi, Vendredi à 7h UTC",
