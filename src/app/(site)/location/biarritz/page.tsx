@@ -4,7 +4,6 @@ import Link from "next/link";
 import { fetchPexelsPhoto } from "@/lib/pexels";
 import { LocationRentalJsonLd } from "@/components/seo/JsonLd";
 import VanSelectionSection from "@/components/location/VanSelectionSection";
-import PracticalInfoSection from "@/components/location/PracticalInfoSection";
 
 export const revalidate = 86400;
 
@@ -20,76 +19,8 @@ export const metadata: Metadata = {
 const FALLBACK_IMG =
   "https://cdn.sanity.io/images/lewexa74/production/d445397965472d300e3dc13d6b1c37503fe8ba25-1920x1080.png?auto=format&q=82";
 
-const YONI_IMG =
-  "https://cdn.sanity.io/images/lewexa74/production/660105a28e577c33f642a8fdff528d88925642e3-1080x750.png?auto=format&q=82";
-
 export default async function LocationBiarritzPage() {
-  const [heroPhoto, photoCoteBasques, photoHalles, photoRocher] =
-    await Promise.all([
-      fetchPexelsPhoto("biarritz grande plage ocean sunset", FALLBACK_IMG),
-      fetchPexelsPhoto("surfer wave atlantic coast france", FALLBACK_IMG),
-      fetchPexelsPhoto("french food market cheese ham tapas", FALLBACK_IMG),
-      fetchPexelsPhoto("rocky cliff ocean walkway dramatic coast", FALLBACK_IMG),
-    ]);
-
-  const activities = [
-    {
-      icon: "🌊",
-      title: "Côte des Basques",
-      desc: "Le spot de surf le plus iconique de France. Waves parfaites et parking gratuit hors saison.",
-      photo: photoCoteBasques,
-    },
-    {
-      icon: "🏛️",
-      title: "Marché des Halles",
-      desc: "Pintxos, jambon de Bayonne, fromages basques. Le meilleur petit-déjeuner avant de surfer.",
-      photo: photoHalles,
-    },
-    {
-      icon: "🗿",
-      title: "Rocher de la Vierge",
-      desc: "Vue à 360° sur l'Atlantique depuis la passerelle. Incontournable au coucher de soleil.",
-      photo: photoRocher,
-    },
-  ];
-
-  const itinerary = [
-    {
-      day: "Vendredi soir",
-      emoji: "🌅",
-      color: "bg-[#4BC3E3]",
-      items: [
-        "Récupération van à Cambo (17h)",
-        "Route vers Biarritz (25 min)",
-        "Installation au parking Côte des Basques",
-        "Coucher de soleil face à l'Atlantique",
-        "Dîner pintxos rue du Port",
-      ],
-    },
-    {
-      day: "Samedi",
-      emoji: "🏄",
-      color: "bg-[#4D5FEC]",
-      items: [
-        "Surf ou bain matinal Côte des Basques",
-        "Café + pintxos aux Halles",
-        "Grande Plage l'après-midi",
-        "Rocher de la Vierge au coucher du soleil",
-        "Soirée en terrasse",
-      ],
-    },
-    {
-      day: "Dimanche",
-      emoji: "🗺️",
-      color: "bg-[#4BC3E3]",
-      items: [
-        "Petit déj dans le van face à l'océan",
-        "Phare et tour de Biarritz",
-        "Option : Saint-Jean-de-Luz à 20 min",
-        "Retour van Cambo (avant 18h)",
-      ],
-    },
-  ];
+  const heroPhoto = await fetchPexelsPhoto("biarritz grande plage ocean sunset", FALLBACK_IMG);
 
   const faq = [
     {
@@ -238,130 +169,32 @@ export default async function LocationBiarritzPage() {
         </div>
       </section>
 
-      {/* ── ACTIVITÉS (3 cards) ───────────────────────────────────── */}
-      <section className="py-20 bg-white">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="text-center mb-14">
-            <span
-              className="badge-glass !px-4 !py-1.5 text-sm font-semibold mb-4 inline-block"
-              style={{ color: "#4D5FEC" }}
-            >
-              À faire à Biarritz
-            </span>
-            <h2 className="text-4xl font-black text-slate-900 mb-3">
-              Que faire à Biarritz en van ?
-            </h2>
-            <p className="text-slate-500 text-lg max-w-xl mx-auto">
-              Biarritz est la capitale du surf français. En van, vous dormez à 500 m des meilleures plages.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {activities.map((activity) => (
-              <div
-                key={activity.title}
-                className="relative h-64 overflow-hidden rounded-2xl group"
-              >
-                <Image
-                  src={activity.photo?.url ?? FALLBACK_IMG}
-                  alt={activity.title}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                  className="object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-                <div className="absolute bottom-0 p-5">
-                  <div className="text-2xl mb-1">{activity.icon}</div>
-                  <h3 className="font-bold text-white text-lg mb-1">{activity.title}</h3>
-                  <p className="text-white/75 text-sm leading-relaxed">{activity.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── ITINÉRAIRE WEEK-END ──────────────────────────────────── */}
-      <section className="py-20 bg-slate-50">
-        <div className="max-w-4xl mx-auto px-6">
-          <div className="text-center mb-14">
-            <span
-              className="badge-glass !px-4 !py-1.5 text-sm font-semibold mb-4 inline-block"
-              style={{ color: "#4D5FEC" }}
-            >
-              Week-end type
-            </span>
-            <h2 className="text-4xl font-black text-slate-900 mb-3">
-              Itinéraire week-end à Biarritz en van
-            </h2>
-            <p className="text-slate-500 text-lg max-w-xl mx-auto">
-              Deux nuits, trois jours — le programme parfait pour découvrir Biarritz et la Côte Basque depuis votre van.
-            </p>
-          </div>
-
-          <div className="space-y-8">
-            {itinerary.map((day, idx) => (
-              <div key={day.day} className="flex gap-6">
-                <div className="flex flex-col items-center flex-shrink-0">
-                  <div className={`w-12 h-12 rounded-full ${day.color} flex items-center justify-center text-xl shadow-md`}>
-                    {day.emoji}
-                  </div>
-                  {idx < itinerary.length - 1 && (
-                    <div className="w-0.5 flex-1 bg-slate-200 mt-3" />
-                  )}
-                </div>
-                <div className="pb-8 flex-1">
-                  <h3 className="font-black text-slate-900 text-xl mb-4">{day.day}</h3>
-                  <ul className="space-y-2">
-                    {day.items.map((item) => (
-                      <li key={item} className="flex items-start gap-3 text-slate-600">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#4BC3E3] flex-shrink-0 mt-2" />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── INFOS PRATIQUES + CARTE ──────────────────────────────── */}
-      <PracticalInfoSection
-        title="Infos pratiques — Biarritz en van"
-        image={YONI_IMG}
-        imageAlt="Van Yoni Vanzon Explorer ouvert près de Biarritz"
-        rows={[
-          { label: "Récupération", value: "Cambo-les-Bains (25 min de Biarritz)" },
-          { label: "Durée recommandée", value: "2 nuits minimum — idéal 4–5 jours pour profiter" },
-          { label: "Tarif", value: "Dès 65€/nuit tout inclus (assurance, équipements, cuisine)" },
-          { label: "Spot nuit", value: "Parking Côte des Basques — gratuit hors juillet/août" },
-          { label: "Meilleure saison", value: "Mai–Juin et Septembre–Octobre — vagues et météo parfaites" },
-          { label: "Accès surf", value: "Côte des Basques, Milady, Les Cavaliers (Anglet) — toutes à 10 min" },
-        ]}
-      />
-
-      <section className="py-12 bg-white">
-        <div className="max-w-5xl mx-auto px-6">
-          <h3 className="text-xl font-black text-slate-900 mb-2 text-center">
-            Votre point de départ : Cambo-les-Bains
-          </h3>
-          <p className="text-slate-500 text-center text-sm mb-6">
-            À 25 min de Biarritz. Remise des clés sur place, parking gratuit.
+      {/* ── ROAD TRIP PERSONNALISÉ ────────────────────────────────── */}
+      <section className="py-20" style={{ background: "linear-gradient(160deg, #EFF6FF 0%, #F0FDFF 100%)" }}>
+        <div className="max-w-3xl mx-auto px-6 text-center">
+          <span
+            className="badge-glass !px-4 !py-1.5 text-sm font-semibold mb-4 inline-block"
+            style={{ color: "#4D5FEC" }}
+          >
+            Votre itinéraire sur-mesure
+          </span>
+          <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-4">
+            Personnalisez votre road trip à Biarritz
+          </h2>
+          <p className="text-slate-500 text-lg leading-relaxed mb-8 max-w-xl mx-auto">
+            Surf, gastronomie, nature — dites-nous ce que vous aimez et recevez un itinéraire personnalisé par email en 60 secondes. Gratuit.
           </p>
-          <div className="rounded-3xl overflow-hidden shadow-lg border border-slate-100">
-            <iframe
-              src="https://maps.google.com/maps?q=Cambo-les-Bains,64250,France&t=&z=13&ie=UTF8&iwloc=&output=embed"
-              width="100%"
-              height="300"
-              style={{ border: 0 }}
-              allowFullScreen
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title="Cambo-les-Bains — Point de départ vers Biarritz"
-            />
+          <div className="flex flex-wrap justify-center gap-3 mb-8 text-sm text-slate-500">
+            <span className="flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-full border border-slate-100">✓ IA</span>
+            <span className="flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-full border border-slate-100">✓ 60 sec</span>
+            <span className="flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-full border border-slate-100">✓ Gratuit</span>
           </div>
+          <Link
+            href="/road-trip-personnalise"
+            className="btn-shine inline-flex items-center justify-center gap-2 bg-slate-900 text-white font-bold px-8 py-4 rounded-xl hover:bg-slate-800 transition-colors text-lg shadow-xl"
+          >
+            Créer mon itinéraire →
+          </Link>
         </div>
       </section>
 
