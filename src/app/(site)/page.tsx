@@ -1,10 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { getGooglePlaceStats } from "@/lib/google-places";
-import OtherServices from "@/components/ui/OtherServices";
 import MarketplaceVansSection from "@/components/marketplace/MarketplaceVansSection";
-import ProprietaireCTA from "@/components/homepage/ProprietaireCTA";
 import RoadTripCTA from "@/components/ui/RoadTripCTA";
 import LiquidButton from "@/components/ui/LiquidButton";
 
@@ -90,8 +87,6 @@ function getSeasonLabel(): string {
 }
 
 export default async function HomePage() {
-  const placeStats = await getGooglePlaceStats();
-
   return (
     <>
       <section className="relative -mt-16 min-h-[620px] lg:min-h-screen flex items-start lg:items-end overflow-hidden">
@@ -117,7 +112,7 @@ export default async function HomePage() {
               className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-2 mb-8 transition-transform hover:scale-105 cursor-pointer"
             >
               <span className="text-amber-400">★★★★★</span>
-              <span className="text-white/90 text-sm font-medium">{placeStats.reviewCount} avis Google • {placeStats.ratingDisplay}/5</span>
+              <span className="text-white/90 text-sm font-medium">5/5 sur Google</span>
             </a>
 
             <h1 className="text-4xl sm:text-4xl md:text-6xl lg:text-7xl font-black text-white leading-[1.08] mb-7">
@@ -146,7 +141,7 @@ export default async function HomePage() {
             {[
               { value: "65€", label: "/ nuit", sub: "à partir de" },
               { value: "2", label: "vans", sub: "exclusifs" },
-              { value: `${placeStats.ratingDisplay}★`, label: "Google", sub: `${placeStats.reviewCount} avis` },
+              { value: "5★", label: "Google", sub: "sur 5" },
             ].map((stat) => (
               <div key={stat.label} className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-5 py-4 text-center min-w-[100px]">
                 <div className="text-xs text-white/60 font-medium mb-0.5">{stat.sub}</div>
@@ -170,7 +165,7 @@ export default async function HomePage() {
             {[
               { icon: "🛡️", text: "Assurance incluse via Yescapa" },
               { icon: "📍", text: "Basé au Pays Basque" },
-              { icon: "⭐", text: `${placeStats.ratingDisplay}/5 sur ${placeStats.reviewCount} avis Google` },
+              { icon: "⭐", text: "5/5 sur Google" },
             ].map((item) => (
               <div key={item.text} className="flex items-center gap-2">
                 <span>{item.icon}</span>
@@ -183,86 +178,6 @@ export default async function HomePage() {
 
 
       <MarketplaceVansSection />
-      <ProprietaireCTA />
-
-      <section className="py-20 bg-white overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div>
-              <span className="badge-glass !px-4 !py-1.5 text-sm font-semibold mb-5 inline-block" style={{ color: '#4D5FEC' }}>
-                📍 La destination
-              </span>
-              <h2 className="text-4xl font-black text-slate-900 mb-6 leading-tight">
-                Le Pays Basque,<br />
-                terrain de jeu idéal<br />
-                pour la vanlife.
-              </h2>
-              <p className="text-slate-500 text-lg leading-relaxed mb-8">
-                De l&apos;Atlantique aux Pyrénées en moins d&apos;une heure — le Pays Basque
-                concentre tout ce qu&apos;on aime : des vagues parfaites, des villages
-                authentiques, une gastronomie unique et des paysages magnifiques.
-              </p>
-
-              <div className="space-y-4">
-                {[
-                  { icon: "🌊", label: "Biarritz & la Côte des Basques", desc: "Les spots de surf les plus célèbres de France" },
-                  { icon: "⛰️", label: "La Rhune & les Pyrénées", desc: "Bivouacs légaux avec vue sur deux pays" },
-                  { icon: "🍷", label: "Saint-Jean-de-Luz & Espelette", desc: "Marchés, pintxos et vins basques" },
-                  { icon: "🌲", label: "Forêt d'Irati", desc: "La plus grande hêtraie d'Europe à votre portée" },
-                ].map((spot) => (
-                  <div key={spot.label} className="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-50 transition-colors">
-                    <span className="text-2xl mt-0.5">{spot.icon}</span>
-                    <div>
-                      <div className="font-semibold text-slate-800">{spot.label}</div>
-                      <div className="text-sm text-slate-500">{spot.desc}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <a
-                href="/road-trip-pays-basque-van"
-                className="inline-flex items-center gap-2 mt-6 text-sm font-semibold transition-colors"
-                style={{ color: "#4D5FEC" }}
-              >
-                Voir l&apos;itinéraire road trip 7 jours →
-              </a>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              {/* Panorama pleine largeur */}
-              <div className="relative col-span-2 aspect-[16/7] rounded-3xl overflow-hidden shadow-lg">
-                <Image
-                  src="https://cdn.sanity.io/images/lewexa74/production/0b3f81d08627ba0b4423224029cb5016d0e7ed25-2048x1365.jpg?auto=format&q=82"
-                  alt="Paysage Pays Basque en van"
-                  fill
-                  sizes="(max-width: 768px) 100vw, calc(50vw + 200px)"
-                  className="object-cover hover:scale-105 transition-transform duration-700"
-                />
-              </div>
-              {/* 2 images côte à côte */}
-              <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-lg">
-                <Image
-                  src="https://cdn.sanity.io/images/lewexa74/production/7e04357061492ab4193c49d03351310cf245a106-1540x976.png?auto=format&q=82"
-                  alt="Van aménagé Vanzon Explorer"
-                  fill
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                  className="object-cover hover:scale-105 transition-transform duration-700"
-                />
-              </div>
-              <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-lg">
-                <Image
-                  src="https://cdn.sanity.io/images/lewexa74/production/4ee40c1abb03d029487868808a159216a641e3ad-3829x2872.jpg?auto=format&q=82"
-                  alt="Van life Pays Basque"
-                  fill
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                  className="object-cover hover:scale-105 transition-transform duration-700"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
 
       {/* ── OÙ PARTIR EN VAN ──────────────────────────────────────── */}
@@ -327,7 +242,7 @@ export default async function HomePage() {
               className="text-sm font-medium transition-colors"
               style={{ color: '#4D5FEC' }}
             >
-              {placeStats.reviewCount} avis Google Maps • Voir tous les avis →
+              5/5 sur Google Maps • Voir tous les avis →
             </a>
           </div>
 
@@ -398,12 +313,11 @@ export default async function HomePage() {
               </h2>
 
               <p className="text-slate-500 text-lg leading-relaxed mb-8 max-w-md">
-                De zéro à la location rentable. Jules vous accompagne dans l&apos;achat du fourgon, l&apos;aménagement, l&apos;homologation VASP et comment gérer des revenus avec votre van.
+                De zéro à la location rentable. Nous vous accompagnons dans l&apos;achat du fourgon, l&apos;aménagement, l&apos;homologation VASP et comment gérer des revenus avec votre van.
               </p>
 
-              <div className="grid grid-cols-3 gap-4 mb-10">
+              <div className="grid grid-cols-2 gap-4 mb-10">
                 {[
-                  { value: "8", label: "semaines" },
                   { value: "A→Z", label: "aménagement" },
                   { value: "100%", label: "en ligne" },
                 ].map((s) => (
@@ -414,18 +328,10 @@ export default async function HomePage() {
                 ))}
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-3">
-                <div className="w-full sm:w-auto">
-                  <LiquidButton href="/formation" variant="gold" size="lg" fullWidth>
-                    Découvrir la formation →
-                  </LiquidButton>
-                </div>
-                <a
-                  href="/formation#programme"
-                  className="flex items-center justify-center gap-2 bg-slate-100 text-slate-700 font-semibold px-6 py-4 rounded-2xl text-sm hover:bg-slate-200 transition-colors w-full sm:w-auto"
-                >
-                  Voir le programme
-                </a>
+              <div className="w-full sm:w-auto">
+                <LiquidButton href="/formation" variant="gold" size="lg" fullWidth>
+                  Découvrir la formation →
+                </LiquidButton>
               </div>
             </div>
 
@@ -486,7 +392,6 @@ export default async function HomePage() {
       </section>
 
       <RoadTripCTA />
-      <OtherServices current="location" bgColor="#F8FAFC" />
     </>
   );
 }

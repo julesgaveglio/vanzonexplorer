@@ -6,6 +6,8 @@ import MarketplaceVanCard from "./MarketplaceVanCard";
 import { slugify } from "@/lib/slugify";
 import type { VanCard as VanCardType } from "@/lib/sanity/types";
 
+const MOBILE_INITIAL_COUNT = 4;
+
 interface MarketplaceVan {
   id: string;
   title: string;
@@ -28,6 +30,7 @@ export default function MarketplaceVansGrid({
   marketplaceVans,
 }: MarketplaceVansGridProps) {
   const [activeRegion, setActiveRegion] = useState("Tous");
+  const [showAllMobile, setShowAllMobile] = useState(false);
 
   const normalize = (s: string) => s.trim().replace(/\b\w/g, (c) => c.toUpperCase());
   const cities = Array.from(new Set(marketplaceVans.map((v) => normalize(v.location_city)))).sort();
@@ -43,6 +46,13 @@ export default function MarketplaceVansGrid({
       : marketplaceVans.filter((v) => normalize(v.location_city) === activeRegion);
 
   const totalCount = officialVans.length + marketplaceVans.length;
+
+  const allItems = [
+    ...filteredOfficial.map((v) => ({ type: "official" as const, data: v })),
+    ...filteredMarketplace.map((v) => ({ type: "marketplace" as const, data: v })),
+  ];
+
+  const hasMoreOnMobile = allItems.length > MOBILE_INITIAL_COUNT;
 
   return (
     <>
@@ -76,18 +86,34 @@ export default function MarketplaceVansGrid({
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-        {filteredOfficial.map((van) => (
-          <VanCard key={van._id} van={van} mode="location" />
-        ))}
-        {filteredMarketplace.map((van) => (
-          <MarketplaceVanCard
-            key={van.id}
-            {...van}
-            href={`/location/${slugify(van.location_city)}/${van.id}`}
-          />
+        {allItems.map((item, i) => (
+          <div
+            key={item.type === "official" ? item.data._id : (item.data as MarketplaceVan).id}
+            className={!showAllMobile && i >= MOBILE_INITIAL_COUNT ? "hidden sm:block" : undefined}
+          >
+            {item.type === "official" ? (
+              <VanCard van={item.data as VanCardType} mode="location" />
+            ) : (
+              <MarketplaceVanCard
+                {...(item.data as MarketplaceVan)}
+                href={`/location/${slugify((item.data as MarketplaceVan).location_city)}/${(item.data as MarketplaceVan).id}`}
+              />
+            )}
+          </div>
         ))}
       </div>
 
+      {hasMoreOnMobile && !showAllMobile && (
+        <div className="sm:hidden mt-6 text-center">
+          <button
+            onClick={() => setShowAllMobile(true)}
+            className="text-sm font-semibold transition-colors"
+            style={{ color: "#4D5FEC" }}
+          >
+            Voir plus →
+          </button>
+        </div>
+      )}
     </>
   );
 }

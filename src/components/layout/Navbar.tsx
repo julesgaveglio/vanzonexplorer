@@ -400,12 +400,9 @@ export default function Navbar() {
                                 : "text-slate-700 hover:text-slate-900 hover:bg-slate-50 active:bg-slate-100"
                             }`}
                           >
-                            <div className="flex items-center gap-3">
-                              <span className="text-lg leading-none w-7 text-center flex-shrink-0">{link.emoji}</span>
-                              <div>
-                                <span className="text-sm font-semibold block">{link.label}</span>
-                                <span className="text-xs text-slate-400 block">{link.desc}</span>
-                              </div>
+                            <div>
+                              <span className="text-sm font-semibold block">{link.label}</span>
+                              <span className="text-xs text-slate-400 block">{link.desc}</span>
                             </div>
                             <svg
                               className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${expandedMenu === link.label ? "rotate-180" : ""}`}
@@ -436,7 +433,6 @@ export default function Navbar() {
                                           : "text-slate-600 hover:text-slate-900 hover:bg-slate-50 active:bg-slate-100"
                                       }`}
                                     >
-                                      <span className="text-base leading-none w-6 text-center flex-shrink-0">{child.emoji}</span>
                                       <div>
                                         <span className="text-sm font-medium block">{child.label}</span>
                                         <span className="text-xs text-slate-400 block">{child.desc}</span>
@@ -461,9 +457,6 @@ export default function Navbar() {
                                   : "text-slate-700 hover:text-slate-900 hover:bg-slate-50 active:bg-slate-100"
                               }`}
                             >
-                              <span className="text-lg leading-none w-7 text-center flex-shrink-0">
-                                {link.emoji}
-                              </span>
                               <div>
                                 <span className="text-sm font-semibold block">{link.label}</span>
                                 <span className="text-xs text-slate-400 block">{link.desc}</span>
