@@ -249,8 +249,23 @@ export default function SpreadsheetBase({
 
       {/* Content area — sidebar + main */}
       {!activeTableId || !tableData ? (
-        <div className="flex items-center justify-center h-64 text-slate-400">
-          {tables.length === 0 ? "Cree une table pour commencer" : "Selectionne une table"}
+        <div className="flex flex-col items-center justify-center h-[60vh] text-center px-4">
+          <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4" style={{ backgroundColor: `${base.color}15` }}>
+            <svg className="w-8 h-8" style={{ color: base.color }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <h2 className="text-lg font-semibold text-slate-800 mb-1">Pas encore de table</h2>
+          <p className="text-sm text-slate-400 mb-5 max-w-xs">Cree ta premiere table pour commencer a organiser tes donnees dans cette base.</p>
+          <button
+            onClick={handleAddTable}
+            className="flex items-center gap-2 px-5 py-2.5 bg-slate-900 text-white rounded-xl text-sm font-medium hover:bg-slate-800 transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+            Creer une table
+          </button>
         </div>
       ) : loading ? (
         <div className="flex items-center justify-center h-64">

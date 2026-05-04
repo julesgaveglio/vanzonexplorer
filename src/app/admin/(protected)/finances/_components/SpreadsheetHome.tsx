@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 interface Base {
@@ -16,6 +17,7 @@ const ICON_OPTIONS = ["📋", "📊", "🚐", "🎓", "💰", "🛠️", "📦",
 const COLOR_OPTIONS = ["#3b82f6", "#22c55e", "#f59e0b", "#ef4444", "#8b5cf6", "#ec4899", "#06b6d4", "#f97316"];
 
 export default function SpreadsheetHome({ initialBases }: { initialBases: Base[] }) {
+  const router = useRouter();
   const [bases, setBases] = useState<Base[]>(initialBases);
   const [showNew, setShowNew] = useState(false);
   const [newName, setNewName] = useState("");
@@ -31,9 +33,9 @@ export default function SpreadsheetHome({ initialBases }: { initialBases: Base[]
     });
     const json = await res.json();
     if (json.base) {
-      setBases((prev) => [{ ...json.base, spreadsheet_tables: [] }, ...prev]);
       setNewName("");
       setShowNew(false);
+      router.push(`/admin/finances/${json.base.id}`);
     }
   };
 
