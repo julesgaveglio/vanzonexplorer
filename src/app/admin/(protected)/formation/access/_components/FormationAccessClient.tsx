@@ -361,14 +361,12 @@ export default function FormationAccessClient({
 /* ─── User Progress Detail ─────────────────────────────────── */
 
 function UserProgressDetail({
-  userId,
   modules,
   lessons,
   completedSet,
   lastActivity,
   formationModules,
 }: {
-  userId: string;
   modules: Module[];
   lessons: Lesson[];
   completedSet: Set<string>;
