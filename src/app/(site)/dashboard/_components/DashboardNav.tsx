@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { User, ChevronDown, Lock, GraduationCap } from "lucide-react";
+import { User, ChevronDown, Lock } from "lucide-react";
 
 const VBA_ICON =
   "https://cdn.sanity.io/images/lewexa74/production/590889d96053ee345a4eaf2fc4909c7064206c94-250x250.webp?auto=format&fit=max&q=82";
