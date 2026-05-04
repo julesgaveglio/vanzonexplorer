@@ -56,11 +56,27 @@ export function validateCredentials(email: string, password: string): boolean {
 }
 
 export async function requireAdsAuth() {
+  // Check ads cookie first
   const session = await getAdsSession();
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (session) return session;
+
+  // Fall back to Clerk admin auth
+  try {
+    const { auth } = await import("@clerk/nextjs/server");
+    const { userId } = await auth();
+    if (userId) {
+      const { currentUser } = await import("@clerk/nextjs/server");
+      const user = await currentUser();
+      const email = user?.emailAddresses?.[0]?.emailAddress;
+      if (email === "gavegliojules@gmail.com") {
+        return { email };
+      }
+    }
+  } catch {
+    // Clerk not available
   }
-  return session;
+
+  return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 }
 
 export const ADS_COOKIE_NAME = COOKIE_NAME;
