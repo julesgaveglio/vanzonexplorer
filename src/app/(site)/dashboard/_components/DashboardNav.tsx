@@ -56,7 +56,7 @@ export default function DashboardNav({ hasVBA, formations }: DashboardNavProps) 
   };
 
   return (
-    <nav className="flex gap-0.5 sm:gap-1 -mb-px overflow-x-auto scrollbar-hide">
+    <nav className="flex gap-0.5 sm:gap-1 -mb-px">
       {/* Mon profil */}
       <Link href="/dashboard" className={navLinkClass("/dashboard", true)}>
         <User className="w-4 h-4" />
