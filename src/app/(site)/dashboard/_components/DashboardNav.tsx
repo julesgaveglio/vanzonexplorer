@@ -117,11 +117,12 @@ export default function DashboardNav({ hasVBA, formations }: DashboardNavProps) 
                 </span>
               </Link>
             ) : (
-              <div className="flex items-center gap-3 px-4 py-3 cursor-not-allowed opacity-60">
-                <Lock className="w-4 h-4 text-slate-400 flex-shrink-0" />
-                <span className="text-sm text-slate-400 flex-1">
+              <div className="flex items-center gap-3 px-4 py-3 cursor-not-allowed">
+                <GraduationCap className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                <span className="text-sm font-medium text-slate-700 flex-1">
                   Van Business Academy
                 </span>
+                <Lock className="w-3.5 h-3.5 text-slate-300 flex-shrink-0" />
               </div>
             )}
 
@@ -146,12 +147,13 @@ export default function DashboardNav({ hasVBA, formations }: DashboardNavProps) 
               ) : (
                 <div
                   key={f.slug}
-                  className="flex items-center gap-3 px-4 py-3 cursor-not-allowed opacity-60"
+                  className="flex items-center gap-3 px-4 py-3 cursor-not-allowed"
                 >
-                  <Lock className="w-4 h-4 text-slate-400 flex-shrink-0" />
-                  <span className="text-sm text-slate-400 flex-1">
+                  <span className="text-base flex-shrink-0">{f.emoji}</span>
+                  <span className="text-sm font-medium text-slate-700 flex-1">
                     {f.name}
                   </span>
+                  <Lock className="w-3.5 h-3.5 text-slate-300 flex-shrink-0" />
                 </div>
               )
             )}
