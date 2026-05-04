@@ -109,16 +109,14 @@ export default function DashboardNav({ hasVBA, formations }: DashboardNavProps) 
             {hasVBA ? (
               <Link
                 href="/dashboard/vba"
-                className="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors"
+                className="flex items-center gap-2 px-4 py-3 hover:bg-slate-50 transition-colors"
               >
-                <GraduationCap className="w-4 h-4 text-amber-600 flex-shrink-0" />
                 <span className="text-sm font-medium text-slate-900 flex-1">
                   Van Business Academy
                 </span>
               </Link>
             ) : (
-              <div className="flex items-center gap-3 px-4 py-3 cursor-not-allowed">
-                <GraduationCap className="w-4 h-4 text-slate-400 flex-shrink-0" />
+              <div className="flex items-center gap-2 px-4 py-3 cursor-not-allowed">
                 <span className="text-sm font-medium text-slate-700 flex-1">
                   Van Business Academy
                 </span>
@@ -137,9 +135,8 @@ export default function DashboardNav({ hasVBA, formations }: DashboardNavProps) 
                 <Link
                   key={f.slug}
                   href={`/dashboard/formations/${f.slug}`}
-                  className="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors"
+                  className="flex items-center gap-2 px-4 py-3 hover:bg-slate-50 transition-colors"
                 >
-                  <span className="text-base flex-shrink-0">{f.emoji}</span>
                   <span className="text-sm font-medium text-slate-900 flex-1">
                     {f.name}
                   </span>
@@ -147,9 +144,8 @@ export default function DashboardNav({ hasVBA, formations }: DashboardNavProps) 
               ) : (
                 <div
                   key={f.slug}
-                  className="flex items-center gap-3 px-4 py-3 cursor-not-allowed"
+                  className="flex items-center gap-2 px-4 py-3 cursor-not-allowed"
                 >
-                  <span className="text-base flex-shrink-0">{f.emoji}</span>
                   <span className="text-sm font-medium text-slate-700 flex-1">
                     {f.name}
                   </span>
