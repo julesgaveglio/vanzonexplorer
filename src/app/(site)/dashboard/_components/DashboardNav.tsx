@@ -25,6 +25,12 @@ const NAV_ITEMS = [
     href: "/dashboard/vba",
     icon: "https://cdn.sanity.io/images/lewexa74/production/590889d96053ee345a4eaf2fc4909c7064206c94-250x250.webp?auto=format&fit=max&q=82" as const,
   },
+  {
+    label: "Homologation VASP",
+    shortLabel: "VASP",
+    href: "/dashboard/formations/homologation-vasp",
+    icon: "gold" as const,
+  },
 ];
 
 export default function DashboardNav() {
@@ -49,6 +55,17 @@ export default function DashboardNav() {
           >
             {item.icon === "user" ? (
               <User className="w-4 h-4" />
+            ) : item.icon === "gold" ? (
+              <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 16 16" fill="none">
+                <rect width="16" height="16" rx="3" fill="url(#goldNav)" />
+                <path d="M8 4l1.5 3H12l-2.5 2 1 3L8 10.5 5.5 12l1-3L4 7h2.5L8 4z" fill="white" />
+                <defs>
+                  <linearGradient id="goldNav" x1="0" y1="0" x2="16" y2="16">
+                    <stop stopColor="#B9945F" />
+                    <stop offset="1" stopColor="#E4D398" />
+                  </linearGradient>
+                </defs>
+              </svg>
             ) : (
               <Image
                 src={item.icon}

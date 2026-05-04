@@ -16,7 +16,7 @@ export default function FormationSignUp({
   emoji,
 }: FormationSignUpProps) {
   return (
-    <section className="min-h-[calc(100vh-4rem)] flex items-center justify-center py-12 px-4 bg-gradient-to-br from-slate-50 to-slate-100">
+    <section className="min-h-[calc(100vh-4rem)] flex items-center justify-center py-12 px-4 bg-gradient-to-br from-[#FAF6F0] to-[#F5EDE0]">
       <div className="w-full max-w-md">
         <div className="text-center mb-6">
           <span className="text-4xl block mb-3">{emoji}</span>
