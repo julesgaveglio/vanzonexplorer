@@ -30,6 +30,31 @@ export async function POST(req: Request) {
     const session = event.data.object as Stripe.Checkout.Session;
     const product = session.metadata?.product;
 
+    // --- Formation purchase ---
+    if (product === "formation") {
+      const clerkUserId = session.metadata?.clerk_user_id;
+      const formationId = session.metadata?.formation_id;
+      const formationSlug = session.metadata?.formation_slug;
+
+      if (clerkUserId && clerkUserId !== "anonymous" && formationId) {
+        // Grant formation access
+        await supabase.from("formation_access").upsert(
+          { clerk_id: clerkUserId, formation_id: formationId },
+          { onConflict: "clerk_id,formation_id" }
+        );
+
+        console.log(
+          `[stripe/webhook] User ${clerkUserId} granted access to formation ${formationSlug}`
+        );
+
+        // Notify Telegram
+        const name = session.customer_details?.name || "Inconnu";
+        const email = session.customer_details?.email || session.customer_email || "—";
+        const amount = session.amount_total ? session.amount_total / 100 : 0;
+        notifyFormationPurchase(name, email, amount, formationSlug || "—").catch(() => {});
+      }
+    }
+
     if (product === "vba") {
       let clerkUserId = session.metadata?.clerk_user_id;
 
@@ -242,6 +267,33 @@ async function notifyNewStudent(
     `─────────────────────\n` +
     `Compte Clerk créé automatiquement.\n` +
     `<a href="https://vanzonexplorer.com/admin/vba">👉 Admin VBA</a>`;
+
+  await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ chat_id: chatId, text, parse_mode: "HTML" }),
+  });
+}
+
+async function notifyFormationPurchase(
+  name: string,
+  email: string,
+  amount: number,
+  formationSlug: string
+) {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_CHAT_ID;
+  if (!token || !chatId) return;
+
+  const text =
+    `📋 <b>ACHAT FORMATION !</b>\n` +
+    `─────────────────────\n` +
+    `<b>Formation :</b> ${formationSlug}\n` +
+    `<b>Nom :</b> ${name}\n` +
+    `<b>Email :</b> ${email}\n` +
+    `<b>Montant :</b> ${amount}€\n` +
+    `─────────────────────\n` +
+    `Accès accordé automatiquement.`;
 
   await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
     method: "POST",

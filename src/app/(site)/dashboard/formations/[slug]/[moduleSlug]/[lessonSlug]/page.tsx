@@ -78,6 +78,7 @@ export default async function FormationLessonPage({
     return (
       <FormationPaywall
         formationName={formation.name}
+        formationSlug={formation.slug}
         description={formation.description || ""}
         priceCents={formation.price_cents}
         emoji={formation.emoji || "🎓"}

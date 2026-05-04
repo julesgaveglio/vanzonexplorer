@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
 
 export async function POST(req: NextRequest) {
@@ -53,5 +53,47 @@ export async function POST(req: NextRequest) {
       .eq("id", promo.id),
   ]);
 
+  // Get user info for Telegram notification
+  const user = await currentUser();
+  const email = user?.emailAddresses?.[0]?.emailAddress ?? "—";
+  const name = [user?.firstName, user?.lastName].filter(Boolean).join(" ") || "Inconnu";
+
+  // Get formation name
+  const { data: formation } = await supabase
+    .from("formations")
+    .select("name")
+    .eq("id", promo.formation_id)
+    .single();
+
+  // Telegram notification
+  notifyPromoActivation(name, email, code.toUpperCase().trim(), formation?.name ?? "—").catch(() => {});
+
   return NextResponse.json({ ok: true });
+}
+
+async function notifyPromoActivation(
+  name: string,
+  email: string,
+  code: string,
+  formationName: string
+) {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_CHAT_ID;
+  if (!token || !chatId) return;
+
+  const text =
+    `🎟️ <b>CODE PROMO ACTIVÉ</b>\n` +
+    `─────────────────────\n` +
+    `<b>Formation :</b> ${formationName}\n` +
+    `<b>Nom :</b> ${name}\n` +
+    `<b>Email :</b> ${email}\n` +
+    `<b>Code :</b> ${code}\n` +
+    `─────────────────────\n` +
+    `⚠️ Pense à désactiver le code si nécessaire.`;
+
+  await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ chat_id: chatId, text, parse_mode: "HTML" }),
+  });
 }
