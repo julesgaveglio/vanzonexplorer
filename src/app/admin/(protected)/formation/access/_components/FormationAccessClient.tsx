@@ -211,7 +211,6 @@ export default function FormationAccessClient({
 
                   {isExpanded && (
                     <UserProgressDetail
-                      userId={clerk_id}
                       modules={modules}
                       lessons={lessons}
                       completedSet={prog.completedSet}
@@ -332,7 +331,6 @@ export default function FormationAccessClient({
 
                           {isExpanded && (
                             <UserProgressDetail
-                              userId={u.clerk_id}
                               modules={modules.filter((m) =>
                                 unlockedModuleIds.includes(m.id)
                               )}
