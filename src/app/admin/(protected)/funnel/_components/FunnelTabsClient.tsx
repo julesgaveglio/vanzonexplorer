@@ -1,14 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { BarChart3, Megaphone, Users } from "lucide-react";
+import { BarChart3, Megaphone, Play, Users } from "lucide-react";
 import FunnelDashboardClient from "./FunnelDashboardClient";
 import CampaignsClient from "./CampaignsClient";
+import VSLManagerClient from "./VSLManagerClient";
 import LeadsClient from "./LeadsClient";
 
 const TABS = [
   { key: "tunnel", label: "Tunnel", icon: BarChart3 },
   { key: "campaigns", label: "Campagnes", icon: Megaphone },
+  { key: "vsl", label: "VSL", icon: Play },
   { key: "leads", label: "Leads", icon: Users },
 ] as const;
 
@@ -43,6 +45,7 @@ export default function FunnelTabsClient() {
       {/* Content */}
       {tab === "tunnel" && <FunnelDashboardClient />}
       {tab === "campaigns" && <CampaignsClient />}
+      {tab === "vsl" && <VSLManagerClient />}
       {tab === "leads" && <LeadsClient />}
     </div>
   );

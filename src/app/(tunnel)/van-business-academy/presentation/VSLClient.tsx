@@ -5,10 +5,6 @@ import { getFunnelData } from "@/lib/hooks/useUTMParams";
 import { trackFunnel } from "@/lib/funnel-tracking";
 import LiquidButton from "@/components/ui/LiquidButton";
 
-const VIDEO_HLS_URL =
-  "https://vz-bac05373-d10.b-cdn.net/7739a3f1-ad32-4839-ba56-e4dc60a27a47/playlist.m3u8";
-const VIDEO_POSTER =
-  "https://vz-bac05373-d10.b-cdn.net/7739a3f1-ad32-4839-ba56-e4dc60a27a47/thumbnail.jpg";
 const CTA_DELAY_SECONDS = 180; // 3min
 
 const QUALITY_OPTIONS = [
@@ -20,7 +16,16 @@ const QUALITY_OPTIONS = [
 
 const SPEED_OPTIONS = [0.75, 1, 1.5, 2];
 
-export default function VSLClient() {
+interface VSLClientProps {
+  videoId: string;
+  libraryId: string;
+  vslVersionId: string;
+}
+
+export default function VSLClient({ videoId, libraryId, vslVersionId }: VSLClientProps) {
+  const VIDEO_HLS_URL = `https://vz-bac05373-d10.b-cdn.net/${videoId}/playlist.m3u8`;
+  const VIDEO_POSTER = `https://vz-bac05373-d10.b-cdn.net/${videoId}/thumbnail.jpg`;
+
   const [firstname, setFirstname] = useState("");
   const [showCTA, setShowCTA] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -130,6 +135,7 @@ export default function VSLClient() {
       trackFunnel("vsl_view", "/van-business-academy/presentation", {
         email: data.email,
         firstname: data.firstname,
+        metadata: { vsl_version_id: vslVersionId },
       });
     }
   }, []);
@@ -187,19 +193,19 @@ export default function VSLClient() {
 
         if (pct >= 25 && !milestones.has("25")) {
           milestones.add("25");
-          trackFunnel("vsl_25", "/van-business-academy/presentation", opts);
+          trackFunnel("vsl_25", "/van-business-academy/presentation", { ...opts, metadata: { vsl_version_id: vslVersionId } });
         }
         if (pct >= 50 && !milestones.has("50")) {
           milestones.add("50");
-          trackFunnel("vsl_50", "/van-business-academy/presentation", opts);
+          trackFunnel("vsl_50", "/van-business-academy/presentation", { ...opts, metadata: { vsl_version_id: vslVersionId } });
         }
         if (pct >= 75 && !milestones.has("75")) {
           milestones.add("75");
-          trackFunnel("vsl_75", "/van-business-academy/presentation", opts);
+          trackFunnel("vsl_75", "/van-business-academy/presentation", { ...opts, metadata: { vsl_version_id: vslVersionId } });
         }
         if (pct >= 95 && !milestones.has("100")) {
           milestones.add("100");
-          trackFunnel("vsl_100", "/van-business-academy/presentation", opts);
+          trackFunnel("vsl_100", "/van-business-academy/presentation", { ...opts, metadata: { vsl_version_id: vslVersionId } });
         }
       }
     };
@@ -239,7 +245,7 @@ export default function VSLClient() {
         page: "/van-business-academy/presentation",
         email: funnelData?.email || null,
         firstname: funnelData?.firstname || null,
-        metadata: { seconds, duration: v.duration ? Math.floor(v.duration) : null },
+        metadata: { seconds, duration: v.duration ? Math.floor(v.duration) : null, vsl_version_id: vslVersionId },
       });
 
       const blob = new Blob([payload], { type: "application/json" });
