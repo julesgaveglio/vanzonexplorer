@@ -41,7 +41,22 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true, already: true });
   }
 
-  // Grant access + increment uses
+  // Ensure Supabase profile exists with plan = "free" (not vba_member)
+  const user = await currentUser();
+  const userEmail = user?.emailAddresses?.[0]?.emailAddress ?? null;
+  const userName = [user?.firstName, user?.lastName].filter(Boolean).join(" ") || null;
+
+  await supabase.from("profiles").upsert(
+    {
+      clerk_id: userId,
+      email: userEmail,
+      full_name: userName,
+      plan: "free",
+    },
+    { onConflict: "clerk_id", ignoreDuplicates: true }
+  );
+
+  // Grant formation access + increment uses
   await Promise.all([
     supabase.from("formation_access").insert({
       clerk_id: userId,
@@ -53,10 +68,9 @@ export async function POST(req: NextRequest) {
       .eq("id", promo.id),
   ]);
 
-  // Get user info for Telegram notification
-  const user = await currentUser();
-  const email = user?.emailAddresses?.[0]?.emailAddress ?? "—";
-  const name = [user?.firstName, user?.lastName].filter(Boolean).join(" ") || "Inconnu";
+  // Telegram notification
+  const email = userEmail ?? "—";
+  const name = userName || "Inconnu";
 
   // Get formation name
   const { data: formation } = await supabase

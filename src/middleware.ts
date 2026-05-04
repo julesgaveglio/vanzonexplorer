@@ -13,6 +13,7 @@ const isMarketplaceInscription = createRouteMatcher(["/proprietaire/inscription(
 const isMarketplaceConnexion = createRouteMatcher(["/proprietaire/connexion(.*)"]);
 const isOldMarketplaceDashboard = createRouteMatcher(["/proprietaire/dashboard(.*)"]);
 
+const isFormationRoute = createRouteMatcher(["/dashboard/formations(.*)"]);
 const isProtectedRoute = createRouteMatcher([
   "/dashboard/vba(.*)",
   "/user(.*)",
@@ -77,6 +78,17 @@ export default clerkMiddleware(async (auth, req) => {
     const { userId } = await auth();
     if (!userId) {
       return NextResponse.redirect(new URL("/proprietaire/connexion", req.url));
+    }
+    return NextResponse.next();
+  }
+
+  // Formations — redirect to sign-up (not sign-in) for new users
+  if (isFormationRoute(req)) {
+    const { userId } = await auth();
+    if (!userId) {
+      const signUpUrl = new URL("/sign-up", req.url);
+      signUpUrl.searchParams.set("redirect_url", req.nextUrl.pathname);
+      return NextResponse.redirect(signUpUrl);
     }
     return NextResponse.next();
   }
