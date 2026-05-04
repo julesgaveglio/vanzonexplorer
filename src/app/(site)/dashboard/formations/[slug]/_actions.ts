@@ -16,14 +16,7 @@ async function requireFormationAccess(): Promise<string> {
 
   const supabase = createSupabaseAdmin();
 
-  // Check vba_member (full access) OR formation_access
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("plan")
-    .eq("clerk_id", userId)
-    .single();
-  if (profile?.plan === "vba_member") return userId;
-
+  // Check formation_access (each formation is independent)
   const { data: access } = await supabase
     .from("formation_access")
     .select("id")

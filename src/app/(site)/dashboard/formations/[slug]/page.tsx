@@ -54,17 +54,8 @@ export default async function FormationPage({
 
   if (!formation) notFound();
 
-  // Check access: admin OR vba_member OR formation_access
+  // Check access: admin OR formation_access (each formation is independent)
   let hasAccess = email === ADMIN_EMAIL;
-
-  if (!hasAccess) {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("plan")
-      .eq("clerk_id", userId)
-      .single();
-    if (profile?.plan === "vba_member") hasAccess = true;
-  }
 
   if (!hasAccess) {
     const { data: access } = await supabase
