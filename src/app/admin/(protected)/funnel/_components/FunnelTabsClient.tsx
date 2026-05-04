@@ -1,27 +1,28 @@
 "use client";
 
 import { useState } from "react";
-import { BarChart3, Megaphone, Play, Users } from "lucide-react";
-import FunnelDashboardClient from "./FunnelDashboardClient";
-import CampaignsClient from "./CampaignsClient";
+import { BarChart3, UserPlus, Users, Play, Settings } from "lucide-react";
+import AdsDashboardClient from "../../../../(ads)/ads/_components/AdsDashboardClient";
+import AdsOptinClient from "../../../../(ads)/ads/_components/AdsOptinClient";
+import AdsLeadsClient from "../../../../(ads)/ads/_components/AdsLeadsClient";
+import AdsVSLClient from "../../../../(ads)/ads/_components/AdsVSLClient";
 import VSLManagerClient from "./VSLManagerClient";
-import LeadsClient from "./LeadsClient";
 
 const TABS = [
-  { key: "tunnel", label: "Tunnel", icon: BarChart3 },
-  { key: "campaigns", label: "Campagnes", icon: Megaphone },
-  { key: "vsl", label: "VSL", icon: Play },
+  { key: "dashboard", label: "Dashboard", icon: BarChart3 },
+  { key: "optin", label: "Opt-in", icon: UserPlus },
   { key: "leads", label: "Leads", icon: Users },
+  { key: "vsl", label: "VSL Analytics", icon: Play },
+  { key: "vsl-manager", label: "VSL Manager", icon: Settings },
 ] as const;
 
 type Tab = (typeof TABS)[number]["key"];
 
 export default function FunnelTabsClient() {
-  const [tab, setTab] = useState<Tab>("tunnel");
+  const [tab, setTab] = useState<Tab>("dashboard");
 
   return (
     <div>
-      {/* Tabs */}
       <div className="flex gap-1 border-b border-slate-200 mb-6 -mt-2 overflow-x-auto">
         {TABS.map((t) => {
           const Icon = t.icon;
@@ -42,11 +43,11 @@ export default function FunnelTabsClient() {
         })}
       </div>
 
-      {/* Content */}
-      {tab === "tunnel" && <FunnelDashboardClient />}
-      {tab === "campaigns" && <CampaignsClient />}
-      {tab === "vsl" && <VSLManagerClient />}
-      {tab === "leads" && <LeadsClient />}
+      {tab === "dashboard" && <AdsDashboardClient />}
+      {tab === "optin" && <AdsOptinClient />}
+      {tab === "leads" && <AdsLeadsClient />}
+      {tab === "vsl" && <AdsVSLClient />}
+      {tab === "vsl-manager" && <VSLManagerClient />}
     </div>
   );
 }
