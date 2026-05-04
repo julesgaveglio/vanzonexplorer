@@ -22,6 +22,7 @@ interface VSLClientProps {
   vslVersionId: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function VSLClient({ videoId, libraryId, vslVersionId }: VSLClientProps) {
   const VIDEO_HLS_URL = `https://vz-bac05373-d10.b-cdn.net/${videoId}/playlist.m3u8`;
   const VIDEO_POSTER = `https://vz-bac05373-d10.b-cdn.net/${videoId}/thumbnail.jpg`;
