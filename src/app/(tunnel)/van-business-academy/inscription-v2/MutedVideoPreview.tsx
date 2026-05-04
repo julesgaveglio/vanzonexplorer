@@ -2,8 +2,7 @@
 
 import Image from "next/image";
 
-const VIDEO_POSTER =
-  "https://vz-bac05373-d10.b-cdn.net/7739a3f1-ad32-4839-ba56-e4dc60a27a47/thumbnail.jpg";
+const VIDEO_POSTER = "/images/construis-ta-liberte.jpg";
 
 export default function MutedVideoPreview() {
   const handleClick = () => {
