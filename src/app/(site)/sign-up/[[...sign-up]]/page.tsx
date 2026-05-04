@@ -10,12 +10,12 @@ export default function SignUpPage() {
     >
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <span className="inline-block text-xs font-semibold uppercase tracking-widest text-purple-500 mb-3">
+          <span className="inline-block text-xs font-semibold uppercase tracking-widest text-slate-400 mb-3">
             Vanzon Explorer
           </span>
-          <h1 className="text-3xl font-black text-slate-900">Rejoindre le Club</h1>
+          <h1 className="text-3xl font-black text-slate-900">Créer un compte</h1>
           <p className="text-slate-500 mt-2 text-sm">
-            Créez votre compte pour accéder aux deals exclusifs et fonctionnalités membres.
+            Inscrivez-vous pour accéder à votre espace personnel.
           </p>
         </div>
         <div className="flex justify-center">

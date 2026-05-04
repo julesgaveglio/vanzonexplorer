@@ -82,13 +82,15 @@ export default clerkMiddleware(async (auth, req) => {
     return NextResponse.next();
   }
 
-  // Formations — redirect to sign-up (not sign-in) for new users
+  // Formations — redirect to dedicated formation sign-up page
   if (isFormationRoute(req)) {
     const { userId } = await auth();
     if (!userId) {
-      const signUpUrl = new URL("/sign-up", req.url);
-      signUpUrl.searchParams.set("redirect_url", req.nextUrl.pathname);
-      return NextResponse.redirect(signUpUrl);
+      // Extract slug from /dashboard/formations/[slug]/...
+      const slugMatch = req.nextUrl.pathname.match(/\/dashboard\/formations\/([^/]+)/);
+      const slug = slugMatch?.[1] ?? "homologation-vasp";
+      const inscriptionUrl = new URL(`/formations/${slug}/inscription`, req.url);
+      return NextResponse.redirect(inscriptionUrl);
     }
     return NextResponse.next();
   }
