@@ -49,7 +49,7 @@ The `(club)` group has its own DM Mono font and `bg-cream text-earth` color sche
 **2. Supabase** (`src/lib/supabase/server.ts`)
 - `createSupabaseAdmin()` — service_role key, bypasses RLS, server-only
 - `createSupabaseAnon()` — public read
-- Key tables: `profiles`, `products`, `brands`, `vans_location`, `prospects`, `vba_competitors`, `vba_keywords`, `backlink_prospects`, `backlink_outreach`, `backlink_scrape_sessions`, `facebook_groups`, `facebook_outreach_schedule`, `road_trip_requests`, `cmo_reports`, `marketplace_leads`, `funnel_events`, `vba_modules`, `vba_lessons`, `vba_progress`
+- Key tables: `profiles`, `products`, `brands`, `vans_location`, `prospects`, `vba_competitors`, `vba_keywords`, `backlink_prospects`, `backlink_outreach`, `backlink_scrape_sessions`, `facebook_groups`, `facebook_outreach_schedule`, `road_trip_requests`, `cmo_reports`, `marketplace_leads`, `funnel_events`, `vba_modules`, `vba_lessons`, `vba_progress`, `finance_transactions`, `finance_categories`, `shopping_lists`, `shopping_items`
 - `profiles.plan = "club_member"` controls Club Prive access (Club is 100% free — no Stripe, no subscription)
 - `profiles.plan = "vba_member"` controls VBA access
 
@@ -135,7 +135,7 @@ Source unique de verite pour le contexte metier : `Vanzon Memory Database/` a la
 
 ### Admin panel (`/admin`)
 
-Sections: Dashboard, SEO Analytics, Mots-Cles, Performance (PSI), Blog, Vans, Marques, Produits, Spots, Media, Prospection, Road Trips, Backlinks, Agents, Marketing (CMO), VBA (Formation), Tunnel VBA (Funnel Analytics).
+Sections: Dashboard, SEO Analytics, Mots-Cles, Performance (PSI), Blog, Vans, Marques, Produits, Spots, Media, Prospection, Road Trips, Backlinks, Agents, Marketing (CMO), VBA (Formation), Tunnel VBA (Funnel Analytics), Finances.
 
 **Prospection** (`/admin/club/prospection`) — internal CRM for partner brand outreach. Separate `prospects` Supabase table (distinct from `brands`). Three AI-powered API routes using SSE streaming:
 - `/api/admin/club/prospect/discover` — Tavily search + Groq analysis
@@ -165,6 +165,14 @@ Sections: Dashboard, SEO Analytics, Mots-Cles, Performance (PSI), Blog, Vans, Ma
 - Events trackes : optin, vsl_view, vsl_25/50/75/100, booking_start, booking_confirmed, checkout, purchase
 - Tunnel pages : `(tunnel)/van-business-academy/` — inscription → presentation → diagnostic-offert → appel-confirme → paiement → paiement-confirme
 - Admin dashboard : KPIs, funnel visuel, attribution UTM, evenements recents
+
+**Finances** (`/admin/finances`) — Suivi financier complet Vanzon. Structure :
+- Tables Supabase : `finance_transactions` (date, description, amount, type, category_id, entity, tags, notes, is_recurring), `finance_categories` (hierarchiques, type expense/income), `shopping_lists`, `shopping_items`
+- Entites : vanzon, yoni, xalbat, vba, perso — permet de filtrer par van ou activite
+- 3 onglets : Transactions (spreadsheet CRUD inline), Listes de courses (cards avec checkbox), Stats (par mois/categorie/entite)
+- KPIs : depenses mois, revenus mois, net, recurring
+- API routes : `/api/admin/finances/transactions`, `/api/admin/finances/categories`, `/api/admin/finances/shopping`
+- Migration SQL : `scripts/migrations/finance-tables.sql`
 
 ## Strategie Location — Modele assurance et tunnel
 

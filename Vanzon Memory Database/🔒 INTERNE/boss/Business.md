@@ -26,9 +26,12 @@
 
 ### 2. Location de vans amenages (activite historique)
 - 2 vans : Yoni (vert, L2H1) et Xalbat (blanc, L2H1), tous deux CTTE
-- Plateformes : Yescapa (16% commission) + debut location directe
+- Plateformes : Yescapa (16% commission) + Wikicampers
 - Tarifs : 65 EUR (basse) / 75 EUR (moyenne) / 95 EUR (haute saison)
 - Objectif flotte : 5-10 vans VASP a terme (necessite local + financement)
+- **Modele assurance :** L'assurance tous risques est fournie PAR les plateformes (Yescapa, Wikicampers). Vanzon ne peut PAS proposer de reservation directe sans elles. C'est la raison structurelle du passage par les plateformes.
+- **Strategie site web :** Le site vanzonexplorer.com est une couche d'acquisition SEO. Les pages villes/destinations sont des etapes intermediaires dans le tunnel : trafic SEO/blog → pages ville → CTA vers plateforme (Yescapa/Wikicampers). Le site ne fait PAS de reservation directe — il redirige vers les plateformes qui gerent assurance + paiement.
+- **Scalabilite :** A mesure que la flotte grandit, chaque van sera affiche sur les pages destination avec son propre lien de reservation plateforme.
 
 ### 3. Marketplace (MVP — secondaire)
 - Concept : plateforme proprietaires/locataires
@@ -54,6 +57,10 @@
 - **Couts fixes :** hebergement Vercel/Supabase/Sanity (gratuit), domaine (~15 EUR/an)
 - **Couts variables :** Meta Ads 600 EUR/mois, agents IA (~25 EUR/mois)
 - **Objectif investissement :** cash VBA → local (12 000 EUR/an) + vans supplementaires
+- **Suivi financier :** Tables Supabase `finance_transactions` et `finance_categories` — admin `/admin/finances`
+  - Entites : vanzon, yoni, xalbat, vba, perso
+  - Categories hierarchiques (depenses + revenus)
+  - Listes de courses : `shopping_lists` + `shopping_items`
 
 ## Marketing
 - **SEO :** 3 articles/semaine automatises, ~100+ articles publies
