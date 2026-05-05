@@ -62,6 +62,7 @@ export async function POST(req: NextRequest) {
       vsl_view: `🎥 <b>VSL lancée</b>${who}`,
       vsl_50: `⏱ <b>VSL 50%</b>${who}`,
       vsl_100: `✅ <b>VSL terminée !</b>${who}`,
+      vsl_exit: `⏹ <b>VSL quittée</b>${who}\n⏱ ${metadata?.seconds ? `${Math.floor(metadata.seconds / 60)}min${String(Math.round(metadata.seconds % 60)).padStart(2, "0")}s` : "—"} / ${metadata?.duration ? `${Math.floor(metadata.duration / 60)}min${String(Math.round(metadata.duration % 60)).padStart(2, "0")}s` : "—"} (${metadata?.duration ? Math.round((metadata.seconds / metadata.duration) * 100) : 0}%)`,
       booking_start: `📅 <b>Calendly ouvert</b>${who}`,
       booking_confirmed: `📞 <b>Call booké !</b>${who}`,
       checkout: `💳 <b>Page paiement ouverte</b>${who}`,
