@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-const FALLBACK_VIDEO_ID = "7739a3f1-ad32-4839-ba56-e4dc60a27a47";
+const FALLBACK_VIDEO_ID = "b8323ed9-2f4b-4bcc-8313-6ab4835246ee";
 const FALLBACK_LIBRARY_ID = "641831";
 
 async function getActiveVSL() {

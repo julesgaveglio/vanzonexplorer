@@ -3,9 +3,9 @@ import { createSupabaseAnon } from "@/lib/supabase/server";
 
 const FALLBACK = {
   id: "fallback",
-  bunny_video_id: "7739a3f1-ad32-4839-ba56-e4dc60a27a47",
+  bunny_video_id: "b8323ed9-2f4b-4bcc-8313-6ab4835246ee",
   bunny_library_id: "641831",
-  name: "VSL1 — Fallback",
+  name: "VSL2 — Hook V2",
 };
 
 export const revalidate = 60;
