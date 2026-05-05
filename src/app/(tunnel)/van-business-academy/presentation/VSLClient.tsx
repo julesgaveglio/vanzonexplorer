@@ -5,7 +5,7 @@ import { getFunnelData } from "@/lib/hooks/useUTMParams";
 import { trackFunnel } from "@/lib/funnel-tracking";
 import LiquidButton from "@/components/ui/LiquidButton";
 
-const CTA_DELAY_SECONDS = 180; // 3min
+const CTA_DELAY_SECONDS = 144; // 2min24
 
 interface VSLClientProps {
   videoId: string;
@@ -14,7 +14,7 @@ interface VSLClientProps {
 }
 
 export default function VSLClient({ videoId, libraryId, vslVersionId }: VSLClientProps) {
-  const EMBED_URL = `https://player.mediadelivery.net/embed/${libraryId}/${videoId}?autoplay=false&loop=false&muted=false&preload=true&responsive=true`;
+  const EMBED_URL = `https://player.mediadelivery.net/embed/${libraryId}/${videoId}?autoplay=false&loop=false&muted=false&preload=true&responsive=true&showHeatmap=false&seekBar=false`;
 
   const [firstname, setFirstname] = useState("");
   const [showCTA, setShowCTA] = useState(false);
