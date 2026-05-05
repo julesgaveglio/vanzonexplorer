@@ -29,20 +29,23 @@ export default function VSLClient({ videoId, libraryId, vslVersionId }: VSLClien
   // Funnel data + tracking
   useEffect(() => {
     const data = getFunnelData();
-    if (data) {
-      setFirstname(data.firstname);
+    if (data?.firstname) setFirstname(data.firstname);
+
+    // Update funnel step if we have email
+    if (data?.email) {
       fetch("/api/van-business-academy/inscription/step", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: data.email, step: "vsl" }),
       }).catch(() => {});
-
-      trackFunnel("vsl_view", "/van-business-academy/presentation", {
-        email: data.email,
-        firstname: data.firstname,
-        metadata: { vsl_version_id: vslVersionId },
-      });
     }
+
+    // Always track vsl_view — even without funnel data
+    trackFunnel("vsl_view", "/van-business-academy/presentation", {
+      email: data?.email,
+      firstname: data?.firstname,
+      metadata: { vsl_version_id: vslVersionId },
+    });
   }, [vslVersionId]);
 
   // CTA delay — show after 3 minutes
