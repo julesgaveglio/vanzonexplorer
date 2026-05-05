@@ -20,6 +20,9 @@ export default function VSLClient({ videoId, libraryId, vslVersionId }: VSLClien
   const [showCTA, setShowCTA] = useState(false);
   const ctaTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const videoMilestonesRef = useRef(new Set<string>());
+  const lastTimeRef = useRef(0);
+  const durationRef = useRef(0);
+  const exitTrackedRef = useRef(false);
 
   // --- Effects ---
 
@@ -48,13 +51,17 @@ export default function VSLClient({ videoId, libraryId, vslVersionId }: VSLClien
     return () => { if (ctaTimerRef.current) clearTimeout(ctaTimerRef.current); };
   }, []);
 
-  // Track milestones via postMessage from Bunny player
+  // Track milestones + position via postMessage from Bunny player
   useEffect(() => {
     const handler = (e: MessageEvent) => {
       if (typeof e.data !== "string") return;
       try {
         const msg = JSON.parse(e.data);
         if (msg.event !== "timeupdate" || !msg.data?.duration) return;
+
+        // Store current position for exit tracking
+        lastTimeRef.current = msg.data.currentTime;
+        durationRef.current = msg.data.duration;
 
         const pct = (msg.data.currentTime / msg.data.duration) * 100;
         const funnelData = getFunnelData();
@@ -69,6 +76,34 @@ export default function VSLClient({ videoId, libraryId, vslVersionId }: VSLClien
     };
     window.addEventListener("message", handler);
     return () => window.removeEventListener("message", handler);
+  }, [vslVersionId]);
+
+  // Track vsl_exit when user leaves the page
+  useEffect(() => {
+    const trackExit = () => {
+      if (exitTrackedRef.current || lastTimeRef.current === 0) return;
+      exitTrackedRef.current = true;
+
+      const funnelData = getFunnelData();
+      trackFunnel("vsl_exit", "/van-business-academy/presentation", {
+        email: funnelData?.email,
+        firstname: funnelData?.firstname,
+        metadata: {
+          vsl_version_id: vslVersionId,
+          seconds: Math.round(lastTimeRef.current),
+          duration: Math.round(durationRef.current),
+        },
+      });
+    };
+
+    window.addEventListener("beforeunload", trackExit);
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "hidden") trackExit();
+    });
+
+    return () => {
+      window.removeEventListener("beforeunload", trackExit);
+    };
   }, [vslVersionId]);
 
   return (
