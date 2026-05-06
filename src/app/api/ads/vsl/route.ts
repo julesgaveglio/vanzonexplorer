@@ -76,18 +76,22 @@ export async function GET(req: NextRequest) {
     const totalExitViewers = Object.keys(viewerMaxSeconds).length;
 
     const retention: { time: number; label: string; pct: number }[] = [];
-    const hasPreciseData = totalExitViewers > 0 && numBuckets > 0;
+    const hasPreciseData = totalExitViewers > 0 && numBuckets > 0 && totalViewers > 0;
 
     if (hasPreciseData) {
+      // Viewers without vsl_exit are assumed still watching (not counted as dropped)
+      // exitedBefore(t) = viewers whose max watched seconds < t
+      // stillWatching(t) = totalViewers - exitedBefore(t)
       for (let i = 0; i <= numBuckets; i++) {
         const t = i * bucketSize;
-        const still = Object.values(viewerMaxSeconds).filter((s) => s >= t).length;
+        const exitedBefore = Object.values(viewerMaxSeconds).filter((s) => s < t).length;
+        const still = totalViewers - exitedBefore;
         const minutes = Math.floor(t / 60);
         const secs = t % 60;
         retention.push({
           time: t,
           label: `${minutes}:${secs.toString().padStart(2, "0")}`,
-          pct: Math.round((still / totalExitViewers) * 100),
+          pct: Math.round((still / totalViewers) * 100),
         });
       }
     }
