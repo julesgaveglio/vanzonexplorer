@@ -68,9 +68,21 @@ export async function GET(req: Request) {
     return eventsByEmail.get(email)?.has(event) ?? false;
   }
 
-  // ── Send E2 (optin J+1, pas de vsl_view) ──
+  // ── Get vsl_exit seconds per email (max seconds watched) ──
+  const vslMaxSeconds = new Map<string, number>();
+  for (const e of allEvents ?? []) {
+    if (!e.email) continue;
+    if (e.event === "vsl_exit" || e.event === "vsl_25" || e.event === "vsl_50" || e.event === "vsl_75" || e.event === "vsl_100") {
+      const meta = e.metadata as Record<string, unknown> | undefined;
+      const sec = typeof meta?.seconds === "number" ? meta.seconds : 0;
+      if (sec > 0) vslMaxSeconds.set(e.email, Math.max(vslMaxSeconds.get(e.email) ?? 0, sec));
+    }
+  }
+
+  // ── Send E2 (optin J+1, a quitté la VSL avant 3min OU pas regardé du tout) ──
   for (const lead of e2Leads ?? []) {
-    if (!lead.email || hasEvent(lead.email, "vsl_view")) {
+    const maxSec = vslMaxSeconds.get(lead.email ?? "") ?? 0;
+    if (!lead.email || maxSec >= 180) {
       results.skipped++;
       continue;
     }
@@ -84,7 +96,7 @@ export async function GET(req: Request) {
       });
       void supabase.from("email_sends").insert({
         email: lead.email,
-        campaign_name: "E2 — Relance J+1 (auto)",
+        campaign_name: "Relance J+1 (auto)",
         subject,
       });
       results.e2_sent++;
@@ -93,9 +105,10 @@ export async function GET(req: Request) {
     }
   }
 
-  // ── Send E3 (optin J+3, pas de vsl_view) ──
+  // ── Send E3 (optin J+3, a quitté la VSL avant 3min OU pas regardé du tout) ──
   for (const lead of e3Leads ?? []) {
-    if (!lead.email || hasEvent(lead.email, "vsl_view")) {
+    const maxSec3 = vslMaxSeconds.get(lead.email ?? "") ?? 0;
+    if (!lead.email || maxSec3 >= 180) {
       results.skipped++;
       continue;
     }

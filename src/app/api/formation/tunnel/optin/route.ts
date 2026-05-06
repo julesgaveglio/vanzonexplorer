@@ -71,7 +71,7 @@ async function sendWelcomeEmail(firstname: string, email: string) {
   const supabase = createSupabaseAdmin();
   void supabase.from("email_sends").insert({
     email,
-    campaign_name: "E1 — Bienvenue (auto)",
+    campaign_name: "Bienvenue",
     subject,
   });
 }
