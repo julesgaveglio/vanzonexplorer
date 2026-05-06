@@ -162,7 +162,7 @@ ${bodyParagraphs}${signatureBlock}
 
   // 4. Construire et envoyer le message MIME
   const raw = buildMimeMessage({
-    from: `Vanzon Explorer <${GMAIL_USER}>`,
+    from: `Jules | Vanzon Explorer <${GMAIL_USER}>`,
     to: options.to,
     subject: options.subject,
     htmlBody,
