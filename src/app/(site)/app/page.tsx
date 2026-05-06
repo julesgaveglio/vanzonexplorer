@@ -48,7 +48,7 @@ export default function AppInfoPage() {
         <p>
           Consultez notre{" "}
           <Link
-            href="/politique-de-confidentialite"
+            href="/confidentialite"
             className="text-blue-600 hover:underline"
           >
             politique de confidentialité
