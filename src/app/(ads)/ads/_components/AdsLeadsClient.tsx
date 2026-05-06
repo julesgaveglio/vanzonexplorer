@@ -9,6 +9,8 @@ interface Lead {
   utm_campaign: string | null;
   utm_content: string | null;
   created_at: string;
+  vsl_seconds: number | null;
+  last_email: { campaign_name: string; sent_at: string } | null;
 }
 
 const PERIODS = [
@@ -17,6 +19,13 @@ const PERIODS = [
   { label: "30j", days: 30 },
   { label: "90j", days: 90 },
 ] as const;
+
+function formatWatch(seconds: number | null): string {
+  if (!seconds) return "—";
+  const m = Math.floor(seconds / 60);
+  const s = Math.round(seconds % 60);
+  return `${m}:${s.toString().padStart(2, "0")}`;
+}
 
 export default function AdsLeadsClient() {
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -66,7 +75,10 @@ export default function AdsLeadsClient() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Leads</h1>
-          <p className="text-sm text-slate-500 mt-1">{filtered.length} lead{filtered.length > 1 ? "s" : ""} sur la période</p>
+          <p className="text-sm text-slate-500 mt-1">
+            {filtered.length} lead{filtered.length > 1 ? "s" : ""} sur la
+            période
+          </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex bg-white rounded-xl border border-slate-200 p-0.5 shadow-sm">
@@ -97,34 +109,106 @@ export default function AdsLeadsClient() {
       <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <svg className="animate-spin h-6 w-6 text-blue-500" viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" fill="none" strokeDasharray="30 70" />
+            <svg
+              className="animate-spin h-6 w-6 text-blue-500"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="3"
+                fill="none"
+                strokeDasharray="30 70"
+              />
             </svg>
           </div>
         ) : filtered.length === 0 ? (
-          <div className="text-center py-20 text-slate-400 text-sm">Aucun lead trouvé</div>
+          <div className="text-center py-20 text-slate-400 text-sm">
+            Aucun lead trouvé
+          </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-slate-100 bg-slate-50/50">
-                  <th className="text-center text-xs text-slate-500 uppercase tracking-wider px-3 py-3 font-medium w-10">#</th>
-                  <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-5 py-3 font-medium">Email</th>
-                  <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-5 py-3 font-medium">Prénom</th>
-                  <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-5 py-3 font-medium hidden md:table-cell">Source</th>
-                  <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-5 py-3 font-medium hidden lg:table-cell">Campagne</th>
-                  <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-5 py-3 font-medium hidden lg:table-cell">Contenu</th>
-                  <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-5 py-3 font-medium">Date</th>
+                  <th className="text-center text-xs text-slate-500 uppercase tracking-wider px-3 py-3 font-medium w-10">
+                    #
+                  </th>
+                  <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium">
+                    Prénom
+                  </th>
+                  <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium">
+                    Email
+                  </th>
+                  <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium">
+                    VSL
+                  </th>
+                  <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium hidden md:table-cell">
+                    Dernier email
+                  </th>
+                  <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium hidden lg:table-cell">
+                    Source
+                  </th>
+                  <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium">
+                    Date
+                  </th>
                   <th className="px-3 py-3 w-10"></th>
                 </tr>
               </thead>
               <tbody>
                 {filtered.map((lead, i) => (
-                  <tr key={i} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
-                    <td className="px-3 py-3 text-center text-slate-400 text-xs font-mono">{filtered.length - i}</td>
-                    <td className="px-5 py-3 text-slate-900 font-medium">{lead.email}</td>
-                    <td className="px-5 py-3 text-slate-600">{lead.firstname ?? "—"}</td>
-                    <td className="px-5 py-3 hidden md:table-cell">
+                  <tr
+                    key={i}
+                    className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors"
+                  >
+                    <td className="px-3 py-3 text-center text-slate-400 text-xs font-mono">
+                      {filtered.length - i}
+                    </td>
+                    <td className="px-4 py-3 text-slate-900 font-medium">
+                      {lead.firstname ?? "—"}
+                    </td>
+                    <td className="px-4 py-3 text-slate-600 text-xs">
+                      {lead.email}
+                    </td>
+                    <td className="px-4 py-3">
+                      {lead.vsl_seconds ? (
+                        <span
+                          className={`inline-flex px-2 py-0.5 text-xs font-mono rounded-full ${
+                            lead.vsl_seconds >= 600
+                              ? "bg-emerald-50 text-emerald-700"
+                              : lead.vsl_seconds >= 180
+                                ? "bg-amber-50 text-amber-700"
+                                : "bg-slate-100 text-slate-500"
+                          }`}
+                        >
+                          {formatWatch(lead.vsl_seconds)}
+                        </span>
+                      ) : (
+                        <span className="text-slate-300 text-xs">—</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 hidden md:table-cell">
+                      {lead.last_email ? (
+                        <div>
+                          <p className="text-xs text-slate-700 font-medium truncate max-w-[150px]">
+                            {lead.last_email.campaign_name}
+                          </p>
+                          <p className="text-[10px] text-slate-400">
+                            {new Date(
+                              lead.last_email.sent_at
+                            ).toLocaleDateString("fr-FR", {
+                              day: "numeric",
+                              month: "short",
+                            })}
+                          </p>
+                        </div>
+                      ) : (
+                        <span className="text-slate-300 text-xs">aucun</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 hidden lg:table-cell">
                       {lead.utm_source ? (
                         <span className="inline-flex px-2 py-0.5 text-xs font-medium rounded-full bg-blue-50 text-blue-600 border border-blue-100">
                           {lead.utm_source}
@@ -133,10 +217,13 @@ export default function AdsLeadsClient() {
                         <span className="text-slate-300">direct</span>
                       )}
                     </td>
-                    <td className="px-5 py-3 text-slate-500 hidden lg:table-cell">{lead.utm_campaign ?? "—"}</td>
-                    <td className="px-5 py-3 text-slate-500 hidden lg:table-cell">{lead.utm_content ?? "—"}</td>
-                    <td className="px-5 py-3 text-slate-400">
-                      {new Date(lead.created_at).toLocaleDateString("fr-FR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
+                    <td className="px-4 py-3 text-slate-400 text-xs">
+                      {new Date(lead.created_at).toLocaleDateString("fr-FR", {
+                        day: "numeric",
+                        month: "short",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
                     </td>
                     <td className="px-3 py-3">
                       <button
@@ -146,9 +233,30 @@ export default function AdsLeadsClient() {
                         title="Supprimer ce lead"
                       >
                         {deleting === lead.email ? (
-                          <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" fill="none" strokeDasharray="30 70" /></svg>
+                          <svg
+                            className="animate-spin h-4 w-4"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="3"
+                              fill="none"
+                              strokeDasharray="30 70"
+                            />
+                          </svg>
                         ) : (
-                          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2m2 0v14a2 2 0 01-2 2H8a2 2 0 01-2-2V6h12z" /></svg>
+                          <svg
+                            className="w-4 h-4"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                          >
+                            <path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2m2 0v14a2 2 0 01-2 2H8a2 2 0 01-2-2V6h12z" />
+                          </svg>
                         )}
                       </button>
                     </td>

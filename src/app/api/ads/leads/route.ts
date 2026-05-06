@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAdsAuth } from "@/lib/ads-auth";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
 
+const EXCLUDED_EMAILS = ["gavegliojules@gmail.com"];
+
 export async function GET(req: NextRequest) {
   const check = await requireAdsAuth();
   if (check instanceof NextResponse) return check;
@@ -19,11 +21,9 @@ export async function GET(req: NextRequest) {
     ? new Date(new Date(endDate).getTime() + 86400000).toISOString()
     : undefined;
 
-  const EXCLUDED_EMAILS = ["gavegliojules@gmail.com"];
-
-  // Paginate — Supabase caps at 1000 rows per request
+  // 1. Get optin events (leads)
   const PAGE = 1000;
-  const data: { email: string | null; metadata: unknown; utm_source: string | null; utm_campaign: string | null; utm_content: string | null; created_at: string | null }[] = [];
+  const optinRows: { email: string | null; metadata: unknown; utm_source: string | null; utm_campaign: string | null; utm_content: string | null; created_at: string | null }[] = [];
   let offset = 0;
   while (true) {
     let q = supabase
@@ -37,21 +37,89 @@ export async function GET(req: NextRequest) {
     if (until) q = q.lte("created_at", until);
     const { data: page } = await q;
     if (!page || page.length === 0) break;
-    data.push(...page);
+    optinRows.push(...page);
     if (page.length < PAGE) break;
     offset += PAGE;
   }
 
-  const leads = (data ?? []).map((row) => ({
-    email: row.email,
-    firstname: typeof row.metadata === "object" && row.metadata !== null
-      ? (row.metadata as Record<string, unknown>).firstname ?? null
-      : null,
-    utm_source: row.utm_source,
-    utm_campaign: row.utm_campaign,
-    utm_content: row.utm_content,
-    created_at: row.created_at,
-  }));
+  // Collect unique emails
+  const emails = Array.from(new Set(
+    optinRows.map((r) => r.email).filter(Boolean) as string[]
+  ));
+
+  // 2. Get firstnames from vba_funnel_leads (more reliable)
+  const { data: funnelLeads } = emails.length > 0
+    ? await supabase
+        .from("vba_funnel_leads")
+        .select("email, firstname")
+        .in("email", emails)
+    : { data: [] };
+  const firstnameMap = new Map(
+    (funnelLeads ?? []).map((l) => [l.email, l.firstname])
+  );
+
+  // 3. Get VSL watch time (max seconds from vsl_exit + milestones)
+  const { data: vslEvents } = emails.length > 0
+    ? await supabase
+        .from("funnel_events")
+        .select("email, event, metadata")
+        .in("email", emails)
+        .in("event", ["vsl_exit", "vsl_25", "vsl_50", "vsl_75", "vsl_100"])
+    : { data: [] };
+
+  const watchTimeMap = new Map<string, number>();
+  for (const e of vslEvents ?? []) {
+    if (!e.email) continue;
+    const meta = e.metadata as Record<string, unknown> | null;
+    const seconds = typeof meta?.seconds === "number" ? meta.seconds : 0;
+    if (seconds > 0) {
+      watchTimeMap.set(e.email, Math.max(watchTimeMap.get(e.email) ?? 0, seconds));
+    }
+  }
+
+  // 4. Get last email sent per lead
+  let lastEmailMap = new Map<string, { campaign_name: string; sent_at: string }>();
+  try {
+    const { data: sends } = emails.length > 0
+      ? await supabase
+          .from("email_sends")
+          .select("email, campaign_name, sent_at")
+          .in("email", emails)
+          .order("sent_at", { ascending: false })
+      : { data: [] };
+
+    for (const s of sends ?? []) {
+      if (!lastEmailMap.has(s.email)) {
+        lastEmailMap.set(s.email, {
+          campaign_name: s.campaign_name,
+          sent_at: s.sent_at,
+        });
+      }
+    }
+  } catch {
+    // Table might not exist yet
+    lastEmailMap = new Map();
+  }
+
+  // 5. Build enriched leads
+  const leads = optinRows.map((row) => {
+    const email = row.email ?? "";
+    const metaFirstname =
+      typeof row.metadata === "object" && row.metadata !== null
+        ? ((row.metadata as Record<string, unknown>).firstname as string) ?? null
+        : null;
+
+    return {
+      email,
+      firstname: firstnameMap.get(email) ?? metaFirstname ?? null,
+      utm_source: row.utm_source,
+      utm_campaign: row.utm_campaign,
+      utm_content: row.utm_content,
+      created_at: row.created_at,
+      vsl_seconds: watchTimeMap.get(email) ?? null,
+      last_email: lastEmailMap.get(email) ?? null,
+    };
+  });
 
   return NextResponse.json({ leads });
 }
@@ -65,22 +133,10 @@ export async function DELETE(req: NextRequest) {
 
   const supabase = createSupabaseAdmin();
 
-  // Delete all funnel events for this email
-  const { error: funnelErr } = await supabase
-    .from("funnel_events")
-    .delete()
-    .eq("email", email);
-
-  // Also delete from vba_funnel_leads if exists
-  const { error: leadErr } = await supabase
-    .from("vba_funnel_leads")
-    .delete()
-    .eq("email", email);
-
-  if (funnelErr || leadErr) {
-    console.error("[ads/leads DELETE]", funnelErr, leadErr);
-    return NextResponse.json({ error: "delete failed" }, { status: 500 });
-  }
+  await Promise.all([
+    supabase.from("funnel_events").delete().eq("email", email),
+    supabase.from("vba_funnel_leads").delete().eq("email", email),
+  ]);
 
   return NextResponse.json({ ok: true });
 }
