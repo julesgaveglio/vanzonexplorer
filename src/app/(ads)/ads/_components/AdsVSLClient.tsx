@@ -43,11 +43,17 @@ export default function AdsVSLClient() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const fetchData = () => {
+      fetch(`/api/ads/vsl?days=${period}`)
+        .then((r) => r.json())
+        .then(setData)
+        .finally(() => setLoading(false));
+    };
     setLoading(true);
-    fetch(`/api/ads/vsl?days=${period}`)
-      .then((r) => r.json())
-      .then(setData)
-      .finally(() => setLoading(false));
+    fetchData();
+    // Auto-refresh toutes les 30 secondes
+    const interval = setInterval(fetchData, 30000);
+    return () => clearInterval(interval);
   }, [period]);
 
   if (loading && !data) {

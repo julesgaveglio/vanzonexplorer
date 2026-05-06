@@ -66,9 +66,12 @@ export default function VSLClient({ videoId, libraryId, vslVersionId }: VSLClien
         lastTimeRef.current = msg.data.currentTime;
         durationRef.current = msg.data.duration;
 
-        const pct = (msg.data.currentTime / msg.data.duration) * 100;
+        const currentTime = msg.data.currentTime;
+        const duration = msg.data.duration;
+        const pct = (currentTime / duration) * 100;
         const funnelData = getFunnelData();
-        const opts = { email: funnelData?.email, firstname: funnelData?.firstname, metadata: { vsl_version_id: vslVersionId } };
+        const meta = { vsl_version_id: vslVersionId, seconds: Math.round(currentTime), duration: Math.round(duration) };
+        const opts = { email: funnelData?.email, firstname: funnelData?.firstname, metadata: meta };
         const milestones = videoMilestonesRef.current;
 
         if (pct >= 25 && !milestones.has("25")) { milestones.add("25"); trackFunnel("vsl_25", "/van-business-academy/presentation", opts); }

@@ -56,17 +56,13 @@ export async function GET(req: NextRequest) {
       const uid = e.email || e.session_id || "anon";
       const meta = e.metadata as Record<string, unknown> | null;
 
-      if (e.event === "vsl_exit" && meta && typeof meta.seconds === "number") {
-        viewerMaxSeconds[uid] = Math.max(viewerMaxSeconds[uid] ?? 0, meta.seconds);
+      if (meta && typeof meta.seconds === "number") {
+        // vsl_exit, vsl_25, vsl_50, vsl_75, vsl_100 — all carry seconds now
+        if (e.event === "vsl_exit" || e.event === "vsl_100" || e.event === "vsl_75" || e.event === "vsl_50" || e.event === "vsl_25") {
+          viewerMaxSeconds[uid] = Math.max(viewerMaxSeconds[uid] ?? 0, meta.seconds);
+        }
         if (meta.duration && typeof meta.duration === "number" && meta.duration > maxDuration) {
           maxDuration = meta.duration;
-        }
-      }
-      if (e.event === "vsl_100") {
-        const dur = (meta as Record<string, unknown>)?.duration as number | undefined;
-        if (dur) {
-          viewerMaxSeconds[uid] = Math.max(viewerMaxSeconds[uid] ?? 0, dur);
-          if (dur > maxDuration) maxDuration = dur;
         }
       }
     }
