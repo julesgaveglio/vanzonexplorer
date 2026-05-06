@@ -12,11 +12,9 @@ export async function GET(req: NextRequest) {
   const campaign = params.get("campaign");
   const url = params.get("url");
 
-  if (!url) {
-    return NextResponse.redirect("https://vanzonexplorer.com");
-  }
+  const target = url || "https://vanzonexplorer.com";
 
-  // Track the click
+  // Track the click (fire and forget)
   if (email && campaign) {
     const supabase = createSupabaseAdmin();
     supabase
@@ -24,11 +22,11 @@ export async function GET(req: NextRequest) {
       .insert({
         email,
         campaign_name: campaign,
-        clicked_url: url,
+        clicked_url: target,
       })
       .then(() => {})
       .catch(() => {});
   }
 
-  return NextResponse.redirect(url);
+  return NextResponse.redirect(new URL(target));
 }
