@@ -1,4 +1,4 @@
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
 
 /**
@@ -26,5 +26,5 @@ export async function GET(req: NextRequest) {
       .catch(() => {});
   }
 
-  return Response.redirect(url, 302);
+  return NextResponse.redirect(new URL(url, req.url));
 }
