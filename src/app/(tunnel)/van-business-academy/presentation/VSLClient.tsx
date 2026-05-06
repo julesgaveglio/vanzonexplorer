@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
+import Hls from "hls.js";
 import { getFunnelData } from "@/lib/hooks/useUTMParams";
 import { trackFunnel } from "@/lib/funnel-tracking";
 import LiquidButton from "@/components/ui/LiquidButton";
@@ -14,24 +15,61 @@ interface VSLClientProps {
 }
 
 export default function VSLClient({ videoId, libraryId, vslVersionId }: VSLClientProps) {
-  const EMBED_URL = `https://player.mediadelivery.net/embed/${libraryId}/${videoId}?autoplay=false&loop=false&muted=false&preload=true&responsive=true&showHeatmap=false`;
+  const HLS_URL = `https://vz-bac05373-d10.b-cdn.net/${videoId}/playlist.m3u8`;
+  const POSTER_URL = `https://vz-bac05373-d10.b-cdn.net/${videoId}/thumbnail.jpg`;
+
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const hlsRef = useRef<Hls | null>(null);
+  const milestonesRef = useRef(new Set<string>());
+  const exitTrackedRef = useRef(false);
+  const lastTimeRef = useRef(0);
+  const durationRef = useRef(0);
 
   const [firstname, setFirstname] = useState("");
   const [showCTA, setShowCTA] = useState(false);
-  const ctaTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const videoMilestonesRef = useRef(new Set<string>());
-  const lastTimeRef = useRef(0);
-  const durationRef = useRef(0);
-  const exitTrackedRef = useRef(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [hasStarted, setHasStarted] = useState(false);
 
-  // --- Effects ---
+  // --- Get tracking opts ---
+  const getTrackOpts = useCallback(
+    (extraMeta?: Record<string, unknown>) => {
+      const data = getFunnelData();
+      return {
+        email: data?.email,
+        firstname: data?.firstname,
+        metadata: {
+          vsl_version_id: vslVersionId,
+          seconds: Math.round(lastTimeRef.current),
+          duration: Math.round(durationRef.current),
+          ...extraMeta,
+        },
+      };
+    },
+    [vslVersionId]
+  );
 
-  // Funnel data + tracking
+  // --- Initialize HLS player ---
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (Hls.isSupported()) {
+      const hls = new Hls({ startLevel: -1 });
+      hls.loadSource(HLS_URL);
+      hls.attachMedia(video);
+      hlsRef.current = hls;
+      return () => { hls.destroy(); };
+    } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+      // Safari native HLS
+      video.src = HLS_URL;
+    }
+  }, [HLS_URL]);
+
+  // --- Track vsl_view on mount ---
   useEffect(() => {
     const data = getFunnelData();
     if (data?.firstname) setFirstname(data.firstname);
 
-    // Update funnel step if we have email
     if (data?.email) {
       fetch("/api/van-business-academy/inscription/step", {
         method: "PATCH",
@@ -40,7 +78,6 @@ export default function VSLClient({ videoId, libraryId, vslVersionId }: VSLClien
       }).catch(() => {});
     }
 
-    // Always track vsl_view — even without funnel data
     trackFunnel("vsl_view", "/van-business-academy/presentation", {
       email: data?.email,
       firstname: data?.firstname,
@@ -48,69 +85,106 @@ export default function VSLClient({ videoId, libraryId, vslVersionId }: VSLClien
     });
   }, [vslVersionId]);
 
-  // CTA delay — show after 3 minutes
+  // --- CTA delay ---
   useEffect(() => {
-    ctaTimerRef.current = setTimeout(() => setShowCTA(true), CTA_DELAY_SECONDS * 1000);
-    return () => { if (ctaTimerRef.current) clearTimeout(ctaTimerRef.current); };
+    const timer = setTimeout(() => setShowCTA(true), CTA_DELAY_SECONDS * 1000);
+    return () => clearTimeout(timer);
   }, []);
 
-  // Track milestones + position via postMessage from Bunny player
+  // --- Video timeupdate handler (the actual tracking) ---
   useEffect(() => {
-    const handler = (e: MessageEvent) => {
-      if (typeof e.data !== "string") return;
-      try {
-        const msg = JSON.parse(e.data);
-        if (msg.event !== "timeupdate" || !msg.data?.duration) return;
+    const video = videoRef.current;
+    if (!video) return;
 
-        // Store current position for exit tracking
-        lastTimeRef.current = msg.data.currentTime;
-        durationRef.current = msg.data.duration;
+    const onTimeUpdate = () => {
+      const currentTime = video.currentTime;
+      const duration = video.duration;
+      if (!duration || isNaN(duration)) return;
 
-        const currentTime = msg.data.currentTime;
-        const duration = msg.data.duration;
-        const pct = (currentTime / duration) * 100;
-        const funnelData = getFunnelData();
-        const meta = { vsl_version_id: vslVersionId, seconds: Math.round(currentTime), duration: Math.round(duration) };
-        const opts = { email: funnelData?.email, firstname: funnelData?.firstname, metadata: meta };
-        const milestones = videoMilestonesRef.current;
+      lastTimeRef.current = currentTime;
+      durationRef.current = duration;
 
-        if (pct >= 25 && !milestones.has("25")) { milestones.add("25"); trackFunnel("vsl_25", "/van-business-academy/presentation", opts); }
-        if (pct >= 50 && !milestones.has("50")) { milestones.add("50"); trackFunnel("vsl_50", "/van-business-academy/presentation", opts); }
-        if (pct >= 75 && !milestones.has("75")) { milestones.add("75"); trackFunnel("vsl_75", "/van-business-academy/presentation", opts); }
-        if (pct >= 95 && !milestones.has("100")) { milestones.add("100"); trackFunnel("vsl_100", "/van-business-academy/presentation", opts); }
-      } catch { /* ignore non-Bunny messages */ }
+      const pct = (currentTime / duration) * 100;
+      const milestones = milestonesRef.current;
+      const page = "/van-business-academy/presentation";
+
+      if (pct >= 25 && !milestones.has("25")) {
+        milestones.add("25");
+        trackFunnel("vsl_25", page, getTrackOpts());
+      }
+      if (pct >= 50 && !milestones.has("50")) {
+        milestones.add("50");
+        trackFunnel("vsl_50", page, getTrackOpts());
+      }
+      if (pct >= 75 && !milestones.has("75")) {
+        milestones.add("75");
+        trackFunnel("vsl_75", page, getTrackOpts());
+      }
+      if (pct >= 95 && !milestones.has("100")) {
+        milestones.add("100");
+        trackFunnel("vsl_100", page, getTrackOpts());
+      }
     };
-    window.addEventListener("message", handler);
-    return () => window.removeEventListener("message", handler);
-  }, [vslVersionId]);
 
-  // Track vsl_exit when user leaves the page
+    const onPlay = () => {
+      setIsPlaying(true);
+      setHasStarted(true);
+    };
+    const onPause = () => setIsPlaying(false);
+
+    video.addEventListener("timeupdate", onTimeUpdate);
+    video.addEventListener("play", onPlay);
+    video.addEventListener("pause", onPause);
+
+    return () => {
+      video.removeEventListener("timeupdate", onTimeUpdate);
+      video.removeEventListener("play", onPlay);
+      video.removeEventListener("pause", onPause);
+    };
+  }, [getTrackOpts]);
+
+  // --- Track vsl_exit on page leave ---
   useEffect(() => {
     const trackExit = () => {
       if (exitTrackedRef.current || lastTimeRef.current === 0) return;
       exitTrackedRef.current = true;
 
-      const funnelData = getFunnelData();
-      trackFunnel("vsl_exit", "/van-business-academy/presentation", {
-        email: funnelData?.email,
-        firstname: funnelData?.firstname,
-        metadata: {
-          vsl_version_id: vslVersionId,
-          seconds: Math.round(lastTimeRef.current),
-          duration: Math.round(durationRef.current),
-        },
-      });
+      trackFunnel("vsl_exit", "/van-business-academy/presentation", getTrackOpts());
+    };
+
+    const onVisChange = () => {
+      if (document.visibilityState === "hidden") trackExit();
     };
 
     window.addEventListener("beforeunload", trackExit);
-    document.addEventListener("visibilitychange", () => {
-      if (document.visibilityState === "hidden") trackExit();
-    });
+    document.addEventListener("visibilitychange", onVisChange);
 
     return () => {
       window.removeEventListener("beforeunload", trackExit);
+      document.removeEventListener("visibilitychange", onVisChange);
     };
-  }, [vslVersionId]);
+  }, [getTrackOpts]);
+
+  // --- Play/pause toggle ---
+  const togglePlay = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (video.paused) {
+      video.play();
+    } else {
+      video.pause();
+    }
+  };
+
+  // --- Block seeking ---
+  const onSeeking = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    // Only allow seeking forward up to lastTimeRef (prevent skipping ahead)
+    if (video.currentTime > lastTimeRef.current + 2) {
+      video.currentTime = lastTimeRef.current;
+    }
+  };
 
   return (
     <div className="max-w-3xl mx-auto px-4 pb-16">
@@ -122,6 +196,9 @@ export default function VSLClient({ videoId, libraryId, vslVersionId }: VSLClien
         .sound-pulse {
           animation: gentle-pulse 2.5s ease-in-out infinite;
         }
+        video::-webkit-media-controls-timeline { display: none; }
+        video::-webkit-media-controls-current-time-display { display: none; }
+        video::-webkit-media-controls-time-remaining-display { display: none; }
       `}</style>
 
       {/* Greeting */}
@@ -157,17 +234,34 @@ export default function VSLClient({ videoId, libraryId, vslVersionId }: VSLClien
         <p className="text-slate-500 text-sm">Active le son et regarde jusqu&apos;à la fin</p>
       </div>
 
-      {/* Video player — Bunny embed iframe */}
-      <div className="relative w-full rounded-2xl overflow-hidden shadow-lg mb-10" style={{ paddingTop: "56.25%" }}>
-        <iframe
-          src={EMBED_URL}
-          loading="lazy"
-          style={{ border: 0, position: "absolute", top: 0, left: 0, height: "100%", width: "100%" }}
-          allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;"
-          allowFullScreen
+      {/* Video player — HLS native */}
+      <div
+        className="relative w-full rounded-2xl overflow-hidden shadow-lg mb-10 bg-black cursor-pointer"
+        style={{ aspectRatio: "16/9" }}
+        onClick={togglePlay}
+      >
+        <video
+          ref={videoRef}
+          poster={POSTER_URL}
+          playsInline
+          onSeeking={onSeeking}
+          className="w-full h-full object-contain"
+          controlsList="nodownload noplaybackrate"
         />
-        {/* Overlay blocks seek bar clicks (bottom 15% of player) without breaking postMessage tracking */}
-        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "15%", zIndex: 2 }} />
+
+        {/* Play button overlay */}
+        {!isPlaying && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/20 transition-opacity">
+            <div
+              className="w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center"
+              style={{ background: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)", boxShadow: "0 4px 20px rgba(185,148,95,0.5)" }}
+            >
+              <svg className="w-7 h-7 sm:w-8 sm:h-8 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* CTA zone */}
