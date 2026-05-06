@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
 
 /**
@@ -10,9 +10,7 @@ export async function GET(req: NextRequest) {
   const params = req.nextUrl.searchParams;
   const email = params.get("email");
   const campaign = params.get("campaign");
-  const url = params.get("url");
-
-  const target = url || "https://vanzonexplorer.com";
+  const url = params.get("url") || "https://vanzonexplorer.com";
 
   // Track the click (fire and forget)
   if (email && campaign) {
@@ -22,11 +20,11 @@ export async function GET(req: NextRequest) {
       .insert({
         email,
         campaign_name: campaign,
-        clicked_url: target,
+        clicked_url: url,
       })
       .then(() => {})
       .catch(() => {});
   }
 
-  return NextResponse.redirect(target, { status: 302 });
+  return Response.redirect(url, 302);
 }
