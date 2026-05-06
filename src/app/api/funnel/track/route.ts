@@ -31,6 +31,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "invalid event" }, { status: 400 });
     }
 
+    // Ignore admin/test emails — no tracking, no notifs, no data
+    const IGNORED_EMAILS = ["gavegliojules@gmail.com", "mateogb.ads@gmail.com", "jules@vanzonexplorer.com"];
+    if (email && IGNORED_EMAILS.includes(email.toLowerCase())) {
+      return NextResponse.json({ ok: true, ignored: true });
+    }
+
     const supabase = createSupabaseAdmin();
 
     const { error } = await supabase.from("funnel_events").insert({
