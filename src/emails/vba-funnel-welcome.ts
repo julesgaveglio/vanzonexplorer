@@ -3,6 +3,9 @@ interface VBAWelcomeEmailProps {
   vslUrl: string;
 }
 
+const THUMBNAIL_URL =
+  "https://cdn.sanity.io/images/lewexa74/production/9b38149c19afa731dc126b6d6e79abedd0ed0e32-1114x622.png?auto=format&q=82&w=460";
+
 export function buildVBAWelcomeEmail({ firstname, vslUrl }: VBAWelcomeEmailProps): {
   subject: string;
   html: string;
@@ -25,7 +28,7 @@ export function buildVBAWelcomeEmail({ firstname, vslUrl }: VBAWelcomeEmailProps
     <div style="background:#FFFFFF;border-radius:16px;padding:40px 32px;box-shadow:0 1px 3px rgba(0,0,0,0.06);">
 
       <h1 style="margin:0 0 16px 0;font-size:24px;font-weight:800;color:#0F172A;line-height:1.3;">
-        ${firstname}, ta vidéo t'attend
+        ${firstname}, ta vidéo t&rsquo;attend
       </h1>
 
       <p style="margin:0 0 24px 0;font-size:15px;color:#475569;line-height:1.7;">
@@ -34,15 +37,31 @@ export function buildVBAWelcomeEmail({ firstname, vslUrl }: VBAWelcomeEmailProps
         même sans expérience en mécanique ou en aménagement.
       </p>
 
-      <!-- CTA -->
-      <div style="text-align:center;margin:32px 0;">
-        <a href="${vslUrl}" target="_blank" style="display:inline-block;background:linear-gradient(135deg,#B9945F 0%,#E4D398 100%);color:#FFFFFF;text-decoration:none;padding:16px 40px;border-radius:12px;font-size:16px;font-weight:700;box-shadow:0 4px 18px rgba(185,148,95,0.45);">
-          Regarder la vidéo gratuite &rarr;
-        </a>
-      </div>
+      <!-- Video thumbnail with play button -->
+      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 24px 0;">
+        <tr>
+          <td align="center">
+            <a href="${vslUrl}" target="_blank" style="text-decoration:none;">
+              <table cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width:460px;">
+                <tr>
+                  <td background="${THUMBNAIL_URL}" width="460" height="258" valign="middle" align="center" style="background-size:cover;background-position:center;border-radius:12px;text-align:center;">
+                    <table cellpadding="0" cellspacing="0" border="0" width="64" height="64" align="center">
+                      <tr>
+                        <td width="64" height="64" align="center" valign="middle" style="background-color:rgba(0,0,0,0.55);border-radius:32px;">
+                          <div style="width:0;height:0;border-style:solid;border-width:12px 0 12px 22px;border-color:transparent transparent transparent #ffffff;margin-left:4px;display:inline-block;"></div>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </a>
+          </td>
+        </tr>
+      </table>
 
       <p style="margin:0;font-size:13px;color:#94A3B8;line-height:1.6;text-align:center;">
-        Prends 15 minutes au calme, active le son, et regarde jusqu'à la fin.
+        Prends 15 minutes au calme, active le son, et regarde jusqu&rsquo;à la fin.
       </p>
 
     </div>
