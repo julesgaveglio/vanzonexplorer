@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAdsAuth } from "@/lib/ads-auth";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function GET(_req: NextRequest) {
   const check = await requireAdsAuth();
   if (check instanceof NextResponse) return check;
