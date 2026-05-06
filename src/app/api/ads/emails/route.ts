@@ -59,6 +59,29 @@ export async function POST(req: NextRequest) {
   return NextResponse.json(data, { status: 201 });
 }
 
+// Update a campaign
+export async function PATCH(req: NextRequest) {
+  const check = await requireAdsAuth();
+  if (check instanceof NextResponse) return check;
+
+  const { id, name, subject, body_html } = await req.json();
+  if (!id) return NextResponse.json({ error: "id required" }, { status: 400 });
+
+  const supabase = createSupabaseAdmin();
+  const updates: Record<string, string> = {};
+  if (name) updates.name = name;
+  if (subject) updates.subject = subject;
+  if (body_html) updates.body_html = body_html;
+
+  const { error } = await supabase
+    .from("email_campaigns")
+    .update(updates)
+    .eq("id", id);
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  return NextResponse.json({ ok: true });
+}
+
 // Record a send
 export async function PUT(req: NextRequest) {
   const check = await requireAdsAuth();

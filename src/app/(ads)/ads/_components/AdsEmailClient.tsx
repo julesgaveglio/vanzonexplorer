@@ -21,6 +21,11 @@ export default function AdsEmailClient() {
   const [formHtml, setFormHtml] = useState("");
   const [saving, setSaving] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [editing, setEditing] = useState<string | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editSubject, setEditSubject] = useState("");
+  const [editHtml, setEditHtml] = useState("");
+  const [editSaving, setEditSaving] = useState(false);
 
   const fetchCampaigns = () => {
     setLoading(true);
@@ -54,14 +59,39 @@ export default function AdsEmailClient() {
     fetchCampaigns();
   };
 
+  const startEdit = (c: Campaign) => {
+    setEditing(c.id);
+    setEditName(c.name);
+    setEditSubject(c.subject);
+    setEditHtml(c.body_html);
+    setExpanded(c.id);
+  };
+
+  const handleSaveEdit = async (id: string) => {
+    setEditSaving(true);
+    await fetch("/api/ads/emails", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id,
+        name: editName.trim(),
+        subject: editSubject.trim(),
+        body_html: editHtml.trim(),
+      }),
+    });
+    setEditSaving(false);
+    setEditing(null);
+    fetchCampaigns();
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Emails</h1>
           <p className="text-sm text-slate-500 mt-1">
-            {campaigns.length} campagne{campaigns.length > 1 ? "s" : ""} — suivi
-            des envois
+            {campaigns.length} campagne{campaigns.length > 1 ? "s" : ""} —
+            suivi des envois
           </p>
         </div>
         <button
@@ -86,7 +116,7 @@ export default function AdsEmailClient() {
               type="text"
               value={formName}
               onChange={(e) => setFormName(e.target.value)}
-              placeholder="Ex: Email général Book"
+              placeholder="Ex: Relance J+7"
               className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30"
             />
           </div>
@@ -156,77 +186,181 @@ export default function AdsEmailClient() {
         </div>
       ) : (
         <div className="space-y-3">
-          {campaigns.map((c) => (
-            <div
-              key={c.id}
-              className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm"
-            >
-              <button
-                onClick={() =>
-                  setExpanded(expanded === c.id ? null : c.id)
-                }
-                className="w-full px-5 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors text-left"
-              >
-                <div>
-                  <p className="font-semibold text-slate-900">{c.name}</p>
-                  <p className="text-xs text-slate-500 mt-0.5">
-                    Objet : {c.subject}
-                  </p>
-                </div>
-                <div className="flex items-center gap-4 flex-shrink-0">
-                  <div className="text-right">
-                    <p className="text-sm font-bold text-slate-900">
-                      {c.sends_count}
-                    </p>
-                    <p className="text-[10px] text-slate-400">envois</p>
-                  </div>
-                  {c.last_sent && (
-                    <div className="text-right hidden sm:block">
-                      <p className="text-xs text-slate-500">
-                        {new Date(c.last_sent).toLocaleDateString("fr-FR", {
-                          day: "numeric",
-                          month: "short",
-                        })}
-                      </p>
-                      <p className="text-[10px] text-slate-400">
-                        dernier envoi
-                      </p>
-                    </div>
-                  )}
-                  <svg
-                    className={`w-4 h-4 text-slate-400 transition-transform ${expanded === c.id ? "rotate-180" : ""}`}
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </div>
-              </button>
+          {campaigns.map((c) => {
+            const isExpanded = expanded === c.id;
+            const isEditing = editing === c.id;
 
-              {expanded === c.id && (
-                <div className="border-t border-slate-100 px-5 py-4">
-                  <p className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-2">
-                    Aperçu
-                  </p>
-                  <div
-                    className="bg-slate-50 rounded-xl p-4 text-sm max-h-60 overflow-y-auto"
-                    dangerouslySetInnerHTML={{
-                      __html: c.body_html.replace(
-                        /\{\{firstname\}\}/g,
-                        "<b>[Prénom]</b>"
-                      ),
-                    }}
-                  />
+            return (
+              <div
+                key={c.id}
+                className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm"
+              >
+                {/* Header */}
+                <div className="px-5 py-4 flex items-center justify-between">
+                  <button
+                    onClick={() =>
+                      setExpanded(isExpanded ? null : c.id)
+                    }
+                    className="flex-1 text-left hover:opacity-80 transition-opacity"
+                  >
+                    <p className="font-semibold text-slate-900">{c.name}</p>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      Objet : {c.subject}
+                    </p>
+                  </button>
+                  <div className="flex items-center gap-4 flex-shrink-0">
+                    <div className="text-right">
+                      <p className="text-sm font-bold text-slate-900">
+                        {c.sends_count}
+                      </p>
+                      <p className="text-[10px] text-slate-400">envois</p>
+                    </div>
+                    {c.last_sent && (
+                      <div className="text-right hidden sm:block">
+                        <p className="text-xs text-slate-500">
+                          {new Date(c.last_sent).toLocaleDateString(
+                            "fr-FR",
+                            { day: "numeric", month: "short" }
+                          )}
+                        </p>
+                        <p className="text-[10px] text-slate-400">
+                          dernier envoi
+                        </p>
+                      </div>
+                    )}
+                    <button
+                      onClick={() =>
+                        isEditing
+                          ? setEditing(null)
+                          : startEdit(c)
+                      }
+                      className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+                        isEditing
+                          ? "bg-slate-100 text-slate-600"
+                          : "text-blue-600 hover:bg-blue-50"
+                      }`}
+                    >
+                      {isEditing ? "Annuler" : "Modifier"}
+                    </button>
+                    <svg
+                      className={`w-4 h-4 text-slate-400 transition-transform cursor-pointer ${isExpanded ? "rotate-180" : ""}`}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      onClick={() =>
+                        setExpanded(isExpanded ? null : c.id)
+                      }
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </div>
                 </div>
-              )}
-            </div>
-          ))}
+
+                {/* Expanded: edit or preview */}
+                {isExpanded && (
+                  <div className="border-t border-slate-100 px-5 py-4">
+                    {isEditing ? (
+                      <div className="space-y-4">
+                        <div>
+                          <label className="text-xs font-medium text-slate-500 mb-1 block">
+                            Nom
+                          </label>
+                          <input
+                            type="text"
+                            value={editName}
+                            onChange={(e) => setEditName(e.target.value)}
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs font-medium text-slate-500 mb-1 block">
+                            Objet
+                          </label>
+                          <input
+                            type="text"
+                            value={editSubject}
+                            onChange={(e) =>
+                              setEditSubject(e.target.value)
+                            }
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs font-medium text-slate-500 mb-1 block">
+                            Contenu HTML
+                          </label>
+                          <textarea
+                            value={editHtml}
+                            onChange={(e) =>
+                              setEditHtml(e.target.value)
+                            }
+                            rows={12}
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500/30 resize-y"
+                          />
+                        </div>
+
+                        {/* Live preview */}
+                        <div>
+                          <p className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-2">
+                            Aperçu
+                          </p>
+                          <div
+                            className="bg-white border border-slate-200 rounded-xl p-5 text-sm"
+                            style={{ lineHeight: "1.7" }}
+                            dangerouslySetInnerHTML={{
+                              __html: editHtml.replace(
+                                /\{\{firstname\}\}/g,
+                                "<b>[Prénom]</b>"
+                              ),
+                            }}
+                          />
+                        </div>
+
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleSaveEdit(c.id)}
+                            disabled={editSaving}
+                            className="px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-500 disabled:opacity-50 transition-colors"
+                          >
+                            {editSaving
+                              ? "Enregistrement..."
+                              : "Enregistrer"}
+                          </button>
+                          <button
+                            onClick={() => setEditing(null)}
+                            className="px-4 py-2 text-sm text-slate-500 hover:text-slate-700"
+                          >
+                            Annuler
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div>
+                        <p className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-2">
+                          Aperçu
+                        </p>
+                        <div
+                          className="bg-slate-50 rounded-xl p-5 text-sm"
+                          style={{ lineHeight: "1.7" }}
+                          dangerouslySetInnerHTML={{
+                            __html: c.body_html.replace(
+                              /\{\{firstname\}\}/g,
+                              "<b>[Prénom]</b>"
+                            ),
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
