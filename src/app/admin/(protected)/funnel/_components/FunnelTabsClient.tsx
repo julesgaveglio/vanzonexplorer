@@ -1,19 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { BarChart3, UserPlus, Users, Play, Settings } from "lucide-react";
+import { BarChart3, UserPlus, Users, Play } from "lucide-react";
 import AdsDashboardClient from "../../../../(ads)/ads/_components/AdsDashboardClient";
 import AdsOptinClient from "../../../../(ads)/ads/_components/AdsOptinClient";
 import AdsLeadsClient from "../../../../(ads)/ads/_components/AdsLeadsClient";
 import AdsVSLClient from "../../../../(ads)/ads/_components/AdsVSLClient";
-import VSLManagerClient from "./VSLManagerClient";
 
 const TABS = [
   { key: "dashboard", label: "Dashboard", icon: BarChart3 },
   { key: "optin", label: "Opt-in", icon: UserPlus },
   { key: "leads", label: "Leads", icon: Users },
   { key: "vsl", label: "VSL Analytics", icon: Play },
-  { key: "vsl-manager", label: "VSL Manager", icon: Settings },
 ] as const;
 
 type Tab = (typeof TABS)[number]["key"];
@@ -47,7 +45,6 @@ export default function FunnelTabsClient() {
       {tab === "optin" && <AdsOptinClient />}
       {tab === "leads" && <AdsLeadsClient />}
       {tab === "vsl" && <AdsVSLClient />}
-      {tab === "vsl-manager" && <VSLManagerClient />}
     </div>
   );
 }
