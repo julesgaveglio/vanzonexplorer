@@ -15,15 +15,11 @@ export async function GET(req: NextRequest) {
   // Track the click (fire and forget)
   if (email && campaign) {
     const supabase = createSupabaseAdmin();
-    supabase
-      .from("email_clicks")
-      .insert({
-        email,
-        campaign_name: campaign,
-        clicked_url: url,
-      })
-      .then(() => {})
-      .catch(() => {});
+    void supabase.from("email_clicks").insert({
+      email,
+      campaign_name: campaign,
+      clicked_url: url,
+    });
   }
 
   return NextResponse.redirect(new URL(url, req.url));
