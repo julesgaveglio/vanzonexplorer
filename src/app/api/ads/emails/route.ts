@@ -9,30 +9,29 @@ export async function GET(_req: NextRequest) {
 
   const supabase = createSupabaseAdmin();
 
-  // Get all campaigns with send counts
   const { data: campaigns } = await supabase
     .from("email_campaigns")
-    .select("id, name, subject, body_html, created_at")
+    .select("id, name, subject, body_html, color, created_at")
     .order("created_at", { ascending: false });
 
-  // Get send counts per campaign
-  const { data: sendCounts } = await supabase
+  // Count sends by campaign_name (more reliable than campaign_id)
+  const { data: allSends } = await supabase
     .from("email_sends")
-    .select("campaign_id, sent_at");
+    .select("campaign_name, sent_at");
 
   const countMap = new Map<string, { total: number; last_sent: string | null }>();
-  for (const s of sendCounts ?? []) {
-    if (!s.campaign_id) continue;
-    const entry = countMap.get(s.campaign_id) ?? { total: 0, last_sent: null };
+  for (const s of allSends ?? []) {
+    if (!s.campaign_name) continue;
+    const entry = countMap.get(s.campaign_name) ?? { total: 0, last_sent: null };
     entry.total++;
     if (!entry.last_sent || s.sent_at > entry.last_sent) entry.last_sent = s.sent_at;
-    countMap.set(s.campaign_id, entry);
+    countMap.set(s.campaign_name, entry);
   }
 
   const enriched = (campaigns ?? []).map((c) => ({
     ...c,
-    sends_count: countMap.get(c.id)?.total ?? 0,
-    last_sent: countMap.get(c.id)?.last_sent ?? null,
+    sends_count: countMap.get(c.name)?.total ?? 0,
+    last_sent: countMap.get(c.name)?.last_sent ?? null,
   }));
 
   return NextResponse.json({ campaigns: enriched });
@@ -43,7 +42,7 @@ export async function POST(req: NextRequest) {
   const check = await requireAdsAuth();
   if (check instanceof NextResponse) return check;
 
-  const { name, subject, body_html } = await req.json();
+  const { name, subject, body_html, color } = await req.json();
   if (!name || !subject || !body_html) {
     return NextResponse.json({ error: "name, subject, body_html required" }, { status: 400 });
   }
@@ -51,7 +50,7 @@ export async function POST(req: NextRequest) {
   const supabase = createSupabaseAdmin();
   const { data, error } = await supabase
     .from("email_campaigns")
-    .insert({ name, subject, body_html })
+    .insert({ name, subject, body_html, color: color || "#6366F1" })
     .select()
     .single();
 
@@ -59,19 +58,30 @@ export async function POST(req: NextRequest) {
   return NextResponse.json(data, { status: 201 });
 }
 
-// Update a campaign
+// Update a campaign (+ rename in email_sends if name changed)
 export async function PATCH(req: NextRequest) {
   const check = await requireAdsAuth();
   if (check instanceof NextResponse) return check;
 
-  const { id, name, subject, body_html } = await req.json();
+  const { id, name, subject, body_html, color } = await req.json();
   if (!id) return NextResponse.json({ error: "id required" }, { status: 400 });
 
   const supabase = createSupabaseAdmin();
+
+  // Get current name before update (for renaming sends)
+  const { data: current } = await supabase
+    .from("email_campaigns")
+    .select("name")
+    .eq("id", id)
+    .single();
+  const oldName = current?.name;
+
+  // Update campaign
   const updates: Record<string, string> = {};
   if (name) updates.name = name;
   if (subject) updates.subject = subject;
   if (body_html) updates.body_html = body_html;
+  if (color) updates.color = color;
 
   const { error } = await supabase
     .from("email_campaigns")
@@ -79,6 +89,15 @@ export async function PATCH(req: NextRequest) {
     .eq("id", id);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  // If name changed, update all email_sends with the old name
+  if (name && oldName && name !== oldName) {
+    await supabase
+      .from("email_sends")
+      .update({ campaign_name: name })
+      .eq("campaign_name", oldName);
+  }
+
   return NextResponse.json({ ok: true });
 }
 

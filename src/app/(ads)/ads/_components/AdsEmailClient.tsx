@@ -2,11 +2,17 @@
 
 import { useState, useEffect } from "react";
 
+const COLORS = [
+  "#0F172A", "#3B82F6", "#10B981", "#F59E0B", "#EF4444",
+  "#8B5CF6", "#EC4899", "#6366F1", "#14B8A6", "#F97316",
+];
+
 interface Campaign {
   id: string;
   name: string;
   subject: string;
   body_html: string;
+  color: string | null;
   created_at: string;
   sends_count: number;
   last_sent: string | null;
@@ -25,6 +31,7 @@ export default function AdsEmailClient() {
   const [editName, setEditName] = useState("");
   const [editSubject, setEditSubject] = useState("");
   const [editHtml, setEditHtml] = useState("");
+  const [editColor, setEditColor] = useState("#6366F1");
   const [editSaving, setEditSaving] = useState(false);
 
   const fetchCampaigns = () => {
@@ -64,6 +71,7 @@ export default function AdsEmailClient() {
     setEditName(c.name);
     setEditSubject(c.subject);
     setEditHtml(c.body_html);
+    setEditColor(c.color || "#6366F1");
     setExpanded(c.id);
   };
 
@@ -77,6 +85,7 @@ export default function AdsEmailClient() {
         name: editName.trim(),
         subject: editSubject.trim(),
         body_html: editHtml.trim(),
+        color: editColor,
       }),
     });
     setEditSaving(false);
@@ -203,7 +212,10 @@ export default function AdsEmailClient() {
                     }
                     className="flex-1 text-left hover:opacity-80 transition-opacity"
                   >
-                    <p className="font-semibold text-slate-900">{c.name}</p>
+                    <div className="flex items-center gap-2">
+                      <span className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: c.color || "#6366F1" }} />
+                      <p className="font-semibold text-slate-900">{c.name}</p>
+                    </div>
                     <p className="text-xs text-slate-500 mt-0.5">
                       Objet : {c.subject}
                     </p>
@@ -289,6 +301,21 @@ export default function AdsEmailClient() {
                             }
                             className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30"
                           />
+                        </div>
+                        <div>
+                          <label className="text-xs font-medium text-slate-500 mb-1 block">
+                            Couleur
+                          </label>
+                          <div className="flex gap-2">
+                            {COLORS.map((c) => (
+                              <button
+                                key={c}
+                                onClick={() => setEditColor(c)}
+                                className={`w-7 h-7 rounded-full transition-all ${editColor === c ? "ring-2 ring-offset-2 ring-slate-400 scale-110" : "hover:scale-110"}`}
+                                style={{ backgroundColor: c }}
+                              />
+                            ))}
+                          </div>
                         </div>
                         <div>
                           <label className="text-xs font-medium text-slate-500 mb-1 block">

@@ -2,6 +2,12 @@
 
 import { useState, useEffect } from "react";
 
+interface EmailEntry {
+  campaign_name: string;
+  sent_at: string;
+  color: string | null;
+}
+
 interface Lead {
   email: string;
   firstname: string | null;
@@ -10,7 +16,8 @@ interface Lead {
   utm_content: string | null;
   created_at: string;
   vsl_seconds: number | null;
-  last_email: { campaign_name: string; sent_at: string } | null;
+  email_history: EmailEntry[];
+  last_email: EmailEntry | null;
 }
 
 const PERIODS = [
@@ -33,6 +40,7 @@ export default function AdsLeadsClient() {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [expandedLead, setExpandedLead] = useState<string | null>(null);
 
   const fetchLeads = () => {
     setLoading(true);
@@ -109,19 +117,8 @@ export default function AdsLeadsClient() {
       <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <svg
-              className="animate-spin h-6 w-6 text-blue-500"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="3"
-                fill="none"
-                strokeDasharray="30 70"
-              />
+            <svg className="animate-spin h-6 w-6 text-blue-500" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" fill="none" strokeDasharray="30 70" />
             </svg>
           </div>
         ) : filtered.length === 0 ? (
@@ -133,135 +130,146 @@ export default function AdsLeadsClient() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-slate-100 bg-slate-50/50">
-                  <th className="text-center text-xs text-slate-500 uppercase tracking-wider px-3 py-3 font-medium w-10">
-                    #
-                  </th>
-                  <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium">
-                    Prénom
-                  </th>
-                  <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium">
-                    Email
-                  </th>
-                  <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium">
-                    VSL
-                  </th>
-                  <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium hidden md:table-cell">
-                    Dernier email
-                  </th>
-                  <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium hidden lg:table-cell">
-                    Source
-                  </th>
-                  <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium">
-                    Date
-                  </th>
+                  <th className="text-center text-xs text-slate-500 uppercase tracking-wider px-3 py-3 font-medium w-10">#</th>
+                  <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium">Prénom</th>
+                  <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium">Email</th>
+                  <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium">VSL</th>
+                  <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium">Dernier email</th>
+                  <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium hidden lg:table-cell">Source</th>
+                  <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium">Date</th>
                   <th className="px-3 py-3 w-10"></th>
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((lead, i) => (
-                  <tr
-                    key={i}
-                    className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors"
-                  >
-                    <td className="px-3 py-3 text-center text-slate-400 text-xs font-mono">
-                      {filtered.length - i}
-                    </td>
-                    <td className="px-4 py-3 text-slate-900 font-medium">
-                      {lead.firstname ?? "—"}
-                    </td>
-                    <td className="px-4 py-3 text-slate-600 text-xs">
-                      {lead.email}
-                    </td>
-                    <td className="px-4 py-3">
-                      {lead.vsl_seconds ? (
-                        <span
-                          className={`inline-flex px-2 py-0.5 text-xs font-mono rounded-full ${
-                            lead.vsl_seconds >= 600
-                              ? "bg-emerald-50 text-emerald-700"
-                              : lead.vsl_seconds >= 180
-                                ? "bg-amber-50 text-amber-700"
-                                : "bg-slate-100 text-slate-500"
-                          }`}
+                {filtered.map((lead, i) => {
+                  const isExpanded = expandedLead === lead.email;
+                  return (
+                    <tr key={i} className="border-b border-slate-50">
+                      {/* Main row */}
+                      <td className="px-3 py-3 text-center text-slate-400 text-xs font-mono align-top">
+                        {filtered.length - i}
+                      </td>
+                      <td className="px-4 py-3 text-slate-900 font-medium align-top">
+                        {lead.firstname ?? "—"}
+                      </td>
+                      <td className="px-4 py-3 align-top">
+                        <button
+                          onClick={() => setExpandedLead(isExpanded ? null : lead.email)}
+                          className="text-slate-600 text-xs hover:text-blue-600 transition-colors text-left"
                         >
-                          {formatWatch(lead.vsl_seconds)}
-                        </span>
-                      ) : (
-                        <span className="text-slate-300 text-xs">—</span>
-                      )}
-                    </td>
-                    <td className="px-4 py-3 hidden md:table-cell">
-                      {lead.last_email ? (
-                        <div>
-                          <p className="text-xs text-slate-700 font-medium truncate max-w-[150px]">
-                            {lead.last_email.campaign_name}
-                          </p>
-                          <p className="text-[10px] text-slate-400">
-                            {new Date(
-                              lead.last_email.sent_at
-                            ).toLocaleDateString("fr-FR", {
-                              day: "numeric",
-                              month: "short",
-                            })}
-                          </p>
-                        </div>
-                      ) : (
-                        <span className="text-slate-300 text-xs">aucun</span>
-                      )}
-                    </td>
-                    <td className="px-4 py-3 hidden lg:table-cell">
-                      {lead.utm_source ? (
-                        <span className="inline-flex px-2 py-0.5 text-xs font-medium rounded-full bg-blue-50 text-blue-600 border border-blue-100">
-                          {lead.utm_source}
-                        </span>
-                      ) : (
-                        <span className="text-slate-300">direct</span>
-                      )}
-                    </td>
-                    <td className="px-4 py-3 text-slate-400 text-xs">
-                      {new Date(lead.created_at).toLocaleDateString("fr-FR", {
-                        day: "numeric",
-                        month: "short",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </td>
-                    <td className="px-3 py-3">
-                      <button
-                        onClick={() => lead.email && handleDelete(lead.email)}
-                        disabled={deleting === lead.email}
-                        className="text-slate-300 hover:text-red-500 transition-colors disabled:opacity-50"
-                        title="Supprimer ce lead"
-                      >
-                        {deleting === lead.email ? (
-                          <svg
-                            className="animate-spin h-4 w-4"
-                            viewBox="0 0 24 24"
-                          >
-                            <circle
-                              cx="12"
-                              cy="12"
-                              r="10"
-                              stroke="currentColor"
-                              strokeWidth="3"
-                              fill="none"
-                              strokeDasharray="30 70"
-                            />
-                          </svg>
-                        ) : (
-                          <svg
-                            className="w-4 h-4"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                          >
-                            <path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2m2 0v14a2 2 0 01-2 2H8a2 2 0 01-2-2V6h12z" />
-                          </svg>
+                          {lead.email}
+                          {lead.email_history.length > 0 && (
+                            <span className="ml-1.5 text-[10px] text-slate-400">
+                              ({lead.email_history.length} email{lead.email_history.length > 1 ? "s" : ""})
+                            </span>
+                          )}
+                        </button>
+                        {/* Email history dropdown */}
+                        {isExpanded && lead.email_history.length > 0 && (
+                          <div className="mt-2 bg-slate-50 rounded-lg p-3 space-y-1.5">
+                            <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
+                              Historique emails
+                            </p>
+                            {lead.email_history.map((eh, j) => (
+                              <div key={j} className="flex items-center gap-2">
+                                <span
+                                  className="w-2 h-2 rounded-full flex-shrink-0"
+                                  style={{ backgroundColor: eh.color || "#94A3B8" }}
+                                />
+                                <span className="text-xs text-slate-700 flex-1">
+                                  {eh.campaign_name}
+                                </span>
+                                <span className="text-[10px] text-slate-400">
+                                  {new Date(eh.sent_at).toLocaleDateString("fr-FR", {
+                                    day: "numeric",
+                                    month: "short",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  })}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
                         )}
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                      <td className="px-4 py-3 align-top">
+                        {lead.vsl_seconds ? (
+                          <span
+                            className={`inline-flex px-2 py-0.5 text-xs font-mono rounded-full ${
+                              lead.vsl_seconds >= 600
+                                ? "bg-emerald-50 text-emerald-700"
+                                : lead.vsl_seconds >= 180
+                                  ? "bg-amber-50 text-amber-700"
+                                  : "bg-slate-100 text-slate-500"
+                            }`}
+                          >
+                            {formatWatch(lead.vsl_seconds)}
+                          </span>
+                        ) : (
+                          <span className="text-slate-300 text-xs">—</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 align-top">
+                        {lead.last_email ? (
+                          <div className="flex items-center gap-1.5">
+                            <span
+                              className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                              style={{ backgroundColor: lead.last_email.color || "#94A3B8" }}
+                            />
+                            <div>
+                              <p className="text-xs text-slate-700 font-medium truncate max-w-[140px]">
+                                {lead.last_email.campaign_name}
+                              </p>
+                              <p className="text-[10px] text-slate-400">
+                                {new Date(lead.last_email.sent_at).toLocaleDateString("fr-FR", {
+                                  day: "numeric",
+                                  month: "short",
+                                })}
+                              </p>
+                            </div>
+                          </div>
+                        ) : (
+                          <span className="text-slate-300 text-xs">aucun</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 hidden lg:table-cell align-top">
+                        {lead.utm_source ? (
+                          <span className="inline-flex px-2 py-0.5 text-xs font-medium rounded-full bg-blue-50 text-blue-600 border border-blue-100">
+                            {lead.utm_source}
+                          </span>
+                        ) : (
+                          <span className="text-slate-300">direct</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-slate-400 text-xs align-top">
+                        {new Date(lead.created_at).toLocaleDateString("fr-FR", {
+                          day: "numeric",
+                          month: "short",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </td>
+                      <td className="px-3 py-3 align-top">
+                        <button
+                          onClick={() => lead.email && handleDelete(lead.email)}
+                          disabled={deleting === lead.email}
+                          className="text-slate-300 hover:text-red-500 transition-colors disabled:opacity-50"
+                          title="Supprimer ce lead"
+                        >
+                          {deleting === lead.email ? (
+                            <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" fill="none" strokeDasharray="30 70" />
+                            </svg>
+                          ) : (
+                            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2m2 0v14a2 2 0 01-2 2H8a2 2 0 01-2-2V6h12z" />
+                            </svg>
+                          )}
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

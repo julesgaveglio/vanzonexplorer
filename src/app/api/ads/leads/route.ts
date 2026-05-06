@@ -77,8 +77,8 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  // 4. Get last email sent per lead
-  let lastEmailMap = new Map<string, { campaign_name: string; sent_at: string }>();
+  // 4. Get ALL emails sent per lead + campaign colors
+  let emailHistoryMap = new Map<string, { campaign_name: string; sent_at: string; color: string | null }[]>();
   try {
     const { data: sends } = emails.length > 0
       ? await supabase
@@ -88,17 +88,23 @@ export async function GET(req: NextRequest) {
           .order("sent_at", { ascending: false })
       : { data: [] };
 
+    // Get campaign colors
+    const { data: campaigns } = await supabase
+      .from("email_campaigns")
+      .select("name, color");
+    const colorMap = new Map((campaigns ?? []).map((c) => [c.name, c.color]));
+
     for (const s of sends ?? []) {
-      if (!lastEmailMap.has(s.email)) {
-        lastEmailMap.set(s.email, {
-          campaign_name: s.campaign_name,
-          sent_at: s.sent_at,
-        });
-      }
+      const list = emailHistoryMap.get(s.email) ?? [];
+      list.push({
+        campaign_name: s.campaign_name,
+        sent_at: s.sent_at,
+        color: colorMap.get(s.campaign_name) ?? null,
+      });
+      emailHistoryMap.set(s.email, list);
     }
   } catch {
-    // Table might not exist yet
-    lastEmailMap = new Map();
+    emailHistoryMap = new Map();
   }
 
   // 5. Build enriched leads
@@ -117,7 +123,8 @@ export async function GET(req: NextRequest) {
       utm_content: row.utm_content,
       created_at: row.created_at,
       vsl_seconds: watchTimeMap.get(email) ?? null,
-      last_email: lastEmailMap.get(email) ?? null,
+      email_history: emailHistoryMap.get(email) ?? [],
+      last_email: (emailHistoryMap.get(email) ?? [])[0] ?? null,
     };
   });
 
