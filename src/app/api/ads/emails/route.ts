@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAdsAuth } from "@/lib/ads-auth";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
 
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   const check = await requireAdsAuth();
   if (check instanceof NextResponse) return check;
 
