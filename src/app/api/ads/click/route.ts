@@ -28,5 +28,5 @@ export async function GET(req: NextRequest) {
       .catch(() => {});
   }
 
-  return NextResponse.redirect(new URL(target));
+  return NextResponse.redirect(target, { status: 302 });
 }
