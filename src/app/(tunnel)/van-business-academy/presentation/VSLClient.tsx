@@ -14,7 +14,7 @@ interface VSLClientProps {
 }
 
 export default function VSLClient({ videoId, libraryId, vslVersionId }: VSLClientProps) {
-  const EMBED_URL = `https://player.mediadelivery.net/embed/${libraryId}/${videoId}?autoplay=false&loop=false&muted=false&preload=true&responsive=true&showHeatmap=false&seekBar=false`;
+  const EMBED_URL = `https://player.mediadelivery.net/embed/${libraryId}/${videoId}?autoplay=false&loop=false&muted=false&preload=true&responsive=true&showHeatmap=false`;
 
   const [firstname, setFirstname] = useState("");
   const [showCTA, setShowCTA] = useState(false);
@@ -163,6 +163,8 @@ export default function VSLClient({ videoId, libraryId, vslVersionId }: VSLClien
           allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;"
           allowFullScreen
         />
+        {/* Overlay blocks seek bar clicks (bottom 15% of player) without breaking postMessage tracking */}
+        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "15%", zIndex: 2 }} />
       </div>
 
       {/* CTA zone */}
