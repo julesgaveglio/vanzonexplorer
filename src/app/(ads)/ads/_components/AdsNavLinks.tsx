@@ -9,6 +9,7 @@ const LINKS = [
   { href: "/ads/leads", label: "Leads" },
   { href: "/ads/vsl", label: "VSL" },
   { href: "/ads/emails", label: "Email" },
+  { href: "/ads/calls", label: "Call" },
 ];
 
 export default function AdsNavLinks() {

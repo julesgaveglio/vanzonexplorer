@@ -1,19 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import { BarChart3, UserPlus, Users, Play, Mail } from "lucide-react";
+import { BarChart3, UserPlus, Users, Play, Mail, Phone } from "lucide-react";
 import AdsDashboardClient from "../../../../(ads)/ads/_components/AdsDashboardClient";
 import AdsOptinClient from "../../../../(ads)/ads/_components/AdsOptinClient";
 import AdsLeadsClient from "../../../../(ads)/ads/_components/AdsLeadsClient";
 import AdsVSLClient from "../../../../(ads)/ads/_components/AdsVSLClient";
 import AdsEmailClient from "../../../../(ads)/ads/_components/AdsEmailClient";
+import AdsCallsClient from "../../../../(ads)/ads/_components/AdsCallsClient";
 
 const TABS = [
   { key: "dashboard", label: "Dashboard", icon: BarChart3 },
   { key: "optin", label: "Opt-in", icon: UserPlus },
   { key: "leads", label: "Leads", icon: Users },
-  { key: "vsl", label: "VSL Analytics", icon: Play },
+  { key: "vsl", label: "VSL", icon: Play },
   { key: "email", label: "Email", icon: Mail },
+  { key: "call", label: "Call", icon: Phone },
 ] as const;
 
 type Tab = (typeof TABS)[number]["key"];
@@ -48,6 +50,7 @@ export default function FunnelTabsClient() {
       {tab === "leads" && <AdsLeadsClient />}
       {tab === "vsl" && <AdsVSLClient />}
       {tab === "email" && <AdsEmailClient />}
+      {tab === "call" && <AdsCallsClient />}
     </div>
   );
 }
