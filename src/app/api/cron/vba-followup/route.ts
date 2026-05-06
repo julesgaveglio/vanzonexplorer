@@ -55,7 +55,7 @@ export async function GET(req: Request) {
   // ── Get funnel events for filtering ──
   const { data: allEvents } = await supabase
     .from("funnel_events")
-    .select("email, event");
+    .select("email, event, metadata");
 
   const eventsByEmail = new Map<string, Set<string>>();
   for (const e of allEvents ?? []) {
