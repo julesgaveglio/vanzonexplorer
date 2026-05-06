@@ -14,7 +14,7 @@ interface VSLClientProps {
   vslVersionId: string;
 }
 
-export default function VSLClient({ videoId, libraryId, vslVersionId }: VSLClientProps) {
+export default function VSLClient({ videoId, vslVersionId }: VSLClientProps) {
   const HLS_URL = `https://vz-bac05373-d10.b-cdn.net/${videoId}/playlist.m3u8`;
   const POSTER_URL = `https://vz-bac05373-d10.b-cdn.net/${videoId}/thumbnail.jpg`;
 
@@ -28,7 +28,6 @@ export default function VSLClient({ videoId, libraryId, vslVersionId }: VSLClien
   const [firstname, setFirstname] = useState("");
   const [showCTA, setShowCTA] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [hasStarted, setHasStarted] = useState(false);
 
   // --- Get tracking opts ---
   const getTrackOpts = useCallback(
@@ -128,8 +127,7 @@ export default function VSLClient({ videoId, libraryId, vslVersionId }: VSLClien
 
     const onPlay = () => {
       setIsPlaying(true);
-      setHasStarted(true);
-    };
+};
     const onPause = () => setIsPlaying(false);
 
     video.addEventListener("timeupdate", onTimeUpdate);
