@@ -66,6 +66,14 @@ async function sendWelcomeEmail(firstname: string, email: string) {
     subject,
     html,
   });
+
+  // Track in email_sends
+  const supabase = createSupabaseAdmin();
+  void supabase.from("email_sends").insert({
+    email,
+    campaign_name: "E1 — Bienvenue (auto)",
+    subject,
+  });
 }
 
 async function notifyTelegram(firstname: string, email: string) {

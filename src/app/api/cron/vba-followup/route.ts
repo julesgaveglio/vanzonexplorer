@@ -82,6 +82,11 @@ export async function GET(req: Request) {
         subject,
         html,
       });
+      void supabase.from("email_sends").insert({
+        email: lead.email,
+        campaign_name: "E2 — Relance J+1 (auto)",
+        subject,
+      });
       results.e2_sent++;
     } catch (err) {
       console.error(`[vba-followup] E2 error for ${lead.email}:`, err);
@@ -101,6 +106,11 @@ export async function GET(req: Request) {
         to: lead.email,
         subject,
         html,
+      });
+      void supabase.from("email_sends").insert({
+        email: lead.email,
+        campaign_name: "E3 — Relance J+3 (auto)",
+        subject,
       });
       results.e3_sent++;
     } catch (err) {
@@ -139,6 +149,11 @@ export async function GET(req: Request) {
         to: email,
         subject,
         html,
+      });
+      void supabase.from("email_sends").insert({
+        email,
+        campaign_name: "E4 — Post-VSL Book (auto)",
+        subject,
       });
       results.e4_sent++;
     } catch (err) {
