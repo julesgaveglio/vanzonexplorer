@@ -1,0 +1,18 @@
+{
+  "name": "Vanzon Explorer",
+  "short_name": "Vanzon",
+  "description": "Tableau de bord Vanzon Explorer",
+  "start_url": "/vanzon-app",
+  "display": "standalone",
+  "background_color": "#F8FAFC",
+  "theme_color": "#0F172A",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://cdn.sanity.io/images/lewexa74/production/1f483103ef15ee3549eab14ba2801d11b32a9055-313x313.png",
+      "sizes": "313x313",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
