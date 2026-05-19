@@ -47,11 +47,8 @@ function buildMessage(name: string, scheduledAt: string): string {
   const { date, time } = formatCallDate(scheduledAt);
 
   return (
-    `Salut ${firstName} ! \u{1F44B}\n\n` +
-    `Merci d'avoir réservé ton appel avec Jules de Vanzon Explorer.\n\n` +
-    `Je te confirme notre créneau le ${date} à ${time} !\n\n` +
-    `Tu peux me joindre sur ce numéro si besoin avant l'appel.\n\n` +
-    `À très vite ! \u{1F690}`
+    `Salut ${firstName} ! C'est Jules de Vanzon, merci d'avoir réservé ton appel avec moi. ` +
+    `Je te confirme notre créneau le ${date} à ${time} ! À très vite !`
   );
 }
 
