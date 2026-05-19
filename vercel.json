@@ -10,7 +10,7 @@
     },
     {
       "path": "/api/cron/whatsapp-closing-calls",
-      "schedule": "*/5 * * * *"
+      "schedule": "0 7 * * *"
     }
   ]
 }

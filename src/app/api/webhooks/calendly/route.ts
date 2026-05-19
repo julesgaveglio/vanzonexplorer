@@ -83,6 +83,49 @@ function formatDateFR(dateStr: string): string {
   return `${date} à ${time}`;
 }
 
+// ── WhatsApp ──
+
+function formatPhoneForWhatsApp(phone: string): string {
+  let cleaned = phone.replace(/[\s\-\.]/g, "");
+  if (cleaned.startsWith("+")) cleaned = cleaned.slice(1);
+  if (cleaned.startsWith("0")) cleaned = "33" + cleaned.slice(1);
+  return cleaned;
+}
+
+async function sendWhatsApp(
+  name: string,
+  phone: string,
+  scheduledAt: string,
+  supabase: ReturnType<typeof createSupabaseAdmin>
+) {
+  const firstName = name.split(" ")[0];
+  const formatted = formatDateFR(scheduledAt);
+  const message = `Salut ${firstName} ! C'est Jules de Vanzon, merci d'avoir réservé ton appel avec moi. Je te confirme notre créneau le ${formatted} ! À très vite !`;
+  const recipient = formatPhoneForWhatsApp(phone);
+
+  try {
+    const res = await fetch("http://localhost:8080/api/send", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ recipient, message }),
+      signal: AbortSignal.timeout(5000),
+    });
+
+    if (res.ok) {
+      // Mark as sent in DB
+      await supabase
+        .from("closing_calls")
+        .update({ whatsapp_sent_at: new Date().toISOString(), whatsapp_message: message })
+        .eq("email", name) // Will be caught by cron if this fails
+        .eq("phone", phone);
+      console.log(`[calendly] WhatsApp sent to ${recipient}`);
+    }
+  } catch {
+    // Bridge unreachable — cron at 7am will retry
+    console.warn(`[calendly] WhatsApp bridge unreachable for ${recipient}`);
+  }
+}
+
 // ── Telegram ──
 
 async function notifyTelegram(data: {
@@ -196,6 +239,13 @@ export async function POST(req: NextRequest) {
       scheduledAt: payload.scheduled_event.start_time,
       notes,
     });
+
+    // Send WhatsApp confirmation immediately (fire-and-forget)
+    if (phone) {
+      sendWhatsApp(payload.name, phone, payload.scheduled_event.start_time, supabase).catch(
+        (err) => console.warn("[calendly] WhatsApp send failed:", err)
+      );
+    }
 
     return NextResponse.json({ ok: true, action: "created", email: payload.email });
   } catch (err) {
