@@ -37,9 +37,21 @@ function isGonePath(pathname: string): boolean {
   return GONE_PREFIXES.some((prefix) => pathname.startsWith(prefix));
 }
 
+// WordPress ghost URLs with query params (e.g. ?action=register) — 410 Gone
+function isWordPressGhost(pathname: string, searchParams: string): boolean {
+  if (pathname.startsWith("/blogs/") && searchParams.includes("action=register")) return true;
+  if (pathname.startsWith("/blogs/category/")) return true;
+  return false;
+}
+
 export default clerkMiddleware(async (auth, req) => {
   // Old WordPress URLs — 410 Gone (tell Google to stop crawling)
   if (isGonePath(req.nextUrl.pathname)) {
+    return new NextResponse("Gone", { status: 410 });
+  }
+
+  // WordPress ghost URLs with ?action=register or /blogs/category/ — 410 Gone
+  if (isWordPressGhost(req.nextUrl.pathname, req.nextUrl.search)) {
     return new NextResponse("Gone", { status: 410 });
   }
 
@@ -102,8 +114,8 @@ export default clerkMiddleware(async (auth, req) => {
 
 export const config = {
   matcher: [
-    // Skip Next.js internals and static files
-    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+    // Skip Next.js internals, static files, and SEO files (robots.txt, sitemap.xml)
+    "/((?!_next|robots\\.txt|sitemap\\.xml|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
     // Always run for API routes
     "/(api|trpc)(.*)",
   ],

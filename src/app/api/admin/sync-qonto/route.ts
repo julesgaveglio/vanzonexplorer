@@ -233,6 +233,7 @@ export async function GET(request: Request) {
 
 // ── POST: Qonto webhook (real-time) ─────────────────────────────────────────
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function POST(request: Request) {
   // Qonto sends webhook events as POST
   // We don't validate the specific event — just trigger a full sync

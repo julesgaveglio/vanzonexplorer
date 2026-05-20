@@ -8,9 +8,9 @@ import { groq } from "next-sanity";
 import { getBrands } from "@/lib/club/data";
 
 export const metadata: Metadata = {
-  title: "À propos — Vanzon Explorer | Écosystème Vanlife Pays Basque",
+  title: { absolute: "À propos — Vanzon Explorer | Écosystème Vanlife Pays Basque" },
   description:
-    "Vanzon Explorer : l'écosystème vanlife 360° qui rend la liberté accessible à tous. Location, achat, formation et Club au Pays Basque et partout en France. Fondé en 2024 par Jules Gaveglio.",
+    "Vanzon Explorer : écosystème vanlife 360°. Location, achat et formation van au Pays Basque. Fondé par Jules Gaveglio.",
   alternates: {
     canonical: "https://vanzonexplorer.com/a-propos",
   },

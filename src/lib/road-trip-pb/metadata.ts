@@ -45,7 +45,8 @@ export function buildDurationPageMetadata(duration: DurationSlug): Metadata {
       type: 'website',
       url: canonical,
     },
-    robots: { index: duration !== '1-jour', follow: true },
+    // Duration pages are filter UIs — only final pages (duration/groupType) carry unique content
+    robots: { index: false, follow: true },
   }
 }
 
@@ -66,6 +67,6 @@ export function buildFinalPageMetadata(
       type: 'article',
       url: canonical,
     },
-    robots: { index: duration !== '1-jour', follow: true },
+    robots: { index: true, follow: true },
   }
 }

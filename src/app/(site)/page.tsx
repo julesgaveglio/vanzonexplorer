@@ -8,9 +8,9 @@ import LiquidButton from "@/components/ui/LiquidButton";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: { absolute: "Vanzon Explorer — Location, Achat & Formation Van Aménagé | Pays Basque" },
+  title: { absolute: "Vanzon Explorer — Location & Achat Van Aménagé | Pays Basque" },
   description:
-    "Location de vans aménagés dès 65€/nuit, achat de fourgons aménagés et formation vanlife au Pays Basque. Biarritz, Bayonne, Hossegor — vivez le Pays Basque en liberté avec Vanzon Explorer.",
+    "Location de vans aménagés dès 65€/nuit et achat au Pays Basque. Biarritz, Bayonne, Hossegor — vivez la liberté avec Vanzon Explorer.",
   alternates: {
     canonical: "https://vanzonexplorer.com/",
   },
@@ -19,8 +19,8 @@ export const metadata: Metadata = {
     follow: true,
   },
   openGraph: {
-    title: "Vanzon Explorer — Location, Achat & Formation Van Aménagé | Pays Basque",
-    description: "Location de vans aménagés dès 65€/nuit, achat et formation vanlife au Pays Basque. Assurance incluse.",
+    title: "Vanzon Explorer — Location & Achat Van Aménagé | Pays Basque",
+    description: "Location de vans aménagés dès 65€/nuit et achat au Pays Basque. Vivez la liberté avec Vanzon Explorer.",
     url: "https://vanzonexplorer.com/",
     images: [
       {
@@ -101,13 +101,13 @@ export default async function HomePage() {
               <span className="text-white/90 text-sm font-medium">5/5 sur Google</span>
             </a>
 
-            <h1 className="text-4xl sm:text-4xl md:text-6xl lg:text-7xl font-black text-white leading-[1.08] mb-7">
+            <p className="text-4xl sm:text-4xl md:text-6xl lg:text-7xl font-black text-white leading-[1.08] mb-7" aria-hidden="true">
               Rendre accessible à tous le goût de la <span className="bg-gradient-to-r from-blue-400 to-sky-300 bg-clip-text text-transparent">liberté</span>
-            </h1>
-
-            <p className="text-lg sm:text-xl text-white/75 leading-relaxed mb-10 max-w-xl">
-              Louez un van aménagé partout en France. Dès 65€/nuit, assurance incluse.
             </p>
+
+            <h1 className="text-lg sm:text-xl text-white/75 leading-relaxed mb-10 max-w-xl">
+              Location de vans aménagés en France dès 65€/nuit. Assurance incluse, départ Pays Basque.
+            </h1>
 
             <div className="flex flex-col sm:flex-row sm:items-center gap-3">
               <div className="flex w-full sm:w-auto">

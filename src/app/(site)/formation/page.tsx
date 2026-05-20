@@ -9,9 +9,9 @@ import ComparisonSection from "@/components/formation/ComparisonSection";
 import LiquidButton from "@/components/ui/LiquidButton";
 
 export const metadata: Metadata = {
-  title: "Van Business Academy — Construis ta liberté van par van",
+  title: "Van Business Academy — Formation Business Van Aménagé",
   description:
-    "Apprends à réaménager ton van, le mettre en location, le revendre avec plus-value et recommencer. Accompagnement terrain créé par des loueurs en activité au Pays Basque.",
+    "Réaménage, loue, revends, recommence. Formation terrain par des loueurs en activité au Pays Basque. Lance ton business van dès maintenant.",
   alternates: {
     canonical: "https://vanzonexplorer.com/formation",
   },
@@ -51,6 +51,7 @@ const courseJsonLd = {
     inLanguage: "fr-FR",
     offers: {
       "@type": "Offer",
+      price: "997",
       priceCurrency: "EUR",
       availability: "https://schema.org/InStock",
       seller: { "@type": "Organization", name: "Vanzon Explorer" },
@@ -101,8 +102,8 @@ export default async function FormationPage() {
             🎓 Van Business Academy
           </span>
 
-          {/* H1 */}
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-slate-900 leading-[1.08] tracking-tight">
+          {/* Slogan visuel */}
+          <p className="text-4xl sm:text-5xl md:text-6xl font-black text-slate-900 leading-[1.08] tracking-tight" aria-hidden="true">
             Réaménage. Loue. Revends. Recommence.
             <br />
             <span
@@ -114,14 +115,13 @@ export default async function FormationPage() {
             >
               Construis ta liberté van par van.
             </span>
-          </h1>
-
-          {/* Sous-titre */}
-          <p className="text-lg sm:text-xl text-slate-500 mt-6 max-w-2xl mx-auto leading-relaxed">
-            Un accompagnement terrain pour apprendre à réaménager ton van, le
-            mettre en location, le revendre avec plus-value, et recommencer.
-            Créé par des loueurs en activité au Pays Basque.
           </p>
+
+          {/* H1 SEO */}
+          <h1 className="text-lg sm:text-xl text-slate-500 mt-6 max-w-2xl mx-auto leading-relaxed">
+            Formation aménagement van : apprenez à réaménager, louer et revendre un van avec plus-value.
+            Accompagnement terrain par des loueurs en activité au Pays Basque.
+          </h1>
 
           {/* CTA visible sans scroll */}
           <div className="mt-8">
