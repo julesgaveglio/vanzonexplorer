@@ -593,7 +593,7 @@ export default function AdminSidebar({
                   }`}
                 >
                   {group.items.map((item) => {
-                    const active = isActive(item.href, item.exact);
+                    const active = isActive(item.href, (item as { exact?: boolean }).exact);
                     return (
                       <li key={item.href}>
                         <Link
