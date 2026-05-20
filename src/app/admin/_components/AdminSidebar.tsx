@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -12,16 +13,6 @@ const navGroups = [
   {
     label: null,
     items: [
-      {
-        label: "Dashboard",
-        href: "/admin",
-        exact: true,
-        icon: (
-          <svg className="w-[18px] h-[18px] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-          </svg>
-        ),
-      },
       {
         label: "Médiathèque",
         href: "/admin/media",
@@ -454,6 +445,27 @@ export default function AdminSidebar({
     return pathname === href || pathname.startsWith(href + "/");
   }
 
+  // Find which group contains the active item (for default open state on mobile)
+  const activeGroupIndex = useMemo(() => {
+    return navGroups.findIndex((group) =>
+      group.items.some((item) => isActive(item.href, item.exact))
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
+
+  const [openGroups, setOpenGroups] = useState<Set<number>>(
+    new Set(activeGroupIndex >= 0 ? [activeGroupIndex] : [])
+  );
+
+  function toggleGroup(index: number) {
+    setOpenGroups((prev) => {
+      const next = new Set(prev);
+      if (next.has(index)) next.delete(index);
+      else next.add(index);
+      return next;
+    });
+  }
+
   const w = collapsed ? "w-[60px]" : "w-[260px]";
 
   return (
@@ -537,51 +549,82 @@ export default function AdminSidebar({
 
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto overflow-x-hidden py-3 px-2">
-          {navGroups.map((group, gi) => (
-            <div key={gi} className={gi > 0 ? "mt-4" : ""}>
-              {/* Label de groupe — masqué en mode réduit */}
-              {group.label && !collapsed && (
-                <p className="px-3 mb-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-400 truncate">
-                  {group.label}
-                </p>
-              )}
-              {/* Séparateur en mode réduit */}
-              {group.label && collapsed && gi > 0 && (
-                <div className="mx-2 mb-2 border-t border-slate-100" />
-              )}
-              <ul className="space-y-0.5">
-                {group.items.map((item) => {
-                  const active = isActive(item.href, item.exact);
-                  return (
-                    <li key={item.href}>
-                      <Link
-                        href={item.href}
-                        onClick={onClose}
-                        title={collapsed ? item.label : undefined}
-                        className={`
-                          relative flex items-center rounded-lg text-sm font-medium
-                          transition-all duration-150
-                          ${collapsed ? "justify-center px-0 py-2.5 min-h-[44px] min-w-[44px]" : "gap-2.5 px-3 py-2 min-h-[44px]"}
-                          ${active
-                            ? "bg-blue-50 text-blue-700"
-                            : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
-                          }
-                        `}
+          {navGroups.map((group, gi) => {
+            const isGroupOpen = openGroups.has(gi);
+            const hasLabel = !!group.label;
+
+            return (
+              <div key={gi} className={gi > 0 ? "mt-4" : ""}>
+                {/* Label de groupe — masqué en mode réduit */}
+                {hasLabel && !collapsed && (
+                  <>
+                    {/* Desktop: static label */}
+                    <p className="hidden lg:block px-3 mb-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-400 truncate">
+                      {group.label}
+                    </p>
+                    {/* Mobile: clickable toggle */}
+                    <button
+                      onClick={() => toggleGroup(gi)}
+                      className="lg:hidden flex items-center justify-between w-full px-3 mb-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-400"
+                    >
+                      <span className="truncate">{group.label}</span>
+                      <svg
+                        className={`w-3 h-3 flex-shrink-0 transition-transform duration-200 ${isGroupOpen ? "rotate-180" : ""}`}
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
                       >
-                        {active && !collapsed && (
-                          <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-r-full bg-blue-500" />
-                        )}
-                        <span className={active ? "text-blue-600" : "text-slate-400"}>
-                          {item.icon}
-                        </span>
-                        {!collapsed && <span className="truncate">{item.label}</span>}
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          ))}
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                  </>
+                )}
+                {/* Séparateur en mode réduit */}
+                {hasLabel && collapsed && gi > 0 && (
+                  <div className="mx-2 mb-2 border-t border-slate-100" />
+                )}
+                {/* Items — on mobile, collapsible for labeled groups */}
+                <ul
+                  className={`space-y-0.5 overflow-hidden transition-[max-height] duration-300 ease-in-out ${
+                    hasLabel && !isGroupOpen
+                      ? "max-h-0 lg:max-h-[2000px]"
+                      : "max-h-[2000px]"
+                  }`}
+                >
+                  {group.items.map((item) => {
+                    const active = isActive(item.href, item.exact);
+                    return (
+                      <li key={item.href}>
+                        <Link
+                          href={item.href}
+                          onClick={onClose}
+                          title={collapsed ? item.label : undefined}
+                          className={`
+                            relative flex items-center rounded-lg text-sm font-medium
+                            transition-all duration-150
+                            ${collapsed ? "justify-center px-0 py-2.5 min-h-[44px] min-w-[44px]" : "gap-2.5 px-3 py-2 min-h-[44px]"}
+                            ${active
+                              ? "bg-blue-50 text-blue-700"
+                              : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                            }
+                          `}
+                        >
+                          {active && !collapsed && (
+                            <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-r-full bg-blue-500" />
+                          )}
+                          <span className={active ? "text-blue-600" : "text-slate-400"}>
+                            {item.icon}
+                          </span>
+                          {!collapsed && <span className="truncate">{item.label}</span>}
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            );
+          })}
 
           {/* Liens utilitaires (Voir le site / Studio) */}
           <div className={`mt-4 pt-4 border-t border-slate-100`}>

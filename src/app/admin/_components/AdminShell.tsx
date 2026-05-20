@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { UserButton } from "@clerk/nextjs";
 import AdminSidebar from "./AdminSidebar";
+import AdminBottomNav from "./AdminBottomNav";
 
 export default function AdminShell({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -67,8 +68,11 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
         </header>
 
         {/* Contenu */}
-        <main className="flex-1">{children}</main>
+        <main className="flex-1 pb-[72px] lg:pb-0">{children}</main>
       </div>
+
+      {/* Bottom nav mobile */}
+      <AdminBottomNav onMenuOpen={() => setSidebarOpen(true)} />
     </div>
   );
 }
