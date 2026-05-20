@@ -448,7 +448,7 @@ export default function AdminSidebar({
   // Find which group contains the active item (for default open state on mobile)
   const activeGroupIndex = useMemo(() => {
     return navGroups.findIndex((group) =>
-      group.items.some((item) => isActive(item.href, item.exact))
+      group.items.some((item) => isActive(item.href, (item as { exact?: boolean }).exact))
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
