@@ -49,7 +49,7 @@ export default function AdminBottomNav({ onMenuOpen }: AdminBottomNavProps) {
     <nav className="fixed bottom-0 left-0 right-0 z-30 lg:hidden bg-white/90 backdrop-blur-md border-t border-slate-200 pb-[env(safe-area-inset-bottom)]">
       <div className="flex items-center justify-around h-[60px]">
         {navItems.map((item) => {
-          const active = isActive(item.href, item.exact);
+          const active = isActive(item.href);
           return (
             <Link
               key={item.href}
