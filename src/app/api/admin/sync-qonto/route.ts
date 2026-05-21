@@ -9,8 +9,8 @@ const QONTO_BANK_ACCOUNT = "vanzone-explorer-5424-bank-account-1";
 
 const AIRTABLE_TOKEN = process.env.AIRTABLE_API_KEY!;
 const AIRTABLE_BASE = "app2FIBm3EPBmi9bL";
-const AIRTABLE_FINANCES = "tblHD44V5TfUnEerY";
-const AIRTABLE_TRANSACTIONS = "tblD59sKLpf4h4eDs";
+const AIRTABLE_FINANCES = "tblHD44V5TfUnEerY";   // Table "Finances"
+const AIRTABLE_DEPENSES = "tbliPuzbXN0s9QCX2";   // Table "Dépenses 💳"
 
 const GROQ_KEYS = [
   process.env.GROQ_API_KEY!,
@@ -72,15 +72,17 @@ async function airtableFetch(path: string, options?: RequestInit) {
 }
 
 async function getExistingAirtableIds(): Promise<Set<string>> {
+  // Extract Qonto IDs from the Notes field of Finances table (format: "...Qonto ID: xxx...")
   const ids = new Set<string>();
   let offset: string | undefined;
   do {
-    const params = new URLSearchParams({ pageSize: "100", "fields[]": "Qonto ID" });
+    const params = new URLSearchParams({ pageSize: "100", "fields[]": "Notes" });
     if (offset) params.set("offset", offset);
-    const data = await airtableFetch(`${AIRTABLE_BASE}/${AIRTABLE_TRANSACTIONS}?${params}`);
+    const data = await airtableFetch(`${AIRTABLE_BASE}/${AIRTABLE_FINANCES}?${params}`);
     for (const r of data.records) {
-      const qid = r.fields["Qonto ID"];
-      if (qid) ids.add(qid);
+      const notes = (r.fields["Notes"] as string) || "";
+      const match = notes.match(/Qonto ID\s*:\s*(\S+)/);
+      if (match) ids.add(match[1]);
     }
     offset = data.offset;
   } while (offset);
@@ -221,10 +223,6 @@ const OP_MAP: Record<string, string> = {
   qonto_fee: "Qonto", income: "Virement",
 };
 
-const STATUS_MAP: Record<string, string> = {
-  completed: "Complété", pending: "En cours", declined: "Annulé", reversed: "Annulé",
-};
-
 const FREQ_LABELS: Record<string, string> = {
   subscription: "Abonnement",
   recurring_expense: "Dépense récurrente",
@@ -319,49 +317,39 @@ async function syncQonto() {
     console.log(`[sync-qonto] ${t.clean_counterparty_name || t.label} → ${cls.category} (${cls.entity}, ${cls.frequency_type}, conf: ${cls.confidence})`);
   }
 
-  // 5. Write to Airtable
+  // 5. Write to Airtable (2 tables: Finances + Dépenses)
   let airtableCount = 0;
   if (newForAirtable.length > 0) {
     try {
-      // Transactions table (detailed)
-      const txRecords = newForAirtable.map((t) => {
+      // Dépenses 💳 table (detailed, matches existing fields)
+      const depRecords = newForAirtable.map((t) => {
         const cls = classifications.get(t.id)!;
+        const isCredit = t.side === "credit";
         return {
           fields: {
-            Fournisseur: t.clean_counterparty_name || t.label,
-            "Libellé": t.label,
+            Produit: t.clean_counterparty_name || t.label,
+            Description: `${t.label}\nQonto ID : ${t.id}\n${FREQ_LABELS[cls.frequency_type] || cls.frequency_type} | ${cls.entity} | Conf: ${cls.confidence}`,
+            "H.T": Math.round((t.amount - (t.vat_amount || 0)) * 100) / 100,
+            "T.V.A": t.vat_amount || 0,
+            "T.T.C": t.amount,
+            "Grosse Catégorie": cls.category,
             Date: t.settled_at?.slice(0, 10) || null,
-            "Montant TTC": t.amount,
-            "Montant HT": Math.round((t.amount - (t.vat_amount || 0)) * 100) / 100,
-            TVA: t.vat_amount || 0,
-            "Taux TVA": t.vat_rate ? t.vat_rate / 100 : 0,
-            Type: t.side === "credit" ? "Revenu" : "Dépense",
-            "Moyen de paiement": OP_MAP[t.operation_type] || "Autre",
-            "Catégorie Qonto": t.cashflow_category?.name || "",
-            "Sous-catégorie": t.cashflow_subcategory?.name || "",
-            Carte: t.card_last_digits ? `*${t.card_last_digits}` : "",
-            Statut: STATUS_MAP[t.status] || "Complété",
-            "Solde après": t.settled_balance || 0,
-            "Qonto ID": t.id,
-            Notes: buildNotes(t),
-            // New AI fields
-            "Frequency Type": FREQ_LABELS[cls.frequency_type] || cls.frequency_type,
-            Entity: cls.entity,
-            "AI Category": cls.category,
-            "AI Confidence": cls.confidence,
+            "Fréquence": FREQ_LABELS[cls.frequency_type] || cls.frequency_type,
+            Van: cls.entity === "yoni" ? "Yoni" : cls.entity === "xalbat" ? "Xalbat" : undefined,
+            "Payé par :": isCredit ? undefined : (t.operation_type === "card" ? "Carte Qonto" : "Virement"),
           },
         };
       });
 
-      for (let i = 0; i < txRecords.length; i += 10) {
-        const batch = txRecords.slice(i, i + 10);
-        await airtableFetch(`${AIRTABLE_BASE}/${AIRTABLE_TRANSACTIONS}`, {
+      for (let i = 0; i < depRecords.length; i += 10) {
+        const batch = depRecords.slice(i, i + 10);
+        await airtableFetch(`${AIRTABLE_BASE}/${AIRTABLE_DEPENSES}`, {
           method: "POST",
           body: JSON.stringify({ records: batch }),
         });
       }
 
-      // Finances table (simplified)
+      // Finances table (simplified view)
       const finRecords = newForAirtable.map((t) => {
         const cls = classifications.get(t.id)!;
         const isCredit = t.side === "credit";
@@ -374,10 +362,8 @@ async function syncQonto() {
             "Sous-catégorie": t.cashflow_subcategory?.name || "",
             Type: isCredit ? "Entrée" : "Sortie",
             "Moyen de paiement": OP_MAP[t.operation_type] || "Autre",
-            Notes: `${FREQ_LABELS[cls.frequency_type]} | ${cls.entity} | Conf: ${cls.confidence} | TVA: ${(t.vat_amount || 0).toFixed(2)}€`,
-            // New AI fields
-            "Frequency Type": FREQ_LABELS[cls.frequency_type] || cls.frequency_type,
-            Entity: cls.entity,
+            Van: cls.entity === "yoni" ? "Yoni" : cls.entity === "xalbat" ? "Xalbat" : undefined,
+            Notes: `${FREQ_LABELS[cls.frequency_type]} | ${cls.entity} | Conf: ${cls.confidence} | TVA: ${(t.vat_amount || 0).toFixed(2)}€\nQonto ID : ${t.id}`,
           },
         };
       });
