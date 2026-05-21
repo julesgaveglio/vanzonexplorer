@@ -1,4 +1,7 @@
 import { NextResponse } from "next/server";
+import { createSupabaseAdmin } from "@/lib/supabase/server";
+
+// ── Config ──────────────────────────────────────────────────────────────────
 
 const QONTO_SLUG = "vanzone-explorer-5424";
 const QONTO_SECRET = process.env.QONTO_API_SECRET!;
@@ -9,7 +12,41 @@ const AIRTABLE_BASE = "app2FIBm3EPBmi9bL";
 const AIRTABLE_FINANCES = "tblHD44V5TfUnEerY";
 const AIRTABLE_TRANSACTIONS = "tblD59sKLpf4h4eDs";
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
+const GROQ_KEYS = [
+  process.env.GROQ_API_KEY!,
+  process.env.GROQ_API_KEY_2!,
+  process.env.GROQ_API_KEY_3!,
+].filter(Boolean);
+
+// ── Types ───────────────────────────────────────────────────────────────────
+
+interface QontoTransaction {
+  id: string;
+  amount: number;
+  side: "credit" | "debit";
+  operation_type: string;
+  label: string;
+  clean_counterparty_name?: string;
+  settled_at?: string;
+  emitted_at?: string;
+  status: string;
+  category?: string;
+  card_last_digits?: string;
+  vat_amount?: number;
+  vat_rate?: number;
+  settled_balance?: number;
+  cashflow_category?: { name: string };
+  cashflow_subcategory?: { name: string };
+}
+
+interface GroqClassification {
+  category: string;
+  entity: "vanzon" | "yoni" | "xalbat" | "vba" | "perso";
+  frequency_type: "subscription" | "recurring_expense" | "one_time_expense" | "recurring_income" | "one_time_income";
+  confidence: number;
+}
+
+// ── Qonto API ───────────────────────────────────────────────────────────────
 
 async function qontoFetch(path: string) {
   const res = await fetch(`https://thirdparty.qonto.com/v2${path}`, {
@@ -19,10 +56,9 @@ async function qontoFetch(path: string) {
   return res.json();
 }
 
-async function airtableFetch(
-  path: string,
-  options?: RequestInit
-) {
+// ── Airtable API ────────────────────────────────────────────────────────────
+
+async function airtableFetch(path: string, options?: RequestInit) {
   const res = await fetch(`https://api.airtable.com/v0/${path}`, {
     ...options,
     headers: {
@@ -35,181 +71,386 @@ async function airtableFetch(
   return res.json();
 }
 
-// Get existing Qonto IDs in Airtable to avoid duplicates
-async function getExistingQontoIds(): Promise<Set<string>> {
+async function getExistingAirtableIds(): Promise<Set<string>> {
   const ids = new Set<string>();
   let offset: string | undefined;
-
   do {
     const params = new URLSearchParams({ pageSize: "100", "fields[]": "Qonto ID" });
     if (offset) params.set("offset", offset);
-
-    const data = await airtableFetch(
-      `${AIRTABLE_BASE}/${AIRTABLE_TRANSACTIONS}?${params}`
-    );
+    const data = await airtableFetch(`${AIRTABLE_BASE}/${AIRTABLE_TRANSACTIONS}?${params}`);
     for (const r of data.records) {
       const qid = r.fields["Qonto ID"];
       if (qid) ids.add(qid);
     }
     offset = data.offset;
   } while (offset);
-
   return ids;
 }
 
-function mapCategory(t: Record<string, unknown>): string {
-  const cat = t.category as string || "";
-  const name = ((t.clean_counterparty_name as string) || (t.label as string) || "").toLowerCase();
-  if (cat === "marketing" || name.includes("facebk") || name.includes("meta")) return "Marketing";
-  if (name.includes("wikicampers") || name.includes("yescapa")) return "Location van";
-  if (cat === "fees" || (t.operation_type as string) === "qonto_fee" || name.includes("gocardless")) return "Frais bancaires";
-  if (name.includes("notaire")) return "Juridique";
-  if (name.includes("jules") || name.includes("gaveglio")) return "Apport";
-  return "Frais bancaires";
+// ── Supabase dedup ──────────────────────────────────────────────────────────
+
+async function getExistingSupabaseIds(): Promise<Set<string>> {
+  const sb = createSupabaseAdmin();
+  const { data } = await sb
+    .from("finance_transactions")
+    .select("qonto_id")
+    .not("qonto_id", "is", null);
+  return new Set((data ?? []).map((r) => r.qonto_id));
 }
 
+// ── Groq AI Classification ─────────────────────────────────────────────────
+
+const GROQ_PROMPT = `Tu es un assistant comptable pour Vanzon Explorer (location/achat/formation van amenage au Pays Basque).
+
+Analyse cette transaction bancaire et retourne UNIQUEMENT un JSON valide, sans texte avant ni apres.
+
+Categories depenses : Marketing, Meta Ads, Outils & SaaS, Amenagement Van, Electricite Van, Isolation Van, Accessoires Van, Entretien Van, Assurance, Carburant, Domaine & Hebergement, Agents IA, Juridique, Divers
+Categories revenus : Location Van, Vente VBA, Consulting IA, Affiliation, Autre Revenu
+
+Entites : vanzon (activite generale), yoni (van Yoni), xalbat (van Xalbat), vba (formation), perso (personnel Jules)
+
+Regles :
+- Meta/Facebook/facebk = "Meta Ads" + entity "vba"
+- Yescapa = "Location Van" + entity par defaut "vanzon"
+- Wikicampers = "Location Van" + entity par defaut "vanzon"
+- Vercel/Clerk/Supabase/Sanity/Resend = "Outils & SaaS" + entity "vanzon"
+- Groq/OpenAI/Anthropic = "Agents IA" + entity "vanzon"
+- Jules Gaveglio/apport = si credit "Autre Revenu", si debit "Divers" + entity "perso"
+- Notaire/avocat = "Juridique" + entity "vanzon"
+- GoCardless/frais bancaires = "Divers" + entity "vanzon"
+- Assurance = "Assurance" + entity selon van si identifiable
+
+frequency_type :
+- subscription = paiement recurrent pour un service (SaaS, pub, abo)
+- recurring_expense = depense recurrente mais pas un abo (comptable, entretien)
+- one_time_expense = achat ponctuel
+- recurring_income = revenu qui revient regulierement (loyers plateforme)
+- one_time_income = revenu ponctuel (vente, consulting one-shot)
+
+Retourne UNIQUEMENT :
+{"category":"...","entity":"...","frequency_type":"...","confidence":0.0}`;
+
+async function classifyWithGroq(t: QontoTransaction): Promise<GroqClassification> {
+  const userMsg = `Counterparty: ${t.clean_counterparty_name || "N/A"}
+Amount: ${t.amount} EUR
+Side: ${t.side}
+Label: ${t.label || "N/A"}
+Qonto category: ${t.cashflow_category?.name || t.category || "N/A"}
+Qonto subcategory: ${t.cashflow_subcategory?.name || "N/A"}
+Operation type: ${t.operation_type}`;
+
+  for (const key of GROQ_KEYS) {
+    try {
+      const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${key}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "llama-3.3-70b-versatile",
+          messages: [
+            { role: "system", content: GROQ_PROMPT },
+            { role: "user", content: userMsg },
+          ],
+          temperature: 0.1,
+          max_tokens: 150,
+          response_format: { type: "json_object" },
+        }),
+      });
+
+      if (!res.ok) {
+        console.warn(`[sync-qonto] Groq key failed (${res.status}), trying next...`);
+        continue;
+      }
+
+      const data = await res.json();
+      const content = data.choices?.[0]?.message?.content;
+      if (!content) continue;
+
+      const parsed = JSON.parse(content) as GroqClassification;
+      // Validate fields
+      if (parsed.category && parsed.entity && parsed.frequency_type) {
+        return parsed;
+      }
+    } catch (err) {
+      console.warn(`[sync-qonto] Groq error:`, err);
+      continue;
+    }
+  }
+
+  // Fallback: keyword-based classification
+  return fallbackClassify(t);
+}
+
+// ── Fallback keyword classification ─────────────────────────────────────────
+
+function fallbackClassify(t: QontoTransaction): GroqClassification {
+  const name = (t.clean_counterparty_name || t.label || "").toLowerCase();
+  const isCredit = t.side === "credit";
+
+  let category = "Divers";
+  let entity: GroqClassification["entity"] = "vanzon";
+  let frequency_type: GroqClassification["frequency_type"] = isCredit ? "one_time_income" : "one_time_expense";
+
+  if (name.includes("facebk") || name.includes("meta")) {
+    category = "Meta Ads"; entity = "vba"; frequency_type = "subscription";
+  } else if (name.includes("yescapa") || name.includes("wikicampers")) {
+    category = "Location Van"; frequency_type = "recurring_income";
+  } else if (name.includes("vercel") || name.includes("clerk") || name.includes("supabase") || name.includes("sanity") || name.includes("resend")) {
+    category = "Outils & SaaS"; frequency_type = "subscription";
+  } else if (name.includes("groq") || name.includes("openai") || name.includes("anthropic")) {
+    category = "Agents IA"; frequency_type = "subscription";
+  } else if (name.includes("notaire") || name.includes("avocat")) {
+    category = "Juridique"; frequency_type = "one_time_expense";
+  } else if (name.includes("jules") || name.includes("gaveglio")) {
+    category = isCredit ? "Autre Revenu" : "Divers"; entity = "perso";
+  } else if (name.includes("assurance") || name.includes("maif") || name.includes("allianz")) {
+    category = "Assurance"; frequency_type = "recurring_expense";
+  } else if (t.operation_type === "qonto_fee" || name.includes("gocardless")) {
+    category = "Divers"; frequency_type = "recurring_expense";
+  }
+
+  return { category, entity, frequency_type, confidence: 0.5 };
+}
+
+// ── Mapping helpers ─────────────────────────────────────────────────────────
+
 const OP_MAP: Record<string, string> = {
-  card: "Carte",
-  transfer: "Virement",
-  direct_debit: "Prélèvement",
-  qonto_fee: "Qonto",
-  income: "Virement",
+  card: "Carte", transfer: "Virement", direct_debit: "Prélèvement",
+  qonto_fee: "Qonto", income: "Virement",
 };
 
 const STATUS_MAP: Record<string, string> = {
-  completed: "Complété",
-  pending: "En cours",
-  declined: "Annulé",
-  reversed: "Annulé",
+  completed: "Complété", pending: "En cours", declined: "Annulé", reversed: "Annulé",
 };
 
-function buildNotes(t: Record<string, unknown>): string {
-  const name = (t.clean_counterparty_name as string) || "N/A";
-  const cat = ((t.cashflow_category as Record<string, string>)?.name) || "";
-  const subcat = ((t.cashflow_subcategory as Record<string, string>)?.name) || "";
-  const vatAmount = (t.vat_amount as number) || 0;
-  const vatRate = (t.vat_rate as number) || 0;
-  const amount = t.amount as number;
+const FREQ_LABELS: Record<string, string> = {
+  subscription: "Abonnement",
+  recurring_expense: "Dépense récurrente",
+  one_time_expense: "One-shot",
+  recurring_income: "Revenu récurrent",
+  one_time_income: "Revenu ponctuel",
+};
 
+function buildNotes(t: QontoTransaction): string {
   const lines = [
     `Libellé : ${t.label}`,
-    `Fournisseur : ${name}`,
-    `Montant : ${amount.toFixed(2)} €`,
-    `HT : ${(amount - vatAmount).toFixed(2)} €`,
-    `TVA : ${vatAmount.toFixed(2)} € (${vatRate.toFixed(0)}%)`,
-    `Date émission : ${(t.emitted_at as string || "N/A").slice(0, 19).replace("T", " ")}`,
-    `Date règlement : ${(t.settled_at as string || "N/A").slice(0, 19).replace("T", " ")}`,
+    `Fournisseur : ${t.clean_counterparty_name || "N/A"}`,
+    `Montant : ${t.amount.toFixed(2)} €`,
+    `HT : ${(t.amount - (t.vat_amount || 0)).toFixed(2)} €`,
+    `TVA : ${(t.vat_amount || 0).toFixed(2)} € (${(t.vat_rate || 0).toFixed(0)}%)`,
+    `Date émission : ${(t.emitted_at || "N/A").slice(0, 19).replace("T", " ")}`,
+    `Date règlement : ${(t.settled_at || "N/A").slice(0, 19).replace("T", " ")}`,
     `Type : ${t.side} (${t.operation_type})`,
   ];
   if (t.card_last_digits) lines.push(`Carte : *${t.card_last_digits}`);
   lines.push(`Statut : ${t.status}`);
-  lines.push(`Catégorie : ${cat}`);
-  if (subcat) lines.push(`Sous-catégorie : ${subcat}`);
-  lines.push(`Solde après : ${((t.settled_balance as number) || 0).toFixed(2)} €`);
+  lines.push(`Catégorie Qonto : ${t.cashflow_category?.name || ""}`);
+  if (t.cashflow_subcategory?.name) lines.push(`Sous-catégorie : ${t.cashflow_subcategory.name}`);
+  lines.push(`Solde après : ${(t.settled_balance || 0).toFixed(2)} €`);
   lines.push(`Qonto ID : ${t.id}`);
-
   return lines.join("\n");
 }
 
-// ── Main sync ────────────────────────────────────────────────────────────────
+// ── Resolve Supabase category_id from name ──────────────────────────────────
 
-async function syncQontoToAirtable() {
-  // 1. Get all Qonto transactions
+let categoryCache: Map<string, { id: string; type: string }> | null = null;
+
+async function getCategoryId(categoryName: string, type: "expense" | "income"): Promise<string | null> {
+  if (!categoryCache) {
+    const sb = createSupabaseAdmin();
+    const { data } = await sb.from("finance_categories").select("id, name, type");
+    categoryCache = new Map();
+    for (const cat of data ?? []) {
+      categoryCache.set(`${cat.name}|${cat.type}`, { id: cat.id, type: cat.type });
+    }
+  }
+
+  // Try exact match with correct type first
+  const exact = categoryCache.get(`${categoryName}|${type}`);
+  if (exact) return exact.id;
+
+  // Try case-insensitive match
+  const entries = Array.from(categoryCache.entries());
+  for (const [key, val] of entries) {
+    if (key.toLowerCase().startsWith(categoryName.toLowerCase() + "|") && val.type === type) {
+      return val.id;
+    }
+  }
+
+  return null;
+}
+
+// ── Main sync ───────────────────────────────────────────────────────────────
+
+async function syncQonto() {
+  // 1. Fetch latest transactions from Qonto
   const qontoData = await qontoFetch(
     `/transactions?slug=${QONTO_BANK_ACCOUNT}&per_page=100&sort_by=settled_at:desc`
   );
-  const transactions = qontoData.transactions as Record<string, unknown>[];
+  const transactions = qontoData.transactions as QontoTransaction[];
 
-  // 2. Get existing IDs in Airtable
-  const existingIds = await getExistingQontoIds();
+  // 2. Get existing IDs from both targets
+  const [airtableIds, supabaseIds] = await Promise.all([
+    getExistingAirtableIds(),
+    getExistingSupabaseIds(),
+  ]);
 
-  // 3. Filter new transactions
-  const newTxs = transactions.filter((t) => !existingIds.has(t.id as string));
+  // 3. Filter truly new transactions (not in either target)
+  const newForAirtable = transactions.filter((t) => !airtableIds.has(t.id));
+  const newForSupabase = transactions.filter((t) => !supabaseIds.has(t.id));
+  const allNew = transactions.filter((t) => !airtableIds.has(t.id) || !supabaseIds.has(t.id));
 
-  if (newTxs.length === 0) {
-    return { synced: 0, message: "Aucune nouvelle transaction" };
+  if (allNew.length === 0) {
+    return { synced: 0, airtable: 0, supabase: 0, message: "Aucune nouvelle transaction" };
   }
 
-  // 4. Insert into Transactions Qonto table
-  const transactionRecords = newTxs.map((t) => {
-    const amount = t.amount as number;
-    const vatAmount = (t.vat_amount as number) || 0;
-    const vatRate = (t.vat_rate as number) || 0;
-    const subcat = ((t.cashflow_subcategory as Record<string, string>)?.name) || "";
+  // 4. Classify all new transactions with Groq AI
+  const uniqueIds = new Set(allNew.map((t) => t.id));
+  const toClassify = transactions.filter((t) => uniqueIds.has(t.id));
 
-    return {
-      fields: {
-        Fournisseur: (t.clean_counterparty_name as string) || (t.label as string),
-        "Libellé": t.label,
-        Date: (t.settled_at as string)?.slice(0, 10) || null,
-        "Montant TTC": amount,
-        "Montant HT": Math.round((amount - vatAmount) * 100) / 100,
-        TVA: vatAmount,
-        "Taux TVA": vatRate ? vatRate / 100 : 0,
-        Type: t.side === "credit" ? "Revenu" : "Dépense",
-        "Moyen de paiement": OP_MAP[(t.operation_type as string)] || "Autre",
-        "Catégorie Qonto": ((t.cashflow_category as Record<string, string>)?.name) || "",
-        "Sous-catégorie": subcat,
-        Carte: t.card_last_digits ? `*${t.card_last_digits}` : "",
-        Statut: STATUS_MAP[(t.status as string)] || "Complété",
-        "Solde après": (t.settled_balance as number) || 0,
-        "Qonto ID": t.id,
-        Notes: buildNotes(t),
-      },
-    };
-  });
+  console.log(`[sync-qonto] Classifying ${toClassify.length} transactions with Groq AI...`);
 
-  // 5. Insert into Finances table
-  const financeRecords = newTxs.map((t) => {
-    const amount = t.amount as number;
-    const isCredit = t.side === "credit";
-    const subcat = ((t.cashflow_subcategory as Record<string, string>)?.name) || "";
-
-    return {
-      fields: {
-        Date: (t.settled_at as string)?.slice(0, 10) || null,
-        Description: (t.clean_counterparty_name as string) || (t.label as string),
-        Montant: isCredit ? amount : -amount,
-        "Catégorie": mapCategory(t),
-        "Sous-catégorie": subcat,
-        Type: isCredit ? "Entrée" : "Sortie",
-        "Moyen de paiement": OP_MAP[(t.operation_type as string)] || "Autre",
-        Notes: `Libellé: ${t.label} | TVA: ${((t.vat_amount as number) || 0).toFixed(2)}€ | Solde: ${((t.settled_balance as number) || 0).toFixed(2)}€`,
-      },
-    };
-  });
-
-  // 6. Send to Airtable in batches of 10
-  let createdTransactions = 0;
-  let createdFinances = 0;
-
-  for (let i = 0; i < transactionRecords.length; i += 10) {
-    const batch = transactionRecords.slice(i, i + 10);
-    const result = await airtableFetch(`${AIRTABLE_BASE}/${AIRTABLE_TRANSACTIONS}`, {
-      method: "POST",
-      body: JSON.stringify({ records: batch }),
-    });
-    createdTransactions += result.records.length;
+  const classifications = new Map<string, GroqClassification>();
+  for (const t of toClassify) {
+    const cls = await classifyWithGroq(t);
+    classifications.set(t.id, cls);
+    console.log(`[sync-qonto] ${t.clean_counterparty_name || t.label} → ${cls.category} (${cls.entity}, ${cls.frequency_type}, conf: ${cls.confidence})`);
   }
 
-  for (let i = 0; i < financeRecords.length; i += 10) {
-    const batch = financeRecords.slice(i, i + 10);
-    const result = await airtableFetch(`${AIRTABLE_BASE}/${AIRTABLE_FINANCES}`, {
-      method: "POST",
-      body: JSON.stringify({ records: batch }),
-    });
-    createdFinances += result.records.length;
+  // 5. Write to Airtable
+  let airtableCount = 0;
+  if (newForAirtable.length > 0) {
+    try {
+      // Transactions table (detailed)
+      const txRecords = newForAirtable.map((t) => {
+        const cls = classifications.get(t.id)!;
+        return {
+          fields: {
+            Fournisseur: t.clean_counterparty_name || t.label,
+            "Libellé": t.label,
+            Date: t.settled_at?.slice(0, 10) || null,
+            "Montant TTC": t.amount,
+            "Montant HT": Math.round((t.amount - (t.vat_amount || 0)) * 100) / 100,
+            TVA: t.vat_amount || 0,
+            "Taux TVA": t.vat_rate ? t.vat_rate / 100 : 0,
+            Type: t.side === "credit" ? "Revenu" : "Dépense",
+            "Moyen de paiement": OP_MAP[t.operation_type] || "Autre",
+            "Catégorie Qonto": t.cashflow_category?.name || "",
+            "Sous-catégorie": t.cashflow_subcategory?.name || "",
+            Carte: t.card_last_digits ? `*${t.card_last_digits}` : "",
+            Statut: STATUS_MAP[t.status] || "Complété",
+            "Solde après": t.settled_balance || 0,
+            "Qonto ID": t.id,
+            Notes: buildNotes(t),
+            // New AI fields
+            "Frequency Type": FREQ_LABELS[cls.frequency_type] || cls.frequency_type,
+            Entity: cls.entity,
+            "AI Category": cls.category,
+            "AI Confidence": cls.confidence,
+          },
+        };
+      });
+
+      for (let i = 0; i < txRecords.length; i += 10) {
+        const batch = txRecords.slice(i, i + 10);
+        await airtableFetch(`${AIRTABLE_BASE}/${AIRTABLE_TRANSACTIONS}`, {
+          method: "POST",
+          body: JSON.stringify({ records: batch }),
+        });
+      }
+
+      // Finances table (simplified)
+      const finRecords = newForAirtable.map((t) => {
+        const cls = classifications.get(t.id)!;
+        const isCredit = t.side === "credit";
+        return {
+          fields: {
+            Date: t.settled_at?.slice(0, 10) || null,
+            Description: t.clean_counterparty_name || t.label,
+            Montant: isCredit ? t.amount : -t.amount,
+            "Catégorie": cls.category,
+            "Sous-catégorie": t.cashflow_subcategory?.name || "",
+            Type: isCredit ? "Entrée" : "Sortie",
+            "Moyen de paiement": OP_MAP[t.operation_type] || "Autre",
+            Notes: `${FREQ_LABELS[cls.frequency_type]} | ${cls.entity} | Conf: ${cls.confidence} | TVA: ${(t.vat_amount || 0).toFixed(2)}€`,
+            // New AI fields
+            "Frequency Type": FREQ_LABELS[cls.frequency_type] || cls.frequency_type,
+            Entity: cls.entity,
+          },
+        };
+      });
+
+      for (let i = 0; i < finRecords.length; i += 10) {
+        const batch = finRecords.slice(i, i + 10);
+        await airtableFetch(`${AIRTABLE_BASE}/${AIRTABLE_FINANCES}`, {
+          method: "POST",
+          body: JSON.stringify({ records: batch }),
+        });
+      }
+
+      airtableCount = newForAirtable.length;
+    } catch (err) {
+      console.error("[sync-qonto] Airtable write failed:", err);
+      // Continue — we still write to Supabase
+    }
   }
+
+  // 6. Write to Supabase
+  let supabaseCount = 0;
+  if (newForSupabase.length > 0) {
+    try {
+      const sb = createSupabaseAdmin();
+
+      for (const t of newForSupabase) {
+        const cls = classifications.get(t.id)!;
+        const isCredit = t.side === "credit";
+        const type = isCredit ? "income" : "expense";
+        const categoryId = await getCategoryId(cls.category, type);
+
+        const { error } = await sb.from("finance_transactions").insert({
+          date: t.settled_at?.slice(0, 10) || new Date().toISOString().split("T")[0],
+          description: t.clean_counterparty_name || t.label,
+          amount: Math.abs(t.amount),
+          type,
+          category_id: categoryId,
+          entity: cls.entity,
+          tags: [cls.frequency_type],
+          notes: buildNotes(t),
+          is_recurring: ["subscription", "recurring_expense", "recurring_income"].includes(cls.frequency_type),
+          recurring_frequency: ["subscription", "recurring_expense", "recurring_income"].includes(cls.frequency_type) ? "monthly" : null,
+          qonto_id: t.id,
+          frequency_type: cls.frequency_type,
+          counterparty: t.clean_counterparty_name || null,
+          payment_method: OP_MAP[t.operation_type] || t.operation_type,
+          vat_amount: t.vat_amount || 0,
+          settled_balance: t.settled_balance || null,
+        });
+
+        if (error) {
+          console.error(`[sync-qonto] Supabase insert failed for ${t.id}:`, error.message);
+        } else {
+          supabaseCount++;
+        }
+      }
+    } catch (err) {
+      console.error("[sync-qonto] Supabase write failed:", err);
+    }
+  }
+
+  const msg = `${allNew.length} transactions traitées (Airtable: ${airtableCount}, Supabase: ${supabaseCount})`;
+  console.log(`[sync-qonto] ${msg}`);
 
   return {
-    synced: newTxs.length,
-    transactions: createdTransactions,
-    finances: createdFinances,
-    message: `${newTxs.length} nouvelles transactions synchronisées`,
+    synced: allNew.length,
+    airtable: airtableCount,
+    supabase: supabaseCount,
+    message: msg,
   };
 }
 
-// ── GET: manual trigger from admin ───────────────────────────────────────────
+// ── GET: manual trigger from admin ──────────────────────────────────────────
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -220,33 +461,23 @@ export async function GET(request: Request) {
   }
 
   try {
-    const result = await syncQontoToAirtable();
+    const result = await syncQonto();
     return NextResponse.json(result);
   } catch (error) {
     console.error("[sync-qonto] Error:", error);
-    return NextResponse.json(
-      { error: (error as Error).message },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: (error as Error).message }, { status: 500 });
   }
 }
 
 // ── POST: Qonto webhook (real-time) ─────────────────────────────────────────
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export async function POST(request: Request) {
-  // Qonto sends webhook events as POST
-  // We don't validate the specific event — just trigger a full sync
-  // This is safer than parsing individual events (handles retries, ordering)
+export async function POST() {
   try {
-    const result = await syncQontoToAirtable();
-    console.log(`[sync-qonto] Webhook sync: ${result.message}`);
+    const result = await syncQonto();
+    console.log(`[sync-qonto] Webhook: ${result.message}`);
     return NextResponse.json(result);
   } catch (error) {
     console.error("[sync-qonto] Webhook error:", error);
-    return NextResponse.json(
-      { error: (error as Error).message },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: (error as Error).message }, { status: 500 });
   }
 }
