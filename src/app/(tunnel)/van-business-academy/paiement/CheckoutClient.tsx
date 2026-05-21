@@ -43,7 +43,10 @@ export default function CheckoutClient() {
   const promo = PROMO_PRICES[appliedCode];
   const totalAmount = promo ? promo.total : DEFAULT_TOTAL;
   const displayPrice = promo ? promo.label : DEFAULT_LABEL;
-  const installmentPrice = Math.ceil(totalAmount / 4 / 100);
+  const installmentRaw = totalAmount / 4 / 100; // ex: 249.25
+  const installmentPrice = Number.isInteger(installmentRaw)
+    ? String(installmentRaw)
+    : installmentRaw.toFixed(2).replace(".", ",");
 
   const handleApplyPromo = () => {
     const code = promoCode.toUpperCase().trim();
