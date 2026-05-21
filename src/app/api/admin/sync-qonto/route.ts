@@ -22,6 +22,7 @@ const GROQ_KEYS = [
 
 interface QontoTransaction {
   id: string;
+  transaction_id?: string;
   amount: number;
   side: "credit" | "debit";
   operation_type: string;
@@ -455,13 +456,113 @@ export async function GET(request: Request) {
   }
 }
 
-// ── POST: Qonto webhook (real-time) ─────────────────────────────────────────
+// ── POST: Qonto webhook (real-time) — only syncs the ONE new transaction ────
 
-export async function POST() {
+export async function POST(request: Request) {
   try {
-    const result = await syncQonto();
-    console.log(`[sync-qonto] Webhook: ${result.message}`);
-    return NextResponse.json(result);
+    // Qonto webhook payload contains the transaction_id
+    const body = await request.json().catch(() => ({}));
+    const transactionId = body?.object_id || body?.transaction_id;
+
+    if (!transactionId) {
+      // No specific transaction — do nothing (avoid full re-sync)
+      console.log("[sync-qonto] Webhook received but no transaction_id — ignoring");
+      return NextResponse.json({ message: "No transaction_id in payload" });
+    }
+
+    // Fetch this specific transaction from Qonto
+    const qontoData = await qontoFetch(
+      `/transactions?slug=${QONTO_BANK_ACCOUNT}&per_page=100&sort_by=settled_at:desc`
+    );
+    const allTxs = qontoData.transactions as QontoTransaction[];
+    const tx = allTxs.find((t) => t.id === transactionId || t.transaction_id === transactionId);
+
+    if (!tx) {
+      console.log(`[sync-qonto] Transaction ${transactionId} not found in Qonto`);
+      return NextResponse.json({ message: "Transaction not found" });
+    }
+
+    // Check if already exists in Supabase
+    const sb = createSupabaseAdmin();
+    const { data: existing } = await sb
+      .from("finance_transactions")
+      .select("id")
+      .eq("qonto_id", tx.id)
+      .maybeSingle();
+
+    if (existing) {
+      console.log(`[sync-qonto] Transaction ${tx.id} already in Supabase — skipping`);
+      return NextResponse.json({ message: "Already synced" });
+    }
+
+    // Classify with Groq
+    const cls = await classifyWithGroq(tx);
+    console.log(`[sync-qonto] Webhook: ${tx.clean_counterparty_name || tx.label} → ${cls.category} (${cls.entity}, ${cls.frequency_type})`);
+
+    // Write to Supabase
+    const isCredit = tx.side === "credit";
+    const type = isCredit ? "income" : "expense";
+    const categoryId = await getCategoryId(cls.category, type);
+
+    const { error: sbError } = await sb.from("finance_transactions").insert({
+      date: tx.settled_at?.slice(0, 10) || new Date().toISOString().split("T")[0],
+      description: tx.clean_counterparty_name || tx.label,
+      amount: Math.abs(tx.amount),
+      type,
+      category_id: categoryId,
+      entity: cls.entity,
+      tags: [cls.frequency_type],
+      notes: buildNotes(tx),
+      is_recurring: ["subscription", "recurring_expense", "recurring_income"].includes(cls.frequency_type),
+      recurring_frequency: ["subscription", "recurring_expense", "recurring_income"].includes(cls.frequency_type) ? "monthly" : null,
+      qonto_id: tx.id,
+      frequency_type: cls.frequency_type,
+      counterparty: tx.clean_counterparty_name || null,
+      payment_method: OP_MAP[tx.operation_type] || tx.operation_type,
+      vat_amount: tx.vat_amount || 0,
+      settled_balance: tx.settled_balance || null,
+    });
+
+    if (sbError) console.error(`[sync-qonto] Supabase error:`, sbError.message);
+
+    // Map to Airtable categories
+    const CAT_MAP_FIN: Record<string, string> = {
+      "Meta Ads": "Marketing", "Outils & SaaS": "Marketing", "Agents IA": "Marketing",
+      "Domaine & Hebergement": "Marketing", "Marketing": "Marketing",
+      "Location Van": "Location van", "Vente VBA": "Van Business Academy",
+      "Consulting IA": "Apport", "Affiliation": "Location van", "Autre Revenu": "Apport",
+      "Assurance": "Frais bancaires", "Carburant": "Frais bancaires",
+      "Juridique": "Juridique", "Divers": "Frais bancaires",
+    };
+
+    // Write to Airtable Finances only (Depenses is manual)
+    try {
+      await airtableFetch(`${AIRTABLE_BASE}/${AIRTABLE_FINANCES}`, {
+        method: "POST",
+        body: JSON.stringify({ records: [{
+          fields: {
+            Date: tx.settled_at?.slice(0, 10) || null,
+            Description: tx.clean_counterparty_name || tx.label,
+            Montant: isCredit ? tx.amount : -tx.amount,
+            "Catégorie": CAT_MAP_FIN[cls.category] || "Frais bancaires",
+            "Sous-catégorie": tx.cashflow_subcategory?.name || "",
+            Type: isCredit ? "Entrée" : "Sortie",
+            "Moyen de paiement": OP_MAP[tx.operation_type] || "Autre",
+            Notes: `${FREQ_LABELS[cls.frequency_type]} | ${cls.entity} | Conf: ${cls.confidence}\nQonto ID : ${tx.id}`,
+          },
+        }] }),
+      });
+    } catch (err) {
+      console.error("[sync-qonto] Airtable write failed:", err);
+    }
+
+    return NextResponse.json({
+      synced: 1,
+      transaction: tx.clean_counterparty_name || tx.label,
+      category: cls.category,
+      entity: cls.entity,
+      frequency: cls.frequency_type,
+    });
   } catch (error) {
     console.error("[sync-qonto] Webhook error:", error);
     return NextResponse.json({ error: (error as Error).message }, { status: 500 });
