@@ -535,8 +535,53 @@ export async function POST(request: Request) {
       "Juridique": "Juridique", "Divers": "Frais bancaires",
     };
 
-    // Write to Airtable Finances only (Depenses is manual)
+    // Map Groq categories → Airtable Dépenses "Grosse Catégorie" select options
+    const CAT_MAP_DEP: Record<string, string> = {
+      "Meta Ads": "Marketing", "Marketing": "Marketing",
+      "Outils & SaaS": "Divers", "Agents IA": "Divers",
+      "Domaine & Hebergement": "Divers",
+      "Amenagement Van": "Travaux", "Electricite Van": "Travaux",
+      "Isolation Van": "Travaux", "Accessoires Van": "Travaux",
+      "Entretien Van": "Maintenance", "Carburant": "Maintenance",
+      "Assurance": "Divers", "Juridique": "Divers", "Divers": "Divers",
+    };
+
+    // Map Groq frequency_type → Dépenses "Fréquence" select options
+    const FREQ_MAP_DEP: Record<string, string> = {
+      subscription: "Annuel", // closest existing option for recurring
+      recurring_expense: "Annuel",
+      one_time_expense: "One Shot",
+      recurring_income: "Annuel",
+      one_time_income: "One Shot",
+    };
+
+    // Map Groq entity → Dépenses "Payé par" select options
+    const PAYE_MAP: Record<string, string> = {
+      vanzon: "Vanzon", vba: "Vanzon", perso: "Jules",
+      yoni: "Vanzon", xalbat: "Vanzon",
+    };
+
+    // Write to Airtable — both Dépenses 💳 AND Finances
     try {
+      // Dépenses 💳
+      await airtableFetch(`${AIRTABLE_BASE}/${AIRTABLE_DEPENSES}`, {
+        method: "POST",
+        body: JSON.stringify({ records: [{
+          fields: {
+            Produit: tx.clean_counterparty_name || tx.label,
+            Description: `${tx.label}\nQonto ID : ${tx.id}\n${FREQ_LABELS[cls.frequency_type] || cls.frequency_type} | ${cls.entity} | Conf: ${cls.confidence}`,
+            "H.T": Math.round((tx.amount - (tx.vat_amount || 0)) * 100) / 100,
+            "T.V.A": tx.vat_amount || 0,
+            "T.T.C": tx.amount,
+            "Grosse Catégorie": CAT_MAP_DEP[cls.category] || "Divers",
+            Date: tx.settled_at?.slice(0, 10) || null,
+            "Fréquence": FREQ_MAP_DEP[cls.frequency_type] || "One Shot",
+            "Payé par :": PAYE_MAP[cls.entity] || "Vanzon",
+          },
+        }] }),
+      });
+
+      // Finances
       await airtableFetch(`${AIRTABLE_BASE}/${AIRTABLE_FINANCES}`, {
         method: "POST",
         body: JSON.stringify({ records: [{
@@ -547,7 +592,7 @@ export async function POST(request: Request) {
             "Catégorie": CAT_MAP_FIN[cls.category] || "Frais bancaires",
             "Sous-catégorie": tx.cashflow_subcategory?.name || "",
             Type: isCredit ? "Entrée" : "Sortie",
-            "Moyen de paiement": OP_MAP[tx.operation_type] || "Autre",
+            "Moyen de paiement": OP_MAP[tx.operation_type] || "Carte",
             Notes: `${FREQ_LABELS[cls.frequency_type]} | ${cls.entity} | Conf: ${cls.confidence}\nQonto ID : ${tx.id}`,
           },
         }] }),

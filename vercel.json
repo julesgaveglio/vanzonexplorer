@@ -11,6 +11,10 @@
     {
       "path": "/api/cron/whatsapp-closing-calls",
       "schedule": "0 7 * * *"
+    },
+    {
+      "path": "/api/cron/sync-qonto",
+      "schedule": "0 */6 * * *"
     }
   ]
 }
