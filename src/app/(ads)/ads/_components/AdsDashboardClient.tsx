@@ -22,6 +22,8 @@ interface FunnelData {
   view_to_optin: number;
   total_events: number;
   estimated_revenue: number;
+  meta_spend: number;
+  cpl: number;
   daily_breakdown: { date: string; page_view: number; optin: number; booking_confirmed: number; purchase: number }[];
 }
 
@@ -144,6 +146,10 @@ export default function AdsDashboardClient() {
   const sc = data?.step_counts ?? {};
   const optinRate = data?.view_to_optin ?? 0;
   const revenue = data?.estimated_revenue ?? 0;
+  const metaSpend = data?.meta_spend ?? 0;
+  const cpl = data?.cpl ?? 0;
+  const selectedCamp = campaigns.find((c) => c.id === selectedCampaign);
+  const budgetEuros = selectedCamp?.budget_euros ?? null;
 
   const FUNNEL_ORDER = ["page_view", "optin", "vsl_25", "vsl_50", "vsl_75", "vsl_100", "booking_start", "booking_confirmed", "checkout", "purchase"];
   const maxStep = Math.max(...FUNNEL_ORDER.map((s) => sc[s] ?? 0), 1);
@@ -251,11 +257,16 @@ export default function AdsDashboardClient() {
       )}
 
       {/* --- KPI cards --- */}
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+        <KPICard label="Dépense Meta" value={`${metaSpend.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`} subtitle={budgetEuros ? `budget : ${budgetEuros} €` : "toutes campagnes"} color="rose" />
+        <KPICard label="CPL" value={cpl > 0 ? `${cpl.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €` : "—"} subtitle={`${sc.optin ?? 0} leads`} color="amber" />
+        <KPICard label="CA estimé" value={`${revenue.toLocaleString("fr-FR")} €`} subtitle={`${sc.purchase ?? 0} vente${(sc.purchase ?? 0) > 1 ? "s" : ""} × 997 €`} color="emerald" />
+      </div>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <KPICard label="Vues opt-in" value={sc.page_view ?? 0} subtitle={`${data?.total_events ?? 0} events totaux`} color="slate" />
         <KPICard label="Leads" value={sc.optin ?? 0} subtitle={`${optinRate}% taux conversion`} color="blue" />
         <KPICard label="Calls bookés" value={sc.booking_confirmed ?? 0} subtitle={`${data?.conversion_rates?.find((r) => r.from === "optin" && r.to === "booking_start")?.rate ?? 0}% opt-in → call`} color="amber" />
-        <KPICard label="CA estimé" value={`${revenue.toLocaleString("fr-FR")} €`} subtitle={`${sc.purchase ?? 0} vente${(sc.purchase ?? 0) > 1 ? "s" : ""} × 997 €`} color="emerald" />
+        <KPICard label="ROAS" value={metaSpend > 0 ? `${(revenue / metaSpend).toFixed(1)}x` : "—"} subtitle={metaSpend > 0 ? `${revenue} € / ${metaSpend.toFixed(0)} €` : "pas de dépense"} color="emerald" />
       </div>
 
       {/* --- Chart --- */}
@@ -415,12 +426,13 @@ export default function AdsDashboardClient() {
   );
 }
 
-function KPICard({ label, value, subtitle, color }: { label: string; value: string | number; subtitle: string; color: "slate" | "blue" | "amber" | "emerald" }) {
+function KPICard({ label, value, subtitle, color }: { label: string; value: string | number; subtitle: string; color: "slate" | "blue" | "amber" | "emerald" | "rose" }) {
   const accents = {
     slate: { text: "text-slate-700", ring: "ring-slate-100", bg: "bg-slate-50" },
     blue: { text: "text-blue-600", ring: "ring-blue-100", bg: "bg-blue-50" },
     amber: { text: "text-amber-600", ring: "ring-amber-100", bg: "bg-amber-50" },
     emerald: { text: "text-emerald-600", ring: "ring-emerald-100", bg: "bg-emerald-50" },
+    rose: { text: "text-rose-600", ring: "ring-rose-100", bg: "bg-rose-50" },
   };
   const a = accents[color];
   return (

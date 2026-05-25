@@ -134,6 +134,22 @@ export async function GET(req: NextRequest) {
 
   const estimatedRevenue = (stepCounts.purchase ?? 0) * 997;
 
+  // Meta Ads spend from Qonto-synced transactions
+  let metaSpend = 0;
+  {
+    let q = supabase
+      .from("finance_transactions")
+      .select("amount")
+      .ilike("counterparty", "%meta%")
+      .eq("type", "expense")
+      .gte("date", since.slice(0, 10));
+    if (until) q = q.lte("date", until.slice(0, 10));
+    const { data: metaTxs } = await q;
+    metaSpend = (metaTxs ?? []).reduce((sum, t) => sum + (t.amount ?? 0), 0);
+  }
+  const optinCount = stepCounts.optin ?? 0;
+  const cpl = optinCount > 0 ? Math.round((metaSpend / optinCount) * 100) / 100 : 0;
+
   // Daily breakdown — fill in missing days with zeros, stop at today
   const sinceDate = new Date(since);
   const today = new Date();
@@ -185,6 +201,8 @@ export async function GET(req: NextRequest) {
     view_to_optin: viewToOptin,
     total_events: allEvents.length,
     estimated_revenue: estimatedRevenue,
+    meta_spend: Math.round(metaSpend * 100) / 100,
+    cpl,
     daily_breakdown,
   });
 }
