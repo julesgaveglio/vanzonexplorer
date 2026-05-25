@@ -363,6 +363,98 @@ export default function ProgrammePage() {
           ))}
         </div>
 
+        {/* ── Bonus exclusifs ── */}
+        <div className="mt-16">
+          <div className="text-center mb-8">
+            <span
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold tracking-wider uppercase"
+              style={{ background: "rgba(16,185,129,0.12)", border: "1px solid rgba(16,185,129,0.25)", color: "#10B981" }}
+            >
+              ✦ Inclus dans la formation
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-bold text-white mt-5">
+              Ce que tu obtiens{" "}
+              <span className="bg-clip-text text-transparent" style={{ backgroundImage: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)" }}>
+                en plus des vidéos
+              </span>
+            </h2>
+          </div>
+
+          <div className="grid gap-4 sm:gap-5">
+            {/* Bonus 1 — Parrainage */}
+            <div
+              className="rounded-2xl p-5 sm:p-6"
+              style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}
+            >
+              <div className="flex items-start gap-4">
+                <div
+                  className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-lg flex-shrink-0"
+                  style={{ background: "rgba(185,148,95,0.12)" }}
+                >
+                  🤝
+                </div>
+                <div>
+                  <h3 className="text-base sm:text-lg font-bold text-white">Programme de parrainage</h3>
+                  <p className="text-sm text-slate-400 mt-1.5 leading-relaxed">
+                    Tu obtiens un <span className="text-white font-semibold">code promo personnalisé</span> à partager autour de toi.
+                    Chaque personne qui rejoint la formation grâce à ton code bénéficie d&apos;une réduction —
+                    et toi, tu touches <span className="text-white font-semibold">10% de commission</span> sur chaque vente.
+                    Un moyen concret de rentabiliser ta formation avant même d&apos;avoir terminé les travaux.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Bonus 2 — Campagne pub offerte */}
+            <div
+              className="rounded-2xl p-5 sm:p-6"
+              style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}
+            >
+              <div className="flex items-start gap-4">
+                <div
+                  className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-lg flex-shrink-0"
+                  style={{ background: "rgba(59,130,246,0.12)" }}
+                >
+                  📣
+                </div>
+                <div>
+                  <h3 className="text-base sm:text-lg font-bold text-white">Campagne de publicité offerte</h3>
+                  <p className="text-sm text-slate-400 mt-1.5 leading-relaxed">
+                    Une fois tes travaux terminés, tu accèdes au <span className="text-white font-semibold">réseau de média buyers de Vanzon Explorer</span>.
+                    On lance gratuitement une campagne publicitaire pour toi — que ce soit pour
+                    optimiser la <span className="text-white font-semibold">location</span> ou accélérer la <span className="text-white font-semibold">revente</span> de ton van.
+                    Tu n&apos;as rien à gérer, on s&apos;occupe de tout.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Bonus 3 — Visibilité sur le site */}
+            <div
+              className="rounded-2xl p-5 sm:p-6"
+              style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}
+            >
+              <div className="flex items-start gap-4">
+                <div
+                  className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-lg flex-shrink-0"
+                  style={{ background: "rgba(168,85,247,0.12)" }}
+                >
+                  🌐
+                </div>
+                <div>
+                  <h3 className="text-base sm:text-lg font-bold text-white">Ton van publié sur Vanzon Explorer</h3>
+                  <p className="text-sm text-slate-400 mt-1.5 leading-relaxed">
+                    Ton van terminé ? On publie ton annonce directement sur <span className="text-white font-semibold">vanzonexplorer.com</span> et
+                    tu profites de notre référencement SEO. En bonus, on publie une <span className="text-white font-semibold">série d&apos;articles de blog</span> ciblés
+                    sur ta zone géographique pour attirer des locataires intéressés par ta région.
+                    Du trafic qualifié, gratuitement.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* ── CTA final ── */}
         <div className="mt-16 text-center">
           <div
