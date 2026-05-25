@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
-import LiquidButton from "@/components/ui/LiquidButton";
 import ModuleAccordion from "./ModuleAccordion";
 
 export const metadata: Metadata = {
   title: "Programme complet — Van Business Academy | Vanzon Explorer",
   description:
-    "Découvre le programme détaillé de la Van Business Academy : 10 modules, +105 vidéos, du sourcing à la location. Formation terrain par des loueurs en activité.",
+    "Découvre le programme détaillé de la Van Business Academy : 11 modules, +100 vidéos, du sourcing à la location. Formation terrain par des loueurs en activité.",
   alternates: { canonical: "https://vanzonexplorer.com/van-business-academy/programme" },
   openGraph: {
     title: "Programme complet — Van Business Academy",
-    description: "10 modules, +105 vidéos, de l'achat du van à la mise en location. Tout le détail du programme.",
+    description: "11 modules, +100 vidéos, de l'achat du van à la mise en location. Tout le détail du programme.",
     type: "website",
   },
 };
@@ -18,8 +17,8 @@ export const metadata: Metadata = {
 
 export interface Lesson {
   title: string;
-  duration?: number; // minutes
-  tag?: "quiz" | "pdf" | "bonus" | "outil" | "nouveau";
+  duration?: number;
+  tag?: "quiz" | "pdf" | "bonus" | "outil" | "nouveau" | "filmé";
 }
 
 export interface Module {
@@ -29,6 +28,8 @@ export interface Module {
   description: string;
   lessons: Lesson[];
   badge?: string;
+  comingSoon?: boolean;
+  estimatedMinutes?: number;
 }
 
 const MODULES: Module[] = [
@@ -147,28 +148,30 @@ const MODULES: Module[] = [
     title: "Les travaux VASP (L1H1)",
     emoji: "👷🏼‍♂️",
     description: "20 vidéos pratiques filmées en atelier — tout l'aménagement VASP d'un L1H1 de A à Z.",
-    badge: "NOUVEAU",
+    badge: "EN TOURNAGE",
+    comingSoon: true,
+    estimatedMinutes: 200,
     lessons: [
-      { title: "Nettoyage", duration: 10, tag: "nouveau" },
-      { title: "La pose de la fenêtre", duration: 10, tag: "nouveau" },
-      { title: "La pose des aérations", duration: 10, tag: "nouveau" },
-      { title: "La pose du lanterneau", duration: 10, tag: "nouveau" },
-      { title: "La pose de la structure", duration: 10, tag: "nouveau" },
-      { title: "L'isolation Armaflex", duration: 10, tag: "nouveau" },
-      { title: "La pose de la moquette feutrine", duration: 10, tag: "nouveau" },
-      { title: "Construire le robinet fixe", duration: 10, tag: "nouveau" },
-      { title: "La plaque de cuisson", duration: 10, tag: "nouveau" },
-      { title: "Le lit peigne", duration: 10, tag: "nouveau" },
-      { title: "Le sol", duration: 10, tag: "nouveau" },
-      { title: "Le plafond", duration: 10, tag: "nouveau" },
-      { title: "La pose des rideaux", duration: 10, tag: "nouveau" },
-      { title: "Fabrication du lit", duration: 10, tag: "nouveau" },
-      { title: "Meuble d'entrée", duration: 10, tag: "nouveau" },
-      { title: "Meuble de cuisine et eau", duration: 10, tag: "nouveau" },
-      { title: "Étagère arrière", duration: 10, tag: "nouveau" },
-      { title: "Le ponçage", duration: 10, tag: "nouveau" },
-      { title: "Installation électrique", duration: 10, tag: "nouveau" },
-      { title: "Le vernissage", duration: 10, tag: "nouveau" },
+      { title: "Nettoyage" },
+      { title: "La pose de la fenêtre" },
+      { title: "La pose des aérations" },
+      { title: "La pose du lanterneau" },
+      { title: "La pose de la structure" },
+      { title: "L'isolation Armaflex" },
+      { title: "La pose de la moquette feutrine" },
+      { title: "Construire le robinet fixe" },
+      { title: "La plaque de cuisson" },
+      { title: "Le lit peigne" },
+      { title: "Le sol" },
+      { title: "Le plafond" },
+      { title: "La pose des rideaux" },
+      { title: "Fabrication du lit" },
+      { title: "Meuble d'entrée" },
+      { title: "Meuble de cuisine et eau" },
+      { title: "Étagère arrière" },
+      { title: "Le ponçage" },
+      { title: "Installation électrique" },
+      { title: "Le vernissage" },
     ],
   },
   {
@@ -193,6 +196,28 @@ const MODULES: Module[] = [
   },
   {
     number: 10,
+    title: "Les démarches administratives",
+    emoji: "📄",
+    description: "Du dossier VASP à la DREAL : chaque document, chaque étape, chaque astuce pour obtenir ton homologation sans stress.",
+    badge: "EN TOURNAGE",
+    comingSoon: true,
+    estimatedMinutes: 120,
+    lessons: [
+      { title: "Les dossiers VASP — Google Drive & checklist Airtable" },
+      { title: "Demande de réception", tag: "filmé" },
+      { title: "Attestation de travaux", tag: "filmé" },
+      { title: "COC / Barré rouge — obtenir le certificat de conformité" },
+      { title: "Photos de ton van" },
+      { title: "La DREAL — tout le process de A à Z" },
+      { title: "Certificat de conformité QUALIGAZ" },
+      { title: "Pré-remplir le dossier pour la DREAL" },
+      { title: "Comment peser son véhicule" },
+      { title: "Calcul de répartition des charges" },
+      { title: "Plans Électricité & eau" },
+    ],
+  },
+  {
+    number: 11,
     title: "BUSINESS de location",
     emoji: "💰",
     description: "Lance ton activité : étude de marché, pricing, publication, automatisation et chiffres réels.",
@@ -212,7 +237,7 @@ const MODULES: Module[] = [
       { title: "Automatisations pour gagner du temps", duration: 10 },
       { title: "Déclarations en tant que particulier", duration: 8 },
       { title: "Déclarations en tant que professionnel", duration: 10 },
-      { title: "Quiz Module 10", tag: "quiz" },
+      { title: "Quiz Module 11", tag: "quiz" },
       { title: "Fiche récap PDF", tag: "pdf" },
     ],
   },
@@ -221,7 +246,7 @@ const MODULES: Module[] = [
 const TOTAL_LESSONS = MODULES.reduce((sum, m) => sum + m.lessons.length, 0);
 const TOTAL_MODULES = MODULES.length;
 const TOTAL_MINUTES = MODULES.reduce(
-  (sum, m) => sum + m.lessons.reduce((s, l) => s + (l.duration ?? 0), 0),
+  (sum, m) => sum + (m.estimatedMinutes ?? m.lessons.reduce((s, l) => s + (l.duration ?? 0), 0)),
   0
 );
 const TOTAL_HOURS = Math.floor(TOTAL_MINUTES / 60);
@@ -242,14 +267,6 @@ export default function ProgrammePage() {
           }}
         />
         <div className="relative z-10 max-w-4xl mx-auto px-5 pt-20 pb-12 md:pt-28 md:pb-16 text-center">
-          <a
-            href="/formation"
-            className="inline-flex items-center gap-2 text-sm mb-8 transition-colors hover:opacity-80"
-            style={{ color: "#B9945F" }}
-          >
-            ← Retour
-          </a>
-
           <div
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold tracking-wider uppercase mb-6"
             style={{ background: "rgba(185,148,95,0.08)", border: "1px solid rgba(185,148,95,0.25)", color: "#B9945F" }}
@@ -258,18 +275,8 @@ export default function ProgrammePage() {
           </div>
 
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 leading-tight tracking-tight">
-            {TOTAL_MODULES} modules.{" "}
-            <span className="bg-clip-text text-transparent" style={{ backgroundImage: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)" }}>
-              {TOTAL_LESSONS}+ leçons.
-            </span>
-            <br />
-            De l&apos;achat du van à la mise en location.
+            Van Business Academy
           </h1>
-
-          <p className="text-base sm:text-lg text-slate-500 mt-6 max-w-2xl mx-auto leading-relaxed">
-            Chaque vidéo est filmée en conditions réelles, dans notre atelier au Pays Basque.
-            Pas de théorie creuse — que du concret, étape par étape.
-          </p>
 
           {/* Stats bar */}
           <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10 mt-10">
@@ -277,7 +284,6 @@ export default function ProgrammePage() {
               { value: `${TOTAL_MODULES}`, label: "modules" },
               { value: `${TOTAL_LESSONS}+`, label: "vidéos" },
               { value: `${TOTAL_HOURS}h${REMAINING_MINUTES > 0 ? `${REMAINING_MINUTES.toString().padStart(2, "0")}` : ""}`, label: "de contenu" },
-              { value: "100%", label: "terrain" },
             ].map((stat) => (
               <div key={stat.label} className="text-center">
                 <div className="text-2xl sm:text-3xl font-black bg-clip-text text-transparent" style={{ backgroundImage: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)" }}>
@@ -371,31 +377,6 @@ export default function ProgrammePage() {
                 </div>
               </div>
             ))}
-          </div>
-        </div>
-
-        {/* ── CTA final ── */}
-        <div className="mt-16 text-center">
-          <div
-            className="rounded-2xl p-8 sm:p-10"
-            style={{
-              background: "linear-gradient(135deg, rgba(185,148,95,0.06) 0%, rgba(228,211,152,0.03) 100%)",
-              border: "1px solid rgba(185,148,95,0.15)",
-            }}
-          >
-            <h3 className="text-xl sm:text-2xl font-bold text-slate-900 mb-3">
-              Prêt à construire ta liberté van par van ?
-            </h3>
-            <p className="text-sm text-slate-500 mb-6 max-w-md mx-auto">
-              {TOTAL_MODULES} modules, {TOTAL_LESSONS}+ vidéos, une méthode testée sur nos propres vans.
-              Le tout accessible à vie.
-            </p>
-            <LiquidButton variant="gold" size="lg" href="/van-business-academy/inscription">
-              Accéder à la formation →
-            </LiquidButton>
-            <p className="text-xs text-slate-400 mt-4">
-              997 € — Tarif lancement (au lieu de 1 497 €)
-            </p>
           </div>
         </div>
       </section>

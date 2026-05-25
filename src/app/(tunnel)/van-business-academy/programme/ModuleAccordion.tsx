@@ -10,6 +10,7 @@ const TAG_STYLES: Record<string, { bg: string; text: string; label: string }> = 
   bonus: { bg: "rgba(16,185,129,0.08)", text: "#10B981", label: "Bonus" },
   outil: { bg: "rgba(245,158,11,0.08)", text: "#F59E0B", label: "Outil" },
   nouveau: { bg: "rgba(185,148,95,0.08)", text: "#B9945F", label: "Nouveau" },
+  filmé: { bg: "rgba(16,185,129,0.08)", text: "#10B981", label: "Filmé ✓" },
 };
 
 export default function ModuleAccordion({ modules }: { modules: Module[] }) {
@@ -19,12 +20,12 @@ export default function ModuleAccordion({ modules }: { modules: Module[] }) {
     <div className="space-y-3">
       {modules.map((mod) => {
         const isOpen = open === mod.number;
-        const modMinutes = mod.lessons.reduce((s, l) => s + (l.duration ?? 0), 0);
+        const modMinutes = mod.estimatedMinutes ?? mod.lessons.reduce((s, l) => s + (l.duration ?? 0), 0);
         const modHours = Math.floor(modMinutes / 60);
         const modRemMin = modMinutes % 60;
         const timeLabel = modHours > 0
-          ? `${modHours}h${modRemMin > 0 ? modRemMin.toString().padStart(2, "0") : ""}`
-          : `${modMinutes} min`;
+          ? `~${modHours}h${modRemMin > 0 ? modRemMin.toString().padStart(2, "0") : ""}`
+          : `~${modMinutes} min`;
 
         return (
           <div
@@ -46,11 +47,19 @@ export default function ModuleAccordion({ modules }: { modules: Module[] }) {
                     <span
                       className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full"
                       style={{
-                        background: mod.badge === "NOUVEAU" ? "rgba(16,185,129,0.10)" : "rgba(185,148,95,0.10)",
-                        color: mod.badge === "NOUVEAU" ? "#10B981" : "#B9945F",
+                        background: mod.badge === "EN TOURNAGE"
+                          ? "rgba(245,158,11,0.10)"
+                          : mod.badge === "NOUVEAU"
+                            ? "rgba(16,185,129,0.10)"
+                            : "rgba(185,148,95,0.10)",
+                        color: mod.badge === "EN TOURNAGE"
+                          ? "#F59E0B"
+                          : mod.badge === "NOUVEAU"
+                            ? "#10B981"
+                            : "#B9945F",
                       }}
                     >
-                      {mod.badge}
+                      {mod.badge === "EN TOURNAGE" ? "🎥 En tournage" : mod.badge}
                     </span>
                   )}
                 </div>
@@ -61,7 +70,7 @@ export default function ModuleAccordion({ modules }: { modules: Module[] }) {
                   {modMinutes > 0 && (
                     <>
                       <span className="text-slate-200">·</span>
-                      <span className="text-xs text-slate-400 tabular-nums">~{timeLabel}</span>
+                      <span className="text-xs text-slate-400 tabular-nums">{timeLabel}</span>
                     </>
                   )}
                 </div>
@@ -75,36 +84,49 @@ export default function ModuleAccordion({ modules }: { modules: Module[] }) {
             <div
               className="overflow-hidden transition-all duration-300"
               style={{
-                maxHeight: isOpen ? `${mod.lessons.length * 48 + 16}px` : "0px",
+                maxHeight: isOpen ? `${mod.lessons.length * 48 + (mod.comingSoon ? 64 : 16)}px` : "0px",
                 opacity: isOpen ? 1 : 0,
               }}
             >
-              <div className="border-t border-slate-50 divide-y divide-slate-50">
-                {mod.lessons.map((lesson, i) => {
-                  const tag = lesson.tag ? TAG_STYLES[lesson.tag] : null;
-                  return (
-                    <div key={i} className="flex items-center gap-3 px-5 sm:px-6 py-3 hover:bg-slate-50/50 transition-colors">
-                      <span className="text-xs text-slate-300 w-5 text-right flex-shrink-0 tabular-nums font-mono">
-                        {i + 1}
-                      </span>
-                      <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: "#D4B88C" }} />
-                      <span className="text-sm text-slate-700 flex-1">{lesson.title}</span>
-                      {lesson.duration && (
-                        <span className="text-[11px] text-slate-300 flex-shrink-0 tabular-nums">
-                          {lesson.duration} min
+              <div className="border-t border-slate-50">
+                {/* Coming soon banner */}
+                {mod.comingSoon && (
+                  <div className="px-5 sm:px-6 py-3 flex items-center gap-2" style={{ background: "rgba(245,158,11,0.04)" }}>
+                    <span className="text-xs font-medium" style={{ color: "#F59E0B" }}>
+                      🎥 Vidéos en cours de tournage — disponibles très prochainement
+                    </span>
+                  </div>
+                )}
+
+                <div className="divide-y divide-slate-50">
+                  {mod.lessons.map((lesson, i) => {
+                    const tag = lesson.tag ? TAG_STYLES[lesson.tag] : null;
+                    return (
+                      <div key={i} className="flex items-center gap-3 px-5 sm:px-6 py-3 hover:bg-slate-50/50 transition-colors">
+                        <span className="text-xs text-slate-300 w-5 text-right flex-shrink-0 tabular-nums font-mono">
+                          {i + 1}
                         </span>
-                      )}
-                      {tag && (
-                        <span
-                          className="text-[10px] font-semibold px-2 py-0.5 rounded-full flex-shrink-0"
-                          style={{ background: tag.bg, color: tag.text }}
-                        >
-                          {tag.label}
+                        <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: "#D4B88C" }} />
+                        <span className={`text-sm flex-1 ${mod.comingSoon && !lesson.tag ? "text-slate-400" : "text-slate-700"}`}>
+                          {lesson.title}
                         </span>
-                      )}
-                    </div>
-                  );
-                })}
+                        {lesson.duration && !mod.comingSoon && (
+                          <span className="text-[11px] text-slate-300 flex-shrink-0 tabular-nums">
+                            {lesson.duration} min
+                          </span>
+                        )}
+                        {tag && (
+                          <span
+                            className="text-[10px] font-semibold px-2 py-0.5 rounded-full flex-shrink-0"
+                            style={{ background: tag.bg, color: tag.text }}
+                          >
+                            {tag.label}
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </div>
