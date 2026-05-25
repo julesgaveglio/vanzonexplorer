@@ -99,9 +99,9 @@ const MODULES: Module[] = [
   },
   {
     number: 5,
-    title: "Les travaux",
+    title: "Les travaux (non VASP)",
     emoji: "🔨",
-    description: "Passe à l'action : du nettoyage aux finitions, chaque étape filmée dans l'atelier.",
+    description: "Passe à l'action : du nettoyage aux finitions, chaque étape filmée dans l'atelier. Aménagement classique sans homologation.",
     lessons: [
       { title: "Le nettoyage", duration: 8 },
       { title: "La pose de la fenêtre", duration: 15 },
