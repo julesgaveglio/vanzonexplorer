@@ -24,6 +24,8 @@ interface FunnelData {
   estimated_revenue: number;
   meta_spend: number;
   cpl: number;
+  cpc: number;
+  ctr: number;
   daily_breakdown: { date: string; page_view: number; optin: number; booking_confirmed: number; purchase: number }[];
 }
 
@@ -148,6 +150,8 @@ export default function AdsDashboardClient() {
   const revenue = data?.estimated_revenue ?? 0;
   const metaSpend = data?.meta_spend ?? 0;
   const cpl = data?.cpl ?? 0;
+  const cpc = data?.cpc ?? 0;
+  const ctr = data?.ctr ?? 0;
   const selectedCamp = campaigns.find((c) => c.id === selectedCampaign);
   const budgetEuros = selectedCamp?.budget_euros ?? null;
 
@@ -257,8 +261,10 @@ export default function AdsDashboardClient() {
       )}
 
       {/* --- KPI cards --- */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         <KPICard label="Dépense Meta" value={`${metaSpend.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`} subtitle={budgetEuros ? `budget : ${budgetEuros} €` : "toutes campagnes"} color="rose" />
+        <KPICard label="CPC" value={cpc > 0 ? `${cpc.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €` : "—"} subtitle={`${sc.page_view ?? 0} clics`} color="slate" />
+        <KPICard label="CTR" value={ctr > 0 ? `${ctr}%` : "—"} subtitle={`clic → opt-in`} color="blue" />
         <KPICard label="CPL" value={cpl > 0 ? `${cpl.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €` : "—"} subtitle={`${sc.optin ?? 0} leads`} color="amber" />
         <KPICard label="CA estimé" value={`${revenue.toLocaleString("fr-FR")} €`} subtitle={`${sc.purchase ?? 0} vente${(sc.purchase ?? 0) > 1 ? "s" : ""} × 997 €`} color="emerald" />
       </div>

@@ -148,7 +148,10 @@ export async function GET(req: NextRequest) {
     metaSpend = (metaTxs ?? []).reduce((sum, t) => sum + (t.amount ?? 0), 0);
   }
   const optinCount = stepCounts.optin ?? 0;
+  const pageViews = stepCounts.page_view ?? 0;
   const cpl = optinCount > 0 ? Math.round((metaSpend / optinCount) * 100) / 100 : 0;
+  const cpc = pageViews > 0 ? Math.round((metaSpend / pageViews) * 100) / 100 : 0;
+  const ctr = pageViews > 0 ? Math.round((optinCount / pageViews) * 1000) / 10 : 0;
 
   // Daily breakdown — fill in missing days with zeros, stop at today
   const sinceDate = new Date(since);
@@ -203,6 +206,8 @@ export async function GET(req: NextRequest) {
     estimated_revenue: estimatedRevenue,
     meta_spend: Math.round(metaSpend * 100) / 100,
     cpl,
+    cpc,
+    ctr,
     daily_breakdown,
   });
 }
