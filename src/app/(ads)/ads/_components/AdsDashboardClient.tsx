@@ -59,18 +59,6 @@ const STEP_LABELS: Record<string, string> = {
   purchase: "Achat validé",
 };
 
-const EVENT_DOT: Record<string, string> = {
-  page_view: "bg-sky-200",
-  optin: "bg-sky-300",
-  vsl_25: "bg-blue-300",
-  vsl_50: "bg-blue-400",
-  vsl_75: "bg-blue-500",
-  vsl_100: "bg-blue-600",
-  booking_start: "bg-blue-700",
-  booking_confirmed: "bg-blue-800",
-  checkout: "bg-indigo-800",
-  purchase: "bg-emerald-500",
-};
 
 const FUNNEL_COLORS: Record<string, string> = {
   page_view: "linear-gradient(90deg, #BAE6FD, #7DD3FC)",
@@ -383,51 +371,7 @@ export default function AdsDashboardClient() {
         </div>
       </div>
 
-      {/* --- Two columns --- */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-          <h3 className="text-slate-900 font-semibold mb-4">Attribution UTM</h3>
-          {(data?.utm_breakdown ?? []).length === 0 ? (
-            <p className="text-sm text-slate-400">Aucune attribution</p>
-          ) : (
-            <div className="space-y-2">
-              {data!.utm_breakdown.map((u, i) => (
-                <div key={i} className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0">
-                  <div>
-                    <span className="text-sm text-slate-900 font-medium">{u.source}</span>
-                    <span className="text-xs text-slate-400 ml-2">{u.campaign}</span>
-                  </div>
-                  <span className="text-sm font-mono font-semibold text-blue-600">{u.count} leads</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-          <h3 className="text-slate-900 font-semibold mb-4">Événements récents</h3>
-          <div className="space-y-1.5 max-h-80 overflow-y-auto pr-1">
-            {(data?.recent_events ?? []).length === 0 ? (
-              <p className="text-sm text-slate-400">Aucun événement</p>
-            ) : (
-              data!.recent_events.map((e, i) => (
-                <div key={i} className="flex items-center justify-between py-1.5 text-sm">
-                  <div className="flex items-center gap-2 min-w-0">
-                    <span className={`w-2 h-2 rounded-full flex-shrink-0 ${EVENT_DOT[e.event] ?? "bg-slate-300"}`} />
-                    <span className="text-slate-700 font-medium">
-                      {STEP_LABELS[e.event] ?? e.event}
-                    </span>
-                    <span className="text-slate-400 truncate">{e.email ?? "anon"}</span>
-                  </div>
-                  <span className="text-xs text-slate-400 shrink-0 ml-2">
-                    {timeAgo(e.created_at)}
-                  </span>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-      </div>
+      {/* Attribution UTM and recent events removed — not useful */}
     </div>
   );
 }
@@ -450,11 +394,3 @@ function KPICard({ label, value, subtitle, color }: { label: string; value: stri
   );
 }
 
-function timeAgo(iso: string) {
-  const diff = Date.now() - new Date(iso).getTime();
-  const mins = Math.floor(diff / 60000);
-  if (mins < 60) return `${mins}m`;
-  const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs}h`;
-  return `${Math.floor(hrs / 24)}j`;
-}
