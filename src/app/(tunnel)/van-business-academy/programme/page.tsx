@@ -99,25 +99,6 @@ const MODULES: Module[] = [
   },
   {
     number: 5,
-    title: "Les travaux (non VASP)",
-    emoji: "🔨",
-    description: "Passe à l'action : du nettoyage aux finitions, chaque étape filmée dans l'atelier. Aménagement classique sans homologation.",
-    lessons: [
-      { title: "Le nettoyage", duration: 8 },
-      { title: "La pose de la fenêtre", duration: 15 },
-      { title: "L'isolation", duration: 12 },
-      { title: "La structure en bois", duration: 15 },
-      { title: "Les murs", duration: 10 },
-      { title: "Le cadrant fenêtre", duration: 8 },
-      { title: "Le sol", duration: 12 },
-      { title: "La construction des meubles", duration: 18 },
-      { title: "Construction de table coulissante", duration: 12 },
-      { title: "Quiz Module 5", tag: "quiz" },
-      { title: "Fiche récap PDF", tag: "pdf" },
-    ],
-  },
-  {
-    number: 6,
     title: "Électricité",
     emoji: "⚡",
     description: "Comprends les bases, calcule ta consommation et câble ton van en toute sécurité.",
@@ -128,12 +109,12 @@ const MODULES: Module[] = [
       { title: "Calculer sa conso et choisir sa batterie", duration: 14 },
       { title: "Section de câble et sécurité", duration: 10 },
       { title: "Le circuit électrique", duration: 15 },
-      { title: "Quiz Module 6", tag: "quiz" },
+      { title: "Quiz Module 5", tag: "quiz" },
       { title: "Fiche récap PDF", tag: "pdf" },
     ],
   },
   {
-    number: 7,
+    number: 6,
     title: "Homologation VASP",
     emoji: "📄",
     description: "Tout le processus administratif pour homologuer ton van — éligibilité, coûts et démarches.",
@@ -145,12 +126,12 @@ const MODULES: Module[] = [
       { title: "Les coûts administratifs", duration: 8 },
       { title: "Avantages et inconvénients du VASP", duration: 10 },
       { title: "BONUS — L'outil IA qui va t'aider", duration: 6, tag: "bonus" },
-      { title: "Quiz Module 7", tag: "quiz" },
+      { title: "Quiz Module 6", tag: "quiz" },
       { title: "Fiche récap PDF", tag: "pdf" },
     ],
   },
   {
-    number: 8,
+    number: 7,
     title: "Les travaux VASP (L1H1)",
     emoji: "👷🏼‍♂️",
     description: "20 vidéos pratiques filmées en atelier — tout l'aménagement VASP d'un L1H1 de A à Z.",
@@ -178,12 +159,12 @@ const MODULES: Module[] = [
       { title: "Le ponçage" },
       { title: "Installation électrique" },
       { title: "Le vernissage" },
-      { title: "Quiz Module 8", tag: "quiz" },
+      { title: "Quiz Module 7", tag: "quiz" },
       { title: "Fiche récap PDF", tag: "pdf" },
     ],
   },
   {
-    number: 9,
+    number: 8,
     title: "Les normes VASP",
     emoji: "📏",
     description: "Toutes les normes à connaître AVANT de commencer les travaux pour être conforme du premier coup.",
@@ -200,12 +181,12 @@ const MODULES: Module[] = [
       { title: "La norme sur la pesée", duration: 5 },
       { title: "Les étiquettes obligatoires", duration: 6 },
       { title: "Les objets obligatoires", duration: 5 },
-      { title: "Quiz Module 9", tag: "quiz" },
+      { title: "Quiz Module 8", tag: "quiz" },
       { title: "Fiche récap PDF", tag: "pdf" },
     ],
   },
   {
-    number: 10,
+    number: 9,
     title: "Les démarches administratives",
     emoji: "📄",
     description: "Du dossier VASP à la DREAL : chaque document, chaque étape, chaque astuce pour obtenir ton homologation sans stress.",
@@ -224,12 +205,12 @@ const MODULES: Module[] = [
       { title: "Comment peser son véhicule" },
       { title: "Calcul de répartition des charges" },
       { title: "Plans Électricité & eau" },
-      { title: "Quiz Module 10", tag: "quiz" },
+      { title: "Quiz Module 9", tag: "quiz" },
       { title: "Fiche récap PDF", tag: "pdf" },
     ],
   },
   {
-    number: 11,
+    number: 10,
     title: "BUSINESS de location",
     emoji: "💰",
     description: "Lance ton activité : étude de marché, pricing, publication, automatisation et chiffres réels.",
@@ -249,13 +230,34 @@ const MODULES: Module[] = [
       { title: "Automatisations pour gagner du temps", duration: 10 },
       { title: "Déclarations en tant que particulier", duration: 8 },
       { title: "Déclarations en tant que professionnel", duration: 10 },
-      { title: "Quiz Module 11", tag: "quiz" },
+      { title: "Quiz Module 10", tag: "quiz" },
       { title: "Fiche récap PDF", tag: "pdf" },
     ],
   },
 ];
 
-const TOTAL_LESSONS = MODULES.reduce((sum, m) => sum + m.lessons.length, 0);
+const BONUS_MODULE: Module = {
+  number: 0,
+  title: "Les travaux (non VASP)",
+  emoji: "🔨",
+  description: "Aménagement classique sans homologation : du nettoyage aux finitions, chaque étape filmée dans l'atelier.",
+  badge: "BONUS",
+  lessons: [
+    { title: "Le nettoyage", duration: 8 },
+    { title: "La pose de la fenêtre", duration: 15 },
+    { title: "L'isolation", duration: 12 },
+    { title: "La structure en bois", duration: 15 },
+    { title: "Les murs", duration: 10 },
+    { title: "Le cadrant fenêtre", duration: 8 },
+    { title: "Le sol", duration: 12 },
+    { title: "La construction des meubles", duration: 18 },
+    { title: "Construction de table coulissante", duration: 12 },
+    { title: "Quiz", tag: "quiz" },
+    { title: "Fiche récap PDF", tag: "pdf" },
+  ],
+};
+
+const TOTAL_LESSONS = MODULES.reduce((sum, m) => sum + m.lessons.length, 0) + BONUS_MODULE.lessons.length;
 const TOTAL_MODULES = MODULES.length;
 const TOTAL_MINUTES = MODULES.reduce(
   (sum, m) => sum + (m.estimatedMinutes ?? m.lessons.reduce((s, l) => s + (l.duration ?? 0), 0)),
@@ -311,6 +313,19 @@ export default function ProgrammePage() {
       {/* ── Modules ── */}
       <section className="max-w-3xl mx-auto px-5 pb-20">
         <ModuleAccordion modules={MODULES} />
+
+        {/* ── Module bonus ── */}
+        <div className="mt-10">
+          <div className="text-center mb-6">
+            <span
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold tracking-wider uppercase"
+              style={{ background: "rgba(185,148,95,0.08)", border: "1px solid rgba(185,148,95,0.25)", color: "#B9945F" }}
+            >
+              🎁 Module bonus
+            </span>
+          </div>
+          <ModuleAccordion modules={[BONUS_MODULE]} isBonusSection />
+        </div>
 
         {/* ── Bonus exclusifs ── */}
         <div className="mt-16">

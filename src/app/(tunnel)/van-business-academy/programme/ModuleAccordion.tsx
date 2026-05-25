@@ -13,7 +13,7 @@ const TAG_STYLES: Record<string, { bg: string; text: string; label: string }> = 
   filmé: { bg: "rgba(16,185,129,0.08)", text: "#10B981", label: "Filmé ✓" },
 };
 
-export default function ModuleAccordion({ modules }: { modules: Module[] }) {
+export default function ModuleAccordion({ modules, isBonusSection }: { modules: Module[]; isBonusSection?: boolean }) {
   const [open, setOpen] = useState<number | null>(null);
 
   return (
@@ -41,7 +41,7 @@ export default function ModuleAccordion({ modules }: { modules: Module[] }) {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-xs font-bold uppercase tracking-wider" style={{ color: "#B9945F" }}>
-                    Module {mod.number}
+                    {isBonusSection ? "Bonus" : `Module ${mod.number}`}
                   </span>
                   {mod.badge && (
                     <span
@@ -51,7 +51,9 @@ export default function ModuleAccordion({ modules }: { modules: Module[] }) {
                           ? "rgba(245,158,11,0.10)"
                           : mod.badge === "NOUVEAU"
                             ? "rgba(16,185,129,0.10)"
-                            : "rgba(185,148,95,0.10)",
+                            : mod.badge === "BONUS"
+                              ? "rgba(185,148,95,0.10)"
+                              : "rgba(185,148,95,0.10)",
                         color: mod.badge === "EN TOURNAGE"
                           ? "#F59E0B"
                           : mod.badge === "NOUVEAU"
