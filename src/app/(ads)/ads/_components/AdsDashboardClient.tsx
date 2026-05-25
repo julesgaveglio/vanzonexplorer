@@ -362,7 +362,6 @@ export default function AdsDashboardClient() {
                   />
                   <div className="absolute inset-0 flex items-center px-3 justify-between">
                     <span className={`text-xs font-bold drop-shadow ${["page_view", "optin", "vsl_25"].includes(step) ? "text-slate-800" : "text-white"}`}>{count}</span>
-                    {i > 0 && <span className={`text-[10px] font-semibold ${convRate >= 50 ? "text-emerald-600" : convRate >= 20 ? "text-amber-600" : "text-red-500"}`}>{convRate}%</span>}
                   </div>
                 </div>
               </div>
