@@ -43,6 +43,8 @@ const MODULES: Module[] = [
       { title: "Aperçu complet de la formation", duration: 8 },
       { title: "Ce qu'un van t'apporte VRAIMENT (bénéfices cachés)", duration: 12 },
       { title: "Quel projet van te correspond VRAIMENT ?", duration: 10 },
+      { title: "Quiz Module 1", tag: "quiz" },
+      { title: "Fiche récap PDF", tag: "pdf" },
     ],
   },
   {
@@ -91,6 +93,8 @@ const MODULES: Module[] = [
     lessons: [
       { title: "Présentation de l'aménagement VASP L1H1", duration: 15 },
       { title: "La liste de course complète (Airtable)", duration: 8, tag: "outil" },
+      { title: "Quiz Module 4", tag: "quiz" },
+      { title: "Fiche récap PDF", tag: "pdf" },
     ],
   },
   {
@@ -141,6 +145,8 @@ const MODULES: Module[] = [
       { title: "Les coûts administratifs", duration: 8 },
       { title: "Avantages et inconvénients du VASP", duration: 10 },
       { title: "BONUS — L'outil IA qui va t'aider", duration: 6, tag: "bonus" },
+      { title: "Quiz Module 7", tag: "quiz" },
+      { title: "Fiche récap PDF", tag: "pdf" },
     ],
   },
   {
@@ -172,6 +178,8 @@ const MODULES: Module[] = [
       { title: "Le ponçage" },
       { title: "Installation électrique" },
       { title: "Le vernissage" },
+      { title: "Quiz Module 8", tag: "quiz" },
+      { title: "Fiche récap PDF", tag: "pdf" },
     ],
   },
   {
@@ -192,6 +200,8 @@ const MODULES: Module[] = [
       { title: "La norme sur la pesée", duration: 5 },
       { title: "Les étiquettes obligatoires", duration: 6 },
       { title: "Les objets obligatoires", duration: 5 },
+      { title: "Quiz Module 9", tag: "quiz" },
+      { title: "Fiche récap PDF", tag: "pdf" },
     ],
   },
   {
@@ -214,6 +224,8 @@ const MODULES: Module[] = [
       { title: "Comment peser son véhicule" },
       { title: "Calcul de répartition des charges" },
       { title: "Plans Électricité & eau" },
+      { title: "Quiz Module 10", tag: "quiz" },
+      { title: "Fiche récap PDF", tag: "pdf" },
     ],
   },
   {
@@ -320,6 +332,39 @@ export default function ProgrammePage() {
           <div className="grid gap-4 sm:gap-5">
             {[
               {
+                emoji: "🛒",
+                title: "Liste de course complète",
+                iconBg: "rgba(245,158,11,0.08)",
+                text: (
+                  <>
+                    Un <span className="text-slate-900 font-semibold">tableur Airtable complet</span> avec chaque matériau, chaque outil, chaque référence et son prix.
+                    Tu maîtrises <span className="text-slate-900 font-semibold">100% de ton budget</span> avant même de commencer les travaux — zéro surprise.
+                  </>
+                ),
+              },
+              {
+                emoji: "📋",
+                title: "Templates administratifs VASP",
+                iconBg: "rgba(59,130,246,0.08)",
+                text: (
+                  <>
+                    Des <span className="text-slate-900 font-semibold">documents pré-remplis</span> dans un Google Drive partagé pour faire ta demande d&apos;homologation VASP
+                    vite et bien. Demande de réception, attestation de travaux, checklist DREAL — tout est prêt, tu n&apos;as qu&apos;à compléter.
+                  </>
+                ),
+              },
+              {
+                emoji: "⚡",
+                title: "Schémas électricité & eau détaillés",
+                iconBg: "rgba(168,85,247,0.08)",
+                text: (
+                  <>
+                    Des <span className="text-slate-900 font-semibold">schémas complets et annotés</span> pour le circuit électrique et le circuit d&apos;eau de ton van.
+                    Tu sais exactement quoi brancher où, sans risque d&apos;erreur.
+                  </>
+                ),
+              },
+              {
                 emoji: "🤝",
                 title: "Programme de parrainage",
                 iconBg: "rgba(185,148,95,0.08)",
@@ -328,33 +373,41 @@ export default function ProgrammePage() {
                     Tu obtiens un <span className="text-slate-900 font-semibold">code promo personnalisé</span> à partager autour de toi.
                     Chaque personne qui rejoint la formation grâce à ton code bénéficie d&apos;une réduction —
                     et toi, tu touches <span className="text-slate-900 font-semibold">10% de commission</span> sur chaque vente.
-                    Un moyen concret de rentabiliser ta formation avant même d&apos;avoir terminé les travaux.
                   </>
                 ),
               },
               {
                 emoji: "📣",
                 title: "Campagne de publicité offerte",
-                iconBg: "rgba(59,130,246,0.08)",
+                iconBg: "rgba(16,185,129,0.08)",
                 text: (
                   <>
                     Une fois tes travaux terminés, tu accèdes au <span className="text-slate-900 font-semibold">réseau de média buyers de Vanzon Explorer</span>.
                     On lance gratuitement une campagne publicitaire pour toi — que ce soit pour
                     optimiser la <span className="text-slate-900 font-semibold">location</span> ou accélérer la <span className="text-slate-900 font-semibold">revente</span> de ton van.
-                    Tu n&apos;as rien à gérer, on s&apos;occupe de tout.
                   </>
                 ),
               },
               {
                 emoji: "🌐",
                 title: "Ton van publié sur Vanzon Explorer",
-                iconBg: "rgba(168,85,247,0.08)",
+                iconBg: "rgba(239,68,68,0.06)",
                 text: (
                   <>
                     Ton van terminé ? On publie ton annonce directement sur <span className="text-slate-900 font-semibold">vanzonexplorer.com</span> et
                     tu profites de notre référencement SEO. En bonus, on publie une <span className="text-slate-900 font-semibold">série d&apos;articles de blog</span> ciblés
                     sur ta zone géographique pour attirer des locataires intéressés par ta région.
-                    Du trafic qualifié, gratuitement.
+                  </>
+                ),
+              },
+              {
+                emoji: "💬",
+                title: "Contact WhatsApp direct avec Jules",
+                iconBg: "rgba(37,211,102,0.08)",
+                text: (
+                  <>
+                    Tu as accès à mon <span className="text-slate-900 font-semibold">WhatsApp personnel</span> pour échanger sur n&apos;importe quelle question liée à ton projet.
+                    Je suis toujours ouvert à de nouvelles idées, des partenariats et de nouveaux projets ensemble.
                   </>
                 ),
               },
