@@ -45,6 +45,7 @@ export default function ComparisonSection() {
               {[
                 { value: "13 000 €", label: "Véhicule" },
                 { value: "10 600 €", label: "Aménagement" },
+                { value: "❌", label: "Pas d'homologation VASP" },
                 { value: "8 mois", label: "Temps des travaux" },
                 { value: "❌", label: "Pas d'exploitation à la location" },
                 { value: "❌", label: "Mauvaise revente" },
