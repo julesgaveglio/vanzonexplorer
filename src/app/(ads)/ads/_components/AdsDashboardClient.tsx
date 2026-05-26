@@ -345,10 +345,10 @@ export default function AdsDashboardClient() {
       <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
         <h3 className="text-slate-900 font-semibold mb-4">Funnel de conversion</h3>
         <div className="space-y-2">
-          {FUNNEL_ORDER.map((step, i) => {
+          {FUNNEL_ORDER.map((step) => {
             const count = sc[step] ?? 0;
             const pct = maxStep > 0 ? (count / maxStep) * 100 : 0;
-            const convRate = i > 0 ? (sc[FUNNEL_ORDER[i - 1]] > 0 ? Math.round((count / sc[FUNNEL_ORDER[i - 1]]) * 100) : 0) : 100;
+
             return (
               <div key={step} className="flex items-center gap-3">
                 <span className="text-xs text-slate-500 w-28 shrink-0 text-right font-medium">{STEP_LABELS[step] ?? step}</span>
