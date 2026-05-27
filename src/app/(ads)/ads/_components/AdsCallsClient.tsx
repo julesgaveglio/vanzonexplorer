@@ -94,18 +94,18 @@ export default function AdsCallsClient() {
       </div>
 
       {/* KPIs */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
           <p className="text-xs text-slate-500 uppercase tracking-wider font-medium mb-1">
             Total appels
           </p>
-          <p className="text-2xl font-bold text-slate-900">{calls.length}</p>
+          <p className="text-xl sm:text-2xl font-bold text-slate-900">{calls.length}</p>
         </div>
         <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
           <p className="text-xs text-slate-500 uppercase tracking-wider font-medium mb-1">
             Confirmés
           </p>
-          <p className="text-2xl font-bold text-emerald-600">
+          <p className="text-xl sm:text-2xl font-bold text-emerald-600">
             {confirmed.length}
           </p>
         </div>
@@ -113,7 +113,7 @@ export default function AdsCallsClient() {
           <p className="text-xs text-slate-500 uppercase tracking-wider font-medium mb-1">
             Taux confirmation
           </p>
-          <p className="text-2xl font-bold text-blue-600">
+          <p className="text-xl sm:text-2xl font-bold text-blue-600">
             {calls.length > 0
               ? Math.round((confirmed.length / calls.length) * 100)
               : 0}
@@ -159,7 +159,7 @@ export default function AdsCallsClient() {
                   <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium">
                     Statut
                   </th>
-                  <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium">
+                  <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium hidden sm:table-cell">
                     Source
                   </th>
                   <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium">
@@ -194,7 +194,7 @@ export default function AdsCallsClient() {
                           {isConfirmed ? "Confirmé" : "Calendly ouvert"}
                         </span>
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3 hidden sm:table-cell">
                         <span
                           className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${
                             call.source.startsWith("email")

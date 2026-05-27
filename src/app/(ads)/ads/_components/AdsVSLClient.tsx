@@ -158,9 +158,9 @@ export default function AdsVSLClient() {
 
       {/* Retention curves overlay */}
       <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-        <div className="flex items-center justify-between mb-1">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-1 gap-2">
           <h3 className="text-slate-900 font-semibold">Courbes de rétention</h3>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-3">
             {versions.map((v) => (
               <div key={v.id} className="flex items-center gap-1.5">
                 <div className="w-3 h-3 rounded-full" style={{ backgroundColor: v.color }} />

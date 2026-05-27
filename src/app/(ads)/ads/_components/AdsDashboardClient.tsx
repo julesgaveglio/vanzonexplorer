@@ -369,7 +369,7 @@ export default function AdsDashboardClient() {
 
             return (
               <div key={step} className="flex items-center gap-3">
-                <span className="text-xs text-slate-500 w-28 shrink-0 text-right font-medium">{STEP_LABELS[step] ?? step}</span>
+                <span className="text-[10px] sm:text-xs text-slate-500 w-20 sm:w-28 shrink-0 text-right font-medium">{STEP_LABELS[step] ?? step}</span>
                 <div className="flex-1 h-8 bg-slate-100 rounded-lg overflow-hidden relative">
                   <div
                     className="h-full rounded-lg transition-all duration-700"

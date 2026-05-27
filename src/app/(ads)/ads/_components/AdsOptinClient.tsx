@@ -130,7 +130,7 @@ export default function AdsOptinClient() {
       ) : (
         <>
           {/* KPIs globaux */}
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <KPICard
               label="Opt-in vues"
               value={data?.total.views ?? 0}
@@ -159,7 +159,7 @@ export default function AdsOptinClient() {
               {(data?.pages ?? []).map((p) => (
                 <div
                   key={p.slug}
-                  className="flex items-center justify-between px-5 py-4"
+                  className="flex flex-col sm:flex-row sm:items-center justify-between px-5 py-4 gap-3"
                 >
                   <div>
                     <p className="text-sm font-semibold text-slate-900">

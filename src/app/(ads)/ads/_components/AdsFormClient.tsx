@@ -143,10 +143,10 @@ export default function AdsFormClient() {
                   <th className="text-center text-xs text-slate-500 uppercase tracking-wider px-2 py-3 font-medium w-10"></th>
                   <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium">Pr&eacute;nom</th>
                   <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium">Email</th>
-                  <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium">T&eacute;l</th>
+                  <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium hidden lg:table-cell">T&eacute;l</th>
                   <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium">Objectif</th>
-                  <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium">Profil</th>
-                  <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium">Budget</th>
+                  <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium hidden sm:table-cell">Profil</th>
+                  <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium hidden sm:table-cell">Budget</th>
                   <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium">Date</th>
                 </tr>
               </thead>
@@ -182,7 +182,7 @@ export default function AdsFormClient() {
                     <td className="px-4 py-3 text-slate-600 text-xs">
                       {lead.email}
                     </td>
-                    <td className="px-4 py-3 text-slate-600 text-xs">
+                    <td className="px-4 py-3 text-slate-600 text-xs hidden lg:table-cell">
                       {lead.phone ?? "\u2014"}
                     </td>
                     <td className="px-4 py-3">
@@ -202,7 +202,7 @@ export default function AdsFormClient() {
                         <span className="text-slate-300 text-xs">\u2014</span>
                       )}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3 hidden sm:table-cell">
                       {lead.q_profile ? (
                         <span
                           className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${
@@ -217,7 +217,7 @@ export default function AdsFormClient() {
                         <span className="text-slate-300 text-xs">\u2014</span>
                       )}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3 hidden sm:table-cell">
                       {lead.q_budget ? (
                         <span
                           className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${
