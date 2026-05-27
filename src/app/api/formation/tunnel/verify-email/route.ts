@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import dns from "dns/promises";
+import { trackVerification, checkRejectionRateAndAlert } from "@/lib/ads-monitor";
 
 // 1000+ disposable email domains
 const DISPOSABLE_DOMAINS = new Set([
@@ -32,33 +33,39 @@ const SUSPICIOUS_TLDS = new Set([
   "review","stream","gdn","bid","trade","webcam","party","science",
 ]);
 
+function reject(emailAddr: string | null, reason: string) {
+  trackVerification("email", emailAddr, false, reason).catch(() => {});
+  checkRejectionRateAndAlert().catch(() => {});
+  return NextResponse.json({ valid: false, reason });
+}
+
 export async function POST(req: Request) {
   try {
     const { email } = await req.json();
     if (!email || typeof email !== "string") {
-      return NextResponse.json({ valid: false, reason: "missing" });
+      return reject(null, "missing");
     }
 
     const emailLower = email.toLowerCase().trim();
     const parts = emailLower.split("@");
     if (parts.length !== 2) {
-      return NextResponse.json({ valid: false, reason: "format" });
+      return reject(emailLower, "format");
     }
 
     const [localPart, domain] = parts;
 
     // ── Step 1: Format check ──
     if (!/^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$/.test(emailLower)) {
-      return NextResponse.json({ valid: false, reason: "format" });
+      return reject(emailLower, "format");
     }
 
     if (localPart.length < 2) {
-      return NextResponse.json({ valid: false, reason: "too_short" });
+      return reject(emailLower, "too_short");
     }
 
     // ── Step 2: Disposable domain check ──
     if (DISPOSABLE_DOMAINS.has(domain)) {
-      return NextResponse.json({ valid: false, reason: "disposable" });
+      return reject(emailLower, "disposable");
     }
 
     // Check subdomain patterns (e.g., anything.tempmail.com)
@@ -66,24 +73,24 @@ export async function POST(req: Request) {
     if (domainParts.length > 2) {
       const baseDomain = domainParts.slice(-2).join(".");
       if (DISPOSABLE_DOMAINS.has(baseDomain)) {
-        return NextResponse.json({ valid: false, reason: "disposable" });
+        return reject(emailLower, "disposable");
       }
     }
 
     // ── Step 3: Suspicious TLD ──
     const tld = domainParts[domainParts.length - 1];
     if (SUSPICIOUS_TLDS.has(tld)) {
-      return NextResponse.json({ valid: false, reason: "suspicious_tld" });
+      return reject(emailLower, "suspicious_tld");
     }
 
     // ── Step 4: MX record check (free, proves domain can receive email) ──
     try {
       const mx = await dns.resolveMx(domain);
       if (!mx || mx.length === 0) {
-        return NextResponse.json({ valid: false, reason: "no_mx" });
+        return reject(emailLower, "no_mx");
       }
     } catch {
-      return NextResponse.json({ valid: false, reason: "no_mx" });
+      return reject(emailLower, "no_mx");
     }
 
     // ── Step 5: ZeroBounce real-time verification ──
@@ -101,12 +108,12 @@ export async function POST(req: Request) {
 
           // Hard reject
           if (status === "invalid" || status === "spamtrap" || status === "abuse" || status === "do_not_mail") {
-            return NextResponse.json({ valid: false, reason: `zerobounce_${status}` });
+            return reject(emailLower, `zerobounce_${status}`);
           }
 
           // Disposable detected by ZeroBounce
           if (zb.sub_status === "disposable" || status === "disposable") {
-            return NextResponse.json({ valid: false, reason: "disposable" });
+            return reject(emailLower, "disposable");
           }
 
           // Valid or catch-all → OK
@@ -122,6 +129,8 @@ export async function POST(req: Request) {
     }
 
     // ── If we got here: MX OK, not disposable, ZeroBounce inconclusive → accept ──
+    trackVerification("email", emailLower, true, "mx_valid").catch(() => {});
+    checkRejectionRateAndAlert().catch(() => {});
     return NextResponse.json({ valid: true, reason: "mx_valid" });
   } catch {
     // Error → don't block the user

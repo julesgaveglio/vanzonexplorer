@@ -1,5 +1,12 @@
 import { NextResponse } from "next/server";
 import { parsePhoneNumberFromString, isValidPhoneNumber } from "libphonenumber-js";
+import { trackVerification, checkRejectionRateAndAlert } from "@/lib/ads-monitor";
+
+function rejectPhone(reason: string) {
+  trackVerification("phone", null, false, reason).catch(() => {});
+  checkRejectionRateAndAlert().catch(() => {});
+  return NextResponse.json({ valid: false, reason });
+}
 
 export async function POST(req: Request) {
   try {
@@ -15,17 +22,17 @@ export async function POST(req: Request) {
     const parsed = parsePhoneNumberFromString(trimmed, "FR");
 
     if (!parsed) {
-      return NextResponse.json({ valid: false, reason: "parse_failed" });
+      return rejectPhone("parse_failed");
     }
 
     // ── Step 2: Validate the number ──
     if (!parsed.isValid()) {
-      return NextResponse.json({ valid: false, reason: "invalid_number" });
+      return rejectPhone("invalid_number");
     }
 
     // ── Step 3: Check it's a possible number (correct length for the country) ──
     if (!parsed.isPossible()) {
-      return NextResponse.json({ valid: false, reason: "impossible_number" });
+      return rejectPhone("impossible_number");
     }
 
     // ── Step 4: Get number type ──
@@ -33,7 +40,7 @@ export async function POST(req: Request) {
     // Block premium, toll-free, voip-only (common for fake signups)
     const blockedTypes = ["PREMIUM_RATE", "TOLL_FREE", "SHARED_COST", "UAN", "VOICEMAIL"];
     if (numberType && blockedTypes.includes(numberType)) {
-      return NextResponse.json({ valid: false, reason: "blocked_type" });
+      return rejectPhone("blocked_type");
     }
 
     // ── Step 5: Additional pattern checks ──
@@ -41,7 +48,7 @@ export async function POST(req: Request) {
 
     // All same digits
     if (/^(\d)\1+$/.test(national)) {
-      return NextResponse.json({ valid: false, reason: "fake_pattern" });
+      return rejectPhone("fake_pattern");
     }
 
     // Sequential (012345, 987654)
@@ -54,7 +61,7 @@ export async function POST(req: Request) {
       }
     }
     if (sequential && digits.length >= 8) {
-      return NextResponse.json({ valid: false, reason: "fake_pattern" });
+      return rejectPhone("fake_pattern");
     }
 
     // Repeated pairs (06060606)
@@ -62,17 +69,18 @@ export async function POST(req: Request) {
     if (pairs.length >= 4) {
       const uniquePairs = new Set(pairs);
       if (uniquePairs.size <= 1) {
-        return NextResponse.json({ valid: false, reason: "fake_pattern" });
+        return rejectPhone("fake_pattern");
       }
     }
 
     // ── Step 6: Double-check with isValidPhoneNumber (belt & suspenders) ──
     const international = parsed.format("E.164");
     if (!isValidPhoneNumber(international)) {
-      return NextResponse.json({ valid: false, reason: "invalid_e164" });
+      return rejectPhone("invalid_e164");
     }
 
     // ── All good ──
+    trackVerification("phone", null, true, "verified").catch(() => {});
     return NextResponse.json({
       valid: true,
       reason: "verified",
