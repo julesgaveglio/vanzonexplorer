@@ -259,6 +259,7 @@ export default function OptinForm() {
           q_profile: answers.q_profile,
           q_budget: answers.q_budget,
           phone: phone || undefined,
+          title_variant_id: (() => { try { return localStorage.getItem("vba_title_variant_id") ?? undefined; } catch { return undefined; } })(),
           is_hot: computeIsHot(answers),
         },
       });

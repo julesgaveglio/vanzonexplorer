@@ -4,6 +4,7 @@ import Image from "next/image";
 import OptinForm from "./OptinForm";
 import PageViewTracker from "./PageViewTracker";
 import VideoThumb from "./VideoThumb";
+import DynamicTitle from "./DynamicTitle";
 
 export const metadata: Metadata = {
   title: "Formation Van Business Academy",
@@ -32,30 +33,8 @@ export default function OptinPage() {
         <PageViewTracker />
 
         <div className="w-full max-w-lg mx-auto flex flex-col items-center">
-          {/* Headline */}
-          <h1 className="font-display text-[1.7rem] sm:text-4xl lg:text-[2.6rem] leading-[1.15] text-center text-white mb-6">
-            Donne-moi{" "}
-            <span
-              style={{
-                background: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
-            >
-              13 minutes
-            </span>{" "}
-            et je te partage (vraiment) tout le process pour générer{" "}
-            <span
-              style={{
-                background: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
-            >
-              600€/mois
-            </span>{" "}
-            de revenu locatif avec un van aménagé
-          </h1>
+          {/* Headline — dynamic A/B tested */}
+          <DynamicTitle />
 
           {/* Bullet points */}
           <ul className="flex flex-col gap-3 mb-8 w-full">
