@@ -210,9 +210,14 @@ export default function OptinForm() {
           />
           <input
             type="tel"
-            placeholder="Ton numéro de téléphone (optionnel)"
+            inputMode="tel"
+            autoComplete="tel"
+            placeholder="Ton numéro de téléphone"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
+            required
+            minLength={10}
+            maxLength={15}
             className="w-full px-4 py-4 rounded-xl text-white text-sm placeholder:text-white/40 transition-all outline-none focus:ring-2 focus:ring-[#B9945F]/40"
             style={{
               background: "rgba(255,255,255,0.06)",

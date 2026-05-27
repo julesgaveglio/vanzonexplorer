@@ -62,7 +62,7 @@ export default function OptinPage() {
             {[
               "Sans expérience en bricolage ou en mécanique",
               "En moins de 2h/jour, même si tu pars de zéro",
-              "Méthode testée et prouvée avec des chiffres réels",
+              "Un process en 4 étapes : acheter, retaper, louer, revendre avec plus-value",
             ].map((text) => (
               <li key={text} className="flex items-start gap-3">
                 <span
