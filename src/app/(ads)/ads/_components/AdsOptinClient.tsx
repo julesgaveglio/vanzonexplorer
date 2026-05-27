@@ -1,16 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Legend,
-} from "recharts";
+import AdsTitlesClient from "./AdsTitlesClient";
 
 interface Campaign {
   id: string;
@@ -75,19 +66,6 @@ export default function AdsOptinClient() {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
-
-  const daily = (data?.daily ?? []).map((d: Record<string, unknown>) => {
-    const date = d.date as string;
-    const v1 = d.v1 as { views: number; optins: number } | undefined;
-    const v2 = d.v2 as { views: number; optins: number } | undefined;
-    return {
-      date: date?.slice(5),
-      "V1 vues": v1?.views ?? 0,
-      "V1 leads": v1?.optins ?? 0,
-      "V2 vues": v2?.views ?? 0,
-      "V2 leads": v2?.optins ?? 0,
-    };
-  });
 
   return (
     <div className="space-y-6">
@@ -202,54 +180,8 @@ export default function AdsOptinClient() {
             </div>
           </div>
 
-          {/* Chart quotidien */}
-          {daily.length > 0 && (
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
-              <h2 className="text-base font-semibold text-slate-900 mb-4">
-                Opt-in vues & leads par jour
-              </h2>
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={daily}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                    <XAxis
-                      dataKey="date"
-                      tick={{ fontSize: 11, fill: "#94a3b8" }}
-                    />
-                    <YAxis tick={{ fontSize: 11, fill: "#94a3b8" }} />
-                    <Tooltip
-                      contentStyle={{
-                        borderRadius: 12,
-                        border: "1px solid #e2e8f0",
-                        fontSize: 12,
-                      }}
-                    />
-                    <Legend wrapperStyle={{ fontSize: 12 }} />
-                    <Bar
-                      dataKey="V1 vues"
-                      fill="#bae6fd"
-                      radius={[4, 4, 0, 0]}
-                    />
-                    <Bar
-                      dataKey="V1 leads"
-                      fill="#0284c7"
-                      radius={[4, 4, 0, 0]}
-                    />
-                    <Bar
-                      dataKey="V2 vues"
-                      fill="#fde68a"
-                      radius={[4, 4, 0, 0]}
-                    />
-                    <Bar
-                      dataKey="V2 leads"
-                      fill="#b9945f"
-                      radius={[4, 4, 0, 0]}
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-          )}
+          {/* A/B Test Titres — intégré dans la page Opt-in */}
+          <AdsTitlesClient />
         </>
       )}
     </div>
