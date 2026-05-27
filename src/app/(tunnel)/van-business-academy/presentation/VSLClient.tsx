@@ -217,7 +217,7 @@ export default function VSLClient({ videoId, vslVersionId }: VSLClientProps) {
 
       {/* Title */}
       <h1 className="text-center leading-tight mb-3">
-        <span className="block font-display text-xl sm:text-2xl md:text-3xl font-black text-white">
+        <span className="block text-xl sm:text-2xl md:text-3xl font-semibold text-white">
           Donne-moi <span style={{ backgroundImage: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)" }} className="bg-clip-text text-transparent">13 minutes</span> et je te partage (vraiment) tout le process pour générer{" "}
           <span style={{ backgroundImage: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)" }} className="bg-clip-text text-transparent">600&euro;/mois</span> de revenu locatif avec un van aménagé
         </span>
