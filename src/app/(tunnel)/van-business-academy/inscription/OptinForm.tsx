@@ -97,8 +97,10 @@ export default function OptinForm() {
         return;
       }
 
-      // Save to localStorage for subsequent pages
+      // Save to localStorage for subsequent pages (include is_hot for VSL CTA delay)
+      const isHot = computeIsHot(answers);
       saveFunnelData({ firstname, email, ...utmParams });
+      try { localStorage.setItem("vba_is_hot", isHot ? "1" : "0"); } catch {}
 
       // Track: Lead event (Pixel + Supabase)
       trackFunnel("optin", "/van-business-academy/inscription", {

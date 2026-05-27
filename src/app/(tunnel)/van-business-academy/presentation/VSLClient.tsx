@@ -6,7 +6,8 @@ import { getFunnelData } from "@/lib/hooks/useUTMParams";
 import { trackFunnel } from "@/lib/funnel-tracking";
 import LiquidButton from "@/components/ui/LiquidButton";
 
-const CTA_DELAY_SECONDS = 144; // 2min24
+const CTA_DELAY_HOT = 60;  // 1 min pour les leads chauds
+const CTA_DELAY_COLD = 300; // 5 min pour les leads froids
 
 interface VSLClientProps {
   videoId: string;
@@ -84,9 +85,14 @@ export default function VSLClient({ videoId, vslVersionId }: VSLClientProps) {
     });
   }, [vslVersionId]);
 
-  // --- CTA delay ---
+  // --- CTA delay (1min hot, 5min cold) ---
   useEffect(() => {
-    const timer = setTimeout(() => setShowCTA(true), CTA_DELAY_SECONDS * 1000);
+    let delay = CTA_DELAY_COLD;
+    try {
+      const isHot = localStorage.getItem("vba_is_hot");
+      if (isHot === "1") delay = CTA_DELAY_HOT;
+    } catch {}
+    const timer = setTimeout(() => setShowCTA(true), delay * 1000);
     return () => clearTimeout(timer);
   }, []);
 
