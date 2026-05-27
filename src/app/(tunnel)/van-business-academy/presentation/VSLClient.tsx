@@ -6,7 +6,7 @@ import { getFunnelData } from "@/lib/hooks/useUTMParams";
 import { trackFunnel } from "@/lib/funnel-tracking";
 import LiquidButton from "@/components/ui/LiquidButton";
 
-const CTA_DELAY_HOT = 60;  // 1 min pour les leads chauds
+const CTA_DELAY_HOT = 0;   // immédiat pour les leads chauds
 const CTA_DELAY_COLD = 300; // 5 min pour les leads froids
 
 interface VSLClientProps {
