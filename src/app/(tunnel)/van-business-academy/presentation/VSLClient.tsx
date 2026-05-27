@@ -193,6 +193,7 @@ export default function VSLClient({ videoId, vslVersionId }: VSLClientProps) {
   };
 
   return (
+    <div className="min-h-screen pt-10 sm:pt-16" style={{ background: "#0A0A0A" }}>
     <div className="max-w-3xl mx-auto px-4 pb-16">
       <style>{`
         @keyframes gentle-pulse {
@@ -216,7 +217,7 @@ export default function VSLClient({ videoId, vslVersionId }: VSLClientProps) {
 
       {/* Title */}
       <h1 className="text-center leading-tight mb-3">
-        <span className="block font-display text-xl sm:text-2xl md:text-3xl font-black text-slate-900">
+        <span className="block font-display text-xl sm:text-2xl md:text-3xl font-black text-white">
           Donne-moi <span style={{ backgroundImage: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)" }} className="bg-clip-text text-transparent">13 minutes</span> et je te partage (vraiment) tout le process pour générer{" "}
           <span style={{ backgroundImage: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)" }} className="bg-clip-text text-transparent">600&euro;/mois</span> de revenu locatif avec un van aménagé
         </span>
@@ -229,7 +230,7 @@ export default function VSLClient({ videoId, vslVersionId }: VSLClientProps) {
           <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
           <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
         </svg>
-        <p className="text-slate-500 text-sm">Active le son et regarde jusqu&apos;à la fin</p>
+        <p className="text-white/50 text-sm">Active le son et regarde jusqu&apos;à la fin</p>
       </div>
 
       {/* Video player — HLS native */}
@@ -272,14 +273,15 @@ export default function VSLClient({ videoId, vslVersionId }: VSLClientProps) {
             <LiquidButton variant="gold" size="responsive" href="/van-business-academy/diagnostic-offert" fullWidth>
               Réserver mon appel stratégique gratuit →
             </LiquidButton>
-            <p className="text-xs text-slate-400 mt-3">30 minutes &middot; Gratuit &middot; Sans engagement</p>
+            <p className="text-xs text-white/40 mt-3">30 minutes &middot; Gratuit &middot; Sans engagement</p>
           </div>
         ) : (
-          <p className="text-base text-slate-400 italic animate-pulse">
+          <p className="text-base text-white/40 italic animate-pulse">
             &#127873; Une surprise apparaitra juste ici...
           </p>
         )}
       </div>
+    </div>
     </div>
   );
 }
