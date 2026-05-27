@@ -79,10 +79,7 @@ export default function OptinPage() {
           </ul>
 
           {/* Video preview — thumbnail + play button → scroll to form */}
-          <div
-            className="w-full mb-8 rounded-2xl overflow-hidden relative cursor-pointer"
-            onClick={() => document.getElementById("optin-form-card")?.scrollIntoView({ behavior: "smooth" })}
-          >
+          <div className="w-full mb-8 rounded-2xl overflow-hidden relative">
             <div
               className="absolute inset-0 rounded-2xl pointer-events-none z-10"
               style={{ boxShadow: "inset 0 0 30px rgba(0,0,0,0.5)" }}

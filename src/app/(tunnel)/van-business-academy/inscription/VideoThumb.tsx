@@ -6,11 +6,9 @@ const VIDEO_POSTER = "/images/construis-ta-liberte.jpg";
 
 export default function VideoThumb() {
   const handleClick = () => {
-    const form = document.getElementById("optin-form");
-    if (form) {
-      form.scrollIntoView({ behavior: "smooth", block: "center" });
-      const firstInput = form.querySelector("input");
-      if (firstInput) setTimeout(() => firstInput.focus(), 500);
+    const card = document.getElementById("optin-form-card");
+    if (card) {
+      card.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
 
