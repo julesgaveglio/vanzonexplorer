@@ -196,6 +196,30 @@ export default function OptinForm() {
     setLoading(true);
 
     try {
+      // ── Server-side email verification (MX + ZeroBounce) ──
+      const verifyRes = await fetch("/api/formation/tunnel/verify-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const verify = await verifyRes.json();
+      if (!verify.valid) {
+        const messages: Record<string, string> = {
+          format: "L'adresse email ne semble pas valide.",
+          too_short: "L'adresse email est trop courte.",
+          disposable: "Les emails temporaires ne sont pas acceptés. Utilise ton email personnel.",
+          suspicious_tld: "Cette extension d'email n'est pas acceptée.",
+          no_mx: "Ce domaine email ne peut pas recevoir de messages. Vérifie ton adresse.",
+          zerobounce_invalid: "Cette adresse email n'existe pas. Vérifie l'orthographe.",
+          zerobounce_spamtrap: "Cette adresse email n'est pas acceptée.",
+          zerobounce_abuse: "Cette adresse email n'est pas acceptée.",
+          zerobounce_do_not_mail: "Cette adresse email n'est pas acceptée.",
+        };
+        setError(messages[verify.reason] ?? "L'adresse email ne semble pas valide.");
+        setLoading(false);
+        return;
+      }
+
       const res = await fetch("/api/formation/tunnel/optin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
