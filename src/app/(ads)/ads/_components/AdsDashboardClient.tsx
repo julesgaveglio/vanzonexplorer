@@ -182,25 +182,43 @@ export default function AdsDashboardClient() {
           </select>
 
           {selectedCampaign !== "all" && (
-            <button
-              onClick={async () => {
-                if (!confirm("Clôturer cette campagne ? Les données seront conservées.")) return;
-                await fetch("/api/ads/campaigns", {
-                  method: "PATCH",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    id: selectedCampaign,
-                    is_active: false,
-                    end_date: new Date().toISOString().slice(0, 10),
-                  }),
-                });
-                setSelectedCampaign("all");
-                fetchData();
-              }}
-              className="px-3 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-xl border border-red-200 hover:bg-red-100 transition-colors"
-            >
-              Clôturer
-            </button>
+            <>
+              <button
+                onClick={async () => {
+                  const camp = campaigns.find((c) => c.id === selectedCampaign);
+                  const newName = prompt("Nouveau nom de la campagne :", camp?.name ?? "");
+                  if (!newName || newName === camp?.name) return;
+                  await fetch("/api/ads/campaigns", {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ id: selectedCampaign, name: newName }),
+                  });
+                  fetchData();
+                }}
+                className="px-3 py-2 text-sm font-medium text-slate-600 bg-slate-50 rounded-xl border border-slate-200 hover:bg-slate-100 transition-colors"
+              >
+                Renommer
+              </button>
+              <button
+                onClick={async () => {
+                  if (!confirm("Clôturer cette campagne ? Les données seront conservées.")) return;
+                  await fetch("/api/ads/campaigns", {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      id: selectedCampaign,
+                      is_active: false,
+                      end_date: new Date().toISOString().slice(0, 10),
+                    }),
+                  });
+                  setSelectedCampaign("all");
+                  fetchData();
+                }}
+                className="px-3 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-xl border border-red-200 hover:bg-red-100 transition-colors"
+              >
+                Clôturer
+              </button>
+            </>
           )}
 
           <button
