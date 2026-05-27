@@ -2,10 +2,10 @@ import { NextResponse } from "next/server";
 import { createSupabaseAnon } from "@/lib/supabase/server";
 
 const FALLBACK = {
-  id: "fallback",
+  id: "047a69df-7309-4719-853a-aa50b7d60d79",
   bunny_video_id: "b8323ed9-2f4b-4bcc-8313-6ab4835246ee",
   bunny_library_id: "641831",
-  name: "VSL2 — Hook V2",
+  name: "VSL 2 — Campagne 2",
 };
 
 export const revalidate = 60;
