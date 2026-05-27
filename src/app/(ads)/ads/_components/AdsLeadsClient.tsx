@@ -2,6 +2,15 @@
 
 import { useState, useEffect } from "react";
 
+interface Campaign {
+  id: string;
+  name: string;
+  start_date: string;
+  end_date: string | null;
+  budget_euros: number | null;
+  platform: string | null;
+}
+
 interface EmailEntry {
   campaign_name: string;
   sent_at: string;
@@ -32,12 +41,6 @@ const PERIODS = [
   { label: "90j", days: 90 },
 ] as const;
 
-const CAMPAIGN_FILTERS = [
-  { label: "Toutes", value: "all" },
-  { label: "Campagne 1", value: "campagne1" },
-  { label: "Campagne 2", value: "campagne2" },
-] as const;
-
 const COLD_OBJECTIVES = ["Gagner de l'argent rapidement avec un van"];
 const COLD_PROFILES = ["Retraité"];
 const COLD_BUDGETS = ["Moins de 10 000 €"];
@@ -60,15 +63,26 @@ function formatWatch(seconds: number | null): string {
 export default function AdsLeadsClient() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [period, setPeriod] = useState(30);
-  const [campaign, setCampaign] = useState("all");
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [selectedCampaign, setSelectedCampaign] = useState<string>("all");
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [expandedLead, setExpandedLead] = useState<string | null>(null);
 
+  useEffect(() => {
+    fetch("/api/ads/campaigns")
+      .then((r) => r.json())
+      .then((json) => setCampaigns(json.campaigns ?? []));
+  }, []);
+
   const fetchLeads = () => {
     setLoading(true);
-    fetch(`/api/ads/leads?days=${period}`)
+    const camp = campaigns.find((c) => c.id === selectedCampaign);
+    const qs = camp
+      ? `start=${camp.start_date}${camp.end_date ? `&end=${camp.end_date}` : ""}`
+      : `days=${period}`;
+    fetch(`/api/ads/leads?${qs}`)
       .then((r) => r.json())
       .then((json) => setLeads(json.leads ?? []))
       .finally(() => setLoading(false));
@@ -77,7 +91,7 @@ export default function AdsLeadsClient() {
   useEffect(() => {
     fetchLeads();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [period]);
+  }, [period, selectedCampaign, campaigns]);
 
   const handleDelete = async (email: string) => {
     if (!confirm(`Supprimer le lead ${email} et tous ses événements ?`)) return;
@@ -92,11 +106,6 @@ export default function AdsLeadsClient() {
   };
 
   const filtered = leads.filter((l) => {
-    // Campaign filter
-    if (campaign === "campagne1" && !l.utm_campaign?.includes("1")) return false;
-    if (campaign === "campagne2" && !l.utm_campaign?.includes("2")) return false;
-
-    // Search
     if (!search) return true;
     const q = search.toLowerCase();
     return (
@@ -126,9 +135,9 @@ export default function AdsLeadsClient() {
             {PERIODS.map((p) => (
               <button
                 key={p.days}
-                onClick={() => setPeriod(p.days)}
+                onClick={() => { setSelectedCampaign("all"); setPeriod(p.days); }}
                 className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-all ${
-                  period === p.days
+                  selectedCampaign === "all" && period === p.days
                     ? "bg-blue-50 text-blue-600 shadow-sm"
                     : "text-slate-500 hover:text-slate-700"
                 }`}
@@ -139,12 +148,13 @@ export default function AdsLeadsClient() {
           </div>
 
           <select
-            value={campaign}
-            onChange={(e) => setCampaign(e.target.value)}
+            value={selectedCampaign}
+            onChange={(e) => setSelectedCampaign(e.target.value)}
             className="bg-white border border-slate-200 text-sm text-slate-700 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500/30 shadow-sm"
           >
-            {CAMPAIGN_FILTERS.map((c) => (
-              <option key={c.value} value={c.value}>{c.label}</option>
+            <option value="all">Toutes les campagnes</option>
+            {campaigns.map((c) => (
+              <option key={c.id} value={c.id}>{c.name}</option>
             ))}
           </select>
 

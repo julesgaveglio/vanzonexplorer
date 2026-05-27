@@ -2,6 +2,15 @@
 
 import { useState, useEffect } from "react";
 
+interface Campaign {
+  id: string;
+  name: string;
+  start_date: string;
+  end_date: string | null;
+  budget_euros: number | null;
+  platform: string | null;
+}
+
 interface Lead {
   firstname: string | null;
   email: string;
@@ -35,21 +44,30 @@ function isColdIndicator(key: "q_objective" | "q_profile" | "q_budget", value: s
 
 export default function AdsFormClient() {
   const [leads, setLeads] = useState<Lead[]>([]);
-  const [campaigns, setCampaigns] = useState<string[]>([]);
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [selectedCampaign, setSelectedCampaign] = useState<string>("all");
   const [period, setPeriod] = useState(30);
-  const [campaign, setCampaign] = useState("all");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    fetch("/api/ads/campaigns")
+      .then((r) => r.json())
+      .then((json) => setCampaigns(json.campaigns ?? []));
+  }, []);
+
+  useEffect(() => {
     setLoading(true);
-    fetch(`/api/ads/qualification?days=${period}&campaign=${encodeURIComponent(campaign)}`)
+    const camp = campaigns.find((c) => c.id === selectedCampaign);
+    const qs = camp
+      ? `start=${camp.start_date}${camp.end_date ? `&end=${camp.end_date}` : ""}`
+      : `days=${period}`;
+    fetch(`/api/ads/qualification?${qs}`)
       .then((r) => r.json())
       .then((json) => {
         setLeads(json.leads ?? []);
-        setCampaigns(json.campaigns ?? []);
       })
       .finally(() => setLoading(false));
-  }, [period, campaign]);
+  }, [period, selectedCampaign, campaigns]);
 
   const hotCount = leads.filter((l) => l.is_hot === true).length;
   const coldCount = leads.filter((l) => l.is_hot === false).length;
@@ -80,9 +98,9 @@ export default function AdsFormClient() {
             {PERIODS.map((p) => (
               <button
                 key={p.days}
-                onClick={() => setPeriod(p.days)}
+                onClick={() => { setSelectedCampaign("all"); setPeriod(p.days); }}
                 className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-all ${
-                  period === p.days
+                  selectedCampaign === "all" && period === p.days
                     ? "bg-blue-50 text-blue-600 shadow-sm"
                     : "text-slate-500 hover:text-slate-700"
                 }`}
@@ -92,15 +110,13 @@ export default function AdsFormClient() {
             ))}
           </div>
           <select
-            value={campaign}
-            onChange={(e) => setCampaign(e.target.value)}
-            className="bg-white border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/30 shadow-sm"
+            value={selectedCampaign}
+            onChange={(e) => setSelectedCampaign(e.target.value)}
+            className="bg-white border border-slate-200 text-sm text-slate-700 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500/30 shadow-sm"
           >
             <option value="all">Toutes les campagnes</option>
             {campaigns.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
+              <option key={c.id} value={c.id}>{c.name}</option>
             ))}
           </select>
         </div>

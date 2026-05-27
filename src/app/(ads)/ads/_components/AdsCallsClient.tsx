@@ -2,6 +2,15 @@
 
 import { useState, useEffect } from "react";
 
+interface Campaign {
+  id: string;
+  name: string;
+  start_date: string;
+  end_date: string | null;
+  budget_euros: number | null;
+  platform: string | null;
+}
+
 interface Call {
   email: string;
   firstname: string | null;
@@ -21,14 +30,26 @@ export default function AdsCallsClient() {
   const [calls, setCalls] = useState<Call[]>([]);
   const [period, setPeriod] = useState(90);
   const [loading, setLoading] = useState(true);
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [selectedCampaign, setSelectedCampaign] = useState<string>("all");
+
+  useEffect(() => {
+    fetch("/api/ads/campaigns")
+      .then((r) => r.json())
+      .then((json) => setCampaigns(json.campaigns ?? []));
+  }, []);
 
   useEffect(() => {
     setLoading(true);
-    fetch(`/api/ads/calls?days=${period}`)
+    const camp = campaigns.find((c) => c.id === selectedCampaign);
+    const qs = camp
+      ? `start=${camp.start_date}${camp.end_date ? `&end=${camp.end_date}` : ""}`
+      : `days=${period}`;
+    fetch(`/api/ads/calls?${qs}`)
       .then((r) => r.json())
       .then((json) => setCalls(json.calls ?? []))
       .finally(() => setLoading(false));
-  }, [period]);
+  }, [period, selectedCampaign, campaigns]);
 
   const confirmed = calls.filter((c) => c.booking_confirmed);
   const pending = calls.filter((c) => !c.booking_confirmed);
@@ -43,20 +64,32 @@ export default function AdsCallsClient() {
             {pending.length} en attente
           </p>
         </div>
-        <div className="flex bg-white rounded-xl border border-slate-200 p-0.5 shadow-sm">
-          {PERIODS.map((p) => (
-            <button
-              key={p.days}
-              onClick={() => setPeriod(p.days)}
-              className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-all ${
-                period === p.days
-                  ? "bg-blue-50 text-blue-600 shadow-sm"
-                  : "text-slate-500 hover:text-slate-700"
-              }`}
-            >
-              {p.label}
-            </button>
-          ))}
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex bg-white rounded-xl border border-slate-200 p-0.5 shadow-sm">
+            {PERIODS.map((p) => (
+              <button
+                key={p.days}
+                onClick={() => { setSelectedCampaign("all"); setPeriod(p.days); }}
+                className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-all ${
+                  selectedCampaign === "all" && period === p.days
+                    ? "bg-blue-50 text-blue-600 shadow-sm"
+                    : "text-slate-500 hover:text-slate-700"
+                }`}
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
+          <select
+            value={selectedCampaign}
+            onChange={(e) => setSelectedCampaign(e.target.value)}
+            className="bg-white border border-slate-200 text-sm text-slate-700 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500/30 shadow-sm"
+          >
+            <option value="all">Toutes les campagnes</option>
+            {campaigns.map((c) => (
+              <option key={c.id} value={c.id}>{c.name}</option>
+            ))}
+          </select>
         </div>
       </div>
 

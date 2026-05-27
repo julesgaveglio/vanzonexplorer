@@ -8,8 +8,16 @@ export async function GET(req: NextRequest) {
 
   const supabase = createSupabaseAdmin();
   const params = req.nextUrl.searchParams;
+  const startDate = params.get("start");
+  const endDate = params.get("end");
   const days = parseInt(params.get("days") ?? "30");
-  const since = new Date(Date.now() - days * 86400000).toISOString();
+
+  const since = startDate
+    ? new Date(startDate).toISOString()
+    : new Date(Date.now() - days * 86400000).toISOString();
+  const until = endDate
+    ? new Date(new Date(endDate).getTime() + 86400000).toISOString()
+    : undefined;
 
   // Fetch VSL versions
   const { data: versions } = await supabase
@@ -18,12 +26,14 @@ export async function GET(req: NextRequest) {
     .order("created_at", { ascending: true });
 
   // Fetch all VSL events
-  const { data: events } = await supabase
+  let eventsQuery = supabase
     .from("funnel_events")
     .select("event, email, session_id, created_at, metadata")
     .in("event", ["vsl_view", "vsl_25", "vsl_50", "vsl_75", "vsl_100", "vsl_exit"])
     .gte("created_at", since)
     .order("created_at", { ascending: false });
+  if (until) eventsQuery = eventsQuery.lte("created_at", until);
+  const { data: events } = await eventsQuery;
 
   const allEvents = events ?? [];
   const allVersions = versions ?? [];

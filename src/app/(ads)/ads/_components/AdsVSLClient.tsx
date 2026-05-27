@@ -6,6 +6,15 @@ import {
   BarChart, Bar,
 } from "recharts";
 
+interface Campaign {
+  id: string;
+  name: string;
+  start_date: string;
+  end_date: string | null;
+  budget_euros: number | null;
+  platform: string | null;
+}
+
 interface RetentionPoint {
   time: number;
   label: string;
@@ -41,10 +50,22 @@ export default function AdsVSLClient() {
   const [data, setData] = useState<VSLData | null>(null);
   const [period, setPeriod] = useState(30);
   const [loading, setLoading] = useState(true);
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [selectedCampaign, setSelectedCampaign] = useState<string>("all");
+
+  useEffect(() => {
+    fetch("/api/ads/campaigns")
+      .then((r) => r.json())
+      .then((json) => setCampaigns(json.campaigns ?? []));
+  }, []);
 
   useEffect(() => {
     const fetchData = () => {
-      fetch(`/api/ads/vsl?days=${period}`)
+      const camp = campaigns.find((c) => c.id === selectedCampaign);
+      const qs = camp
+        ? `start=${camp.start_date}${camp.end_date ? `&end=${camp.end_date}` : ""}`
+        : `days=${period}`;
+      fetch(`/api/ads/vsl?${qs}`)
         .then((r) => r.json())
         .then(setData)
         .finally(() => setLoading(false));
@@ -54,7 +75,7 @@ export default function AdsVSLClient() {
     // Auto-refresh toutes les 30 secondes
     const interval = setInterval(fetchData, 30000);
     return () => clearInterval(interval);
-  }, [period]);
+  }, [period, selectedCampaign, campaigns]);
 
   if (loading && !data) {
     return (
@@ -82,18 +103,30 @@ export default function AdsVSLClient() {
             {versions.length} version{versions.length > 1 ? "s" : ""} — courbes de rétention superposées
           </p>
         </div>
-        <div className="flex bg-white rounded-xl border border-slate-200 p-0.5 shadow-sm">
-          {PERIODS.map((p) => (
-            <button
-              key={p.days}
-              onClick={() => setPeriod(p.days)}
-              className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-all ${
-                period === p.days ? "bg-violet-50 text-violet-600 shadow-sm" : "text-slate-500 hover:text-slate-700"
-              }`}
-            >
-              {p.label}
-            </button>
-          ))}
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex bg-white rounded-xl border border-slate-200 p-0.5 shadow-sm">
+            {PERIODS.map((p) => (
+              <button
+                key={p.days}
+                onClick={() => { setSelectedCampaign("all"); setPeriod(p.days); }}
+                className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-all ${
+                  selectedCampaign === "all" && period === p.days ? "bg-violet-50 text-violet-600 shadow-sm" : "text-slate-500 hover:text-slate-700"
+                }`}
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
+          <select
+            value={selectedCampaign}
+            onChange={(e) => setSelectedCampaign(e.target.value)}
+            className="bg-white border border-slate-200 text-sm text-slate-700 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500/30 shadow-sm"
+          >
+            <option value="all">Toutes les campagnes</option>
+            {campaigns.map((c) => (
+              <option key={c.id} value={c.id}>{c.name}</option>
+            ))}
+          </select>
         </div>
       </div>
 

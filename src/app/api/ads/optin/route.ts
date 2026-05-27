@@ -16,15 +16,23 @@ export async function GET(req: NextRequest) {
 
   const supabase = createSupabaseAdmin();
   const params = req.nextUrl.searchParams;
+  const startDate = params.get("start");
+  const endDate = params.get("end");
   const days = parseInt(params.get("days") ?? "30");
-  const since = new Date(Date.now() - days * 86400000).toISOString();
+
+  const since = startDate
+    ? new Date(startDate).toISOString()
+    : new Date(Date.now() - days * 86400000).toISOString();
+  const until = endDate
+    ? new Date(new Date(endDate).getTime() + 86400000).toISOString()
+    : undefined;
 
   // Paginate — Supabase caps at 1000 rows per request
   const PAGE = 1000;
   const allEvents: { event: string; page: string | null; email: string | null; session_id: string | null; created_at: string | null }[] = [];
   let offset = 0;
   while (true) {
-    const { data } = await supabase
+    let q = supabase
       .from("funnel_events")
       .select("event, page, email, session_id, created_at")
       .in("event", ["page_view", "optin"])
@@ -32,6 +40,8 @@ export async function GET(req: NextRequest) {
       .or(`email.is.null,email.not.in.(${EXCLUDED_EMAILS.join(",")})`)
       .order("created_at", { ascending: false })
       .range(offset, offset + PAGE - 1);
+    if (until) q = q.lte("created_at", until);
+    const { data } = await q;
     if (!data || data.length === 0) break;
     allEvents.push(...data);
     if (data.length < PAGE) break;

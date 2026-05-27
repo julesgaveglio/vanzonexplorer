@@ -7,16 +7,27 @@ export async function GET(req: NextRequest) {
   if (check instanceof NextResponse) return check;
 
   const supabase = createSupabaseAdmin();
-  const days = parseInt(req.nextUrl.searchParams.get("days") ?? "90");
-  const since = new Date(Date.now() - days * 86400000).toISOString();
+  const params = req.nextUrl.searchParams;
+  const startDate = params.get("start");
+  const endDate = params.get("end");
+  const days = parseInt(params.get("days") ?? "90");
+
+  const since = startDate
+    ? new Date(startDate).toISOString()
+    : new Date(Date.now() - days * 86400000).toISOString();
+  const until = endDate
+    ? new Date(new Date(endDate).getTime() + 86400000).toISOString()
+    : undefined;
 
   // Get all booking events (booking_start + booking_confirmed)
-  const { data: bookingEvents } = await supabase
+  let bookingQuery = supabase
     .from("funnel_events")
     .select("email, firstname, event, created_at, utm_source, utm_medium, utm_campaign, metadata")
     .in("event", ["booking_start", "booking_confirmed"])
     .gte("created_at", since)
     .order("created_at", { ascending: false });
+  if (until) bookingQuery = bookingQuery.lte("created_at", until);
+  const { data: bookingEvents } = await bookingQuery;
 
   // Get email click data to detect email source
   const { data: emailClicks } = await supabase
