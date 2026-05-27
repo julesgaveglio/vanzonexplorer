@@ -11,6 +11,11 @@ interface EmailEntry {
 interface Lead {
   email: string;
   firstname: string | null;
+  phone: string | null;
+  q_objective: string | null;
+  q_profile: string | null;
+  q_budget: string | null;
+  is_hot: boolean | null;
   utm_source: string | null;
   utm_campaign: string | null;
   utm_content: string | null;
@@ -27,6 +32,24 @@ const PERIODS = [
   { label: "90j", days: 90 },
 ] as const;
 
+const CAMPAIGN_FILTERS = [
+  { label: "Toutes", value: "all" },
+  { label: "Campagne 1", value: "campagne1" },
+  { label: "Campagne 2", value: "campagne2" },
+] as const;
+
+const COLD_OBJECTIVES = ["Gagner de l'argent rapidement avec un van"];
+const COLD_PROFILES = ["Retraité"];
+const COLD_BUDGETS = ["Moins de 10 000 €"];
+
+function isColdAnswer(field: "objective" | "profile" | "budget", value: string | null): boolean {
+  if (!value) return false;
+  if (field === "objective") return COLD_OBJECTIVES.includes(value);
+  if (field === "profile") return COLD_PROFILES.includes(value);
+  if (field === "budget") return COLD_BUDGETS.includes(value);
+  return false;
+}
+
 function formatWatch(seconds: number | null): string {
   if (!seconds) return "—";
   const m = Math.floor(seconds / 60);
@@ -37,6 +60,7 @@ function formatWatch(seconds: number | null): string {
 export default function AdsLeadsClient() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [period, setPeriod] = useState(30);
+  const [campaign, setCampaign] = useState("all");
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<string | null>(null);
@@ -68,15 +92,23 @@ export default function AdsLeadsClient() {
   };
 
   const filtered = leads.filter((l) => {
+    // Campaign filter
+    if (campaign === "campagne1" && !l.utm_campaign?.includes("1")) return false;
+    if (campaign === "campagne2" && !l.utm_campaign?.includes("2")) return false;
+
+    // Search
     if (!search) return true;
     const q = search.toLowerCase();
     return (
       l.email?.toLowerCase().includes(q) ||
       l.firstname?.toLowerCase().includes(q) ||
-      l.utm_source?.toLowerCase().includes(q) ||
-      l.utm_campaign?.toLowerCase().includes(q)
+      l.phone?.toLowerCase().includes(q) ||
+      l.utm_source?.toLowerCase().includes(q)
     );
   });
+
+  const hotCount = filtered.filter((l) => l.is_hot === true).length;
+  const coldCount = filtered.filter((l) => l.is_hot === false).length;
 
   return (
     <div className="space-y-6">
@@ -84,8 +116,9 @@ export default function AdsLeadsClient() {
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Leads</h1>
           <p className="text-sm text-slate-500 mt-1">
-            {filtered.length} lead{filtered.length > 1 ? "s" : ""} sur la
-            période
+            {filtered.length} lead{filtered.length > 1 ? "s" : ""} —{" "}
+            <span className="text-emerald-600 font-medium">{hotCount} chauds</span>{" · "}
+            <span className="text-red-500 font-medium">{coldCount} froids</span>
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -104,6 +137,17 @@ export default function AdsLeadsClient() {
               </button>
             ))}
           </div>
+
+          <select
+            value={campaign}
+            onChange={(e) => setCampaign(e.target.value)}
+            className="bg-white border border-slate-200 text-sm text-slate-700 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500/30 shadow-sm"
+          >
+            {CAMPAIGN_FILTERS.map((c) => (
+              <option key={c.value} value={c.value}>{c.label}</option>
+            ))}
+          </select>
+
           <input
             type="text"
             placeholder="Rechercher..."
@@ -131,10 +175,12 @@ export default function AdsLeadsClient() {
               <thead>
                 <tr className="border-b border-slate-100 bg-slate-50/50">
                   <th className="text-center text-xs text-slate-500 uppercase tracking-wider px-3 py-3 font-medium w-10">#</th>
+                  <th className="text-center text-xs text-slate-500 uppercase tracking-wider px-2 py-3 font-medium w-8"></th>
                   <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium">Prénom</th>
                   <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium">Email</th>
+                  <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium hidden lg:table-cell">Tél</th>
+                  <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium">Qualification</th>
                   <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium">VSL</th>
-                  <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium">Dernier email</th>
                   <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium hidden lg:table-cell">Source</th>
                   <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium">Date</th>
                   <th className="px-3 py-3 w-10"></th>
@@ -143,11 +189,23 @@ export default function AdsLeadsClient() {
               <tbody>
                 {filtered.map((lead, i) => {
                   const isExpanded = expandedLead === lead.email;
+                  const hasQual = lead.q_objective || lead.q_profile || lead.q_budget;
                   return (
-                    <tr key={i} className="border-b border-slate-50">
-                      {/* Main row */}
+                    <tr key={i} className="border-b border-slate-50 hover:bg-slate-50/30">
                       <td className="px-3 py-3 text-center text-slate-400 text-xs font-mono align-top">
                         {filtered.length - i}
+                      </td>
+                      {/* Hot/Cold dot */}
+                      <td className="px-2 py-3 text-center align-top">
+                        {lead.is_hot === true && (
+                          <span className="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500" title="Lead chaud" />
+                        )}
+                        {lead.is_hot === false && (
+                          <span className="inline-block w-2.5 h-2.5 rounded-full bg-red-500" title="Lead froid" />
+                        )}
+                        {lead.is_hot === null && (
+                          <span className="inline-block w-2.5 h-2.5 rounded-full bg-slate-200" title="Non qualifié" />
+                        )}
                       </td>
                       <td className="px-4 py-3 text-slate-900 font-medium align-top">
                         {lead.firstname ?? "—"}
@@ -164,72 +222,59 @@ export default function AdsLeadsClient() {
                             </span>
                           )}
                         </button>
-                        {/* Email history dropdown */}
                         {isExpanded && lead.email_history.length > 0 && (
                           <div className="mt-2 bg-slate-50 rounded-lg p-3 space-y-1.5">
-                            <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
-                              Historique emails
-                            </p>
+                            <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Historique emails</p>
                             {lead.email_history.map((eh, j) => (
                               <div key={j} className="flex items-center gap-2">
-                                <span
-                                  className="w-2 h-2 rounded-full flex-shrink-0"
-                                  style={{ backgroundColor: eh.color || "#94A3B8" }}
-                                />
-                                <span className="text-xs text-slate-700 flex-1">
-                                  {eh.campaign_name}
-                                </span>
+                                <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: eh.color || "#94A3B8" }} />
+                                <span className="text-xs text-slate-700 flex-1">{eh.campaign_name}</span>
                                 <span className="text-[10px] text-slate-400">
-                                  {new Date(eh.sent_at).toLocaleDateString("fr-FR", {
-                                    day: "numeric",
-                                    month: "short",
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                  })}
+                                  {new Date(eh.sent_at).toLocaleDateString("fr-FR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
                                 </span>
                               </div>
                             ))}
                           </div>
                         )}
                       </td>
+                      <td className="px-4 py-3 hidden lg:table-cell align-top">
+                        <span className="text-xs text-slate-500">{lead.phone || "—"}</span>
+                      </td>
+                      {/* Qualification badges */}
+                      <td className="px-4 py-3 align-top">
+                        {hasQual ? (
+                          <div className="flex flex-wrap gap-1">
+                            {lead.q_objective && (
+                              <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${isColdAnswer("objective", lead.q_objective) ? "bg-red-50 text-red-600" : "bg-slate-100 text-slate-600"}`}>
+                                {lead.q_objective.length > 25 ? lead.q_objective.slice(0, 25) + "…" : lead.q_objective}
+                              </span>
+                            )}
+                            {lead.q_profile && (
+                              <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${isColdAnswer("profile", lead.q_profile) ? "bg-red-50 text-red-600" : "bg-blue-50 text-blue-600"}`}>
+                                {lead.q_profile}
+                              </span>
+                            )}
+                            {lead.q_budget && (
+                              <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${isColdAnswer("budget", lead.q_budget) ? "bg-red-50 text-red-600" : "bg-emerald-50 text-emerald-600"}`}>
+                                {lead.q_budget}
+                              </span>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-[10px] text-slate-300">—</span>
+                        )}
+                      </td>
                       <td className="px-4 py-3 align-top">
                         {lead.vsl_seconds ? (
-                          <span
-                            className={`inline-flex px-2 py-0.5 text-xs font-mono rounded-full ${
-                              lead.vsl_seconds >= 600
-                                ? "bg-emerald-50 text-emerald-700"
-                                : lead.vsl_seconds >= 180
-                                  ? "bg-amber-50 text-amber-700"
-                                  : "bg-slate-100 text-slate-500"
-                            }`}
-                          >
+                          <span className={`inline-flex px-2 py-0.5 text-xs font-mono rounded-full ${
+                            lead.vsl_seconds >= 600 ? "bg-emerald-50 text-emerald-700"
+                              : lead.vsl_seconds >= 180 ? "bg-amber-50 text-amber-700"
+                              : "bg-slate-100 text-slate-500"
+                          }`}>
                             {formatWatch(lead.vsl_seconds)}
                           </span>
                         ) : (
                           <span className="text-slate-300 text-xs">—</span>
-                        )}
-                      </td>
-                      <td className="px-4 py-3 align-top">
-                        {lead.last_email ? (
-                          <div className="flex items-center gap-1.5">
-                            <span
-                              className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-                              style={{ backgroundColor: lead.last_email.color || "#94A3B8" }}
-                            />
-                            <div>
-                              <p className="text-xs text-slate-700 font-medium truncate max-w-[140px]">
-                                {lead.last_email.campaign_name}
-                              </p>
-                              <p className="text-[10px] text-slate-400">
-                                {new Date(lead.last_email.sent_at).toLocaleDateString("fr-FR", {
-                                  day: "numeric",
-                                  month: "short",
-                                })}
-                              </p>
-                            </div>
-                          </div>
-                        ) : (
-                          <span className="text-slate-300 text-xs">aucun</span>
                         )}
                       </td>
                       <td className="px-4 py-3 hidden lg:table-cell align-top">
@@ -242,12 +287,7 @@ export default function AdsLeadsClient() {
                         )}
                       </td>
                       <td className="px-4 py-3 text-slate-400 text-xs align-top">
-                        {new Date(lead.created_at).toLocaleDateString("fr-FR", {
-                          day: "numeric",
-                          month: "short",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
+                        {new Date(lead.created_at).toLocaleDateString("fr-FR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
                       </td>
                       <td className="px-3 py-3 align-top">
                         <button

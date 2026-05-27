@@ -47,15 +47,24 @@ export async function GET(req: NextRequest) {
     optinRows.map((r) => r.email).filter(Boolean) as string[]
   ));
 
-  // 2. Get firstnames from vba_funnel_leads (more reliable)
+  // 2. Get firstnames + qualification data from vba_funnel_leads
   const { data: funnelLeads } = emails.length > 0
     ? await supabase
         .from("vba_funnel_leads")
-        .select("email, firstname")
+        .select("email, firstname, phone, q_objective, q_profile, q_budget, is_hot")
         .in("email", emails)
     : { data: [] };
   const firstnameMap = new Map(
     (funnelLeads ?? []).map((l) => [l.email, l.firstname])
+  );
+  const qualMap = new Map(
+    (funnelLeads ?? []).map((l) => [l.email, {
+      phone: l.phone as string | null,
+      q_objective: l.q_objective as string | null,
+      q_profile: l.q_profile as string | null,
+      q_budget: l.q_budget as string | null,
+      is_hot: l.is_hot as boolean | null,
+    }])
   );
 
   // 3. Get VSL watch time (max seconds from vsl_exit + milestones)
@@ -115,9 +124,15 @@ export async function GET(req: NextRequest) {
         ? ((row.metadata as Record<string, unknown>).firstname as string) ?? null
         : null;
 
+    const qual = qualMap.get(email);
     return {
       email,
       firstname: firstnameMap.get(email) ?? metaFirstname ?? null,
+      phone: qual?.phone ?? null,
+      q_objective: qual?.q_objective ?? null,
+      q_profile: qual?.q_profile ?? null,
+      q_budget: qual?.q_budget ?? null,
+      is_hot: qual?.is_hot ?? null,
       utm_source: row.utm_source,
       utm_campaign: row.utm_campaign,
       utm_content: row.utm_content,
