@@ -49,15 +49,24 @@ export function trackFunnel(
   // Unique event ID for Meta deduplication
   const eventId = crypto.randomUUID();
 
-  // 1. Meta Pixel — only for mapped conversion events
+  // 1. Meta Pixel — only for mapped conversion events AND only hot leads
+  // Cold leads are excluded from Meta Pixel to optimize ad spend
   const metaEvent = META_EVENT_MAP[event];
   if (metaEvent) {
-    const pixelParams: Record<string, unknown> = {
-      content_name: event,
-    };
-    if (options.value !== undefined) pixelParams.value = options.value;
-    if (options.currency) pixelParams.currency = options.currency;
-    trackEvent(metaEvent, pixelParams, eventId);
+    let isHot = true;
+    try {
+      const stored = localStorage.getItem("vba_is_hot");
+      if (stored === "0") isHot = false;
+    } catch {}
+
+    if (isHot) {
+      const pixelParams: Record<string, unknown> = {
+        content_name: event,
+      };
+      if (options.value !== undefined) pixelParams.value = options.value;
+      if (options.currency) pixelParams.currency = options.currency;
+      trackEvent(metaEvent, pixelParams, eventId);
+    }
   }
 
   // 2. Supabase — all events (powers /admin/funnel dashboard)
