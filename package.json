@@ -49,6 +49,7 @@
     "groq-sdk": "^1.1.1",
     "gsap": "^3.14.2",
     "hls.js": "^1.6.16",
+    "libphonenumber-js": "^1.13.3",
     "lucide-react": "^0.577.0",
     "maplibre-gl": "^5.21.1",
     "next": "14.2.35",

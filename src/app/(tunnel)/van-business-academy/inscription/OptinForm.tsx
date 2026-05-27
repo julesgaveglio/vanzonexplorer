@@ -204,18 +204,20 @@ export default function OptinForm() {
       });
       const verify = await verifyRes.json();
       if (!verify.valid) {
-        const messages: Record<string, string> = {
-          format: "L'adresse email ne semble pas valide.",
-          too_short: "L'adresse email est trop courte.",
-          disposable: "Les emails temporaires ne sont pas acceptés. Utilise ton email personnel.",
-          suspicious_tld: "Cette extension d'email n'est pas acceptée.",
-          no_mx: "Ce domaine email ne peut pas recevoir de messages. Vérifie ton adresse.",
-          zerobounce_invalid: "Cette adresse email n'existe pas. Vérifie l'orthographe.",
-          zerobounce_spamtrap: "Cette adresse email n'est pas acceptée.",
-          zerobounce_abuse: "Cette adresse email n'est pas acceptée.",
-          zerobounce_do_not_mail: "Cette adresse email n'est pas acceptée.",
-        };
-        setError(messages[verify.reason] ?? "L'adresse email ne semble pas valide.");
+        setError("Email incorrect. Merci de renseigner une adresse email valide.");
+        setLoading(false);
+        return;
+      }
+
+      // ── Server-side phone verification (libphonenumber) ──
+      const verifyPhoneRes = await fetch("/api/formation/tunnel/verify-phone", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone }),
+      });
+      const verifyPhone = await verifyPhoneRes.json();
+      if (!verifyPhone.valid) {
+        setError("Numéro de téléphone incorrect. Merci de renseigner un numéro valide.");
         setLoading(false);
         return;
       }
