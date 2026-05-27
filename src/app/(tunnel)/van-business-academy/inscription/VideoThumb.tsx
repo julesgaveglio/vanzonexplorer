@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 
-const VIDEO_POSTER = "/images/construis-ta-liberte.jpg";
+const VIDEO_POSTER = "/images/vsl2-thumbnail.png";
 
 export default function VideoThumb() {
   const handleClick = () => {

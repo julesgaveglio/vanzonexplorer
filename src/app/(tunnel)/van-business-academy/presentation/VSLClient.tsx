@@ -16,7 +16,7 @@ interface VSLClientProps {
 
 export default function VSLClient({ videoId, vslVersionId }: VSLClientProps) {
   const HLS_URL = `https://vz-bac05373-d10.b-cdn.net/${videoId}/playlist.m3u8`;
-  const POSTER_URL = `https://vz-bac05373-d10.b-cdn.net/${videoId}/thumbnail.jpg`;
+  const POSTER_URL = "/images/vsl2-thumbnail.png";
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const hlsRef = useRef<Hls | null>(null);
