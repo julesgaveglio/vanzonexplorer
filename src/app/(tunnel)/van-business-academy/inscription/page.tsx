@@ -87,18 +87,23 @@ export default function OptinPage() {
             <VideoThumb />
           </div>
 
-          {/* Form card */}
+          {/* Form card — bump effect */}
           <div
             id="optin-form-card"
-            className="w-full rounded-2xl p-6 sm:p-8"
+            className="w-full rounded-2xl p-6 sm:p-8 animate-[bump_0.4s_ease-out]"
             style={{
-              background: "rgba(255,255,255,0.04)",
-              border: "1px solid rgba(185,148,95,0.25)",
+              background: "rgba(185,148,95,0.06)",
+              border: "2px solid rgba(185,148,95,0.4)",
+              boxShadow: "0 0 40px rgba(185,148,95,0.15)",
             }}
           >
-            <p className="text-white/80 text-sm sm:text-base text-center mb-6">
-              Réponds à <strong className="text-white">3 questions rapides</strong> pour accéder à la vidéo
-            </p>
+            <div className="flex flex-col items-center mb-5">
+              <span className="text-2xl mb-2">👇</span>
+              <p className="text-white font-bold text-base sm:text-lg text-center">
+                Réponds à 3 questions rapides pour accéder à la vidéo
+              </p>
+              <p className="text-white/40 text-xs mt-1">C&apos;est gratuit et ça prend 30 secondes</p>
+            </div>
 
             <Suspense>
               <OptinForm />
@@ -106,6 +111,11 @@ export default function OptinPage() {
           </div>
 
           <div className="mb-10" />
+
+          {/* Trustpilot title */}
+          <h2 className="text-xl sm:text-2xl font-bold text-white text-center mb-6">
+            Ce qu&apos;ils pensent de nous
+          </h2>
 
           {/* Trustpilot reviews */}
           <div className="w-full flex flex-col gap-5">

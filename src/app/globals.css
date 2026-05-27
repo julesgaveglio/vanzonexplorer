@@ -249,3 +249,10 @@ h1, h2, h3, h4, h5, h6 {
 .liquid-cta-glow-pulse {
   animation: liquid-glow-pulse 2.6s ease-in-out infinite;
 }
+
+/* ━━━ Bump animation — optin form card ━━━ */
+@keyframes bump {
+  0%   { transform: scale(0.95); opacity: 0.7; }
+  50%  { transform: scale(1.03); }
+  100% { transform: scale(1); opacity: 1; }
+}
