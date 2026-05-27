@@ -8,7 +8,6 @@ const LINKS = [
   { href: "/ads/optin", label: "Opt-in" },
   { href: "/ads/leads", label: "Leads" },
   { href: "/ads/formulaire", label: "Formulaire" },
-  { href: "/ads/titres", label: "Titres" },
   { href: "/ads/vsl", label: "VSL" },
   { href: "/ads/emails", label: "Email" },
   { href: "/ads/calls", label: "Call" },

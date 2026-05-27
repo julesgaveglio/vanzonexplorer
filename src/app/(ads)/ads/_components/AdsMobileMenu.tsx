@@ -3,14 +3,13 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, LayoutDashboard, MousePointerClick, Users, ClipboardList, Type, Play, LogOut } from "lucide-react";
+import { Menu, X, LayoutDashboard, MousePointerClick, Users, ClipboardList, Play, LogOut } from "lucide-react";
 
 const LINKS = [
   { href: "/ads", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { href: "/ads/optin", label: "Opt-in", icon: MousePointerClick },
   { href: "/ads/leads", label: "Leads", icon: Users },
   { href: "/ads/formulaire", label: "Formulaire", icon: ClipboardList },
-  { href: "/ads/titres", label: "Titres", icon: Type },
   { href: "/ads/vsl", label: "VSL", icon: Play },
 ];
 
