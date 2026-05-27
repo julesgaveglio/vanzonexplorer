@@ -50,7 +50,7 @@ export default function OptinPage() {
 
           {/* Headline */}
           <h1 className="font-display text-[1.7rem] sm:text-4xl lg:text-[2.6rem] leading-[1.15] text-center text-white mb-6">
-            La méthode complète pour créer un{" "}
+            Donne-moi{" "}
             <span
               style={{
                 background: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
@@ -58,10 +58,9 @@ export default function OptinPage() {
                 WebkitTextFillColor: "transparent",
               }}
             >
-              business rentable
+              13 minutes
             </span>{" "}
-            de van aménagé{" "}
-            de{" "}
+            et je te partage (vraiment) tout le process pour générer{" "}
             <span
               style={{
                 background: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
@@ -69,8 +68,9 @@ export default function OptinPage() {
                 WebkitTextFillColor: "transparent",
               }}
             >
-              A à Z
-            </span>
+              600€/mois
+            </span>{" "}
+            de revenu locatif avec un van aménagé
           </h1>
 
           {/* Bullet points */}
