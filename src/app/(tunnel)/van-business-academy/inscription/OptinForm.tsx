@@ -249,12 +249,7 @@ export default function OptinForm() {
                 Chargement...
               </span>
             ) : (
-              <span className="flex flex-col items-center">
-                <span>JE D&Eacute;COUVRE LA M&Eacute;THODE GRATUITE !</span>
-                <span className="text-xs font-normal normal-case tracking-normal opacity-80 mt-0.5">
-                  (places limit&eacute;es)
-                </span>
-              </span>
+              <span>JE DÉCOUVRE LA MÉTHODE GRATUITE !</span>
             )}
           </button>
 
