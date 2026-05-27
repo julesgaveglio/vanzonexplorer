@@ -32,22 +32,6 @@ export default function OptinPage() {
         <PageViewTracker />
 
         <div className="w-full max-w-lg mx-auto flex flex-col items-center">
-          {/* Badge cible */}
-          <div
-            className="inline-flex px-5 py-2.5 rounded-full text-center mb-8"
-            style={{
-              border: "1px solid rgba(185,148,95,0.4)",
-              background: "rgba(185,148,95,0.08)",
-            }}
-          >
-            <span
-              className="text-xs sm:text-sm font-semibold uppercase tracking-wider leading-snug"
-              style={{ color: "#B9945F" }}
-            >
-              Pour les passionnés de vans qui veulent plus de liberté
-            </span>
-          </div>
-
           {/* Headline */}
           <h1 className="font-display text-[1.7rem] sm:text-4xl lg:text-[2.6rem] leading-[1.15] text-center text-white mb-6">
             Donne-moi{" "}
@@ -94,8 +78,11 @@ export default function OptinPage() {
             ))}
           </ul>
 
-          {/* Video preview — thumbnail + play button */}
-          <div className="w-full mb-8 rounded-2xl overflow-hidden relative">
+          {/* Video preview — thumbnail + play button → scroll to form */}
+          <div
+            className="w-full mb-8 rounded-2xl overflow-hidden relative cursor-pointer"
+            onClick={() => document.getElementById("optin-form-card")?.scrollIntoView({ behavior: "smooth" })}
+          >
             <div
               className="absolute inset-0 rounded-2xl pointer-events-none z-10"
               style={{ boxShadow: "inset 0 0 30px rgba(0,0,0,0.5)" }}
@@ -105,6 +92,7 @@ export default function OptinPage() {
 
           {/* Form card */}
           <div
+            id="optin-form-card"
             className="w-full rounded-2xl p-6 sm:p-8"
             style={{
               background: "rgba(255,255,255,0.04)",
