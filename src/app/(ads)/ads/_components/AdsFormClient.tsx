@@ -115,7 +115,7 @@ export default function AdsFormClient() {
             className="bg-white border border-slate-200 text-sm text-slate-700 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500/30 shadow-sm"
           >
             <option value="all">Toutes les campagnes</option>
-            {campaigns.map((c) => (
+            {campaigns.filter((c) => new Date(c.start_date) >= new Date("2026-05-20")).map((c) => (
               <option key={c.id} value={c.id}>{c.name}</option>
             ))}
           </select>
