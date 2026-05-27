@@ -70,32 +70,116 @@ export default function OptinForm() {
   };
 
   const validateInputs = (): string | null => {
-    // Block disposable/fake email domains
+    // ── EMAIL VALIDATION ──
+
+    const emailLower = email.toLowerCase().trim();
+    const [localPart, domain] = emailLower.split("@");
+
+    // Basic format
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(emailLower)) {
+      return "L'adresse email ne semble pas valide.";
+    }
+
+    // Block disposable/temporary email domains (extended list)
     const disposable = [
       "yopmail","tempmail","guerrillamail","mailinator","throwaway","fakeinbox",
       "sharklasers","guerrillamailblock","grr","pokemail","spam4","trashmail",
       "dispostable","maildrop","meltmail","temp-mail","10minutemail","mohmal",
+      "getairmail","mailnesia","tempr","discard","filzmail","trash-me",
+      "mytemp","tempinbox","getnada","burnermail","inboxkitten","33mail",
+      "mintemail","emailondeck","tmail","spambox","crazymailing","jetable",
+      "mailfence","mailcatch","fakemail","tmpmail","mailsac","anonbox",
+      "deadfake","spamgourmet","mailexpire","tempail","nada","emailfake",
     ];
-    const domain = email.split("@")[1]?.toLowerCase() ?? "";
-    if (disposable.some((d) => domain.includes(d))) {
-      return "Merci d'utiliser une adresse email valide (pas d'email temporaire).";
+    if (domain && disposable.some((d) => domain.includes(d))) {
+      return "Merci d'utiliser une adresse email personnelle (pas d'email temporaire).";
     }
-    // Basic email format
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
-      return "L'adresse email ne semble pas valide.";
+
+    // Block suspicious TLDs (common for fake emails)
+    const suspiciousTlds = [".tk", ".ml", ".ga", ".cf", ".gq", ".xyz", ".top", ".buzz", ".click"];
+    if (suspiciousTlds.some((tld) => domain?.endsWith(tld))) {
+      return "Cette extension d'email n'est pas acceptée. Utilise ton email personnel.";
     }
-    // Phone: must be 10+ digits, allow +, spaces, dots, dashes
-    const digits = phone.replace(/\D/g, "");
+
+    // Must have a real domain (gmail, outlook, yahoo, hotmail, icloud, orange, free, sfr, etc.)
+    const trustedDomains = [
+      "gmail.com","googlemail.com","outlook.com","outlook.fr","hotmail.com","hotmail.fr",
+      "yahoo.com","yahoo.fr","icloud.com","me.com","mac.com","live.com","live.fr",
+      "msn.com","aol.com","protonmail.com","proton.me","zoho.com",
+      "orange.fr","wanadoo.fr","free.fr","sfr.fr","laposte.net","bbox.fr",
+      "numericable.fr","neuf.fr","club-internet.fr","alice.fr","cegetel.net",
+    ];
+    const isTrusted = trustedDomains.includes(domain ?? "");
+
+    // If not trusted, check it has at least a proper structure (company email OK)
+    if (!isTrusted && domain) {
+      const parts = domain.split(".");
+      // Must have at least 2 parts, TLD >= 2 chars, domain part >= 2 chars
+      if (parts.length < 2 || parts[parts.length - 1].length < 2 || parts[0].length < 2) {
+        return "L'adresse email ne semble pas valide.";
+      }
+    }
+
+    // Block obvious fake local parts
+    if (localPart) {
+      // All same character: aaaa@, 1111@
+      if (/^(.)\1{3,}$/.test(localPart)) {
+        return "L'adresse email ne semble pas valide.";
+      }
+      // Keyboard smash: asdf, qwerty, azerty
+      const smashes = ["asdf","qwerty","azerty","zxcv","azer","qsdf","wxcv","test","fake","null","none","nope","xxx","yyy","zzz"];
+      if (smashes.some((s) => localPart === s || localPart.startsWith(s + "@"))) {
+        return "Merci d'entrer ta vraie adresse email.";
+      }
+      // Too short
+      if (localPart.length < 3) {
+        return "L'adresse email semble trop courte.";
+      }
+    }
+
+    // ── PHONE VALIDATION ──
+
+    const phoneTrimmed = phone.trim();
+    const digits = phoneTrimmed.replace(/\D/g, "");
+
     if (digits.length < 10) {
       return "Le numéro de téléphone doit contenir au moins 10 chiffres.";
     }
     if (digits.length > 15) {
       return "Le numéro de téléphone semble trop long.";
     }
-    // Block obvious fake patterns (all same digit)
+
+    // Block all same digit (0000000000, 1111111111, etc.)
     if (/^(\d)\1{9,}$/.test(digits)) {
       return "Le numéro de téléphone ne semble pas valide.";
     }
+
+    // Block sequential patterns (0123456789, 9876543210)
+    if (/^0?1234567890?$/.test(digits) || /^0?9876543210?$/.test(digits)) {
+      return "Le numéro de téléphone ne semble pas valide.";
+    }
+
+    // French numbers: must start with 0 or +33
+    if (digits.startsWith("33")) {
+      // +33 format OK
+    } else if (digits.startsWith("0")) {
+      // 0X format — check it's a valid French prefix
+      const prefix2 = digits.slice(0, 2);
+      const validPrefixes = ["06", "07", "01", "02", "03", "04", "05", "09"];
+      if (!validPrefixes.includes(prefix2)) {
+        return "Le numéro de téléphone ne semble pas valide pour la France.";
+      }
+    } else {
+      // International number — allow if 10+ digits
+    }
+
+    // Block numbers with too many repeated groups (06 06 06 06 06)
+    const pairs = digits.match(/.{2}/g) ?? [];
+    const uniquePairs = new Set(pairs);
+    if (pairs.length >= 5 && uniquePairs.size <= 2) {
+      return "Le numéro de téléphone ne semble pas valide.";
+    }
+
     return null;
   };
 
