@@ -7,22 +7,44 @@ import { buildVBAWelcomeEmail } from "@/emails/vba-funnel-welcome";
 const schema = z.object({
   firstname: z.string().min(2, "Prénom requis").max(50),
   email: z.string().email("Email invalide"),
+  phone: z.string().optional(),
+  q_objective: z.string().optional(),
+  q_profile: z.string().optional(),
+  q_budget: z.string().optional(),
   utm_source: z.string().optional(),
   utm_medium: z.string().optional(),
   utm_campaign: z.string().optional(),
   utm_content: z.string().optional(),
 });
 
+function computeIsHot(data: {
+  q_objective?: string;
+  q_profile?: string;
+  q_budget?: string;
+}): boolean {
+  if (data.q_objective === "Gagner de l'argent rapidement avec un van") return false;
+  if (data.q_profile === "Retraité") return false;
+  if (data.q_budget === "Moins de 10 000 \u20AC") return false;
+  return true;
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
     const data = schema.parse(body);
+
+    const isHot = computeIsHot(data);
 
     const supabase = createSupabaseAdmin();
     const { error } = await supabase.from("vba_funnel_leads").upsert(
       {
         firstname: data.firstname,
         email: data.email,
+        phone: data.phone ?? null,
+        q_objective: data.q_objective ?? null,
+        q_profile: data.q_profile ?? null,
+        q_budget: data.q_budget ?? null,
+        is_hot: isHot,
         utm_source: data.utm_source ?? null,
         utm_medium: data.utm_medium ?? null,
         utm_campaign: data.utm_campaign ?? null,
@@ -43,7 +65,7 @@ export async function POST(req: Request) {
     );
 
     // Telegram notification
-    notifyTelegram(data.firstname, data.email).catch(() => {});
+    notifyTelegram(data.firstname, data.email, data.phone, data.q_objective, data.q_profile, data.q_budget, isHot).catch(() => {});
 
     return NextResponse.json({ success: true });
   } catch (err) {
@@ -76,18 +98,40 @@ async function sendWelcomeEmail(firstname: string, email: string) {
   });
 }
 
-async function notifyTelegram(firstname: string, email: string) {
+async function notifyTelegram(
+  firstname: string,
+  email: string,
+  phone?: string,
+  q_objective?: string,
+  q_profile?: string,
+  q_budget?: string,
+  isHot?: boolean,
+) {
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
   if (!token || !chatId) return;
 
-  const text =
-    `🎓 <b>Nouveau lead VBA Tunnel !</b>\n` +
-    `─────────────────────\n` +
-    `<b>Prénom :</b> ${firstname}\n` +
-    `<b>Email :</b> ${email}\n` +
-    `─────────────────────\n` +
-    `<a href="https://vanzonexplorer.com/admin/formation">👉 Voir dans l'admin</a>`;
+  const hotLabel = isHot ? "\u2705 HOT" : "\u274C COLD";
+
+  let text =
+    `\uD83C\uDF93 <b>Nouveau lead VBA Tunnel !</b>\n` +
+    `\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n` +
+    `<b>Pr\u00E9nom :</b> ${firstname}\n` +
+    `<b>Email :</b> ${email}\n`;
+
+  if (phone) text += `<b>T\u00E9l :</b> ${phone}\n`;
+
+  text += `\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n`;
+
+  if (q_objective) text += `<b>Objectif :</b> ${q_objective}\n`;
+  if (q_profile) text += `<b>Profil :</b> ${q_profile}\n`;
+  if (q_budget) text += `<b>Budget :</b> ${q_budget}\n`;
+
+  text +=
+    `\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n` +
+    `<b>Qualification :</b> ${hotLabel}\n` +
+    `\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n` +
+    `<a href="https://vanzonexplorer.com/admin/formation">\uD83D\uDC49 Voir dans l'admin</a>`;
 
   await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
     method: "POST",

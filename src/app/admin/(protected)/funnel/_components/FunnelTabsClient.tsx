@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { BarChart3, UserPlus, Users, Play, Mail, Phone } from "lucide-react";
+import { BarChart3, UserPlus, Users, ClipboardList, Play, Mail, Phone } from "lucide-react";
 import AdsDashboardClient from "../../../../(ads)/ads/_components/AdsDashboardClient";
 import AdsOptinClient from "../../../../(ads)/ads/_components/AdsOptinClient";
 import AdsLeadsClient from "../../../../(ads)/ads/_components/AdsLeadsClient";
+import AdsFormClient from "../../../../(ads)/ads/_components/AdsFormClient";
 import AdsVSLClient from "../../../../(ads)/ads/_components/AdsVSLClient";
 import AdsEmailClient from "../../../../(ads)/ads/_components/AdsEmailClient";
 import AdsCallsClient from "../../../../(ads)/ads/_components/AdsCallsClient";
@@ -13,6 +14,7 @@ const TABS = [
   { key: "dashboard", label: "Dashboard", icon: BarChart3 },
   { key: "optin", label: "Opt-in", icon: UserPlus },
   { key: "leads", label: "Leads", icon: Users },
+  { key: "formulaire", label: "Formulaire", icon: ClipboardList },
   { key: "vsl", label: "VSL", icon: Play },
   { key: "email", label: "Email", icon: Mail },
   { key: "call", label: "Call", icon: Phone },
@@ -48,6 +50,7 @@ export default function FunnelTabsClient() {
       {tab === "dashboard" && <AdsDashboardClient />}
       {tab === "optin" && <AdsOptinClient />}
       {tab === "leads" && <AdsLeadsClient />}
+      {tab === "formulaire" && <AdsFormClient />}
       {tab === "vsl" && <AdsVSLClient />}
       {tab === "email" && <AdsEmailClient />}
       {tab === "call" && <AdsCallsClient />}

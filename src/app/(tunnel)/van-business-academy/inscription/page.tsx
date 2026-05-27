@@ -112,9 +112,7 @@ export default function OptinPage() {
             }}
           >
             <p className="text-white/80 text-sm sm:text-base text-center mb-6">
-              Entre simplement tes informations pour
-              <br />
-              accéder à la <strong className="text-white">vidéo gratuite</strong> :
+              Réponds à <strong className="text-white">3 questions rapides</strong> pour accéder à la vidéo
             </p>
 
             <Suspense>

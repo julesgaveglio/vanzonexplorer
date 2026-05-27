@@ -208,17 +208,9 @@ export default function VSLClient({ videoId, vslVersionId }: VSLClientProps) {
 
       {/* Title */}
       <h1 className="text-center leading-tight mb-3">
-        <span className="block text-xs sm:text-sm tracking-widest uppercase text-slate-400 font-bold mb-2">
-          Découvre la méthode pour
-        </span>
-        <span
-          className="block font-display text-2xl sm:text-3xl md:text-4xl font-black bg-clip-text text-transparent"
-          style={{ backgroundImage: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)" }}
-        >
-          Construire ta liberté
-        </span>
-        <span className="block font-display text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 mt-1">
-          grâce aux vans aménagés
+        <span className="block font-display text-xl sm:text-2xl md:text-3xl font-black text-slate-900">
+          Donne-moi <span style={{ backgroundImage: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)" }} className="bg-clip-text text-transparent">13 minutes</span> et je te partage (vraiment) tout le process pour générer{" "}
+          <span style={{ backgroundImage: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)" }} className="bg-clip-text text-transparent">600&euro;/mois</span> de revenu locatif avec un van aménagé
         </span>
       </h1>
 
