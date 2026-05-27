@@ -3,7 +3,7 @@ import { createSupabaseAnon } from "@/lib/supabase/server";
 
 const FALLBACK = {
   id: "047a69df-7309-4719-853a-aa50b7d60d79",
-  bunny_video_id: "b8323ed9-2f4b-4bcc-8313-6ab4835246ee",
+  bunny_video_id: "c46b5408-a638-4d2d-8a6d-ef5b3c13bd8d",
   bunny_library_id: "641831",
   name: "VSL 2 — Campagne 2",
 };
