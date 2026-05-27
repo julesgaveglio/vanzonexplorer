@@ -69,9 +69,46 @@ export default function OptinForm() {
     setTimeout(() => setStep((s) => s + 1), 250);
   };
 
+  const validateInputs = (): string | null => {
+    // Block disposable/fake email domains
+    const disposable = [
+      "yopmail","tempmail","guerrillamail","mailinator","throwaway","fakeinbox",
+      "sharklasers","guerrillamailblock","grr","pokemail","spam4","trashmail",
+      "dispostable","maildrop","meltmail","temp-mail","10minutemail","mohmal",
+    ];
+    const domain = email.split("@")[1]?.toLowerCase() ?? "";
+    if (disposable.some((d) => domain.includes(d))) {
+      return "Merci d'utiliser une adresse email valide (pas d'email temporaire).";
+    }
+    // Basic email format
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+      return "L'adresse email ne semble pas valide.";
+    }
+    // Phone: must be 10+ digits, allow +, spaces, dots, dashes
+    const digits = phone.replace(/\D/g, "");
+    if (digits.length < 10) {
+      return "Le numéro de téléphone doit contenir au moins 10 chiffres.";
+    }
+    if (digits.length > 15) {
+      return "Le numéro de téléphone semble trop long.";
+    }
+    // Block obvious fake patterns (all same digit)
+    if (/^(\d)\1{9,}$/.test(digits)) {
+      return "Le numéro de téléphone ne semble pas valide.";
+    }
+    return null;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+
+    const validationError = validateInputs();
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
     setLoading(true);
 
     try {

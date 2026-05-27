@@ -6,8 +6,7 @@ import { getFunnelData } from "@/lib/hooks/useUTMParams";
 import { trackFunnel } from "@/lib/funnel-tracking";
 import LiquidButton from "@/components/ui/LiquidButton";
 
-const CTA_DELAY_HOT = 0;   // immédiat pour les leads chauds
-const CTA_DELAY_COLD = 300; // 5 min pour les leads froids
+const CTA_WATCH_COLD = 420; // 7 min de visionnage réel pour les leads froids
 
 interface VSLClientProps {
   videoId: string;
@@ -85,15 +84,13 @@ export default function VSLClient({ videoId, vslVersionId }: VSLClientProps) {
     });
   }, [vslVersionId]);
 
-  // --- CTA delay (1min hot, 5min cold) ---
+  // --- CTA: instant for hot leads, after 7min of real watch time for cold ---
+  const isHotRef = useRef(false);
   useEffect(() => {
-    let delay = CTA_DELAY_COLD;
     try {
-      const isHot = localStorage.getItem("vba_is_hot");
-      if (isHot === "1") delay = CTA_DELAY_HOT;
+      isHotRef.current = localStorage.getItem("vba_is_hot") === "1";
     } catch {}
-    const timer = setTimeout(() => setShowCTA(true), delay * 1000);
-    return () => clearTimeout(timer);
+    if (isHotRef.current) setShowCTA(true);
   }, []);
 
   // --- Video timeupdate handler (the actual tracking) ---
@@ -108,6 +105,11 @@ export default function VSLClient({ videoId, vslVersionId }: VSLClientProps) {
 
       lastTimeRef.current = currentTime;
       durationRef.current = duration;
+
+      // Show CTA for cold leads after 7 min of real watch time
+      if (!isHotRef.current && currentTime >= CTA_WATCH_COLD) {
+        setShowCTA(true);
+      }
 
       const pct = (currentTime / duration) * 100;
       const milestones = milestonesRef.current;
