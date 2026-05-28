@@ -3,7 +3,7 @@ import { requireAdsAuth } from "@/lib/ads-auth";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
 import { groqWithFallback } from "@/lib/groq-with-fallback";
 
-// POST — AI analyzes transcript + retention data → segment-level edits
+// POST — AI analyzes transcript + retention data → segment-level edits + quality scores
 export async function POST(req: NextRequest) {
   const check = await requireAdsAuth();
   if (check instanceof NextResponse) return check;
@@ -84,68 +84,90 @@ export async function POST(req: NextRequest) {
         .join("\n")
     : "Aucune zone critique detectee";
 
-  // 6. AI prompt — ask for segment-level edits
-  const systemPrompt = `Tu es un expert en retention video et copywriting VSL.
-Tu analyses des transcripts avec les donnees de retention pour proposer des EDITS precis.
+  // 6. Calculate total duration from segments
+  const totalDuration = hasSegments
+    ? Math.ceil((segments.at(-1)?.endSec ?? 0) / 30)
+    : Math.ceil(maxSec / 30);
 
-TON ROLE : proposer des modifications chirurgicales du script pour maintenir la retention.
-Tu ne changes PAS tout le script. Tu identifies les passages faibles et tu proposes des remplacements.
+  // Build zone list for scoring (30s zones)
+  const zoneCount = Math.max(totalDuration, buckets.length);
+  const zoneLabels = Array.from({ length: zoneCount }, (_, i) =>
+    `${fmtTime(i * 30)}-${fmtTime((i + 1) * 30)}`
+  );
+
+  // 7. AI prompt
+  const systemPrompt = `Tu es un expert en retention video et copywriting VSL.
+Tu analyses des transcripts pour proposer des EDITS precis et SCORER la qualite de chaque zone.
+
+TON ROLE :
+1. Evaluer la qualite de retention du script zone par zone (toutes les 30 secondes)
+2. Proposer des modifications chirurgicales aux points faibles
+
+SCORING PAR ZONE (0-100) :
+- 90-100 : excellent — hook fort, emotion, tension, le spectateur est captive
+- 70-89 : bon — contenu interessant, rythme correct
+- 50-69 : moyen — passage un peu plat, risque de decrochage
+- 30-49 : faible — trop technique, monotone, pas d'engagement
+- 0-29 : critique — le spectateur quitte probablement ici
+
+CRITERES DE SCORING :
+- Presence de hooks ou pattern interrupts
+- Variation du rythme (pas de monologue plat trop long)
+- Engagement emotionnel (histoires, questions, preuves)
+- Clarte du message (pas trop technique sans payoff)
+- Tension narrative (open loops, curiosity gaps actifs)
 
 TYPES DE HOOKS :
-- PATTERN INTERRUPT : casse le rythme ("Stop. Relis ce que je viens de dire.")
-- OPEN LOOP : question en suspens ("Et la, il s'est passe un truc...")
-- CURIOSITY GAP : tease ("Dans 2 minutes je te montre exactement...")
-- PROOF DROP : preuve sociale ("C'est ce qu'a fait Marc, en 3 mois...")
-- DIRECT QUESTION : interpelle ("Est-ce que toi aussi tu as ressenti ca ?")
+- PATTERN INTERRUPT : casse le rythme
+- OPEN LOOP : question en suspens
+- CURIOSITY GAP : tease une info
+- PROOF DROP : preuve sociale
+- DIRECT QUESTION : interpelle
 - REFRAME : change la perspective
-- MICRO-COMMITMENT : petit oui mental ("Si tu es encore la...")
-- TRANSITION : phrase de liaison engageante entre deux sections
+- MICRO-COMMITMENT : petit oui mental
+- TRANSITION : liaison engageante
 
-REGLES STRICTES :
-- Maximum 6 a 10 edits pour une VSL de 10-15 min (pas plus, sois strategique)
-- Espace les edits : minimum 60 secondes entre chaque edit
-- Place les edits 10-20s AVANT les zones de drop-off
-- Le texte de remplacement doit etre naturel, meme ton que l'auteur (tutoiement, direct, van life)
-- Chaque edit remplace un passage existant OU insere du texte (insert_after_segment)
-- Pour un remplacement : donne le texte original exact a barrer + le nouveau texte
-- Pour une insertion : donne le numero du segment apres lequel inserer
+REGLES EDITS :
+- Max 6 a 10 edits pour 10-15 min
+- Minimum 60 secondes entre chaque edit
+- Place les edits AVANT les zones faibles
+- Ton naturel : tutoiement, direct, van life
+- Pour "replace" : donne le texte original exact + le nouveau
+- Pour "insert_after" : donne juste le nouveau texte
 
-IMPORTANT : JSON valide uniquement, sans markdown.`;
+JSON valide uniquement.`;
 
-  const userPrompt = `Analyse cette VSL et propose des edits pour maximiser la retention.
+  const userPrompt = `Analyse cette VSL. Score chaque zone de 30s et propose des edits.
 
-=== TRANSCRIPT (chaque ligne = [#index|timestamp] texte) ===
+=== TRANSCRIPT ===
 ${numberedTranscript}
 
-=== RETENTION PAR TRANCHE DE 30s ===
+=== RETENTION REELLE ===
 ${retentionContext}
 
 === ZONES DE DROP-OFF ===
 ${dropContext}
 
-=== TOTAL SPECTATEURS : ${exitSeconds.length} ===
+=== ${zoneCount} ZONES A SCORER ===
+${zoneLabels.join(", ")}
 
 Reponds en JSON :
 {
-  "analysis": "Diagnostic global 2-3 phrases",
+  "analysis": "Diagnostic 2-3 phrases",
+  "zone_scores": [
+    { "zone": "0:00-0:30", "score": 85, "note": "Hook fort, bonne intro" },
+    { "zone": "0:30-1:00", "score": 55, "note": "Passage technique sans hook" }
+  ],
   "edits": [
     {
       "segment_index": 15,
       "at_time": "1:12",
       "type": "replace",
       "hook_type": "OPEN LOOP",
-      "original_text": "le texte exact du segment a remplacer",
-      "new_text": "le nouveau texte avec le hook integre naturellement",
-      "reason": "pourquoi cet edit a cet endroit"
-    },
-    {
-      "segment_index": 30,
-      "at_time": "2:25",
-      "type": "insert_after",
-      "hook_type": "DIRECT QUESTION",
-      "original_text": "",
-      "new_text": "Est-ce que tu te reconnais dans cette situation ?",
-      "reason": "relance l'attention apres passage technique"
+      "original_text": "texte exact a remplacer",
+      "new_text": "nouveau texte avec hook",
+      "reason": "pourquoi cet edit",
+      "score_impact": 25
     }
   ]
 }`;
@@ -157,7 +179,7 @@ Reponds en JSON :
         { role: "user", content: userPrompt },
       ],
       temperature: 0.6,
-      max_tokens: 4000,
+      max_tokens: 6000,
       response_format: { type: "json_object" },
     });
 
@@ -172,16 +194,16 @@ Reponds en JSON :
     }
 
     // Save to DB
-    if (parsed.edits?.length) {
-      await sb
-        .from("vsl_versions")
-        .update({ hook_suggestions: parsed.edits })
-        .eq("id", versionId);
-    }
+    const dbData = { edits: parsed.edits ?? [], zone_scores: parsed.zone_scores ?? [] };
+    await sb
+      .from("vsl_versions")
+      .update({ hook_suggestions: dbData })
+      .eq("id", versionId);
 
     return NextResponse.json({
       analysis: parsed.analysis ?? "",
       edits: parsed.edits ?? [],
+      zone_scores: parsed.zone_scores ?? [],
       model_used: result.modelUsed,
       retention_summary: {
         total_viewers: exitSeconds.length,

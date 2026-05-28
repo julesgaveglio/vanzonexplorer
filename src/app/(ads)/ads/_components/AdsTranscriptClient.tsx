@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 
 /* ── Types ────────────────────────────────────────────────── */
 
@@ -26,7 +26,6 @@ interface TranscriptData {
   segments: Segment[];
   retention_buckets: RetentionBucket[];
   total_exits: number;
-  hook_suggestions: Edit[];
 }
 
 interface VSLVersion {
@@ -43,11 +42,19 @@ interface Edit {
   original_text: string;
   new_text: string;
   reason: string;
+  score_impact?: number;
+}
+
+interface ZoneScore {
+  zone: string;
+  score: number;
+  note: string;
 }
 
 interface AnalysisResult {
   analysis: string;
   edits: Edit[];
+  zone_scores: ZoneScore[];
   model_used: string;
   retention_summary: {
     total_viewers: number;
@@ -56,9 +63,9 @@ interface AnalysisResult {
   };
 }
 
-/* ── Hook type colors ────────────────────────────────────── */
+/* ── Hook type styles ────────────────────────────────────── */
 
-const HOOK_COLORS: Record<string, { bg: string; text: string; border: string }> = {
+const HOOK_STYLES: Record<string, { bg: string; text: string; border: string }> = {
   "PATTERN INTERRUPT": { bg: "bg-purple-50", text: "text-purple-700", border: "border-purple-200" },
   "OPEN LOOP": { bg: "bg-blue-50", text: "text-blue-700", border: "border-blue-200" },
   "CURIOSITY GAP": { bg: "bg-cyan-50", text: "text-cyan-700", border: "border-cyan-200" },
@@ -71,7 +78,7 @@ const HOOK_COLORS: Record<string, { bg: string; text: string; border: string }> 
 };
 
 function hookStyle(type: string) {
-  return HOOK_COLORS[type] ?? { bg: "bg-violet-50", text: "text-violet-700", border: "border-violet-200" };
+  return HOOK_STYLES[type] ?? { bg: "bg-violet-50", text: "text-violet-700", border: "border-violet-200" };
 }
 
 /* ── Component ────────────────────────────────────────────── */
@@ -81,7 +88,6 @@ export default function AdsTranscriptClient() {
   const [selectedVersion, setSelectedVersion] = useState("");
   const [data, setData] = useState<TranscriptData | null>(null);
   const [loading, setLoading] = useState(false);
-  const [showEdits, setShowEdits] = useState(false);
 
   // Upload
   const [showUpload, setShowUpload] = useState(false);
@@ -91,6 +97,9 @@ export default function AdsTranscriptClient() {
   // AI
   const [analyzing, setAnalyzing] = useState(false);
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
+
+  // Applied edits tracking
+  const [appliedEdits, setAppliedEdits] = useState<Set<number>>(new Set());
 
   // Fetch versions
   useEffect(() => {
@@ -109,7 +118,7 @@ export default function AdsTranscriptClient() {
     if (!selectedVersion) return;
     setLoading(true);
     setAnalysis(null);
-    setShowEdits(false);
+    setAppliedEdits(new Set());
     fetch(`/api/ads/vsl/transcript?versionId=${selectedVersion}`)
       .then((r) => r.json())
       .then((d) => {
@@ -156,41 +165,72 @@ export default function AdsTranscriptClient() {
       const json = await res.json();
       if (json.error) { alert(json.error); return; }
       setAnalysis(json);
-      setShowEdits(true);
-      // Reload transcript (edits saved in DB)
-      const res2 = await fetch(`/api/ads/vsl/transcript?versionId=${selectedVersion}`);
-      setData(await res2.json());
+      setAppliedEdits(new Set());
     } finally {
       setAnalyzing(false);
     }
   }
 
-  // Retention helpers
-  const getRetentionAt = (sec: number): number => {
-    if (!data) return 100;
-    const b = data.retention_buckets.find((b) => sec >= b.start && sec < b.end);
-    return b?.cumulative_retention ?? 100;
-  };
+  // Apply an edit
+  const applyEdit = useCallback((segIndex: number) => {
+    setAppliedEdits((prev) => new Set(prev).add(segIndex));
+  }, []);
 
-  const dropZones = (data?.retention_buckets ?? []).filter((b, i, arr) => {
-    if (i === 0) return false;
-    return arr[i - 1].cumulative_retention - b.cumulative_retention > 8;
-  });
+  // Build edit map
+  const edits = useMemo(() => analysis?.edits ?? [], [analysis]);
+  const editMap = useMemo(() => {
+    const m = new Map<number, Edit>();
+    for (const e of edits) m.set(e.segment_index, e);
+    return m;
+  }, [edits]);
 
-  // Build edit map: segment_index → Edit
-  const editMap = new Map<number, Edit>();
-  const edits = analysis?.edits ?? [];
-  for (const e of edits) {
-    editMap.set(e.segment_index, e);
-  }
+  // ── Dynamic retention bar scores ──────────────────────────
+  // Base: AI zone_scores. Boost applied edits.
+  const dynamicScores = useMemo(() => {
+    if (!analysis?.zone_scores?.length) {
+      // No AI analysis yet → derive from actual retention data
+      return (data?.retention_buckets ?? []).map((b) => ({
+        zone: `${fmt(b.start)}-${fmt(b.end)}`,
+        score: b.cumulative_retention,
+        note: `${b.exits} sorties`,
+        boosted: false,
+      }));
+    }
+
+    return analysis.zone_scores.map((zs) => {
+      // Check if any applied edit falls in this zone
+      const zoneStart = parseZoneStart(zs.zone);
+      const zoneEnd = zoneStart + 30;
+      const hasAppliedEdit = edits.some(
+        (e) => appliedEdits.has(e.segment_index) && data?.segments.some(
+          (seg) => seg.index === e.segment_index && seg.startSec >= zoneStart && seg.startSec < zoneEnd
+        )
+      );
+      const boost = hasAppliedEdit ? (edits.find(
+        (e) => appliedEdits.has(e.segment_index) && data?.segments.some(
+          (seg) => seg.index === e.segment_index && seg.startSec >= zoneStart && seg.startSec < zoneEnd
+        )
+      )?.score_impact ?? 15) : 0;
+
+      return {
+        zone: zs.zone,
+        score: Math.min(100, zs.score + boost),
+        note: hasAppliedEdit ? `${zs.note} (+${boost} hook applique)` : zs.note,
+        boosted: hasAppliedEdit,
+      };
+    });
+  }, [analysis, appliedEdits, data, edits]);
+
+  // Average score
+  const avgScore = dynamicScores.length > 0
+    ? Math.round(dynamicScores.reduce((s, z) => s + z.score, 0) / dynamicScores.length)
+    : 0;
 
   const hasTranscript = data && (data.segments.length > 0 || data.transcript_text);
-
-  // Group segments into paragraphs (~30s each)
   const paragraphs = groupIntoParagraphs(data?.segments ?? [], 30);
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6">
+    <div className="max-w-5xl mx-auto space-y-5">
       {/* ── Header ──────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
@@ -217,6 +257,18 @@ export default function AdsTranscriptClient() {
           >
             Importer
           </button>
+          <button
+            onClick={runAnalysis}
+            disabled={analyzing || !hasTranscript}
+            className="px-4 py-2 bg-violet-600 hover:bg-violet-700 disabled:bg-violet-300 text-white text-sm font-semibold rounded-lg transition-colors flex items-center gap-1.5"
+          >
+            {analyzing ? (
+              <>
+                <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                Analyse...
+              </>
+            ) : analysis ? "Relancer" : "Analyser IA"}
+          </button>
         </div>
       </div>
 
@@ -226,7 +278,7 @@ export default function AdsTranscriptClient() {
         </div>
       ) : (
         <>
-          {/* ── Upload panel ────────────────────────────── */}
+          {/* ── Upload ──────────────────────────────────── */}
           {showUpload && (
             <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-3">
               <p className="text-sm font-medium text-slate-700">Coller le transcript (SRT ou texte brut)</p>
@@ -250,137 +302,125 @@ export default function AdsTranscriptClient() {
 
           {hasTranscript && (
             <>
-              {/* ── Toolbar ───────────────────────────────── */}
-              <div className="flex items-center justify-between bg-white border border-slate-200 rounded-xl px-5 py-3">
-                <div className="flex items-center gap-4">
-                  {/* Retention mini bar */}
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-slate-400 whitespace-nowrap">Retention</span>
-                    <div className="flex h-3 w-48 rounded overflow-hidden gap-px">
-                      {(data?.retention_buckets ?? []).map((b, i) => (
-                        <div
-                          key={i}
-                          className={`flex-1 ${retColor(b.cumulative_retention)} relative group`}
-                        >
-                          <div className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 hidden group-hover:block bg-slate-900 text-white text-[10px] px-1.5 py-0.5 rounded whitespace-nowrap z-20">
-                            {fmt(b.start)} — {b.cumulative_retention}%
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  {dropZones.length > 0 && (
-                    <span className="text-xs text-red-500 font-medium">
-                      {dropZones.length} drop-off{dropZones.length > 1 ? "s" : ""}
+              {/* ── Dynamic Retention Bar ─────────────────── */}
+              <div className="bg-white border border-slate-200 rounded-xl px-5 py-4">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <h3 className="text-sm font-semibold text-slate-900">Score de retention</h3>
+                    <span className={`text-lg font-bold ${scoreColor(avgScore)}`}>
+                      {avgScore}%
                     </span>
-                  )}
-                  <span className="text-xs text-slate-400">{data?.total_exits ?? 0} vues</span>
+                    {appliedEdits.size > 0 && (
+                      <span className="text-[11px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full font-medium">
+                        {appliedEdits.size} edit{appliedEdits.size > 1 ? "s" : ""} applique{appliedEdits.size > 1 ? "s" : ""}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-3 text-[10px] text-slate-400">
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-500" />Bon</span>
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-400" />Moyen</span>
+                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-500" />Faible</span>
+                  </div>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  {/* Toggle edits */}
-                  {edits.length > 0 && (
-                    <button
-                      onClick={() => setShowEdits(!showEdits)}
-                      className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors ${
-                        showEdits
-                          ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                          : "bg-white text-slate-500 border-slate-200 hover:bg-slate-50"
-                      }`}
+                {/* Bar */}
+                <div className="flex h-6 rounded-lg overflow-hidden gap-[1px]">
+                  {dynamicScores.map((z, i) => (
+                    <div
+                      key={i}
+                      className={`flex-1 ${zoneBarColor(z.score)} relative group transition-colors duration-500 ${z.boosted ? "ring-1 ring-emerald-400 ring-inset" : ""}`}
                     >
-                      {showEdits ? `${edits.length} edits visibles` : "Voir les edits"}
-                    </button>
+                      <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block bg-slate-900 text-white text-[11px] px-2.5 py-1.5 rounded-lg whitespace-nowrap z-20 shadow-lg">
+                        <p className="font-bold">{z.zone} — {z.score}/100</p>
+                        <p className="text-slate-300 mt-0.5">{z.note}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Time labels */}
+                <div className="flex justify-between mt-1">
+                  <span className="text-[10px] text-slate-400">0:00</span>
+                  {dynamicScores.length > 0 && (
+                    <span className="text-[10px] text-slate-400">
+                      {dynamicScores[dynamicScores.length - 1].zone.split("-")[1]}
+                    </span>
                   )}
-                  {/* Analyze button */}
-                  <button
-                    onClick={runAnalysis}
-                    disabled={analyzing}
-                    className="px-4 py-1.5 bg-violet-600 hover:bg-violet-700 disabled:bg-violet-300 text-white text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5"
-                  >
-                    {analyzing ? (
-                      <>
-                        <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        Analyse...
-                      </>
-                    ) : (
-                      "Analyser avec IA"
-                    )}
-                  </button>
                 </div>
               </div>
 
-              {/* ── AI Analysis summary ───────────────────── */}
+              {/* ── AI Summary ────────────────────────────── */}
               {analysis && (
-                <div className="bg-violet-50 border border-violet-200 rounded-xl px-5 py-4">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1">
-                      <p className="text-sm text-violet-800 leading-relaxed">{analysis.analysis}</p>
-                    </div>
-                    <div className="flex gap-4 flex-shrink-0">
-                      <MiniStat label="Edits" value={analysis.edits.length} />
-                      <MiniStat label="Drop zones" value={analysis.retention_summary.drop_zones} />
-                      <MiniStat label="Ret. moy." value={`${analysis.retention_summary.avg_retention}%`} />
-                    </div>
-                  </div>
-                  {/* Legend */}
-                  <div className="flex items-center gap-4 mt-3 pt-3 border-t border-violet-200/50">
-                    <span className="text-[11px] text-violet-500">Legende :</span>
-                    <span className="text-[11px] text-red-500 line-through">Texte a retirer</span>
-                    <span className="text-[11px] text-emerald-700 bg-emerald-100 px-1 rounded">Texte a ajouter</span>
-                    <span className="text-[11px] text-blue-600 bg-blue-50 border border-blue-200 px-1.5 rounded">Hook</span>
+                <div className="bg-violet-50/50 border border-violet-200 rounded-xl px-5 py-3">
+                  <p className="text-sm text-violet-800 leading-relaxed">{analysis.analysis}</p>
+                  <div className="flex items-center gap-4 mt-2 pt-2 border-t border-violet-200/50">
+                    <span className="text-[11px] text-slate-400">Legende :</span>
+                    <span className="text-[11px] text-red-500 line-through">Retirer</span>
+                    <span className="text-[11px] text-emerald-700 bg-emerald-100 px-1 rounded">Ajouter</span>
+                    <span className="text-[11px] text-violet-500 ml-auto">{analysis.model_used}</span>
                   </div>
                 </div>
               )}
 
-              {/* ── Transcript body (flowing text) ────────── */}
+              {/* ── Transcript body ───────────────────────── */}
               <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
-                <div className="max-h-[75vh] overflow-y-auto">
+                <div className="max-h-[70vh] overflow-y-auto">
                   {paragraphs.map((para, pi) => {
                     const paraStart = para[0].startSec;
-                    const ret = getRetentionAt(paraStart);
-                    const isDrop = dropZones.some(
-                      (z) => paraStart >= z.start - 10 && paraStart <= z.end + 10
-                    );
+
+                    // Find zone score for this paragraph
+                    const zoneIdx = Math.floor(paraStart / 30);
+                    const zoneScore = dynamicScores[zoneIdx]?.score ?? 50;
 
                     return (
                       <div
                         key={pi}
-                        className={`flex border-b border-slate-50 last:border-b-0 ${
-                          isDrop ? "bg-red-50/30" : ""
-                        }`}
+                        className="flex border-b border-slate-50 last:border-b-0"
                       >
-                        {/* Time + retention gutter */}
-                        <div className="flex-shrink-0 w-20 py-4 px-3 border-r border-slate-100 flex flex-col items-center gap-1">
+                        {/* Gutter: time + quality indicator */}
+                        <div className="flex-shrink-0 w-16 py-4 px-2 border-r border-slate-100 flex flex-col items-center gap-1.5">
                           <span className="text-[11px] font-mono text-slate-400">
                             {fmt(paraStart)}
                           </span>
-                          <div className="flex items-center gap-1">
-                            <div className={`w-2 h-2 rounded-full ${retColor(ret)}`} />
-                            <span className="text-[10px] text-slate-400">{ret}%</span>
-                          </div>
+                          <div
+                            className={`w-3 h-3 rounded-full transition-colors duration-500 ${zoneBarColor(zoneScore)}`}
+                            title={`Score: ${zoneScore}/100`}
+                          />
                         </div>
 
-                        {/* Text content */}
+                        {/* Text */}
                         <div className="flex-1 py-4 px-5">
-                          <p className="text-[15px] text-slate-800 leading-[1.8]">
+                          <div className="text-[15px] text-slate-800 leading-[1.9]">
                             {para.map((seg) => {
-                              const edit = showEdits ? editMap.get(seg.index) : undefined;
+                              const edit = analysis ? editMap.get(seg.index) : undefined;
+                              const isApplied = appliedEdits.has(seg.index);
 
-                              if (edit && edit.type === "replace") {
+                              // Applied edit: show only the new text (no red/green)
+                              if (edit && isApplied) {
+                                if (edit.type === "replace") {
+                                  return (
+                                    <span key={seg.index}>
+                                      <span className="text-slate-800">{edit.new_text}</span>{" "}
+                                    </span>
+                                  );
+                                }
                                 return (
                                   <span key={seg.index}>
-                                    {/* Red strikethrough */}
-                                    <span className="text-red-500 line-through decoration-red-400 bg-red-50 px-0.5 rounded-sm">
+                                    <span>{seg.text} </span>
+                                    <span className="text-slate-800">{edit.new_text} </span>
+                                  </span>
+                                );
+                              }
+
+                              // Pending edit: show red/green + validate button
+                              if (edit && edit.type === "replace") {
+                                return (
+                                  <span key={seg.index} className="relative">
+                                    <span className="text-red-500/80 line-through decoration-red-300 bg-red-50/70 px-0.5 rounded-sm">
                                       {seg.text}
                                     </span>
                                     {" "}
-                                    {/* Green replacement */}
-                                    <span className="relative inline">
-                                      <HookBadge type={edit.hook_type} reason={edit.reason} />
-                                      <span className="text-emerald-800 bg-emerald-100/80 px-0.5 rounded-sm">
-                                        {edit.new_text}
-                                      </span>
-                                    </span>
+                                    <InlineEdit edit={edit} onApply={() => applyEdit(seg.index)} />
                                     {" "}
                                   </span>
                                 );
@@ -390,13 +430,7 @@ export default function AdsTranscriptClient() {
                                 return (
                                   <span key={seg.index}>
                                     <span>{seg.text} </span>
-                                    {/* Green insertion */}
-                                    <span className="relative inline">
-                                      <HookBadge type={edit.hook_type} reason={edit.reason} />
-                                      <span className="text-emerald-800 bg-emerald-100/80 px-0.5 rounded-sm">
-                                        {edit.new_text}
-                                      </span>
-                                    </span>
+                                    <InlineEdit edit={edit} onApply={() => applyEdit(seg.index)} />
                                     {" "}
                                   </span>
                                 );
@@ -404,16 +438,16 @@ export default function AdsTranscriptClient() {
 
                               return <span key={seg.index}>{seg.text} </span>;
                             })}
-                          </p>
+                          </div>
                         </div>
                       </div>
                     );
                   })}
 
-                  {/* Fallback: plain text if no SRT segments */}
+                  {/* Fallback plain text */}
                   {data && data.segments.length === 0 && data.transcript_text && (
                     <div className="p-6">
-                      <p className="text-[15px] text-slate-800 leading-[1.8] whitespace-pre-wrap">
+                      <p className="text-[15px] text-slate-800 leading-[1.9] whitespace-pre-wrap">
                         {data.transcript_text}
                       </p>
                     </div>
@@ -428,36 +462,41 @@ export default function AdsTranscriptClient() {
   );
 }
 
-/* ── Sub-components ──────────────────────────────────────── */
+/* ── InlineEdit ──────────────────────────────────────────── */
 
-function HookBadge({ type, reason }: { type: string; reason: string }) {
-  const style = hookStyle(type);
-  const [show, setShow] = useState(false);
+function InlineEdit({ edit, onApply }: { edit: Edit; onApply: () => void }) {
+  const style = hookStyle(edit.hook_type);
+  const [showReason, setShowReason] = useState(false);
 
   return (
-    <span
-      className="relative inline-block mr-1 align-middle cursor-help"
-      onMouseEnter={() => setShow(true)}
-      onMouseLeave={() => setShow(false)}
-    >
-      <span className={`inline-flex items-center px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded ${style.bg} ${style.text} border ${style.border}`}>
-        {type}
+    <span className="inline">
+      {/* Hook badge */}
+      <span
+        className={`inline-flex items-center px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider rounded mr-0.5 align-middle cursor-help ${style.bg} ${style.text} border ${style.border}`}
+        onMouseEnter={() => setShowReason(true)}
+        onMouseLeave={() => setShowReason(false)}
+      >
+        {edit.hook_type}
+        {/* Tooltip */}
+        {showReason && edit.reason && (
+          <span className="absolute bottom-full left-0 mb-1 w-60 p-2 bg-slate-900 text-white text-xs rounded-lg shadow-xl z-30 leading-relaxed normal-case tracking-normal font-normal">
+            {edit.reason}
+          </span>
+        )}
       </span>
-      {show && reason && (
-        <span className="absolute bottom-full left-0 mb-1 w-64 p-2 bg-slate-900 text-white text-xs rounded-lg shadow-xl z-30 leading-relaxed">
-          {reason}
-        </span>
-      )}
+      {/* New text in green */}
+      <span className="text-emerald-800 bg-emerald-100/70 px-0.5 rounded-sm">
+        {edit.new_text}
+      </span>
+      {/* Validate button */}
+      <button
+        onClick={onApply}
+        className="inline-flex items-center ml-1 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded transition-colors align-middle"
+        title="Appliquer cet edit"
+      >
+        Valider
+      </button>
     </span>
-  );
-}
-
-function MiniStat({ label, value }: { label: string; value: string | number }) {
-  return (
-    <div className="text-center">
-      <p className="text-lg font-bold text-violet-900">{value}</p>
-      <p className="text-[10px] text-violet-500 uppercase tracking-wider">{label}</p>
-    </div>
   );
 }
 
@@ -472,8 +511,8 @@ function groupIntoParagraphs(segments: Segment[], intervalSec: number): Segment[
     if (current.length === 0) {
       current.push(seg);
     } else {
-      const lastSeg = current[0];
-      if (seg.startSec - lastSeg.startSec >= intervalSec) {
+      const first = current[0];
+      if (seg.startSec - first.startSec >= intervalSec) {
         groups.push([seg]);
       } else {
         current.push(seg);
@@ -483,12 +522,23 @@ function groupIntoParagraphs(segments: Segment[], intervalSec: number): Segment[
   return groups;
 }
 
-function retColor(pct: number): string {
-  if (pct >= 70) return "bg-emerald-500";
-  if (pct >= 50) return "bg-emerald-400";
-  if (pct >= 35) return "bg-amber-400";
-  if (pct >= 20) return "bg-orange-400";
+function zoneBarColor(score: number): string {
+  if (score >= 80) return "bg-emerald-500";
+  if (score >= 65) return "bg-emerald-400";
+  if (score >= 50) return "bg-amber-400";
+  if (score >= 35) return "bg-orange-400";
   return "bg-red-500";
+}
+
+function scoreColor(score: number): string {
+  if (score >= 70) return "text-emerald-600";
+  if (score >= 50) return "text-amber-600";
+  return "text-red-600";
+}
+
+function parseZoneStart(zone: string): number {
+  const parts = zone.split("-")[0].trim().split(":");
+  return parseInt(parts[0]) * 60 + parseInt(parts[1] ?? "0");
 }
 
 function fmt(sec: number): string {
