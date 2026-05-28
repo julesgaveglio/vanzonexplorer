@@ -144,7 +144,7 @@ export default function AdsLoginPage() {
 
         {/* Footer */}
         <p className="text-center text-[11px] text-slate-400 mt-6">
-          Vanzon Explorer &copy; {new Date().getFullYear()} — Acces restreint
+          Vanzon Explorer &copy; {new Date().getFullYear()}
         </p>
       </div>
     </div>
