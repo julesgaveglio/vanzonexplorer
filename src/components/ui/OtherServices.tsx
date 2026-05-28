@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-type ServiceKey = "location" | "achat" | "formation" | "club";
+type ServiceKey = "location" | "achat" | "formation";
 
 const SERVICES: Record<ServiceKey, {
   emoji: string;
@@ -42,19 +42,9 @@ const SERVICES: Record<ServiceKey, {
     gradient: "from-[#CDA77B] to-[#B9945F]",
     accent: "#B9945F",
   },
-  club: {
-    emoji: "✨",
-    label: "Club",
-    title: "Deals & codes promo vanlife",
-    desc: "Accédez gratuitement aux meilleures réductions sur l'équipement van : literie, énergie, cuisine, sécurité… 100% gratuit.",
-    zone: "Toute la France",
-    href: "/club",
-    gradient: "from-[#8B5CF6] to-[#7C3AED]",
-    accent: "#8B5CF6",
-  },
 };
 
-const ALL_KEYS: ServiceKey[] = ["location", "achat", "formation", "club"];
+const ALL_KEYS: ServiceKey[] = ["location", "achat", "formation"];
 
 interface OtherServicesProps {
   current: ServiceKey;

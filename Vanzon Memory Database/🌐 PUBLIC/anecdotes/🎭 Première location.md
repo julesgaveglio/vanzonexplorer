@@ -1,3 +1,7 @@
+---
+tags:
+  - histoire
+---
 # 🎭 La Première Location
 
 > *"Après deux ou trois locations, tout est devenu beaucoup plus naturel."* — Jules

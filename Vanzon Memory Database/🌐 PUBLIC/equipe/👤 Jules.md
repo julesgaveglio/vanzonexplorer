@@ -2,6 +2,8 @@
 name: Profil Jules — Fondateur Vanzon Explorer
 description: Identité, parcours, valeurs et vision de Jules — à utiliser pour personnaliser les réponses et le contenu
 type: user
+tags:
+  - equipe
 ---
 
 ## Identité

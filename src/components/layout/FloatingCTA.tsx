@@ -27,11 +27,6 @@ const PALETTE = {
     gradient: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
     glow: "0 4px 18px rgba(185, 148, 95, 0.55), 0 1px 4px rgba(228, 211, 152, 0.30)",
   },
-  // Violet — Club
-  purple: {
-    gradient: "linear-gradient(135deg, #883AE2 0%, #8A80E9 100%)",
-    glow: "0 4px 18px rgba(136, 58, 226, 0.50), 0 1px 4px rgba(138, 128, 233, 0.30)",
-  },
   // Slate — Achat Van / Aménagement
   slate: {
     gradient: "linear-gradient(135deg, #334155 0%, #475569 100%)",
@@ -51,7 +46,6 @@ const ARTICLE_CATEGORY_CTA: Record<string, CTAConfig> = {
   "Aménagement Van": { btnLabel: "Trouver mon van", href: "/achat", ...PALETTE.slate },
   "Achat Van": { btnLabel: "Trouver mon van", href: "/achat", ...PALETTE.slate },
   // Business Van: disabled — VSLStickyBar handles mobile CTA on these articles
-  "Club": { btnLabel: "Rejoindre le Club", href: "/club", ...PALETTE.purple },
 };
 
 function getCTAConfig(pathname: string): CTAConfig | null {
@@ -81,15 +75,6 @@ function getCTAConfig(pathname: string): CTAConfig | null {
       btnLabel: "En savoir plus",
       href: "/van-business-academy/presentation",
       ...PALETTE.gold,
-    };
-  }
-
-  // Club — violet
-  if (pathname.startsWith("/club")) {
-    return {
-      btnLabel: "Rejoindre le Club",
-      href: "/club#rejoindre",
-      ...PALETTE.purple,
     };
   }
 

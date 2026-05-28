@@ -1,3 +1,7 @@
+---
+tags:
+  - territoire
+---
 # 🗺️ Pays Basque — Notre Terrain
 
 > *"Mes parents sont tombés amoureux de la région."* — Jules

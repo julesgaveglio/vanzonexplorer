@@ -1,3 +1,8 @@
+---
+tags:
+  - boss
+status: active
+---
 # Common Entrepreneur Problems
 
 Catalogue des 30 problemes entrepreneurs les plus frequents (pre-lancement a ~10k EUR/mois).
@@ -14,7 +19,7 @@ Le Boss utilise ce catalogue pour detecter les patterns et proposer des solution
 **Application Jules :** Peur identifiee des closing calls. C'est LE blocage humain du tunnel VBA.
 
 ### #11 — Syndrome de l'objet brillant
-**Signaux :** Location + VBA + Marketplace + Affiliation + Club + SEO + Backlinks + Pinterest + Road Trip IA
+**Signaux :** Location + VBA + Marketplace + Affiliation + SEO + Backlinks + Pinterest + Road Trip IA
 **Application Jules :** 5+ projets actifs. Focus = VBA closing pour les 90 prochains jours.
 
 ### #13 — Pas de metriques
@@ -23,7 +28,7 @@ Le Boss utilise ce catalogue pour detecter les patterns et proposer des solution
 
 ### #17 — Isolation
 **Signaux :** Construit seul, Mario peu actif, pas de peers.
-**Application Jules :** Risque d'isolement. Matteo est le seul contact business actif.
+**Application Jules :** Risque d'isolement. Mateo est le seul contact business actif.
 
 ---
 

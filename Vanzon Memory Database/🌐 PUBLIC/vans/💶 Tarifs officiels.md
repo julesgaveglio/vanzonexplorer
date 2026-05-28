@@ -2,6 +2,8 @@
 name: Vanzon Explorer — Tarifs officiels location van
 description: Prix par nuit selon la saison pour la location des vans Vanzon Explorer
 type: project
+tags:
+  - van
 ---
 
 ## Tarifs officiels — Location van Vanzon Explorer

@@ -1,12 +1,16 @@
 ---
 name: Campagne 1 Meta Ads — 3 créatives (transcripts)
-description: Scripts des 3 hooks publicitaires Facebook/Instagram pour la VBA — avril 2026, media buyer Matteo, budget 600€/mois
+description: Scripts des 3 hooks publicitaires Facebook/Instagram pour la VBA — avril 2026, media buyer Mateo, budget 600€/mois
 type: project
+tags:
+  - strategie
+  - meta-ads
+status: active
 ---
 
 ## Campagne Meta Ads — Avril 2026
 
-**Media buyer :** Matteo
+**Media buyer :** Mateo
 **Budget :** 600€/mois (20€/jour)
 **Plateformes :** Facebook + Instagram
 **Objectif :** leads VBA → opt-in → VSL → call → vente 997€

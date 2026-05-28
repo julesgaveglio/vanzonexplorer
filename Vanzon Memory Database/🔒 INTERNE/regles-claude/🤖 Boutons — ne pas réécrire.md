@@ -2,6 +2,8 @@
 name: Prudence avec les boutons CTA
 description: Règle stricte — ne JAMAIS casser le design des boutons existants quand on change leur destination ou leur label
 type: feedback
+tags:
+  - regles-claude
 ---
 
 Quand je modifie un bouton existant (URL, label, couleur de marque partenaire), je dois **préserver strictement la structure, les classes CSS, les props et l'accessibilité** du bouton original. Je ne recrée pas le bouton depuis zéro, je fais un Edit ciblé minimal.

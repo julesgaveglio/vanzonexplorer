@@ -1,3 +1,8 @@
+---
+tags:
+  - boss
+status: active
+---
 # Profile — Jules Gaveglio
 
 ## Identite

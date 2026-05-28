@@ -2,6 +2,9 @@
 name: VBA Module 8 — Normes VASP
 description: 12 vidéos sur les normes VASP — aération, aménagement, eau, électricité, cuisson, gaz, issue secours, marche-pied, pesée, étiquettes, objets.
 type: reference
+tags:
+  - vba/module
+status: published
 ---
 
 # Module 8 — Les normes VASP à connaître avant les travaux

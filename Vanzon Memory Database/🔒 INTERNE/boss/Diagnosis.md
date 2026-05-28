@@ -1,3 +1,8 @@
+---
+tags:
+  - boss
+status: active
+---
 # Diagnostic
 
 ## Diagnostic — 2026-04-30

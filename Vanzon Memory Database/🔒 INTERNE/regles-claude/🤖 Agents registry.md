@@ -2,6 +2,8 @@
 name: Toujours ajouter les nouveaux agents au registry admin
 description: Règle : chaque nouvel agent créé doit être ajouté au registry.json et visible dans /admin/agents
 type: feedback
+tags:
+  - regles-claude
 ---
 
 Chaque fois qu'un nouvel agent est créé (script + GitHub Actions), l'ajouter immédiatement dans `scripts/agents/registry.json`.

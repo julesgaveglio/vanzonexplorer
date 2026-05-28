@@ -2,6 +2,9 @@
 name: Objectifs financiers Vanzon — Stack de revenus cible
 description: Objectif 2 000€/mois net pour expatriation Thaïlande — stack de revenus, timeline, structure SAS
 type: project
+tags:
+  - strategie
+status: active
 ---
 
 ## Objectif principal
@@ -54,7 +57,7 @@ Cela permet à Jules de gérer la plateforme depuis la Thaïlande.
 
 Le "15 000 visites/mois" mentionné dans les messages de prospection marketplace est un **pitch commercial futur**, pas une donnée réelle actuelle.
 
-Tout l'investissement technique actuel (blog automatisé, road trip IA, Le Club, backlinks) est un pari long terme sur l'autorité SEO. L'indexation est le principal verrou à débloquer.
+Tout l'investissement technique actuel (blog automatisé, road trip IA, backlinks) est un pari long terme sur l'autorité SEO. L'indexation est le principal verrou à débloquer.
 
 **Logique** : obtenir des backlinks → gain d'autorité domaine → Google indexe les articles → trafic organique → conversions location / marketplace.
 

@@ -1,3 +1,8 @@
+---
+tags:
+  - vba/module
+status: published
+---
 # VBA — Structure complete & Transcrits
 
 > 10 modules, 71 videos, 80 lecons (dont 9 quiz)

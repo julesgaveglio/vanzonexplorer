@@ -2,6 +2,9 @@
 name: Quiz Module 4 — Conception & Budget VASP L1H1
 description: 10 questions sur l'aménagement VASP L1H1 — plan 3D, cuisine fixe, Airtable VASP, budget
 type: reference
+tags:
+  - vba/quiz
+status: published
 ---
 
 # Quiz Module 4 — Conception & Budget VASP L1H1

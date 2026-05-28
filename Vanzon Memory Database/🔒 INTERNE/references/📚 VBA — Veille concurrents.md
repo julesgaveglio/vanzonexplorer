@@ -2,6 +2,9 @@
 name: VBA Competitors & Keyword Strategy
 description: Contexte de la veille concurrents et stratégie mots-clés Van Business Academy — tables Supabase, routes API, pages admin
 type: project
+tags:
+  - reference
+  - vba
 ---
 
 ## Tables Supabase créées (2026-04-01)

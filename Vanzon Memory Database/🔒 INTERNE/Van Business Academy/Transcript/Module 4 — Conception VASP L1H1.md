@@ -2,6 +2,9 @@
 name: VBA Module 4 — Conception & budget aménagement VASP L1H1
 description: Module dédié à l'aménagement VASP L1H1 — présentation, liste de course Airtable.
 type: reference
+tags:
+  - vba/module
+status: published
 ---
 
 # Module 4 — Conception & budget aménagement VASP L1H1

@@ -2,6 +2,8 @@
 name: feedback_email_template
 description: Style imposé pour tous les emails envoyés depuis Vanzon Explorer — fond blanc, logo officiel, rappels dégradé bleu
 type: feedback
+tags:
+  - regles-claude
 ---
 
 Tous les emails envoyés depuis Vanzon Explorer (éditeur, road trip, prospection, etc.) doivent respecter ce style :

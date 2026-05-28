@@ -2,6 +2,8 @@
 name: Vanzon Explorer — Déploiement Vercel via GitHub
 description: Le site se déploie automatiquement sur Vercel à chaque push sur la branche main
 type: project
+tags:
+  - reference
 ---
 
 ## Déploiement

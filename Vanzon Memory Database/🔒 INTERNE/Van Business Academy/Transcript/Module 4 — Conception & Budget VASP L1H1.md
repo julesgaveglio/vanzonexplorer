@@ -1,3 +1,8 @@
+---
+tags:
+  - vba/module
+status: published
+---
 # Module 4 — Conception & Budget VASP L1H1 — Transcrits
 
 > Genere automatiquement depuis les videos Bunny.net via Whisper

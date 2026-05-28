@@ -1,3 +1,8 @@
+---
+tags:
+  - vba/module
+status: published
+---
 # Module 8 — Les normes VASP — Transcrits
 
 > Genere automatiquement depuis les videos Bunny.net via Whisper

@@ -2,6 +2,9 @@
 name: Quiz Module 3 — Conception & Budget
 description: 10 questions sur la conception, erreurs d'aménagement, cuisine, Airtable, bois, VASP
 type: reference
+tags:
+  - vba/quiz
+status: published
 ---
 
 # Quiz Module 3 — Conception & Budget

@@ -2,6 +2,8 @@
 name: Infos légales KBIS Vanzon Explorer
 description: Données juridiques officielles de la SAS Vanzon Explorer — SIRET, RCS, siège, activités, dirigeants
 type: project
+tags:
+  - legal
 ---
 
 **VANZON EXPLORER** — SAS au capital de 100,00 €

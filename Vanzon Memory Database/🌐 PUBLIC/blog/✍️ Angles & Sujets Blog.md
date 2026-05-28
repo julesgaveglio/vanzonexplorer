@@ -1,3 +1,7 @@
+---
+tags:
+  - blog
+---
 # ✍️ Angles & Sujets Blog — Banque d'Idées
 
 > Tous les angles dérivés des anecdotes et vécus de Jules. Pour des articles humains, pas génériques.

@@ -2,6 +2,9 @@
 name: daily_journal
 description: Structure et emplacement du journal quotidien des avancées de Jules — à lire pour contextualiser chaque session avec l'agent stratégique
 type: reference
+tags:
+  - reference
+  - journal
 ---
 
 Le journal quotidien est dans : `Vanzon Memory Database/🔒 INTERNE/journal/`

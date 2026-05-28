@@ -2,6 +2,8 @@
 name: feedback_blog_tone
 description: Ton des articles de blog Vanzon : professionnel avec vouvoiement, pas tutoiement chaleureux
 type: feedback
+tags:
+  - regles-claude
 ---
 
 Ton des articles de blog : vouvoiement professionnel par défaut, pas de tutoiement chaleureux.

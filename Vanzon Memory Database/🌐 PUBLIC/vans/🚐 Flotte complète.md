@@ -2,6 +2,9 @@
 name: Flotte Vanzon — Yoni & Xalbat
 description: Fiches techniques, histoires, règles critiques pour les articles sur les deux vans
 type: project
+tags:
+  - van
+  - flotte
 ---
 
 ## Yoni — Le Van Vert

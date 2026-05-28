@@ -1,3 +1,8 @@
+---
+tags:
+  - boss
+status: active
+---
 # Business — Vanzon Explorer
 
 ## Persona cible
@@ -7,18 +12,26 @@
 ## Offre
 
 ### 1. Formation Van Business Academy (VBA) — LEVIER PRINCIPAL
-- **Prix actuel :** 997 EUR (tarif lancement) → 1 497 EUR apres 10 ventes
-- **Contenu :** 10 modules, ~60 videos sur Bunny.net Stream
+- **Prix actuel :** 997 EUR (tarif lancement) → 1 497 EUR apres juillet 2026
+- **Contenu :** 11 modules, 120+ videos, 17h+ de contenu sur Bunny.net Stream
 - **Hebergement :** vanzonexplorer.com/dashboard/vba
+- **Page programme :** /van-business-academy/programme (white mode, accordion, bonuses)
 - **Promesse :** apprendre a acheter, amenager et mettre en location un van — meme sans competence bricolage
 - **Ventes a date :** 1 (avril 2026)
-- **Tunnel :** Meta Ads → opt-in email → VSL 15min → call Calendly → closing → paiement Stripe
-- **Media buyer :** Matteo (ami), budget 600 EUR/mois (~20 EUR/jour), 3 creatives A/B
+- **En tournage :** Module 8 (travaux VASP L1H1, 20 videos) + Module 10 (demarches admin, 11 lecons)
+- **Tunnel :** Meta Ads → opt-in email → VSL → call Calendly → closing → paiement Stripe
+- **Campagne 1 :** avril-mai 2026, Matteo media buyer, ~7 EUR/jour (~210 EUR/mois), 480 EUR depenses total
+- **Campagne 2 :** en preparation pour juin 2026
+- **VSL1 (originale) :** 59 vues, 24% completion
+- **VSL2 (Hook V2) :** 211 vues, 13% completion — active
+- **Formulaire qualification :** 7 questions, scoring A/B/C
+- **7 Bonuses :** liste de course, templates admin VASP, schemas elec/eau, parrainage 10%, campagne pub offerte, van sur vanzonexplorer.com, WhatsApp direct Jules
 - **Support client :** WhatsApp 1-to-1 avec Jules (pas de groupe)
+- **Qonto sync :** daily → Supabase finance_transactions → dashboard /admin/finances auto
 
 **Strategie packs (apres validation) :**
 - Pack Non-VASP : modules amenagement simple + business
-- Pack VASP : formation complete 10 modules
+- Pack VASP : formation complete 11 modules
 - Pack Business Only : pour ceux qui ont deja un van
 - Pack Business+ : Business + publication van sur vanzonexplorer.com + articles SEO locaux + campagne ads
 - Full Pack : tout inclus
@@ -28,6 +41,7 @@
 - 2 vans : Yoni (vert, L2H1) et Xalbat (blanc, L2H1), tous deux CTTE
 - Plateformes : Yescapa (16% commission) + Wikicampers
 - Tarifs : 65 EUR (basse) / 75 EUR (moyenne) / 95 EUR (haute saison)
+- **Expansion flotte :** 🔴 Bloquee (Mario). Local/parking a 1 000 EUR/mois pas rentable avant 5+ vans
 - Objectif flotte : 5-10 vans VASP a terme (necessite local + financement)
 - **Modele assurance :** L'assurance tous risques est fournie PAR les plateformes (Yescapa, Wikicampers). Vanzon ne peut PAS proposer de reservation directe sans elles. C'est la raison structurelle du passage par les plateformes.
 - **Strategie site web :** Le site vanzonexplorer.com est une couche d'acquisition SEO. Les pages villes/destinations sont des etapes intermediaires dans le tunnel : trafic SEO/blog → pages ville → CTA vers plateforme (Yescapa/Wikicampers). Le site ne fait PAS de reservation directe — il redirige vers les plateformes qui gerent assurance + paiement.
@@ -45,9 +59,10 @@
 - Acces au referencement Vanzon
 
 ## Produit/Service
-- VBA : 10 modules video (en cours de refonte qualite)
-  - M1 Presentation → M2 Sourcing → M3 Conception → M4 VASP L1H1 → M5 Travaux → M6 Electricite → M7 Homologation VASP → M8 Normes VASP → M9 Dossier VASP → M10 Business
-  - 2 parcours : non-VASP (skip M4, M7-M9) et VASP (complet)
+- VBA : 11 modules video, 120+ videos, 17h+ de contenu
+  - M1 Presentation → M2 Sourcing → M3 Conception → M4 VASP L1H1 → M5 Electricite → M6 Homologation VASP → M7 Normes VASP → M8 Travaux VASP L1H1 (en tournage) → M9 Dossier VASP → M10 Demarches admin (en tournage) → M11 Business
+  - Module Bonus : Les travaux (non VASP)
+  - 2 parcours : non-VASP (skip M4, M6-M10) et VASP (complet)
 - Satisfaction : a evaluer (1er client en cours)
 - Amelioration continue : ecoute retours eleves, ajout valeur, qualite video
 
@@ -63,17 +78,20 @@
   - Listes de courses : `shopping_lists` + `shopping_items`
 
 ## Marketing
-- **SEO :** 3 articles/semaine automatises, ~100+ articles publies
-- **Meta Ads :** campagne active avec Matteo, tunnel opt-in → VSL → call
+- **SEO :** blog writer pause depuis 3 mai (attente indexation Google), ~100+ articles publies
+- **Meta Ads :** Campagne 1 (avril-mai 2026) : Matteo, ~7 EUR/jour, 480 EUR depenses. Campagne 2 en prep pour juin
+- **VSL :** VSL1 (59 vues, 24% completion) / VSL2 Hook V2 (211 vues, 13% completion — active)
+- **Funnel dashboard :** /admin/funnel — KPIs Meta (CPC, CTR, CPL, CA estime, ROAS)
 - **Backlinks :** systeme automatise (5 emails/jour, 72+ prospects)
-- **Reseaux sociaux :** faible investissement actuel
+- **YouTube :** strategie 1 video/semaine planifiee (pas encore lance)
 - **Email :** tunnel VBA uniquement (pas de newsletter)
-- **Futur :** affiliation, parrainage, campagnes ads par van
+- **Objectif :** monter budget Meta a 50-60 EUR/jour, ameliorer closing 30% → 40%
 
 ## Equipe
-- **Jules :** fondateur, dev, contenu, strategie, vente — TOUT
-- **Mario :** 20% SAS, contenu VBA, peu actif, contrat non signe
+- **Jules :** fondateur autodidacte, dev, contenu, strategie, vente — TOUT
+- **Mario :** 20% SAS, contrat non signe, peu actif
 - **Matteo :** media buyer externe (ami)
+- **Elio :** parti — SAS 80/20 Jules/Mario, storytelling Jules autodidacte
 - **Futur :** 1 employe/DG terrain pour la partie physique
 
 ## Outils
@@ -91,4 +109,4 @@
 - **CMO :** table cmo_reports — health score, actions
 - **Couts :** `/api/admin/costs` — depenses par agent/service
 - **Stripe :** webhooks — achats VBA
-- **Profiles :** table profiles — membres VBA, club
+- **Profiles :** table profiles — membres VBA

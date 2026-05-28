@@ -1,3 +1,7 @@
+---
+tags:
+  - histoire
+---
 # 📖 La Naissance de Vanzon Explorer
 
 > Pas un plan de business. Une passion qui a pris forme dans un garage, entre de la musique, un pinceau et de la détermination.

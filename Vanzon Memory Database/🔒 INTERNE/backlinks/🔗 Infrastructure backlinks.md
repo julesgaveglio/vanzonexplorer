@@ -2,6 +2,9 @@
 name: Infrastructure backlinks automatisée
 description: Système complet d'outreach backlinks : agent daily (5 emails/jour Mar-Ven 9h30), reply detection Gmail+Groq, follow-up J+4, 72 prospects diversifiés
 type: project
+tags:
+  - backlinks
+status: active
 ---
 
 Système backlinks automatisé déployé le 2026-04-04 :

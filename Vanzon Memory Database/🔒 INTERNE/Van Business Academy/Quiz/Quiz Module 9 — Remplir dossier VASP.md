@@ -2,6 +2,9 @@
 name: "Quiz Module 9 — Remplir le dossier VASP"
 description: "10 questions sur le dossier VASP — demande réception, attestation travaux, certificat conformité, photos"
 type: reference
+tags:
+  - vba/quiz
+status: published
 ---
 
 # Quiz Module 9 — Remplir le dossier VASP

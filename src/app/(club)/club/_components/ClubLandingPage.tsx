@@ -5,7 +5,6 @@ import { motion, useInView } from "framer-motion";
 import Link from "next/link";
 import { ArrowRight, Tag, RefreshCw, ShieldCheck } from "lucide-react";
 import type { Product, Brand, Category } from "@/lib/club/types";
-import OtherServices from "@/components/ui/OtherServices";
 
 const ease = [0.25, 0.1, 0.25, 1] as const;
 const fadeUp   = { hidden: { opacity: 0, y: 28 },  visible: { opacity: 1, y: 0,  transition: { duration: 0.6, ease } } };
@@ -724,7 +723,6 @@ export default function ClubLandingPage({ previewProducts, allProducts, brands, 
         </motion.div>
       </section>
 
-      <OtherServices current="club" bgColor="#F8FAFC" />
     </>
   );
 }

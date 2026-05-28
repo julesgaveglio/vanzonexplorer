@@ -2,6 +2,8 @@
 name: Identité de marque Vanzon Explorer
 description: Valeurs, slogan, positionnement, ton, et ce qui distingue Vanzon — à utiliser pour tout contenu ou feature orienté marque
 type: project
+tags:
+  - marque
 ---
 
 ## Slogan
@@ -35,7 +37,7 @@ Le vanlife n'est pas réservé à ceux qui "savent bricoler" ou qui ont beaucoup
 Les locataires sont des gens, pas des risques. Les partenariats se construisent dans la confiance.
 
 ### 4. Transmission
-L'objectif de la formation VBA et du Club : éviter aux autres de refaire les mêmes erreurs. Gagner du temps, accélérer les projets.
+L'objectif de la formation VBA : éviter aux autres de refaire les mêmes erreurs. Gagner du temps, accélérer les projets.
 
 ---
 

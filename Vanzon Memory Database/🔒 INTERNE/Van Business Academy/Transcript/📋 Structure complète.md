@@ -1,13 +1,19 @@
 ---
-name: VBA — Structure complète Podia
-description: Vue d'ensemble de la formation Van Business Academy hébergée sur Podia (Sigma IPF) — tous les modules et leçons
+name: VBA — Structure complète
+description: Vue d'ensemble de la formation Van Business Academy — 11 modules, 120+ vidéos, 17h+ de contenu
 type: reference
+tags:
+  - vba/module
+status: published
 ---
 
 # Van Business Academy — Structure complète
 
-> Formation hébergée sur sigmaipf.podia.com (entreprise de Mario)
-> "Cette formation te donne toutes les clés pour construire ton propre van aménagé, obtenir l'homologation si tu le souhaites, et avancer vers un mode de vie plus libre et plus aligné avec toi !"
+> Formation hébergée sur vanzonexplorer.com/dashboard/vba (Bunny.net Stream)
+> Page programme publique : /van-business-academy/programme
+> 11 modules, 120+ vidéos, 17h+ de contenu
+> Prix : 997 EUR (lancement) → 1 497 EUR après juillet 2026
+> Fondateur : Jules (autodidacte). SAS 80/20 Jules/Mario. Elio parti.
 
 ## Module 1 — Présentation (4 leçons)
 1. Bienvenue
@@ -44,20 +50,7 @@ type: reference
 1. Présentation de l'aménagement VASP L1H1
 2. La liste de course (Airtable)
 
-## Module 5 — Les travaux (11 leçons)
-1. Le nettoyage
-2. La pose de la fenêtre
-3. L'isolation
-4. La structure en bois
-5. Les murs
-6. Le cadrant fenêtre
-7. Le sol
-8. La construction des meubles
-9. Construction de table coulissante
-10. Quiz Module 4 (Les travaux)
-11. PDF Module 4
-
-## Module 6 — Électricité (9 leçons)
+## Module 5 — Électricité (9 leçons)
 1. Présentation de l'électricité dans le van
 2. Faire des raccords solides
 3. La bases des bases (débutant)
@@ -68,7 +61,7 @@ type: reference
 8. Quiz Module 5 (L'Électricité)
 9. PDF Module 5
 
-## Module 7 — Homologation VASP (6 leçons)
+## Module 6 — Homologation VASP (6 leçons)
 1. Introduction VASP
 2. Ce que ton aménagement DOIT comporter pour être éligible à l'homologation
 3. Le processus complet pour l'homologation
@@ -76,7 +69,7 @@ type: reference
 5. Avantages et inconvénients du VASP
 6. BONUS — L'outil IA puissant qui va t'aider
 
-## Module 8 — Les normes VASP à connaître avant les travaux (12 leçons)
+## Module 7 — Les normes VASP à connaître avant les travaux (12 leçons)
 1. Les normes d'aération
 2. Les normes pour l'aménagement
 3. Les normes pour le circuit d'eau
@@ -90,13 +83,7 @@ type: reference
 11. Les objets obligatoires (vidéo)
 12. Les objets obligatoires (texte)
 
-## Module 9 — Remplir le dossier VASP (4 leçons)
-1. Demande de réception
-2. Attestation de travaux
-3. Certificat de conformité / barré rouge
-4. Les photos du van
-
-## Module en attente — Les travaux VASP (16 leçons, bientôt disponible)
+## Module 8 — Les travaux VASP L1H1 (20 leçons, en tournage)
 1. La pose de la fenêtre
 2. La pose des aérations
 3. La pose du lanterneau
@@ -113,8 +100,19 @@ type: reference
 14. Le ponçage
 15. Installation électrique
 16. Le vernissage
+17-20. (vidéos supplémentaires en tournage)
 
-## Module 10 — BUSINESS de location (18 leçons)
+## Module 9 — Remplir le dossier VASP (4 leçons)
+1. Demande de réception
+2. Attestation de travaux
+3. Certificat de conformité / barré rouge
+4. Les photos du van
+
+## Module 10 — Les démarches administratives (11 leçons, en tournage)
+> Expansion de l'ancien module 9. Couvre tout le processus administratif VASP en détail.
+1-11. (leçons en tournage, certaines déjà filmées)
+
+## Module 11 — BUSINESS de location (18 leçons)
 1. Petite précision avant de commencer
 2. Présentation du business modèle van
 3. Étude de marché simple & efficace
@@ -131,8 +129,33 @@ type: reference
 14. Automatisations pour gagner du temps
 15. Déclarations en tant que particulier
 16. Déclarations en tant que professionnel
-17. Quiz Module 6 (Business de van)
-18. PDF Module 6
+17. Quiz Module 11 (Business de van)
+18. PDF Module 11
+
+## Module Bonus — Les travaux (non VASP) (11 leçons)
+> Ancien module 5. Déplacé en bonus pour les aménagements sans homologation VASP.
+1. Le nettoyage
+2. La pose de la fenêtre
+3. L'isolation
+4. La structure en bois
+5. Les murs
+6. Le cadrant fenêtre
+7. Le sol
+8. La construction des meubles
+9. Construction de table coulissante
+10. Quiz (Les travaux non VASP)
+11. PDF
+
+---
+
+## 7 Bonus inclus
+1. Liste de course complète (Airtable)
+2. Templates administratifs VASP
+3. Schémas électricité et eau
+4. Parrainage 10%
+5. Campagne pub offerte
+6. Van publié sur vanzonexplorer.com
+7. WhatsApp direct avec Jules
 
 ---
 

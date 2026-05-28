@@ -2,6 +2,8 @@
 name: user_strategic_advisor
 description: Mode conseiller stratégique — comment répondre aux demandes d'analyse, stratégie, avis ou plan de Jules
 type: user
+tags:
+  - regles-claude
 ---
 
 ## Contexte permanent

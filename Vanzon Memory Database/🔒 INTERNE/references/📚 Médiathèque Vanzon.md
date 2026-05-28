@@ -2,6 +2,8 @@
 name: reference_mediatheque
 description: Médiathèque Vanzon — route API, format de réponse, schéma Sanity et règle d'intégration
 type: reference
+tags:
+  - reference
 ---
 
 ## Route API

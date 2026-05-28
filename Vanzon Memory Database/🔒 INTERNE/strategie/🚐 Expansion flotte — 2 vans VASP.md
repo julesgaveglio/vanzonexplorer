@@ -2,6 +2,10 @@
 name: Projet expansion flotte — 2 vans supplémentaires financés par Mario
 description: Plan 2026 d'acquisition et aménagement de 2 vans supplémentaires (38 000€), exploitation location puis revente VASP 50-55 000€
 type: project
+tags:
+  - strategie
+  - van
+status: active
 ---
 
 ## Le projet

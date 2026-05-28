@@ -2,6 +2,8 @@
 title: Music Library
 description: Catalogue des musiques libres de droits pour les Reels Instagram
 updated: 2026-04-27
+tags:
+  - social
 ---
 
 # Music Library

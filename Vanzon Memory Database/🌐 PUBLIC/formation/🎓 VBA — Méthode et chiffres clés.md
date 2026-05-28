@@ -2,6 +2,9 @@
 name: Van Business Academy — Méthode, chiffres et positionnement
 description: Contenu de la formation VBA : cycle complet, chiffres clés, erreurs à éviter, positionnement — à utiliser dans les articles et pages formation
 type: project
+tags:
+  - formation
+  - vba
 ---
 
 ## Positionnement
@@ -61,7 +64,7 @@ Lien : https://vanzonexplorer.com/formation
 ## Ce que couvre la formation
 
 - Recherche et négociation du véhicule
-- Choix des matériaux et équipements (accès aux réductions Club Privé)
+- Choix des matériaux et équipements
 - Aménagement optimisé et aux normes
 - Processus d'homologation VASP complet
 - Mise en location et optimisation plateforme (Yescapa)

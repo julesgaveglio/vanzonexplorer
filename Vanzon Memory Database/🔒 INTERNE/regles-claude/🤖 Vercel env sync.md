@@ -2,6 +2,8 @@
 name: feedback_vercel_env_sync
 description: Toujours synchroniser .env.local et Vercel quand un token/secret est régénéré
 type: feedback
+tags:
+  - regles-claude
 ---
 
 Quand un token ou secret est régénéré (Sanity, Clerk, etc.), TOUJOURS mettre à jour les deux :

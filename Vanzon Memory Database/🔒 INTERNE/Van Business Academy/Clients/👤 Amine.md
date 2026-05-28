@@ -1,3 +1,7 @@
+---
+tags:
+  - vba/client
+---
 # Appel avec Amine
 
 > Créé automatiquement par l'agent mémoire Vanzon — 2026-04-29

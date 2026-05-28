@@ -2,6 +2,8 @@
 name: feedback_image_upload
 description: Règle upload image dans le dashboard admin — toujours deux options : bibliothèque Vanzon en premier, puis depuis l'ordinateur
 type: feedback
+tags:
+  - regles-claude
 ---
 
 Dans tout composant d'upload d'image dans le dashboard admin, toujours proposer **deux choix dans cet ordre** :

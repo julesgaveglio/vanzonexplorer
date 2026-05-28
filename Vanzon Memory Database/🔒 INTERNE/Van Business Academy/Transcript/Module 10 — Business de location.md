@@ -1,3 +1,8 @@
+---
+tags:
+  - vba/module
+status: published
+---
 # Module 10 — Business de location — Transcrits
 
 > Genere automatiquement depuis les videos Bunny.net via Whisper

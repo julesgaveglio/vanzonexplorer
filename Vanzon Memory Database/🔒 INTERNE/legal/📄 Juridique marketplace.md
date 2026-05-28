@@ -2,6 +2,8 @@
 name: Risques juridiques marketplace — Points non-négociables
 description: Points légaux à anticiper avant le lancement de la marketplace de location de vans entre particuliers
 type: project
+tags:
+  - legal
 ---
 
 ## 1. Paiement (critique avant le premier euro)

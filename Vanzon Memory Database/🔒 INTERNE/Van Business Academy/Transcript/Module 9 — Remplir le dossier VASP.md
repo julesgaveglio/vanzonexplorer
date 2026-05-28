@@ -1,3 +1,8 @@
+---
+tags:
+  - vba/module
+status: published
+---
 # Module 9 — Remplir le dossier VASP — Transcrits
 
 > Genere automatiquement depuis les videos Bunny.net via Whisper

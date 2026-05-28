@@ -1,3 +1,8 @@
+---
+tags:
+  - boss
+status: active
+---
 # Goal
 
 ## Vision long terme
@@ -7,14 +12,27 @@
 
 ---
 
+## Objectif court terme : 10 000 EUR/mois en 6 mois
+
+**Leviers pour y arriver :**
+- Monter le budget Meta Ads a 50-60 EUR/jour (actuellement ~7 EUR/jour)
+- Lancer YouTube : 1 video/semaine (acquisition organique)
+- Ameliorer le closing rate de 30% a 40%
+- Campagne 2 Meta Ads en juin 2026 (nouvelles creatives)
+- Ameliorer la VSL (completion rate VSL2 a 13%, a optimiser)
+
 ## Phase 1 — Lancement VBA (maintenant → 10 premieres ventes)
 **Priorite absolue : vendre la formation et ecouter les retours.**
 
-- Prix actuel : **997 EUR** (tarif lancement)
+- Prix actuel : **997 EUR** (tarif lancement) → **1 497 EUR apres juillet 2026**
 - Objectif : 10 ventes → validation du produit + cash pour investir
-- Ameliorer la formation en continu : qualite video, structure, completude des modules
+- Formation : 11 modules, 120+ videos, 17h+ de contenu
+- Module 8 (travaux VASP L1H1, 20 videos) et Module 10 (demarches admin, 11 lecons) en tournage
+- 7 bonuses : liste de course, templates admin VASP, schemas elec/eau, parrainage 10%, campagne pub offerte, van sur vanzonexplorer.com, WhatsApp Jules
 - Ecouter les retours des premiers eleves, iterer rapidement
-- Tunnel actif : Meta Ads (600 EUR/mois avec Matteo) → opt-in → VSL → call → closing
+- Tunnel actif : Meta Ads (~7 EUR/jour avec Matteo) → opt-in → VSL → call → closing
+- Campagne 1 : 480 EUR depenses (avril-mai 2026)
+- Campagne 2 : en preparation pour juin 2026
 - **A 10 ventes : passer le prix a 1 497 EUR**
 
 ## Phase 2 — Expansion offre VBA (apres 10 ventes)
@@ -61,7 +79,8 @@
 
 ## Phase 5 — Scale & diversification
 - Multiplier les sources de revenus : formation (packs), location (flotte), affiliation, services premium
-- Marketplace (si validee) : commission sur les locations de vans tiers
+- Marketplace location (si validee) : commission sur les locations de vans tiers
+- **Marketplace Artisans Amenagement** — mise en relation clients/artisans amenageurs van, paiement via plateforme, commission 10-15%. Marche estime 175-350M€/an en France, zero concurrent transactionnel (Vansity mort). Funnel naturel VBA : chaque visiteur voit l'option "faites-le vous-meme". Potentiel 1-2M€ commission/an a 3 ans. **TRIGGER : lancer le MVP apres 10 ventes VBA.** Idee notee le 2026-05-03. **RAPPEL : reevaluer en aout 2026.**
 - Contenu SEO comme moteur d'acquisition long terme
 - Systeme d'affiliation actif qui genere des leads sans effort
 
@@ -78,6 +97,7 @@
 | Local Pays Basque | Fevrier 2027 | A financer |
 | 5 vans VASP en flotte | 2027 | A financer |
 | Embauche terrain | 2027 | Apres local |
+| Marketplace Artisans (MVP) | Aout 2026 (si 10 ventes VBA) | Idee validee, en attente trigger |
 | Liberte geographique totale | 2027-2028 | Objectif final |
 
 ## Motivation profonde

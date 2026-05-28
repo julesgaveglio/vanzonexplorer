@@ -1,3 +1,8 @@
+---
+tags:
+  - strategie
+status: active
+---
 # 💰 Business Model & Vision Vanzon
 
 > Derniere mise a jour : 2026-04-30

@@ -1,0 +1,20 @@
+filters:
+  and:
+    - file.hasTag("regles-claude")
+    - 'file.ext == "md"'
+
+formulas:
+  derniere_modif: 'file.mtime.format("DD/MM/YYYY")'
+
+properties:
+  file.name:
+    displayName: "Règle"
+  formula.derniere_modif:
+    displayName: "Dernière modif"
+
+views:
+  - type: table
+    name: "Toutes les règles"
+    order:
+      - file.name
+      - formula.derniere_modif

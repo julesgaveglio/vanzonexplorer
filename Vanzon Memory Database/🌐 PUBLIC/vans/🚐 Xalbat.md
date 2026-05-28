@@ -1,3 +1,7 @@
+---
+tags:
+  - van
+---
 # 🚐 Xalbat — Le Van Blanc
 
 > Le deuxième. Construit avec l'expérience, dédié à un compagnon disparu.

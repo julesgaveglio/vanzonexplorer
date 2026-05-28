@@ -2,6 +2,9 @@
 name: Vision produit Vanzon — roadmap et idées long terme
 description: Document vivant pour capturer les idées de Jules sur l'évolution de Vanzon Explorer — mis à jour au fil des conversations
 type: project
+tags:
+  - vision
+status: active
 ---
 
 > Ce document est un carnet d'idées stratégiques. Chaque idée est datée. Certaines seront implémentées, d'autres non. L'objectif est de ne rien perdre.

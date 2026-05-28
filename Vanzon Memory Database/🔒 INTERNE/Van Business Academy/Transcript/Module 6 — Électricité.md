@@ -1,3 +1,8 @@
+---
+tags:
+  - vba/module
+status: published
+---
 # Module 6 — Électricité — Transcrits
 
 > Genere automatiquement depuis les videos Bunny.net via Whisper

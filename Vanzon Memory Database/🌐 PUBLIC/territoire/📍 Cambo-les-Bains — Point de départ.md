@@ -2,6 +2,8 @@
 name: Vanzon Explorer — Point de départ Cambo-les-Bains
 description: Le départ des vans Vanzon Explorer est depuis Cambo-les-Bains (64250), pas Bayonne
 type: project
+tags:
+  - territoire
 ---
 
 Le point de départ (remise des clés) des vans Vanzon Explorer est **Cambo-les-Bains (64250)**, Pays Basque.

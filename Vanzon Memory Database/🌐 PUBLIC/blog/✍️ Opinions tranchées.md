@@ -1,3 +1,7 @@
+---
+tags:
+  - blog
+---
 # ✍️ Opinions Tranchées de Jules
 
 > Ce qu'il pense vraiment — et qu'il n'ose pas toujours dire.

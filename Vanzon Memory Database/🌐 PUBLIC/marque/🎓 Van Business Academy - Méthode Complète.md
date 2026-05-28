@@ -1,3 +1,9 @@
+---
+tags:
+  - marque
+  - formation
+  - vba
+---
 # 🎓 Van Business Academy — Méthode Complète
 
 La **Van Business Academy** (VBA) est la formation de Vanzon Explorer pour apprendre à aménager et revendre un van avec une plus-value de 6 000 à 9 000€. Elle couvre l'intégralité du processus de A à Z.
@@ -35,7 +41,7 @@ La majorité des personnes qui se lancent seules font ces erreurs :
 - **3 mois** en suivant la méthode VBA
 - **6 à 8 mois** en autonomie — et souvent pour un coût supérieur
 
-**Accès aux tarifs préférentiels** : Vanzon Explorer a négocié des remises avec plusieurs marques partenaires, accessibles aux membres VBA et aux membres du [[Club Privé]]. Lien Club : https://vanzonexplorer.com/club
+**Accès aux tarifs préférentiels** : Vanzon Explorer a négocié des remises avec plusieurs marques partenaires, accessibles aux membres VBA.
 
 ---
 
@@ -93,7 +99,7 @@ C'est là que le modèle devient scalable :
 ## Ce que couvre la formation VBA
 
 - Recherche et négociation du véhicule
-- Choix des matériaux et équipements (avec accès aux réductions Club)
+- Choix des matériaux et équipements
 - Aménagement optimisé et aux normes
 - Processus d'homologation VASP complet
 - Mise en location et optimisation plateforme
@@ -124,7 +130,6 @@ C'est là que le modèle devient scalable :
 ## Liens
 
 - Formation : https://vanzonexplorer.com/formation
-- Club Privé (accès remises partenaires) : https://vanzonexplorer.com/club
 - Location vans : https://vanzonexplorer.com/location
 - Vans à l'achat : https://vanzonexplorer.com/achat
 - Road trip personnalisé : https://vanzonexplorer.com/road-trip-personnalise

@@ -21,17 +21,14 @@ There is no `basePath` configured — all routes are served at `/` (not `/vanzon
 
 ## Route Groups
 
-Four distinct route groups, each with its own layout:
+Three distinct route groups, each with its own layout:
 
 | Group | Path prefix | Auth |
 |---|---|---|
 | `(site)` | All public pages | None (dashboard needs Clerk) |
-| `(club)` | `/club/*` | Supabase `profiles.plan = "club_member"` checked per page |
 | `(tunnel)` | `/van-business-academy/*` | None (tunnel de vente VBA) |
 | `admin/(protected)` | `/admin/*` | Clerk — hardcoded to `gavegliojules@gmail.com` |
 | `studio` | `/studio` | Sanity built-in |
-
-The `(club)` group has its own DM Mono font and `bg-cream text-earth` color scheme. Club access gating is done inside each page via Supabase, not in the layout. **Note : le Club a ete retire du menu nav principal (mai 2026) — les pages restent accessibles par URL directe pour le SEO.**
 
 ## Architecture
 
@@ -50,7 +47,6 @@ The `(club)` group has its own DM Mono font and `bg-cream text-earth` color sche
 - `createSupabaseAdmin()` — service_role key, bypasses RLS, server-only
 - `createSupabaseAnon()` — public read
 - Key tables: `profiles`, `products`, `brands`, `vans_location`, `prospects`, `vba_competitors`, `vba_keywords`, `backlink_prospects`, `backlink_outreach`, `backlink_scrape_sessions`, `facebook_groups`, `facebook_outreach_schedule`, `road_trip_requests`, `cmo_reports`, `marketplace_leads`, `funnel_events`, `vba_modules`, `vba_lessons`, `vba_progress`, `finance_transactions`, `finance_categories`, `shopping_lists`, `shopping_items`
-- `profiles.plan = "club_member"` controls Club Prive access (Club is 100% free — no Stripe, no subscription)
 - `profiles.plan = "vba_member"` controls VBA access
 
 **3. Clerk** — authentication
@@ -64,7 +60,7 @@ The `(club)` group has its own DM Mono font and `bg-cream text-earth` color sche
 
 **CalendlyButton** (`src/components/ui/CalendlyButton.tsx`) — thin wrapper around `CalendlyModal` (`src/components/ui/CalendlyModal.tsx`). `CalendlyModal` is a client component that lazy-loads Calendly assets on click and renders an inline widget inside a portal modal. No global Calendly script is required in `layout.tsx` — assets are injected dynamically on first open.
 
-**Navbar** (`src/components/layout/Navbar.tsx`) — client component with dynamic logo per section (Location, Formation, Club). Menu mobile sans emojis. Le Club a ete retire du menu nav (mai 2026).
+**Navbar** (`src/components/layout/Navbar.tsx`) — client component with dynamic logo per section (Location, Formation). Menu mobile sans emojis.
 
 **Footer** (`src/components/layout/Footer.tsx`) — client component with dynamic logo (logo dore sur `/formation`, logo classique partout ailleurs). Meme logique que la Navbar.
 
@@ -137,10 +133,10 @@ Source unique de verite pour le contexte metier : `Vanzon Memory Database/` a la
 
 Sections: Dashboard, SEO Analytics, Mots-Cles, Performance (PSI), Blog, Vans, Marques, Produits, Spots, Media, Prospection, Road Trips, Backlinks, Agents, Marketing (CMO), VBA (Formation), Tunnel VBA (Funnel Analytics), Finances.
 
-**Prospection** (`/admin/club/prospection`) — internal CRM for partner brand outreach. Separate `prospects` Supabase table (distinct from `brands`). Three AI-powered API routes using SSE streaming:
-- `/api/admin/club/prospect/discover` — Tavily search + Groq analysis
-- `/api/admin/club/prospect/enrich` — Jina AI site scraping + Groq contact extraction
-- `/api/admin/club/prospect/generate-email` — Groq personalized email generation
+**Prospection** (`/admin/prospection`) — internal CRM for partner brand outreach. Separate `prospects` Supabase table (distinct from `brands`). Three AI-powered API routes using SSE streaming:
+- `/api/admin/prospect/discover` — Tavily search + Groq analysis
+- `/api/admin/prospect/enrich` — Jina AI site scraping + Groq contact extraction
+- `/api/admin/prospect/generate-email` — Groq personalized email generation
 
 **Backlinks SEO** (`/admin/backlinks`) — Kanban board for backlink prospect management. Columns: decouvert → contacte → relance → obtenu / rejete. Features: AI-powered prospect discovery (SSE), email generation + sending via Gmail API, drag & drop status. Tables: `backlink_prospects`, `backlink_outreach`, `backlink_scrape_sessions`. Automated by `backlinks-daily-outreach.ts` and `backlinks-weekly-agent.ts`.
 
@@ -282,7 +278,7 @@ GOOGLE_PLACE_ID=
 - **LiquidButton**: composant avance avec variantes (blue, gold, purple, slate, rose, ghost, orange, green), tailles (sm, md, lg, responsive), effets shine/glow
 - **Colors**: custom tokens `bg-bg-primary`, `text-text-primary`, `text-accent-blue` in `globals.css`
 - **Gold gradient** (formation): `linear-gradient(135deg, #B9945F 0%, #E4D398 100%)`
-- **Fonts**: Inter (main), Bebas Neue (display), DM Mono (Club Prive layout only)
+- **Fonts**: Inter (main), Bebas Neue (display)
 - **Images**: `next/image` with `unoptimized: true`. Allowed hostnames in `next.config.mjs`. Use `imagePresets` from `src/lib/sanity/client.ts` for Sanity images.
 - **Google avis** : toujours afficher "5/5 sur Google" sans nombre d'avis (decision mai 2026)
 

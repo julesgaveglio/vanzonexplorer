@@ -2,6 +2,9 @@
 name: VBA Module 9 — Remplir le dossier VASP
 description: 4 vidéos sur le dossier VASP — demande de réception, attestation travaux, certificat conformité, photos.
 type: reference
+tags:
+  - vba/module
+status: published
 ---
 
 # Module 9 — Remplir le dossier VASP

@@ -1,3 +1,7 @@
+---
+tags:
+  - marque
+---
 # 💡 Ce Qui Nous Énerve dans l'Industrie du Vanlife
 
 > *"Ce comportement est totalement à l'opposé des valeurs de la van life."*

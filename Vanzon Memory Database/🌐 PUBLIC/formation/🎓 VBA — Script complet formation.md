@@ -2,6 +2,9 @@
 name: VBA Formation — Contenu complet des modules
 description: Synthèse structurée du script intégral de la formation Van Business Academy (6 modules, 50+ vidéos) — contenu pédagogique, chiffres clés, anecdotes, erreurs, et arguments de vente
 type: project
+tags:
+  - formation
+  - vba
 ---
 
 # Van Business Academy — Contenu de formation

@@ -2,6 +2,8 @@
 title: Reel Ideas Bank
 description: Banque d'idées de Reels Instagram — générées automatiquement, trackées par statut
 updated: 2026-04-27
+tags:
+  - social
 ---
 
 # Reel Ideas Bank

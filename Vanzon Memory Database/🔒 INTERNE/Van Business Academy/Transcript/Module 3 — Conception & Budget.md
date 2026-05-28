@@ -1,3 +1,8 @@
+---
+tags:
+  - vba/module
+status: published
+---
 # Module 3 — Conception & Budget — Transcrits
 
 > Genere automatiquement depuis les videos Bunny.net via Whisper

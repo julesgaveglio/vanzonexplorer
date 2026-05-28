@@ -1,14 +1,18 @@
 ---
 name: Première campagne Meta Ads — détails et stratégie
-description: Campagne Facebook/Instagram avec Matteo, budget 600€/mois, tunnel opt-in → VSL → call Calendly → vente VBA
+description: Campagne Facebook/Instagram avec Mateo, budget 600€/mois, tunnel opt-in → VSL → call Calendly → vente VBA
 type: project
+tags:
+  - strategie
+  - meta-ads
+status: active
 ---
 
 ## Contexte
 
 Première campagne publicitaire payante de Vanzon Explorer. Objectif : vendre la Van Business Academy via un tunnel Meta Ads.
 
-**Media buyer :** Matteo (ami de Jules, première collaboration)
+**Media buyer :** Mateo (ami de Jules, première collaboration)
 **Budget :** 600€/mois (~20€/jour)
 **Durée :** 1 mois (test initial, peut évoluer)
 **Plateformes :** Facebook + Instagram

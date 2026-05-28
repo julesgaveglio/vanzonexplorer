@@ -2,6 +2,9 @@
 name: "Quiz Module 7 — Homologation VASP"
 description: "10 questions sur l'homologation VASP — introduction, éligibilité, processus, coûts, avantages/inconvénients"
 type: reference
+tags:
+  - vba/quiz
+status: published
 ---
 
 # Quiz Module 7 — Homologation VASP

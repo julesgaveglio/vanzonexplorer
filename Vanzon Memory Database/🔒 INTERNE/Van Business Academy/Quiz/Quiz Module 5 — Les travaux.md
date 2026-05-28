@@ -2,6 +2,9 @@
 name: Quiz Module 5 — Les travaux
 description: 10 questions sur les étapes d'aménagement — nettoyage, fenêtre, isolation, structure, murs, sol, meubles, table VASP
 type: reference
+tags:
+  - vba/quiz
+status: published
 ---
 
 # Quiz Module 5 — Les travaux

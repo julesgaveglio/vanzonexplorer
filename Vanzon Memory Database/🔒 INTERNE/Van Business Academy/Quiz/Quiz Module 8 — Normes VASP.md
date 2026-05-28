@@ -2,6 +2,9 @@
 name: "Quiz Module 8 — Normes VASP"
 description: "10 questions sur les normes VASP — aération, aménagement, eau, électricité, gaz, issue secours, pesée, étiquettes"
 type: reference
+tags:
+  - vba/quiz
+status: published
 ---
 
 # Quiz Module 8 — Normes VASP

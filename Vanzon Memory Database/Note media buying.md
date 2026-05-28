@@ -1,3 +1,8 @@
+---
+tags:
+  - strategie
+  - meta-ads
+---
 Ne jamais mettre "gratuit" dans les ads parce que meta n'aime pas les choses gratuite, privilégié le mot "offer"
 
 Ne pas se justifier "clic sur la vidéo pour voir que tous ce que je dis est vrai"

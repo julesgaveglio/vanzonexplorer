@@ -1,0 +1,25 @@
+filters:
+  and:
+    - file.hasTag("boss")
+    - file.ext == "md"
+formulas:
+  derniere_modif: file.mtime.format("DD/MM/YYYY HH:mm")
+  jours_depuis_modif: (now() - file.mtime).days.round(0)
+  alerte: if((now() - file.mtime).days > 7, "⚠️ À mettre à jour", "✅ OK")
+properties:
+  file.name:
+    displayName: Fichier Boss
+  formula.derniere_modif:
+    displayName: Dernière modif
+  formula.jours_depuis_modif:
+    displayName: Jours
+  formula.alerte:
+    displayName: État
+views:
+  - type: table
+    name: Fichiers Boss
+    order:
+      - file.name
+      - formula.alerte
+      - formula.derniere_modif
+      - formula.jours_depuis_modif

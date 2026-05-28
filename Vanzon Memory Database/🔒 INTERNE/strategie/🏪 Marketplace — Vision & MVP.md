@@ -1,3 +1,8 @@
+---
+tags:
+  - strategie
+status: active
+---
 # 🏪 Marketplace — Vision & MVP
 
 ## Vision
@@ -29,8 +34,7 @@ Vanzon = canal supplémentaire, argument : "0% commission sur les réservations 
 
 1. Trafic SEO organique propre
 2. Commission 2× moins chère que Yescapa
-3. Communauté Le Club = premiers utilisateurs
-4. IA intégrée (road trip, reco)
+3. IA intégrée (road trip, reco)
 5. Spécialisation géo vs généralistes
 
 ---

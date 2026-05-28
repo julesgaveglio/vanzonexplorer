@@ -1,3 +1,8 @@
+---
+tags:
+  - vba/module
+status: published
+---
 # Module 2 — Sourcing & Achat du Van — Transcrits
 
 > Genere automatiquement depuis les videos Bunny.net via Whisper

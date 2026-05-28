@@ -1,0 +1,24 @@
+filters:
+  and:
+    - file.hasTag("vba/module")
+    - file.ext == "md"
+formulas:
+  derniere_modif: file.mtime.format("DD/MM/YYYY")
+  taille: (file.size / 1024).round(1).toString() + " KB"
+properties:
+  file.name:
+    displayName: Module
+  status:
+    displayName: Statut
+  formula.derniere_modif:
+    displayName: Dernière modif
+  formula.taille:
+    displayName: Taille
+views:
+  - type: table
+    name: Tous les modules
+    order:
+      - file.name
+      - status
+      - formula.derniere_modif
+      - formula.taille

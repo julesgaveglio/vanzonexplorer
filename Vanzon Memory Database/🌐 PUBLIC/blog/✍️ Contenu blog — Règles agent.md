@@ -2,6 +2,8 @@
 name: Contenu blog — Angles, anecdotes et règles d'écriture
 description: Banque d'angles et anecdotes réelles pour alimenter le blog agent — ce qui rend le contenu Vanzon unique vs générique
 type: project
+tags:
+  - blog
 ---
 
 ## Règles d'écriture pour l'agent blog

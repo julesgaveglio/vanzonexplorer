@@ -1,3 +1,7 @@
+---
+tags:
+  - marque
+---
 # 💡 Business Model & Revenus
 
 ---

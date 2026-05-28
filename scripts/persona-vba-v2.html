@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VBA — Persona Campagne 2</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: #0F1117;
+    color: #E8E8ED;
+    width: 210mm;
+    min-height: 297mm;
+    margin: 0 auto;
+    padding: 24px 32px 20px;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Header */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #B9945F;
+  }
+  .header-left h1 {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #B9945F 0%, #E4D398 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .header-left p {
+    font-size: 11px;
+    color: #8B8B9E;
+    margin-top: 2px;
+  }
+  .header-right {
+    text-align: right;
+    font-size: 10px;
+    color: #8B8B9E;
+  }
+  .header-right strong {
+    color: #B9945F;
+    font-size: 11px;
+  }
+
+  /* Grid */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 11px;
+  }
+  .full-width { grid-column: 1 / -1; }
+
+  /* Cards */
+  .card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    padding: 12px 14px;
+  }
+  .card-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: #B9945F;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .card-title .icon {
+    font-size: 13px;
+  }
+
+  /* Core vs Secondary */
+  .target-row {
+    display: flex;
+    gap: 12px;
+  }
+  .target-box {
+    flex: 1;
+    background: rgba(185,148,95,0.08);
+    border: 1px solid rgba(185,148,95,0.2);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .target-box.secondary {
+    background: rgba(255,255,255,0.03);
+    border-color: rgba(255,255,255,0.1);
+  }
+  .target-box h3 {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .target-box.secondary h3 { color: #8B8B9E; }
+  .target-box ul {
+    list-style: none;
+    font-size: 11px;
+    line-height: 1.6;
+    color: #C8C8D4;
+  }
+  .target-box ul li::before {
+    content: "•";
+    color: #B9945F;
+    font-weight: 700;
+    margin-right: 6px;
+  }
+  .target-box.secondary ul li::before { color: #555; }
+
+  /* Tags */
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 4px;
+  }
+  .tag {
+    background: rgba(185,148,95,0.12);
+    border: 1px solid rgba(185,148,95,0.25);
+    color: #E4D398;
+    font-size: 10.5px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+
+  /* Bullet lists */
+  .bullets {
+    list-style: none;
+    font-size: 11.5px;
+    line-height: 1.7;
+    color: #C8C8D4;
+  }
+  .bullets li { padding-left: 14px; position: relative; }
+  .bullets li::before {
+    content: ">";
+    position: absolute;
+    left: 0;
+    color: #B9945F;
+    font-weight: 700;
+    font-size: 11px;
+  }
+  .bullets li strong { color: #E8E8ED; }
+
+  /* Highlight box */
+  .highlight {
+    background: linear-gradient(135deg, rgba(185,148,95,0.12) 0%, rgba(228,211,152,0.06) 100%);
+    border: 1px solid rgba(185,148,95,0.3);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-top: 6px;
+  }
+  .highlight-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #B9945F;
+    margin-bottom: 4px;
+  }
+  .highlight p {
+    font-size: 12px;
+    line-height: 1.6;
+    color: #E8E8ED;
+  }
+
+  /* Columns inside card */
+  .two-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .col-title {
+    font-size: 10px;
+    font-weight: 700;
+    color: #B9945F;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 4px;
+  }
+  .mini-list {
+    list-style: none;
+    font-size: 11px;
+    line-height: 1.65;
+    color: #C8C8D4;
+  }
+  .mini-list li::before {
+    content: "✓ ";
+    color: #6BCB77;
+    font-weight: 700;
+  }
+  .mini-list.red li::before {
+    content: "✗ ";
+    color: #E85D5D;
+  }
+
+  /* Footer */
+  .footer {
+    margin-top: 12px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    font-size: 9.5px;
+    color: #555;
+    display: flex;
+    justify-content: space-between;
+  }
+</style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <h1>VBA — Persona Campagne 2</h1>
+      <p>Van Business Academy — Ciblage Meta Ads recalibr&eacute; sur donn&eacute;es terrain</p>
+    </div>
+    <div class="header-right">
+      <strong>Vanzon Explorer</strong><br>
+      Mai 2026 &middot; Pour Matteo (m&eacute;dia buyer)
+    </div>
+  </div>
+
+  <!-- GRID -->
+  <div class="grid">
+
+    <!-- CIBLE COEUR + SECONDAIRE -->
+    <div class="card full-width">
+      <div class="card-title"><span class="icon">&#127919;</span> CIBLE</div>
+      <div class="target-row">
+        <div class="target-box">
+          <h3 style="color:#E4D398">Coeur de cible</h3>
+          <ul>
+            <li>25-35 ans, H/F, toute la France</li>
+            <li>Freelances, ind&eacute;pendants, entrepreneurs</li>
+            <li>Temps flexible pour g&eacute;rer un projet de travaux</li>
+            <li>Y pensent depuis 6 mois &agrave; 5 ans &mdash; l'ad = le d&eacute;clic</li>
+            <li>Mindset : apprendre, construire, rebondir</li>
+          </ul>
+        </div>
+        <div class="target-box secondary">
+          <h3>Cible secondaire</h3>
+          <ul>
+            <li>Salari&eacute;s en qu&ecirc;te d'un side project</li>
+            <li>Petit investissement + compl&eacute;ment revenus</li>
+            <li>Moins de flexibilit&eacute; temps, mais motiv&eacute;s</li>
+            <li>Sensibles &agrave; l'argument "revente + plus-value"</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- PSYCHO -->
+    <div class="card">
+      <div class="card-title"><span class="icon">&#129504;</span> PSYCHOLOGIE</div>
+      <ul class="bullets">
+        <li><strong>D&eacute;termin&eacute;s, pas r&ecirc;veurs</strong> &mdash; projet m&ucirc;ri, vision &agrave; plusieurs ann&eacute;es</li>
+        <li><strong>Enthousiastes &agrave; l'id&eacute;e d'apprendre</strong> &mdash; nouvelles comp&eacute;tences = motivation #1</li>
+        <li><strong>Entrepreneurs dans l'&acirc;me</strong> &mdash; proposent des collabs, des id&eacute;es, brainstorment</li>
+        <li><strong>Proches de la nature</strong> &mdash; voyage, plein air, ouverture d'esprit</li>
+        <li><strong>Optimistes r&eacute;alistes</strong> &mdash; pas na&iuml;fs, mais pr&ecirc;ts &agrave; foncer intelligemment</li>
+      </ul>
+    </div>
+
+    <!-- CENTRES D'INTERET -->
+    <div class="card">
+      <div class="card-title"><span class="icon">&#128270;</span> CENTRES D'INT&Eacute;R&Ecirc;T META</div>
+      <div class="tags">
+        <span class="tag">Vanlife</span>
+        <span class="tag">Bricolage / DIY</span>
+        <span class="tag">Road trip</span>
+        <span class="tag">Entrepreneuriat</span>
+        <span class="tag">D&eacute;veloppement personnel</span>
+        <span class="tag">Voyage nature</span>
+        <span class="tag">Side project</span>
+        <span class="tag">Camping / Plein air</span>
+        <span class="tag">Artisanat</span>
+        <span class="tag">Investissement alternatif</span>
+        <span class="tag">Micro-entreprise</span>
+        <span class="tag">YouTube cr&eacute;ateurs</span>
+      </div>
+    </div>
+
+    <!-- USP TREMPLIN -->
+    <div class="card full-width">
+      <div class="card-title"><span class="icon">&#128640;</span> USP CL&Eacute; &mdash; LA STRAT&Eacute;GIE TREMPLIN</div>
+      <div class="highlight">
+        <div class="highlight-label">L'argument qui fait tilt sur les calls</div>
+        <p>
+          <strong>Petit van (L1H1) &rarr; am&eacute;nagement &rarr; homologation VASP &rarr; location/revente avec plus-value &rarr; budget + comp&eacute;tences pour le projet r&ecirc;v&eacute;.</strong><br>
+          Un processus de 6 mois o&ugrave; on apprend en faisant, on s&eacute;curise son investissement, et on rebondit. Pas un pari &agrave; l'aveugle &mdash; une strat&eacute;gie concr&egrave;te par &eacute;tapes.
+        </p>
+      </div>
+    </div>
+
+    <!-- CE QUI CONVERTIT -->
+    <div class="card">
+      <div class="card-title"><span class="icon">&#9989;</span> CE QUI CONVERTIT</div>
+      <div class="two-cols">
+        <div>
+          <div class="col-title">Sur la VSL</div>
+          <ul class="mini-list">
+            <li>Transparence &amp; honn&ecirc;tet&eacute; de Jules</li>
+            <li>Passion ressentie &agrave; travers l'&eacute;cran</li>
+            <li>C&ocirc;t&eacute; humain &amp; authentique</li>
+            <li>Chiffres r&eacute;els (pas de promesses folles)</li>
+          </ul>
+        </div>
+        <div>
+          <div class="col-title">Sur le call</div>
+          <ul class="mini-list">
+            <li>Strat&eacute;gie tremplin personnalis&eacute;e</li>
+            <li>997&euro; per&ccedil;u comme une bonne affaire</li>
+            <li>&Eacute;conomise des milliers d'&euro; d'erreurs</li>
+            <li>M&eacute;thode compl&egrave;te A&rarr;Z, pas du YouTube</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- CE QUI NE MARCHE PAS -->
+    <div class="card">
+      <div class="card-title"><span class="icon">&#9888;&#65039;</span> &Agrave; &Eacute;VITER DANS LES ADS</div>
+      <ul class="mini-list red">
+        <li>Promesses de revenus exag&eacute;r&eacute;es ("5000&euro;/mois")</li>
+        <li>Ton corporate / d&eacute;tach&eacute; / trop marketing</li>
+        <li>Ciblage trop large (&gt;45 ans, retraite, camping-car)</li>
+        <li>Visuels lifestyle Instagram irr&eacute;alistes</li>
+        <li>Hooks urgence artificielle sans valeur</li>
+      </ul>
+    </div>
+
+    <!-- DIRECTION CREATIVES -->
+    <div class="card full-width">
+      <div class="card-title"><span class="icon">&#127916;</span> DIRECTION CR&Eacute;ATIVES CAMPAGNE 2</div>
+      <ul class="bullets">
+        <li><strong>Hook principal :</strong> la strat&eacute;gie tremplin &mdash; "Retape un petit van, revends-le avec une plus-value, et rebondis vers ton vrai projet"</li>
+        <li><strong>Hook secondaire :</strong> la transformation personnelle &mdash; "J'ai appris &agrave; bricoler, &agrave; g&eacute;rer un business, et &agrave; devenir autonome en 6 mois"</li>
+        <li><strong>Ton :</strong> humain, passionn&eacute;, tutoiement, pas vendeur &mdash; Jules face cam&eacute;ra, souriant, naturel</li>
+        <li><strong>Formats :</strong> face cam (atelier/devant le van), t&eacute;moignages UGC, avant/apr&egrave;s van</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <span>Vanzon Explorer &mdash; Document interne</span>
+    <span>Bas&eacute; sur donn&eacute;es r&eacute;elles des calls de closing &mdash; Mai 2026</span>
+  </div>
+
+</body>
+</html>

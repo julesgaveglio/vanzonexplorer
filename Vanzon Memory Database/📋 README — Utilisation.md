@@ -1,3 +1,7 @@
+---
+tags:
+  - reference
+---
 # 📋 README — Utilisation de la Vanzon Memory Database
 
 > Base de connaissance structurée en deux niveaux : public et interne.

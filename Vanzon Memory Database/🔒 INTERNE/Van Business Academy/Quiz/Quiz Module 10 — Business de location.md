@@ -2,6 +2,9 @@
 name: "Quiz Module 10 — Business de location"
 description: "10 questions sur le business de location — revenus, plateformes, assurance, prix, fiscalité, chiffres réels"
 type: reference
+tags:
+  - vba/quiz
+status: published
 ---
 
 # Quiz Module 10 — Business de location

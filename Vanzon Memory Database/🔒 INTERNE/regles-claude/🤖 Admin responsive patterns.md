@@ -2,6 +2,8 @@
 name: Patterns responsive admin Vanzon
 description: Règles mobile-first à appliquer sur toutes les pages admin — composants partagés, breakpoints, touch targets
 type: feedback
+tags:
+  - regles-claude
 ---
 
 Toute nouvelle page admin doit utiliser les composants partagés dans `src/app/admin/_components/ui/` :

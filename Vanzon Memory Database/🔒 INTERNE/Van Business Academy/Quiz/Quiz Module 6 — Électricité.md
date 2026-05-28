@@ -2,6 +2,9 @@
 name: Quiz Module 6 — Électricité
 description: 10 questions sur l'installation électrique — batterie auxiliaire, DC-DC, panneau solaire, calcul conso, sections câbles, fusibles, circuit
 type: reference
+tags:
+  - vba/quiz
+status: published
 ---
 
 # Quiz Module 6 — Électricité

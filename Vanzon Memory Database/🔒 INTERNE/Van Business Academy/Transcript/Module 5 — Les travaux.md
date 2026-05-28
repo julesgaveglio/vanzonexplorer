@@ -1,3 +1,8 @@
+---
+tags:
+  - vba/module
+status: published
+---
 # Module 5 — Les travaux — Transcrits
 
 > Genere automatiquement depuis les videos Bunny.net via Whisper

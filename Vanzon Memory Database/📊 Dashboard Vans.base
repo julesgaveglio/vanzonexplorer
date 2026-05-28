@@ -1,0 +1,27 @@
+filters:
+  and:
+    - file.hasTag("van")
+    - file.ext == "md"
+formulas:
+  derniere_modif: file.mtime.format("DD/MM/YYYY")
+properties:
+  file.name:
+    displayName: Van
+  status:
+    displayName: Statut
+  formula.derniere_modif:
+    displayName: Dernière modif
+views:
+  - type: cards
+    name: Flotte
+    order:
+      - file.name
+      - status
+      - formula.derniere_modif
+  - type: table
+    name: Table
+    order:
+      - file.name
+      - status
+      - formula.derniere_modif
+      - file.size

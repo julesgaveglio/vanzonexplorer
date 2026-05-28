@@ -1,3 +1,8 @@
+---
+tags:
+  - strategie
+status: active
+---
 # 🔍 SEO — Infrastructure de trafic
 
 ## Logique centrale
@@ -19,11 +24,6 @@ Sans trafic propre, la marketplace n'a pas d'argument. Le SEO EST la marketplace
 - Wizard → itinéraire personnalisé par email (Tavily + Groq + Resend)
 - Valeur utilisateur forte → signal engagement Google → trafic récurrent
 
-### Le Club (ex Club Privé)
-- 100% gratuit — promos partenaires, guides, avantages
-- Fidélisation + inscription email + réduction taux de rebond
-- Signaux comportementaux positifs pour Google
-
 ### Pinterest automation
 - 3-5 pins/jour (boards vanlife, road trip France, van aménagé Pays Basque)
 - Durée de vie d'un pin = 2 ans → trafic référent long terme
@@ -35,7 +35,7 @@ Sans trafic propre, la marketplace n'a pas d'argument. Le SEO EST la marketplace
 ```
 Google / Pinterest
        ↓
-Articles blog / Road trip IA / Le Club / Pages vans
+Articles blog / Road trip IA / Pages vans
        ↓
 Confiance dans la marque Vanzon
        ↓

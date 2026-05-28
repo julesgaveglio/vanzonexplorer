@@ -2,6 +2,9 @@
 name: Quiz Module 2 — Sourcing & Achat du Van
 description: 10 questions sur le choix, l'achat et la négociation d'un van (Renault Trafic III, budget 15k€)
 type: reference
+tags:
+  - vba/quiz
+status: published
 ---
 
 # Quiz Module 2 — Sourcing & Achat du Van

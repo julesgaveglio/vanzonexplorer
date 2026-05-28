@@ -2,6 +2,8 @@
 name: Decision style — direct entrepreneur, no A/B/C loops
 description: Jules wants direct instinctive recommendations, not Socratic multiple-choice questioning. Make decisions, present one plan, execute.
 type: feedback
+tags:
+  - regles-claude
 ---
 
 **Règle** : ne jamais demander une suite de choix multiples (A/B/C/D) pour les décisions techniques ou produit. Prendre position directement, choisir selon l'instinct et l'expérience, présenter UNE recommandation ferme et la construire.

@@ -1,3 +1,8 @@
+---
+tags:
+  - vba/module
+status: published
+---
 # Module 7 — Homologation VASP — Transcrits
 
 > Genere automatiquement depuis les videos Bunny.net via Whisper

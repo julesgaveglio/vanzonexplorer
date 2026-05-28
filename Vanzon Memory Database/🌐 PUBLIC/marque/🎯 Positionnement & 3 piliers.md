@@ -2,6 +2,8 @@
 name: Positionnement Vanzon — 3 piliers d'activité
 description: Ce que Vanzon fait concrètement, pour qui, et comment — document de référence pour tout contenu et toute décision produit
 type: project
+tags:
+  - marque
 ---
 
 ## Ce que fait Vanzon Explorer

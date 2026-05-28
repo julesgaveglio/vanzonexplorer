@@ -2,6 +2,9 @@
 name: VBA Module 2 — Sourcing & Achat du Van
 description: Scripts complets des 8 vidéos du module 2 — choix du Renault Trafic III, recherche Leboncoin, mécanique, négociation
 type: reference
+tags:
+  - vba/module
+status: published
 ---
 
 # Module 2 — Sourcing & Achat du Van

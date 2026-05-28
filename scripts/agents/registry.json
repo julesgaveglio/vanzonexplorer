@@ -730,5 +730,35 @@
       "Manuel"
     ],
     "pipeline": "Lit les Core files (boss/) + donnees dynamiques Supabase + GSC"
+  },
+  {
+    "id": "shorts-editor",
+    "name": "YouTube Shorts Editor",
+    "emoji": "🎬",
+    "status": "active",
+    "description": "Prend une vidéo face-cam brute (1-3 min) et produit un YouTube Short (<60s) avec suppression des silences, validation QC par Claude Haiku (cohérence des phrases), sous-titres animés style CapCut (pycaps), et musique de fond. Pipeline : auto-editor → whisper → Claude QC → FFmpeg cuts → pycaps subtitles → FFmpeg export → Telegram.",
+    "trigger": "manual",
+    "schedule": "Manuel uniquement",
+    "cronExpression": null,
+    "file": "scripts/agents/shorts-editor-agent.ts",
+    "workflow": null,
+    "apis": [
+      "Anthropic Claude (Haiku)",
+      "Telegram Bot API",
+      "ffmpeg/ffprobe",
+      "OpenAI Whisper (local)",
+      "auto-editor",
+      "pycaps"
+    ],
+    "output": "YouTube Short MP4 envoyé sur Telegram",
+    "manualCommand": "npx tsx scripts/agents/shorts-editor-agent.ts /path/to/video.mp4",
+    "tags": [
+      "YouTube",
+      "Shorts",
+      "Video",
+      "VBA",
+      "Manuel"
+    ],
+    "pipeline": "Standalone — vidéo brute → Short prêt à poster"
   }
 ]

@@ -2,6 +2,8 @@
 name: Schéma Supabase Marketplace Vanzon
 description: Tables Supabase prévues pour la marketplace de location de vans — schéma validé lors de la session stratégique avril 2026
 type: reference
+tags:
+  - reference
 ---
 
 ## Tables marketplace (à créer — pas encore en base au 2026-04-04)

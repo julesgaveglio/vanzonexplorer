@@ -2,6 +2,8 @@
 title: Trends — Dernière analyse
 description: Insights du scraper de tendances vanlife Instagram
 updated: 2026-04-27
+tags:
+  - social
 ---
 
 # Analyse des tendances vanlife Instagram

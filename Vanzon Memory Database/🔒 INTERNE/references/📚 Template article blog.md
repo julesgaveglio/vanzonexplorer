@@ -2,6 +2,9 @@
 name: project_article_template
 description: Template centralisé des articles de blog Vanzon Explorer — fichier maître à modifier pour mettre à jour toutes les previews
 type: project
+tags:
+  - reference
+  - blog
 ---
 
 Le template visuel des articles de blog Vanzon Explorer est centralisé dans un seul fichier :

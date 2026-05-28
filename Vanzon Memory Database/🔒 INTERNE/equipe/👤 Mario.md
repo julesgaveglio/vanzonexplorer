@@ -2,6 +2,8 @@
 name: Formation Van Business — Situation Mario
 description: Risques, structure et état de la formation "Van Business" pilotée par Mario (associé 20%)
 type: project
+tags:
+  - equipe
 ---
 
 ## Rôle de Mario dans Vanzon

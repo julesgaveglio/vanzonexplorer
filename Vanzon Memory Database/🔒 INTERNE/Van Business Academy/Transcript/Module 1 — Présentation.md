@@ -1,3 +1,8 @@
+---
+tags:
+  - vba/module
+status: published
+---
 # Module 1 — Présentation — Transcrits
 
 > Genere automatiquement depuis les videos Bunny.net via Whisper

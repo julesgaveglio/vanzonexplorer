@@ -1,3 +1,7 @@
+---
+tags:
+  - histoire
+---
 # 📖 Le Tour du Monde de Jules
 
 > Le voyage qui a tout changé. Avant : incertitude. Après : clarté totale.

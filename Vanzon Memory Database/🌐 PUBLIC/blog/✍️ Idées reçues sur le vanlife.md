@@ -1,3 +1,7 @@
+---
+tags:
+  - blog
+---
 # ✍️ Idées Reçues sur le Vanlife
 
 > *"Beaucoup de ces croyances sont infondées. Ne croyez pas tout ce que vous entendez."* — Jules
