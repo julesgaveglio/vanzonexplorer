@@ -147,8 +147,8 @@ export async function GET(req: NextRequest) {
     const { data: metaTxs } = await q;
     metaSpend = (metaTxs ?? []).reduce((sum, t) => sum + (t.amount ?? 0), 0);
 
-    // Deduct warmup spend (25.06€) from Campaign 1 period (Apr 24 - May 19)
-    if (startDate === "2026-04-24" || since.startsWith("2026-04-24")) {
+    // Deduct warmup spend (25.06€) only when Campaign 1 is explicitly selected
+    if (startDate === "2026-04-24" && endDate === "2026-05-19") {
       metaSpend = Math.max(0, metaSpend - 25.06);
     }
   }
