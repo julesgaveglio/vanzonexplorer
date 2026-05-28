@@ -61,15 +61,22 @@ export function CampaignProvider({ children, role = "admin" }: { children: React
         const camps = (json.campaigns ?? []) as Campaign[];
         setCampaigns(camps);
 
-        // Restore from cookie, or default to latest active campaign (no end_date)
+        // Find the currently running campaign (no end_date)
+        const running = camps.find((c) => !c.end_date);
+
+        // Check saved cookie
         const saved = readCookie();
-        const valid = camps.find((c) => c.id === saved);
-        if (valid) {
+        const savedCamp = camps.find((c) => c.id === saved);
+
+        // If a campaign is running and the saved cookie points to a finished one,
+        // auto-switch to the running campaign
+        if (running && savedCamp && savedCamp.end_date) {
+          setIdRaw(running.id);
+          writeCookie(running.id);
+        } else if (savedCamp) {
           setIdRaw(saved);
         } else {
-          // Default: latest campaign without end_date (still running)
-          const running = camps.find((c) => !c.end_date);
-          const fallback = running ?? camps[0]; // camps are ordered by start_date DESC
+          const fallback = running ?? camps[0];
           if (fallback) {
             setIdRaw(fallback.id);
             writeCookie(fallback.id);
