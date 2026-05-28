@@ -3,7 +3,7 @@ import { requireAdsAuth } from "@/lib/ads-auth";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
 import { groqWithFallback } from "@/lib/groq-with-fallback";
 
-// POST — AI analyzes transcript + retention data → hook suggestions + optimized version
+// POST — AI analyzes transcript + retention data → segment-level edits
 export async function POST(req: NextRequest) {
   const check = await requireAdsAuth();
   if (check instanceof NextResponse) return check;
@@ -58,19 +58,19 @@ export async function POST(req: NextRequest) {
     buckets.push({ start: t, end: t + bucketSize, retention: Math.max(retention, 0), exits: exitsInBucket });
   }
 
-  // 4. Parse SRT into text segments with timestamps
+  // 4. Parse SRT segments
   const segments = parseSRTForAnalysis(version.transcript_srt ?? "");
   const hasSegments = segments.length > 0;
 
-  // 5. Build context for AI
-  const transcriptContext = hasSegments
+  // 5. Number each segment for AI reference
+  const numberedTranscript = hasSegments
     ? segments
-        .map((s) => `[${formatTime(s.startSec)}-${formatTime(s.endSec)}] ${s.text}`)
+        .map((s, i) => `[#${i}|${fmtTime(s.startSec)}] ${s.text}`)
         .join("\n")
     : version.transcript_text ?? "";
 
   const retentionContext = buckets
-    .map((b) => `${formatTime(b.start)}-${formatTime(b.end)}: ${b.retention}% retention (${b.exits} sorties)`)
+    .map((b) => `${fmtTime(b.start)}-${fmtTime(b.end)}: ${b.retention}% (${b.exits} sorties)`)
     .join("\n");
 
   const dropZones = buckets.filter((b, i, arr) => {
@@ -80,37 +80,42 @@ export async function POST(req: NextRequest) {
 
   const dropContext = dropZones.length > 0
     ? dropZones
-        .map((z) => `${formatTime(z.start)}: retention chute a ${z.retention}% (${z.exits} sorties)`)
+        .map((z) => `${fmtTime(z.start)}: chute a ${z.retention}% (${z.exits} sorties)`)
         .join("\n")
-    : "Pas de zone de drop-off majeure detectee";
+    : "Aucune zone critique detectee";
 
-  // 6. AI Analysis
-  const systemPrompt = `Tu es un expert en retention video et copywriting VSL (Video Sales Letter).
-Tu analyses des transcripts de VSL avec leurs donnees de retention pour suggerer des hooks strategiques.
+  // 6. AI prompt — ask for segment-level edits
+  const systemPrompt = `Tu es un expert en retention video et copywriting VSL.
+Tu analyses des transcripts avec les donnees de retention pour proposer des EDITS precis.
 
-TYPES DE HOOKS A UTILISER :
-- PATTERN INTERRUPT : casse le rythme, surprend le spectateur (ex: "Stop. Relis ce que je viens de dire.")
-- OPEN LOOP : cree une question en suspens (ex: "Et la, il s'est passe un truc que personne n'avait prevu...")
-- CURIOSITY GAP : tease une info a venir (ex: "Dans 2 minutes je te montre exactement comment...")
-- PROOF DROP : insere une preuve sociale au bon moment (ex: "C'est exactement ce qu'a fait Marc, et en 3 mois...")
-- DIRECT QUESTION : interpelle directement (ex: "Est-ce que toi aussi tu as deja ressenti ca ?")
-- REFRAME : change la perspective (ex: "La question n'est pas si c'est possible, mais pourquoi tu ne l'as pas encore fait")
-- MICRO-COMMITMENT : obtient un petit oui mental (ex: "Si tu es encore la, c'est que ca te parle...")
-- TENSION EMOTIONNELLE : amplifie l'emotion du moment (ex: pause, repetition, contraste avant/apres)
+TON ROLE : proposer des modifications chirurgicales du script pour maintenir la retention.
+Tu ne changes PAS tout le script. Tu identifies les passages faibles et tu proposes des remplacements.
 
-REGLES :
-- Place les hooks 10-20 secondes AVANT chaque zone de drop-off (pour prevenir l'abandon)
-- Ajoute aussi des hooks reguliers toutes les 60-90 secondes meme sans drop-off (maintenir l'attention)
-- Chaque hook doit etre naturel dans le flow de la VSL, pas force
-- Les hooks doivent correspondre au ton de la VSL (analyse le style de l'auteur)
-- Genere entre 8 et 15 hooks pour une VSL de 10-15 min
+TYPES DE HOOKS :
+- PATTERN INTERRUPT : casse le rythme ("Stop. Relis ce que je viens de dire.")
+- OPEN LOOP : question en suspens ("Et la, il s'est passe un truc...")
+- CURIOSITY GAP : tease ("Dans 2 minutes je te montre exactement...")
+- PROOF DROP : preuve sociale ("C'est ce qu'a fait Marc, en 3 mois...")
+- DIRECT QUESTION : interpelle ("Est-ce que toi aussi tu as ressenti ca ?")
+- REFRAME : change la perspective
+- MICRO-COMMITMENT : petit oui mental ("Si tu es encore la...")
+- TRANSITION : phrase de liaison engageante entre deux sections
 
-IMPORTANT : Reponds UNIQUEMENT en JSON valide, sans markdown, sans code fence.`;
+REGLES STRICTES :
+- Maximum 6 a 10 edits pour une VSL de 10-15 min (pas plus, sois strategique)
+- Espace les edits : minimum 60 secondes entre chaque edit
+- Place les edits 10-20s AVANT les zones de drop-off
+- Le texte de remplacement doit etre naturel, meme ton que l'auteur (tutoiement, direct, van life)
+- Chaque edit remplace un passage existant OU insere du texte (insert_after_segment)
+- Pour un remplacement : donne le texte original exact a barrer + le nouveau texte
+- Pour une insertion : donne le numero du segment apres lequel inserer
 
-  const userPrompt = `Analyse cette VSL et genere des hooks pour maximiser la retention.
+IMPORTANT : JSON valide uniquement, sans markdown.`;
 
-=== TRANSCRIPT ===
-${transcriptContext}
+  const userPrompt = `Analyse cette VSL et propose des edits pour maximiser la retention.
+
+=== TRANSCRIPT (chaque ligne = [#index|timestamp] texte) ===
+${numberedTranscript}
 
 === RETENTION PAR TRANCHE DE 30s ===
 ${retentionContext}
@@ -120,19 +125,29 @@ ${dropContext}
 
 === TOTAL SPECTATEURS : ${exitSeconds.length} ===
 
-Reponds en JSON avec cette structure exacte :
+Reponds en JSON :
 {
-  "analysis": "Resume de 2-3 phrases de ton diagnostic global sur la retention",
-  "hooks": [
+  "analysis": "Diagnostic global 2-3 phrases",
+  "edits": [
     {
-      "atSecond": 45,
-      "type": "PATTERN INTERRUPT",
-      "suggestion": "Texte exact du hook a inserer",
-      "reason": "Pourquoi ce hook a cet endroit",
-      "priority": "high"
+      "segment_index": 15,
+      "at_time": "1:12",
+      "type": "replace",
+      "hook_type": "OPEN LOOP",
+      "original_text": "le texte exact du segment a remplacer",
+      "new_text": "le nouveau texte avec le hook integre naturellement",
+      "reason": "pourquoi cet edit a cet endroit"
+    },
+    {
+      "segment_index": 30,
+      "at_time": "2:25",
+      "type": "insert_after",
+      "hook_type": "DIRECT QUESTION",
+      "original_text": "",
+      "new_text": "Est-ce que tu te reconnais dans cette situation ?",
+      "reason": "relance l'attention apres passage technique"
     }
-  ],
-  "optimized_script": "Le script complet reecrit avec les hooks integres naturellement. Marque chaque hook avec [HOOK: TYPE] avant le texte du hook."
+  ]
 }`;
 
   try {
@@ -141,8 +156,8 @@ Reponds en JSON avec cette structure exacte :
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt },
       ],
-      temperature: 0.7,
-      max_tokens: 8000,
+      temperature: 0.6,
+      max_tokens: 4000,
       response_format: { type: "json_object" },
     });
 
@@ -156,18 +171,17 @@ Reponds en JSON avec cette structure exacte :
       );
     }
 
-    // Save hook suggestions to DB
-    if (parsed.hooks?.length) {
+    // Save to DB
+    if (parsed.edits?.length) {
       await sb
         .from("vsl_versions")
-        .update({ hook_suggestions: parsed.hooks })
+        .update({ hook_suggestions: parsed.edits })
         .eq("id", versionId);
     }
 
     return NextResponse.json({
       analysis: parsed.analysis ?? "",
-      hooks: parsed.hooks ?? [],
-      optimized_script: parsed.optimized_script ?? "",
+      edits: parsed.edits ?? [],
       model_used: result.modelUsed,
       retention_summary: {
         total_viewers: exitSeconds.length,
@@ -209,7 +223,7 @@ function toSec(t: string): number {
   return parseInt(h) * 3600 + parseInt(m) * 60 + parseInt(s) + parseInt(ms ?? "0") / 1000;
 }
 
-function formatTime(sec: number): string {
+function fmtTime(sec: number): string {
   const m = Math.floor(sec / 60);
   const s = Math.round(sec % 60);
   return `${m}:${s.toString().padStart(2, "0")}`;
