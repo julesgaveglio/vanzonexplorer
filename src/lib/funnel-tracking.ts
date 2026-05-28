@@ -19,15 +19,13 @@ function getSessionId(): string {
 // Meta Pixel events — only trackCustomEvent to avoid auto-detected standard events
 // page_view fires a CUSTOM ViewContent (not fbq "track" but fbq "trackCustom")
 // to prevent Meta from auto-detecting Subscribe/button click
-const META_STANDARD_MAP: Record<string, string> = {
+const META_EVENT_MAP: Record<string, string> = {
+  page_view: "ViewContent",
   optin: "Lead",
   booking_start: "Schedule",
   appel_confirme: "SubmitApplication",
   checkout: "InitiateCheckout",
   purchase: "Purchase",
-};
-const META_CUSTOM_MAP: Record<string, string> = {
-  page_view: "PageView_VBA",
 };
 
 interface TrackOptions {
@@ -53,9 +51,9 @@ export function trackFunnel(
   // Unique event ID for Meta deduplication
   const eventId = crypto.randomUUID();
 
-  // 1. Meta Pixel — standard events (Lead, Schedule, etc.) only for hot leads
-  const standardEvent = META_STANDARD_MAP[event];
-  if (standardEvent) {
+  // 1. Meta Pixel — standard events, hot leads only (cold excluded)
+  const metaEvent = META_EVENT_MAP[event];
+  if (metaEvent) {
     let isHot = true;
     try {
       const stored = localStorage.getItem("vba_is_hot");
@@ -68,14 +66,8 @@ export function trackFunnel(
       };
       if (options.value !== undefined) pixelParams.value = options.value;
       if (options.currency) pixelParams.currency = options.currency;
-      trackEvent(standardEvent, pixelParams, eventId);
+      trackEvent(metaEvent, pixelParams, eventId);
     }
-  }
-
-  // 2. Meta Pixel — custom events (page view) for all leads, uses trackCustom
-  const customEvent = META_CUSTOM_MAP[event];
-  if (customEvent && typeof window !== "undefined" && window.fbq) {
-    window.fbq("trackCustom", customEvent, { content_name: event }, { eventID: eventId });
   }
 
   // 2. Supabase — all events (powers /admin/funnel dashboard)
