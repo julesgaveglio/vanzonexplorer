@@ -152,6 +152,8 @@ export async function GET(req: NextRequest) {
   const cpl = optinCount > 0 ? Math.round((metaSpend / optinCount) * 100) / 100 : 0;
   const cpc = pageViews > 0 ? Math.round((metaSpend / pageViews) * 100) / 100 : 0;
   const ctr = pageViews > 0 ? Math.round((optinCount / pageViews) * 1000) / 10 : 0;
+  const cpm = pageViews > 0 ? Math.round((metaSpend / pageViews) * 1000 * 100) / 100 : 0;
+  const costPerView = pageViews > 0 ? Math.round((metaSpend / pageViews) * 100) / 100 : 0;
 
   // Daily breakdown — fill in missing days with zeros, stop at today
   const sinceDate = new Date(since);
@@ -208,6 +210,8 @@ export async function GET(req: NextRequest) {
     cpl,
     cpc,
     ctr,
+    cpm,
+    cost_per_view: costPerView,
     daily_breakdown,
   });
 }

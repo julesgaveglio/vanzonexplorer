@@ -26,6 +26,8 @@ interface FunnelData {
   cpl: number;
   cpc: number;
   ctr: number;
+  cpm: number;
+  cost_per_view: number;
   daily_breakdown: { date: string; page_view: number; optin: number; booking_confirmed: number; purchase: number }[];
 }
 
@@ -140,6 +142,8 @@ export default function AdsDashboardClient() {
   const cpl = data?.cpl ?? 0;
   const cpc = data?.cpc ?? 0;
   const ctr = data?.ctr ?? 0;
+  const cpm = data?.cpm ?? 0;
+  const costPerView = data?.cost_per_view ?? 0;
   const selectedCamp = campaigns.find((c) => c.id === selectedCampaign);
   const budgetEuros = selectedCamp?.budget_euros ?? null;
 
@@ -272,6 +276,8 @@ export default function AdsDashboardClient() {
         <KPICard label="CPC" value={cpc > 0 ? `${cpc.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €` : "—"} subtitle={`${sc.page_view ?? 0} clics`} color="slate" />
         <KPICard label="CTR" value={ctr > 0 ? `${ctr}%` : "—"} subtitle={`clic → opt-in`} color="blue" />
         <KPICard label="CPL" value={cpl > 0 ? `${cpl.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €` : "—"} subtitle={`${sc.optin ?? 0} leads`} color="amber" />
+        <KPICard label="CPM" value={cpm > 0 ? `${cpm.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €` : "—"} subtitle="coût pour 1000 vues" color="slate" />
+        <KPICard label="Coût / View" value={costPerView > 0 ? `${costPerView.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €` : "—"} subtitle={`${sc.page_view ?? 0} content views`} color="blue" />
         <KPICard label="CA estimé" value={`${revenue.toLocaleString("fr-FR")} €`} subtitle={`${sc.purchase ?? 0} vente${(sc.purchase ?? 0) > 1 ? "s" : ""} × 997 €`} color="emerald" />
       </div>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
