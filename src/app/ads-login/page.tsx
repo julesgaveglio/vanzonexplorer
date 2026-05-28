@@ -43,23 +43,16 @@ export default function AdsLoginPage() {
       <div className="fixed inset-0 bg-[url('/noise.png')] opacity-[0.03] pointer-events-none" />
 
       <div className="w-full max-w-md relative z-10">
-        {/* Logo + subtitle */}
+        {/* Logo */}
         <div className="text-center mb-10">
           <Image
             src={LOGO_SRC}
             alt="Vanzon Ads"
-            width={200}
-            height={56}
-            className="h-12 w-auto mx-auto"
+            width={280}
+            height={78}
+            className="h-16 w-auto mx-auto"
             unoptimized
           />
-          <div className="mt-4 flex items-center justify-center gap-2">
-            <div className="h-px w-8 bg-slate-300" />
-            <span className="text-xs font-medium tracking-widest uppercase text-slate-400">
-              Media Buyer Dashboard
-            </span>
-            <div className="h-px w-8 bg-slate-300" />
-          </div>
         </div>
 
         {/* Login card */}
