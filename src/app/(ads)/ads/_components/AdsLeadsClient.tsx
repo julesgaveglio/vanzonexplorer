@@ -53,7 +53,7 @@ function formatWatch(seconds: number | null): string {
 }
 
 export default function AdsLeadsClient() {
-  const { activeCampaign, activeCampaignId, campaigns } = useCampaign();
+  const { activeCampaign } = useCampaign();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [period, setPeriod] = useState(30);
   const [search, setSearch] = useState("");

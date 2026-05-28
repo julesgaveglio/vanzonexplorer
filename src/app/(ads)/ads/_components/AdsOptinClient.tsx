@@ -26,7 +26,7 @@ const PERIODS = [
 ] as const;
 
 export default function AdsOptinClient() {
-  const { activeCampaign, activeCampaignId, campaigns } = useCampaign();
+  const { activeCampaign } = useCampaign();
   const [period, setPeriod] = useState(30);
   const [data, setData] = useState<OptinData | null>(null);
   const [loading, setLoading] = useState(true);

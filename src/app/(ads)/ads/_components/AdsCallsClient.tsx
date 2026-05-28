@@ -19,7 +19,7 @@ const PERIODS = [
 ] as const;
 
 export default function AdsCallsClient() {
-  const { activeCampaign, activeCampaignId, campaigns } = useCampaign();
+  const { activeCampaign } = useCampaign();
   const [calls, setCalls] = useState<Call[]>([]);
   const [period, setPeriod] = useState(90);
   const [loading, setLoading] = useState(true);

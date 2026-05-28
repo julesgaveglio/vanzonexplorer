@@ -35,7 +35,7 @@ function isColdIndicator(key: "q_objective" | "q_profile" | "q_budget", value: s
 }
 
 export default function AdsFormClient() {
-  const { activeCampaign, activeCampaignId, campaigns } = useCampaign();
+  const { activeCampaign } = useCampaign();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [period, setPeriod] = useState(30);
   const [loading, setLoading] = useState(true);

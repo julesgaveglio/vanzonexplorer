@@ -39,7 +39,7 @@ const PERIODS = [
 ] as const;
 
 export default function AdsVSLClient() {
-  const { activeCampaign, activeCampaignId, campaigns } = useCampaign();
+  const { activeCampaign } = useCampaign();
   const [data, setData] = useState<VSLData | null>(null);
   const [period, setPeriod] = useState(30);
   const [loading, setLoading] = useState(true);
