@@ -4,7 +4,7 @@ interface VBAWelcomeEmailProps {
 }
 
 const THUMBNAIL_URL =
-  "https://cdn.sanity.io/images/lewexa74/production/9b38149c19afa731dc126b6d6e79abedd0ed0e32-1114x622.png?auto=format&q=82&w=460";
+  "https://vanzonexplorer.com/images/vsl2-thumbnail.png";
 
 export function buildVBAWelcomeEmail({ firstname, vslUrl }: VBAWelcomeEmailProps): {
   subject: string;

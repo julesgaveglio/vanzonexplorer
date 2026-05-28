@@ -7,7 +7,7 @@
 
 const VSL_BASE = "https://vanzonexplorer.com/van-business-academy/presentation";
 const CALENDLY_URL = "https://calendly.com/vanzonexplorer/new-meeting?utm_source=email&utm_medium=sequence&utm_campaign=post-vsl";
-const THUMBNAIL_URL = "https://cdn.sanity.io/images/lewexa74/production/9b38149c19afa731dc126b6d6e79abedd0ed0e32-1114x622.png?auto=format&q=82&w=460";
+const THUMBNAIL_URL = "https://vanzonexplorer.com/images/vsl2-thumbnail.png";
 
 function simpleEmail(body: string): string {
   return `<!DOCTYPE html>
