@@ -260,9 +260,12 @@ export default function OptinForm() {
           q_budget: answers.q_budget,
           phone: phone || undefined,
           title_variant_id: (() => { try { return localStorage.getItem("vba_title_variant_id") ?? undefined; } catch { return undefined; } })(),
-          is_hot: computeIsHot(answers),
+          is_hot: isHot,
         },
       });
+
+      // Wait for Meta Pixel to fire before redirecting
+      await new Promise((r) => setTimeout(r, 800));
 
       // Redirect to VSL
       router.push("/van-business-academy/presentation");
