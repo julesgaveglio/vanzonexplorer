@@ -68,7 +68,7 @@ const FUNNEL_COLORS: Record<string, string> = {
 
 /* ---------- component ---------- */
 export default function AdsDashboardClient() {
-  const { activeCampaign, activeCampaignId, isAdmin } = useCampaign();
+  const { activeCampaign, activeCampaignId, isAdmin, loading: campLoading } = useCampaign();
   const [period, setPeriod] = useState(30);
   const [data, setData] = useState<FunnelData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -93,9 +93,9 @@ export default function AdsDashboardClient() {
   }, [period, activeCampaign]);
 
   useEffect(() => {
-    fetchData();
+    if (!campLoading) fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [period, activeCampaignId]);
+  }, [period, activeCampaignId, campLoading]);
 
   const handleCreateCampaign = async () => {
     if (!newCampaign.name || !newCampaign.start_date) return;

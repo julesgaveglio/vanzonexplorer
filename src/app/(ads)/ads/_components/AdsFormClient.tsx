@@ -35,12 +35,13 @@ function isColdIndicator(key: "q_objective" | "q_profile" | "q_budget", value: s
 }
 
 export default function AdsFormClient() {
-  const { activeCampaign } = useCampaign();
+  const { activeCampaign, loading: campLoading } = useCampaign();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [period, setPeriod] = useState(30);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (campLoading) return;
     setLoading(true);
     const qs = activeCampaign
       ? `start=${activeCampaign.start_date}${activeCampaign.end_date ? `&end=${activeCampaign.end_date}` : ""}`
@@ -51,7 +52,7 @@ export default function AdsFormClient() {
         setLeads(json.leads ?? []);
       })
       .finally(() => setLoading(false));
-  }, [period, activeCampaign]);
+  }, [period, activeCampaign, campLoading]);
 
   const hotCount = leads.filter((l) => l.is_hot === true).length;
   const coldCount = leads.filter((l) => l.is_hot === false).length;

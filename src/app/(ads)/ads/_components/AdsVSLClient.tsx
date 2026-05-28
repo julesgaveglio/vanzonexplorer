@@ -39,12 +39,13 @@ const PERIODS = [
 ] as const;
 
 export default function AdsVSLClient() {
-  const { activeCampaign } = useCampaign();
+  const { activeCampaign, loading: campLoading } = useCampaign();
   const [data, setData] = useState<VSLData | null>(null);
   const [period, setPeriod] = useState(30);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (campLoading) return;
     const fetchData = () => {
       const qs = activeCampaign
         ? `start=${activeCampaign.start_date}${activeCampaign.end_date ? `&end=${activeCampaign.end_date}` : ""}`
@@ -59,7 +60,7 @@ export default function AdsVSLClient() {
     // Auto-refresh toutes les 30 secondes
     const interval = setInterval(fetchData, 30000);
     return () => clearInterval(interval);
-  }, [period, activeCampaign]);
+  }, [period, activeCampaign, campLoading]);
 
   if (loading && !data) {
     return (

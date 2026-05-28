@@ -26,7 +26,7 @@ const PERIODS = [
 ] as const;
 
 export default function AdsOptinClient() {
-  const { activeCampaign } = useCampaign();
+  const { activeCampaign, loading: campLoading } = useCampaign();
   const [period, setPeriod] = useState(30);
   const [data, setData] = useState<OptinData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -48,8 +48,8 @@ export default function AdsOptinClient() {
   }, [period, activeCampaign]);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    if (!campLoading) fetchData();
+  }, [fetchData, campLoading]);
 
   return (
     <div className="space-y-6">

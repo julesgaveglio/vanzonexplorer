@@ -53,7 +53,7 @@ function formatWatch(seconds: number | null): string {
 }
 
 export default function AdsLeadsClient() {
-  const { activeCampaign } = useCampaign();
+  const { activeCampaign, loading: campLoading } = useCampaign();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [period, setPeriod] = useState(30);
   const [search, setSearch] = useState("");
@@ -73,9 +73,9 @@ export default function AdsLeadsClient() {
   };
 
   useEffect(() => {
-    fetchLeads();
+    if (!campLoading) fetchLeads();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [period, activeCampaign]);
+  }, [period, activeCampaign, campLoading]);
 
   const handleDelete = async (email: string) => {
     if (!confirm(`Supprimer le lead ${email} et tous ses événements ?`)) return;
