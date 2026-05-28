@@ -16,10 +16,11 @@ function getSessionId(): string {
   return id;
 }
 
-// Only REAL conversions are sent to Meta — no page views, no intermediate steps
+// Only REAL conversions are sent to Meta — NO page views, NO intermediate steps
+// page_view removed: was triggering false "Subscribe/button click" auto-detection
+// optin added: the REAL conversion event when the lead fills the form
 const META_EVENT_MAP: Record<string, string> = {
-  page_view: "ViewContent",
-  vsl_view: "Lead",
+  optin: "Lead",
   booking_start: "Schedule",
   appel_confirme: "SubmitApplication",
   checkout: "InitiateCheckout",
