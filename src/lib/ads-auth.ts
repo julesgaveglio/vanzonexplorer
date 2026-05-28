@@ -6,14 +6,19 @@ const SECRET = process.env.SUPABASE_SERVICE_ROLE_KEY ?? "dev-fallback-secret-key
 const COOKIE_NAME = "ads_session";
 const MAX_AGE = 30 * 24 * 60 * 60; // 30 days
 
-// Pre-computed SHA-256 password hashes
-const USERS: Record<string, string> = {
-  "gavegliojules@gmail.com": "ba38d573193a93e95dd51adf4c53b91e59fac058b4d9cc8f32ea9648d4c85693",
-  "mateogb.ads@gmail.com": "912fa39a344628f4500ebef5a73fae7a9d7ee48db7e9796b101f3a86c3f74d0a",
+// Roles: admin = full access, viewer = read-only (no edit/delete)
+type AdsRole = "admin" | "viewer";
+
+// Pre-computed SHA-256 password hashes + roles
+const USERS: Record<string, { hash: string; role: AdsRole }> = {
+  "gavegliojules@gmail.com": { hash: "ba38d573193a93e95dd51adf4c53b91e59fac058b4d9cc8f32ea9648d4c85693", role: "admin" },
+  "mateogb.ads@gmail.com": { hash: "912fa39a344628f4500ebef5a73fae7a9d7ee48db7e9796b101f3a86c3f74d0a", role: "admin" },
+  "contact@sigmaipf.fr": { hash: "a20e7cff82c45d613a6badc8789a366f412e5d3b910e627eb601d81ef1546941", role: "viewer" },
 };
 
 interface SessionPayload {
   email: string;
+  role: AdsRole;
   exp: number;
 }
 
@@ -38,21 +43,26 @@ function verify(token: string): SessionPayload | null {
   }
 }
 
-export async function getAdsSession(): Promise<{ email: string } | null> {
+export async function getAdsSession(): Promise<{ email: string; role: AdsRole } | null> {
   const cookieStore = await cookies();
   const token = cookieStore.get(COOKIE_NAME)?.value;
   if (!token) return null;
   const payload = verify(token);
-  return payload ? { email: payload.email } : null;
+  return payload ? { email: payload.email, role: payload.role ?? "admin" } : null;
 }
 
 export function createSessionToken(email: string): string {
-  return sign({ email, exp: Math.floor(Date.now() / 1000) + MAX_AGE });
+  const role = USERS[email]?.role ?? "admin";
+  return sign({ email, role, exp: Math.floor(Date.now() / 1000) + MAX_AGE });
 }
 
 export function validateCredentials(email: string, password: string): boolean {
   const hash = crypto.createHash("sha256").update(password).digest("hex");
-  return USERS[email] === hash;
+  return USERS[email]?.hash === hash;
+}
+
+export function getUserRole(email: string): AdsRole {
+  return USERS[email]?.role ?? "viewer";
 }
 
 export async function requireAdsAuth() {

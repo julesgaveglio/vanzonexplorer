@@ -13,6 +13,8 @@ export interface Campaign {
   platform: string | null;
 }
 
+export type AdsRole = "admin" | "viewer";
+
 interface CampaignContextValue {
   campaigns: Campaign[];
   activeCampaign: Campaign | null;
@@ -21,6 +23,9 @@ interface CampaignContextValue {
   /** Query string for API calls: either start=...&end=... or days=N */
   buildQS: (fallbackDays?: number) => string;
   loading: boolean;
+  /** User role: admin = full access, viewer = read-only */
+  role: AdsRole;
+  isAdmin: boolean;
 }
 
 const Ctx = createContext<CampaignContextValue | null>(null);
@@ -43,7 +48,7 @@ function writeCookie(id: string) {
   document.cookie = `${COOKIE_NAME}=${id}; path=/; max-age=${30 * 86400}; SameSite=Lax`;
 }
 
-export function CampaignProvider({ children }: { children: ReactNode }) {
+export function CampaignProvider({ children, role = "admin" }: { children: ReactNode; role?: AdsRole }) {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [activeCampaignId, setIdRaw] = useState("");
   const [loading, setLoading] = useState(true);
@@ -93,7 +98,7 @@ export function CampaignProvider({ children }: { children: ReactNode }) {
 
   return (
     <Ctx.Provider
-      value={{ campaigns, activeCampaign, activeCampaignId, setActiveCampaignId, buildQS, loading }}
+      value={{ campaigns, activeCampaign, activeCampaignId, setActiveCampaignId, buildQS, loading, role, isAdmin: role === "admin" }}
     >
       {children}
     </Ctx.Provider>

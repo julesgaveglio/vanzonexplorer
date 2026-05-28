@@ -68,7 +68,7 @@ const FUNNEL_COLORS: Record<string, string> = {
 
 /* ---------- component ---------- */
 export default function AdsDashboardClient() {
-  const { activeCampaign, activeCampaignId } = useCampaign();
+  const { activeCampaign, activeCampaignId, isAdmin } = useCampaign();
   const [period, setPeriod] = useState(30);
   const [data, setData] = useState<FunnelData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -151,7 +151,7 @@ export default function AdsDashboardClient() {
             ))}
           </div>
 
-          {activeCampaignId && (
+          {isAdmin && activeCampaignId && (
             <>
               <button
                 onClick={async () => {
@@ -189,12 +189,14 @@ export default function AdsDashboardClient() {
             </>
           )}
 
-          <button
-            onClick={() => setShowNewCampaign(!showNewCampaign)}
-            className="px-3 py-2 text-sm font-medium bg-blue-50 text-blue-600 rounded-xl border border-blue-200 hover:bg-blue-100 transition-colors"
-          >
-            + Campagne
-          </button>
+          {isAdmin && (
+            <button
+              onClick={() => setShowNewCampaign(!showNewCampaign)}
+              className="px-3 py-2 text-sm font-medium bg-blue-50 text-blue-600 rounded-xl border border-blue-200 hover:bg-blue-100 transition-colors"
+            >
+              + Campagne
+            </button>
+          )}
 
           <button
             onClick={fetchData}
@@ -211,7 +213,7 @@ export default function AdsDashboardClient() {
       </div>
 
       {/* --- New campaign form --- */}
-      {showNewCampaign && (
+      {isAdmin && showNewCampaign && (
         <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
           <h3 className="text-slate-900 font-semibold">Nouvelle campagne</h3>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
