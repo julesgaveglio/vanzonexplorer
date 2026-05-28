@@ -264,14 +264,28 @@ export default function OptinForm() {
         },
       });
 
-      // Fire Meta Pixel Lead DIRECTLY for hot leads (bypass trackFunnel chain)
-      if (isHot && typeof window !== "undefined" && window.fbq) {
+      // Fire Meta Pixel Lead DIRECTLY for hot leads
+      if (isHot && typeof window !== "undefined") {
         const eid = crypto.randomUUID();
-        window.fbq("track", "Lead", { content_name: "optin" }, { eventID: eid });
+        const fireLead = () => {
+          if (window.fbq) {
+            window.fbq("track", "Lead", { content_name: "optin" }, { eventID: eid });
+            return true;
+          }
+          return false;
+        };
+        // Try immediately, then retry every 100ms for up to 2s
+        if (!fireLead()) {
+          let attempts = 0;
+          const interval = setInterval(() => {
+            attempts++;
+            if (fireLead() || attempts >= 20) clearInterval(interval);
+          }, 100);
+        }
       }
 
       // Wait for pixel + Supabase to complete before redirecting
-      await new Promise((r) => setTimeout(r, 1000));
+      await new Promise((r) => setTimeout(r, 1500));
 
       // Redirect to VSL
       router.push("/van-business-academy/presentation");
