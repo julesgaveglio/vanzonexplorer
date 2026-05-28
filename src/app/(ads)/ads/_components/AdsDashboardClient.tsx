@@ -68,7 +68,7 @@ const FUNNEL_COLORS: Record<string, string> = {
 
 /* ---------- component ---------- */
 export default function AdsDashboardClient() {
-  const { activeCampaign, activeCampaignId, buildQS, campaigns } = useCampaign();
+  const { activeCampaign, activeCampaignId } = useCampaign();
   const [period, setPeriod] = useState(30);
   const [data, setData] = useState<FunnelData | null>(null);
   const [loading, setLoading] = useState(true);
