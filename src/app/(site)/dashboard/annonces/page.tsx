@@ -9,7 +9,7 @@ export const metadata = {
   robots: { index: false, follow: false },
 };
 
-const ADMIN_EMAIL = "gavegliojules@gmail.com";
+const ADMIN_EMAILS = ["gavegliojules@gmail.com", "vanzonexplorer@gmail.com"];
 
 export default async function AnnoncesPage() {
   const { userId } = await auth();
@@ -17,7 +17,7 @@ export default async function AnnoncesPage() {
 
   const user = await currentUser();
   const email = user?.emailAddresses?.[0]?.emailAddress;
-  const isAdmin = email === ADMIN_EMAIL;
+  const isAdmin = !!email && ADMIN_EMAILS.includes(email);
 
   const supabase = createSupabaseAdmin();
   const { data: profile } = await supabase

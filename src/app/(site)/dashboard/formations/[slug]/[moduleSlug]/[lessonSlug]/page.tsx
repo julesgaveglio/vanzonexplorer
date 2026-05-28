@@ -27,7 +27,7 @@ interface Resource {
   label: string;
 }
 
-const ADMIN_EMAIL = "gavegliojules@gmail.com";
+const ADMIN_EMAILS = ["gavegliojules@gmail.com", "vanzonexplorer@gmail.com"];
 
 export default async function FormationLessonPage({
   params,
@@ -53,7 +53,7 @@ export default async function FormationLessonPage({
   if (!formation) notFound();
 
   // Check access: admin OR formation_access (each formation is independent)
-  let hasAccess = email === ADMIN_EMAIL;
+  let hasAccess = !!email && ADMIN_EMAILS.includes(email);
 
   if (!hasAccess) {
     const { data: access } = await supabase

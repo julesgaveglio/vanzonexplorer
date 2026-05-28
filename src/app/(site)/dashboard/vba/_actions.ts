@@ -4,7 +4,7 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 
-const ADMIN_EMAIL = "gavegliojules@gmail.com";
+const ADMIN_EMAILS = ["gavegliojules@gmail.com", "vanzonexplorer@gmail.com"];
 
 async function requireVBAAccess(): Promise<string> {
   const { userId } = await auth();
@@ -12,7 +12,7 @@ async function requireVBAAccess(): Promise<string> {
 
   const user = await currentUser();
   const email = user?.emailAddresses?.[0]?.emailAddress;
-  if (email === ADMIN_EMAIL) return userId;
+  if (email && ADMIN_EMAILS.includes(email)) return userId;
 
   // Check vba_member plan
   const supabase = createSupabaseAdmin();

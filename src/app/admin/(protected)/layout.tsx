@@ -3,7 +3,7 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import AdminShell from "../_components/AdminShell";
 
 // Emails admin autorisés — séparés par virgule dans ADMIN_EMAILS
-const ALLOWED_EMAILS = (process.env.ADMIN_EMAILS ?? "gavegliojules@gmail.com,jules.skate64@gmail.com")
+const ALLOWED_EMAILS = (process.env.ADMIN_EMAILS ?? "gavegliojules@gmail.com,vanzonexplorer@gmail.com,jules.skate64@gmail.com")
   .split(",")
   .map((e) => e.trim().toLowerCase());
 

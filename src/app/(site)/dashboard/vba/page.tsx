@@ -19,7 +19,7 @@ const MODULE_ICONS: Record<number, string> = {
   10: "/icons/vba-emoji-10.png",
 };
 
-const ADMIN_EMAIL = "gavegliojules@gmail.com";
+const ADMIN_EMAILS = ["gavegliojules@gmail.com", "vanzonexplorer@gmail.com"];
 
 interface VBAModule {
   id: string;
@@ -59,7 +59,7 @@ export default async function VBAPage() {
   const supabase = createSupabaseAdmin();
 
   // Check access: admin OR vba_member
-  if (email !== ADMIN_EMAIL) {
+  if (!email || !ADMIN_EMAILS.includes(email)) {
     const { data: profile } = await supabase
       .from("profiles")
       .select("plan")

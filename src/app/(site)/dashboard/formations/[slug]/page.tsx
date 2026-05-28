@@ -3,7 +3,7 @@ import { redirect, notFound } from "next/navigation";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
 import FormationPaywall from "./_components/FormationPaywall";
 
-const ADMIN_EMAIL = "gavegliojules@gmail.com";
+const ADMIN_EMAILS = ["gavegliojules@gmail.com", "vanzonexplorer@gmail.com"];
 
 export default async function FormationPage({
   params,
@@ -29,7 +29,7 @@ export default async function FormationPage({
   if (!formation) notFound();
 
   // Check access: admin OR formation_access
-  let hasAccess = email === ADMIN_EMAIL;
+  let hasAccess = !!email && ADMIN_EMAILS.includes(email);
 
   if (!hasAccess) {
     const { data: access } = await supabase

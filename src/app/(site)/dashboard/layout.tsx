@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
 import DashboardNav from "./_components/DashboardNav";
 
-const ADMIN_EMAIL = "gavegliojules@gmail.com";
+const ADMIN_EMAILS = ["gavegliojules@gmail.com", "vanzonexplorer@gmail.com"];
 
 export const metadata = {
   title: "Mon espace — Vanzon Explorer",
@@ -20,7 +20,7 @@ export default async function DashboardLayout({
 
   const user = await currentUser();
   const email = user?.emailAddresses?.[0]?.emailAddress;
-  const isAdmin = email === ADMIN_EMAIL;
+  const isAdmin = !!email && ADMIN_EMAILS.includes(email);
 
   const supabase = createSupabaseAdmin();
 

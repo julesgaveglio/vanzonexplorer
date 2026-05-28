@@ -1,7 +1,7 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
-const ALLOWED_EMAIL = "gavegliojules@gmail.com";
+const ADMIN_EMAILS = ["gavegliojules@gmail.com", "vanzonexplorer@gmail.com"];
 
 export async function requireAdmin() {
   const { userId } = await auth();
@@ -10,7 +10,7 @@ export async function requireAdmin() {
   }
   const user = await currentUser();
   const email = user?.emailAddresses?.[0]?.emailAddress;
-  if (email !== ALLOWED_EMAIL) {
+  if (!email || !ADMIN_EMAILS.includes(email)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
   return { userId };

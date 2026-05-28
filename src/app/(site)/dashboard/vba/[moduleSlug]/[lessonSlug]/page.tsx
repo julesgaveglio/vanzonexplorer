@@ -4,8 +4,7 @@ import Link from "next/link";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
 import { ArrowLeft, ArrowRight, FileText, Image as ImageIcon, ExternalLink } from "lucide-react";
 
-const ADMIN_EMAIL = "gavegliojules@gmail.com";
-const VBA_ADMIN_EMAIL = "vanzonexplorer@gmail.com";
+const ADMIN_EMAILS = ["gavegliojules@gmail.com", "vanzonexplorer@gmail.com"];
 import VBASidebar from "../../_components/VBASidebar";
 import VBAMobileDrawer from "../../_components/VBAMobileDrawer";
 import MarkCompleteButton from "../../_components/MarkCompleteButton";
@@ -34,8 +33,7 @@ export default async function LessonPage({
   const supabase = createSupabaseAdmin();
 
   // Check access: admin OR vba_admin OR vba_member
-  const isVBAAdmin = email === VBA_ADMIN_EMAIL;
-  if (email !== ADMIN_EMAIL && !isVBAAdmin) {
+  if (!email || !ADMIN_EMAILS.includes(email)) {
     const { data: profile } = await supabase
       .from("profiles")
       .select("plan")
@@ -208,7 +206,7 @@ export default async function LessonPage({
             <VBALessonContent
               lessonId={currentLesson.id}
               initialContent={currentLesson.lesson_content ?? null}
-              isAdmin={isVBAAdmin}
+              isAdmin={!!email && ADMIN_EMAILS.includes(email)}
             />
           </div>
 
