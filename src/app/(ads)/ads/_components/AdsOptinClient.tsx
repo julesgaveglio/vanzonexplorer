@@ -154,6 +154,28 @@ export default function AdsOptinClient() {
             </div>
           </div>
 
+          {/* Live preview — desktop only */}
+          <div className="hidden lg:block bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+              <h2 className="text-base font-semibold text-slate-900">Page Opt-in — Live</h2>
+              <a
+                href="/van-business-academy/inscription"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-slate-400 hover:text-slate-600 transition-colors"
+              >
+                Ouvrir dans un nouvel onglet
+              </a>
+            </div>
+            <div className="relative w-full" style={{ height: 700 }}>
+              <iframe
+                src="/van-business-academy/inscription"
+                className="w-full h-full border-0"
+                title="Page Opt-in live"
+              />
+            </div>
+          </div>
+
           {/* A/B Test Titres — intégré dans la page Opt-in */}
           <AdsTitlesClient />
         </>
