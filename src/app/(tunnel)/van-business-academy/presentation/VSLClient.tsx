@@ -85,12 +85,35 @@ export default function VSLClient({ videoId, vslVersionId }: VSLClientProps) {
   }, [vslVersionId]);
 
   // --- CTA: instant for hot leads, after 7min of real watch time for cold ---
+  // --- Lead pixel: fires ONLY for hot leads when they land on this page ---
   const isHotRef = useRef(false);
+  const leadFiredRef = useRef(false);
   useEffect(() => {
     try {
       isHotRef.current = localStorage.getItem("vba_is_hot") === "1";
     } catch {}
-    if (isHotRef.current) setShowCTA(true);
+    if (isHotRef.current) {
+      setShowCTA(true);
+      // Fire Meta Lead for hot leads arriving on presentation page
+      if (!leadFiredRef.current) {
+        leadFiredRef.current = true;
+        const eid = crypto.randomUUID();
+        const fireLead = () => {
+          if (window.fbq) {
+            window.fbq("track", "Lead", { content_name: "optin" }, { eventID: eid });
+            return true;
+          }
+          return false;
+        };
+        if (!fireLead()) {
+          let attempts = 0;
+          const interval = setInterval(() => {
+            attempts++;
+            if (fireLead() || attempts >= 20) clearInterval(interval);
+          }, 100);
+        }
+      }
+    }
   }, []);
 
   // --- Video timeupdate handler (the actual tracking) ---
