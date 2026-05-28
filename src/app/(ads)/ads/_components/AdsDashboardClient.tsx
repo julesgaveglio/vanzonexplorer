@@ -10,6 +10,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { useCampaign } from "./CampaignContext";
 
 /* ---------- types ---------- */
 interface FunnelData {
@@ -29,16 +30,6 @@ interface FunnelData {
   cpm: number;
   cost_per_view: number;
   daily_breakdown: { date: string; page_view: number; optin: number; booking_confirmed: number; purchase: number }[];
-}
-
-interface Campaign {
-  id: string;
-  name: string;
-  start_date: string;
-  end_date: string | null;
-  budget_euros: number | null;
-  platform: string | null;
-  notes: string | null;
 }
 
 const PERIODS = [
@@ -77,10 +68,9 @@ const FUNNEL_COLORS: Record<string, string> = {
 
 /* ---------- component ---------- */
 export default function AdsDashboardClient() {
+  const { activeCampaign, activeCampaignId, buildQS, campaigns } = useCampaign();
   const [period, setPeriod] = useState(30);
   const [data, setData] = useState<FunnelData | null>(null);
-  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
-  const [selectedCampaign, setSelectedCampaign] = useState<string>("all");
   const [loading, setLoading] = useState(true);
   const [showNewCampaign, setShowNewCampaign] = useState(false);
   const [newCampaign, setNewCampaign] = useState({ name: "", start_date: "", end_date: "", budget_euros: "", platform: "meta", notes: "" });
@@ -88,36 +78,24 @@ export default function AdsDashboardClient() {
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const camp = campaigns.find((c) => c.id === selectedCampaign);
-      const qs = camp
-        ? `start=${camp.start_date}${camp.end_date ? `&end=${camp.end_date}` : ""}`
+      const qs = activeCampaign
+        ? `start=${activeCampaign.start_date}${activeCampaign.end_date ? `&end=${activeCampaign.end_date}` : ""}`
         : `days=${period}`;
 
-      const [funnelRes, campRes] = await Promise.all([
-        fetch(`/api/ads/funnel?${qs}`),
-        fetch("/api/ads/campaigns"),
-      ]);
+      const funnelRes = await fetch(`/api/ads/funnel?${qs}`);
       const funnelJson = await funnelRes.json();
-      const campJson = await campRes.json();
       setData(funnelJson);
-      setCampaigns(campJson.campaigns ?? []);
     } catch {
       /* ignore */
     } finally {
       setLoading(false);
     }
-  }, [period, selectedCampaign, campaigns]);
-
-  useEffect(() => {
-    fetch("/api/ads/campaigns")
-      .then((r) => r.json())
-      .then((json) => setCampaigns(json.campaigns ?? []));
-  }, []);
+  }, [period, activeCampaign]);
 
   useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [period, selectedCampaign]);
+  }, [period, activeCampaignId]);
 
   const handleCreateCampaign = async () => {
     if (!newCampaign.name || !newCampaign.start_date) return;
@@ -144,8 +122,7 @@ export default function AdsDashboardClient() {
   const ctr = data?.ctr ?? 0;
   const cpm = data?.cpm ?? 0;
   const costPerView = data?.cost_per_view ?? 0;
-  const selectedCamp = campaigns.find((c) => c.id === selectedCampaign);
-  const budgetEuros = selectedCamp?.budget_euros ?? null;
+  const budgetEuros = activeCampaign?.budget_euros ?? null;
 
   const FUNNEL_ORDER = ["page_view", "optin", "vsl_25", "vsl_50", "vsl_75", "vsl_100", "booking_start", "booking_confirmed", "checkout", "purchase"];
   const maxStep = Math.max(...FUNNEL_ORDER.map((s) => sc[s] ?? 0), 1);
@@ -162,9 +139,9 @@ export default function AdsDashboardClient() {
             {PERIODS.map((p) => (
               <button
                 key={p.days}
-                onClick={() => { setSelectedCampaign("all"); setPeriod(p.days); }}
+                onClick={() => setPeriod(p.days)}
                 className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-all ${
-                  selectedCampaign === "all" && period === p.days
+                  !activeCampaign && period === p.days
                     ? "bg-blue-50 text-blue-600 shadow-sm"
                     : "text-slate-500 hover:text-slate-700"
                 }`}
@@ -174,28 +151,16 @@ export default function AdsDashboardClient() {
             ))}
           </div>
 
-          <select
-            value={selectedCampaign}
-            onChange={(e) => setSelectedCampaign(e.target.value)}
-            className="bg-white border border-slate-200 text-sm text-slate-700 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500/30 shadow-sm"
-          >
-            <option value="all">Toutes les campagnes</option>
-            {campaigns.map((c) => (
-              <option key={c.id} value={c.id}>{c.name}</option>
-            ))}
-          </select>
-
-          {selectedCampaign !== "all" && (
+          {activeCampaignId && (
             <>
               <button
                 onClick={async () => {
-                  const camp = campaigns.find((c) => c.id === selectedCampaign);
-                  const newName = prompt("Nouveau nom de la campagne :", camp?.name ?? "");
-                  if (!newName || newName === camp?.name) return;
+                  const newName = prompt("Nouveau nom de la campagne :", activeCampaign?.name ?? "");
+                  if (!newName || newName === activeCampaign?.name) return;
                   await fetch("/api/ads/campaigns", {
                     method: "PATCH",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ id: selectedCampaign, name: newName }),
+                    body: JSON.stringify({ id: activeCampaignId, name: newName }),
                   });
                   fetchData();
                 }}
@@ -210,12 +175,11 @@ export default function AdsDashboardClient() {
                     method: "PATCH",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
-                      id: selectedCampaign,
+                      id: activeCampaignId,
                       is_active: false,
                       end_date: new Date().toISOString().slice(0, 10),
                     }),
                   });
-                  setSelectedCampaign("all");
                   fetchData();
                 }}
                 className="px-3 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-xl border border-red-200 hover:bg-red-100 transition-colors"

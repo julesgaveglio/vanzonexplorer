@@ -1,15 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-
-interface Campaign {
-  id: string;
-  name: string;
-  start_date: string;
-  end_date: string | null;
-  budget_euros: number | null;
-  platform: string | null;
-}
+import { useCampaign } from "./CampaignContext";
 
 interface Call {
   email: string;
@@ -27,29 +19,21 @@ const PERIODS = [
 ] as const;
 
 export default function AdsCallsClient() {
+  const { activeCampaign, activeCampaignId, campaigns } = useCampaign();
   const [calls, setCalls] = useState<Call[]>([]);
   const [period, setPeriod] = useState(90);
   const [loading, setLoading] = useState(true);
-  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
-  const [selectedCampaign, setSelectedCampaign] = useState<string>("all");
-
-  useEffect(() => {
-    fetch("/api/ads/campaigns")
-      .then((r) => r.json())
-      .then((json) => setCampaigns(json.campaigns ?? []));
-  }, []);
 
   useEffect(() => {
     setLoading(true);
-    const camp = campaigns.find((c) => c.id === selectedCampaign);
-    const qs = camp
-      ? `start=${camp.start_date}${camp.end_date ? `&end=${camp.end_date}` : ""}`
+    const qs = activeCampaign
+      ? `start=${activeCampaign.start_date}${activeCampaign.end_date ? `&end=${activeCampaign.end_date}` : ""}`
       : `days=${period}`;
     fetch(`/api/ads/calls?${qs}`)
       .then((r) => r.json())
       .then((json) => setCalls(json.calls ?? []))
       .finally(() => setLoading(false));
-  }, [period, selectedCampaign, campaigns]);
+  }, [period, activeCampaign]);
 
   const confirmed = calls.filter((c) => c.booking_confirmed);
   const pending = calls.filter((c) => !c.booking_confirmed);
@@ -69,9 +53,9 @@ export default function AdsCallsClient() {
             {PERIODS.map((p) => (
               <button
                 key={p.days}
-                onClick={() => { setSelectedCampaign("all"); setPeriod(p.days); }}
+                onClick={() => setPeriod(p.days)}
                 className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-all ${
-                  selectedCampaign === "all" && period === p.days
+                  period === p.days
                     ? "bg-blue-50 text-blue-600 shadow-sm"
                     : "text-slate-500 hover:text-slate-700"
                 }`}
@@ -80,16 +64,6 @@ export default function AdsCallsClient() {
               </button>
             ))}
           </div>
-          <select
-            value={selectedCampaign}
-            onChange={(e) => setSelectedCampaign(e.target.value)}
-            className="bg-white border border-slate-200 text-sm text-slate-700 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500/30 shadow-sm"
-          >
-            <option value="all">Toutes les campagnes</option>
-            {campaigns.map((c) => (
-              <option key={c.id} value={c.id}>{c.name}</option>
-            ))}
-          </select>
         </div>
       </div>
 

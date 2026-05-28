@@ -1,15 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-
-interface Campaign {
-  id: string;
-  name: string;
-  start_date: string;
-  end_date: string | null;
-  budget_euros: number | null;
-  platform: string | null;
-}
+import { useCampaign } from "./CampaignContext";
 
 interface EmailEntry {
   campaign_name: string;
@@ -61,26 +53,18 @@ function formatWatch(seconds: number | null): string {
 }
 
 export default function AdsLeadsClient() {
+  const { activeCampaign, activeCampaignId, campaigns } = useCampaign();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [period, setPeriod] = useState(30);
-  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
-  const [selectedCampaign, setSelectedCampaign] = useState<string>("all");
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [expandedLead, setExpandedLead] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetch("/api/ads/campaigns")
-      .then((r) => r.json())
-      .then((json) => setCampaigns(json.campaigns ?? []));
-  }, []);
-
   const fetchLeads = () => {
     setLoading(true);
-    const camp = campaigns.find((c) => c.id === selectedCampaign);
-    const qs = camp
-      ? `start=${camp.start_date}${camp.end_date ? `&end=${camp.end_date}` : ""}`
+    const qs = activeCampaign
+      ? `start=${activeCampaign.start_date}${activeCampaign.end_date ? `&end=${activeCampaign.end_date}` : ""}`
       : `days=${period}`;
     fetch(`/api/ads/leads?${qs}`)
       .then((r) => r.json())
@@ -91,7 +75,7 @@ export default function AdsLeadsClient() {
   useEffect(() => {
     fetchLeads();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [period, selectedCampaign, campaigns]);
+  }, [period, activeCampaign]);
 
   const handleDelete = async (email: string) => {
     if (!confirm(`Supprimer le lead ${email} et tous ses événements ?`)) return;
@@ -135,9 +119,9 @@ export default function AdsLeadsClient() {
             {PERIODS.map((p) => (
               <button
                 key={p.days}
-                onClick={() => { setSelectedCampaign("all"); setPeriod(p.days); }}
+                onClick={() => setPeriod(p.days)}
                 className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-all ${
-                  selectedCampaign === "all" && period === p.days
+                  period === p.days
                     ? "bg-blue-50 text-blue-600 shadow-sm"
                     : "text-slate-500 hover:text-slate-700"
                 }`}
@@ -146,17 +130,6 @@ export default function AdsLeadsClient() {
               </button>
             ))}
           </div>
-
-          <select
-            value={selectedCampaign}
-            onChange={(e) => setSelectedCampaign(e.target.value)}
-            className="bg-white border border-slate-200 text-sm text-slate-700 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500/30 shadow-sm"
-          >
-            <option value="all">Toutes les campagnes</option>
-            {campaigns.map((c) => (
-              <option key={c.id} value={c.id}>{c.name}</option>
-            ))}
-          </select>
 
           <input
             type="text"

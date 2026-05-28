@@ -1,15 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-
-interface Campaign {
-  id: string;
-  name: string;
-  start_date: string;
-  end_date: string | null;
-  budget_euros: number | null;
-  platform: string | null;
-}
+import { useCampaign } from "./CampaignContext";
 
 interface Lead {
   firstname: string | null;
@@ -43,23 +35,15 @@ function isColdIndicator(key: "q_objective" | "q_profile" | "q_budget", value: s
 }
 
 export default function AdsFormClient() {
+  const { activeCampaign, activeCampaignId, campaigns } = useCampaign();
   const [leads, setLeads] = useState<Lead[]>([]);
-  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
-  const [selectedCampaign, setSelectedCampaign] = useState<string>("all");
   const [period, setPeriod] = useState(30);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/ads/campaigns")
-      .then((r) => r.json())
-      .then((json) => setCampaigns(json.campaigns ?? []));
-  }, []);
-
-  useEffect(() => {
     setLoading(true);
-    const camp = campaigns.find((c) => c.id === selectedCampaign);
-    const qs = camp
-      ? `start=${camp.start_date}${camp.end_date ? `&end=${camp.end_date}` : ""}`
+    const qs = activeCampaign
+      ? `start=${activeCampaign.start_date}${activeCampaign.end_date ? `&end=${activeCampaign.end_date}` : ""}`
       : `days=${period}`;
     fetch(`/api/ads/qualification?${qs}`)
       .then((r) => r.json())
@@ -67,7 +51,7 @@ export default function AdsFormClient() {
         setLeads(json.leads ?? []);
       })
       .finally(() => setLoading(false));
-  }, [period, selectedCampaign, campaigns]);
+  }, [period, activeCampaign]);
 
   const hotCount = leads.filter((l) => l.is_hot === true).length;
   const coldCount = leads.filter((l) => l.is_hot === false).length;
@@ -98,9 +82,9 @@ export default function AdsFormClient() {
             {PERIODS.map((p) => (
               <button
                 key={p.days}
-                onClick={() => { setSelectedCampaign("all"); setPeriod(p.days); }}
+                onClick={() => setPeriod(p.days)}
                 className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-all ${
-                  selectedCampaign === "all" && period === p.days
+                  period === p.days
                     ? "bg-blue-50 text-blue-600 shadow-sm"
                     : "text-slate-500 hover:text-slate-700"
                 }`}
@@ -109,16 +93,6 @@ export default function AdsFormClient() {
               </button>
             ))}
           </div>
-          <select
-            value={selectedCampaign}
-            onChange={(e) => setSelectedCampaign(e.target.value)}
-            className="bg-white border border-slate-200 text-sm text-slate-700 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500/30 shadow-sm"
-          >
-            <option value="all">Toutes les campagnes</option>
-            {campaigns.filter((c) => new Date(c.start_date) >= new Date("2026-05-20")).map((c) => (
-              <option key={c.id} value={c.id}>{c.name}</option>
-            ))}
-          </select>
         </div>
       </div>
 

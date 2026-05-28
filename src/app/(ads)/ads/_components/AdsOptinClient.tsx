@@ -2,15 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import AdsTitlesClient from "./AdsTitlesClient";
-
-interface Campaign {
-  id: string;
-  name: string;
-  start_date: string;
-  end_date: string | null;
-  budget_euros: number | null;
-  platform: string | null;
-}
+import { useCampaign } from "./CampaignContext";
 
 interface PageData {
   slug: string;
@@ -34,24 +26,16 @@ const PERIODS = [
 ] as const;
 
 export default function AdsOptinClient() {
+  const { activeCampaign, activeCampaignId, campaigns } = useCampaign();
   const [period, setPeriod] = useState(30);
   const [data, setData] = useState<OptinData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
-  const [selectedCampaign, setSelectedCampaign] = useState<string>("all");
-
-  useEffect(() => {
-    fetch("/api/ads/campaigns")
-      .then((r) => r.json())
-      .then((json) => setCampaigns(json.campaigns ?? []));
-  }, []);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const camp = campaigns.find((c) => c.id === selectedCampaign);
-      const qs = camp
-        ? `start=${camp.start_date}${camp.end_date ? `&end=${camp.end_date}` : ""}`
+      const qs = activeCampaign
+        ? `start=${activeCampaign.start_date}${activeCampaign.end_date ? `&end=${activeCampaign.end_date}` : ""}`
         : `days=${period}`;
       const res = await fetch(`/api/ads/optin?${qs}`);
       const json = await res.json();
@@ -61,7 +45,7 @@ export default function AdsOptinClient() {
     } finally {
       setLoading(false);
     }
-  }, [period, selectedCampaign, campaigns]);
+  }, [period, activeCampaign]);
 
   useEffect(() => {
     fetchData();
@@ -77,9 +61,9 @@ export default function AdsOptinClient() {
             {PERIODS.map((p) => (
               <button
                 key={p.days}
-                onClick={() => { setSelectedCampaign("all"); setPeriod(p.days); }}
+                onClick={() => setPeriod(p.days)}
                 className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-all ${
-                  selectedCampaign === "all" && period === p.days
+                  period === p.days
                     ? "bg-slate-900 text-white shadow-sm"
                     : "text-slate-500 hover:text-slate-700"
                 }`}
@@ -88,16 +72,6 @@ export default function AdsOptinClient() {
               </button>
             ))}
           </div>
-          <select
-            value={selectedCampaign}
-            onChange={(e) => setSelectedCampaign(e.target.value)}
-            className="bg-white border border-slate-200 text-sm text-slate-700 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500/30 shadow-sm"
-          >
-            <option value="all">Toutes les campagnes</option>
-            {campaigns.map((c) => (
-              <option key={c.id} value={c.id}>{c.name}</option>
-            ))}
-          </select>
         </div>
       </div>
 
