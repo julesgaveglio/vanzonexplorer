@@ -4,8 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
-const LOGO_URL =
-  "https://cdn.sanity.io/images/lewexa74/production/9de5b0e768fa1fcc5ea5aa6f41ac816c249af9b0-1042x417.png?auto=format&q=82";
+const LOGO_SRC = "/icons/vanzon-ads-logo.png";
 
 export default function AdsLoginPage() {
   const router = useRouter();
@@ -47,11 +46,11 @@ export default function AdsLoginPage() {
         {/* Logo + subtitle */}
         <div className="text-center mb-10">
           <Image
-            src={LOGO_URL}
-            alt="Vanzon Explorer"
-            width={280}
-            height={112}
-            className="h-16 w-auto mx-auto"
+            src={LOGO_SRC}
+            alt="Vanzon Ads"
+            width={200}
+            height={56}
+            className="h-12 w-auto mx-auto"
             unoptimized
           />
           <div className="mt-4 flex items-center justify-center gap-2">
