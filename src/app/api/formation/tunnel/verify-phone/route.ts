@@ -43,35 +43,66 @@ export async function POST(req: Request) {
       return rejectPhone("blocked_type");
     }
 
-    // ── Step 5: Additional pattern checks ──
+    // ── Step 5: Extensive fake pattern detection ──
     const national = parsed.nationalNumber;
+    const digits = national.split("").map(Number);
 
-    // All same digits
+    // All same digits (0000000000)
     if (/^(\d)\1+$/.test(national)) {
       return rejectPhone("fake_pattern");
     }
 
-    // Sequential (012345, 987654)
-    const digits = national.split("").map(Number);
-    let sequential = true;
+    // Sequential ascending (0123456789)
+    let seqUp = true;
     for (let i = 1; i < digits.length; i++) {
-      if (digits[i] !== digits[i - 1] + 1 && digits[i] !== digits[i - 1] - 1) {
-        sequential = false;
-        break;
-      }
+      if (digits[i] !== digits[i - 1] + 1) { seqUp = false; break; }
     }
-    if (sequential && digits.length >= 8) {
-      return rejectPhone("fake_pattern");
-    }
+    if (seqUp && digits.length >= 8) return rejectPhone("fake_pattern");
 
-    // Repeated pairs (06060606)
+    // Sequential descending (9876543210)
+    let seqDown = true;
+    for (let i = 1; i < digits.length; i++) {
+      if (digits[i] !== digits[i - 1] - 1) { seqDown = false; break; }
+    }
+    if (seqDown && digits.length >= 8) return rejectPhone("fake_pattern");
+
+    // Repeated pairs (06060606, 12121212)
     const pairs = national.match(/.{2}/g) ?? [];
     if (pairs.length >= 4) {
       const uniquePairs = new Set(pairs);
-      if (uniquePairs.size <= 1) {
-        return rejectPhone("fake_pattern");
-      }
+      if (uniquePairs.size <= 1) return rejectPhone("fake_pattern");
     }
+
+    // Repeated triplets (061061061)
+    const triplets = national.match(/.{3}/g) ?? [];
+    if (triplets.length >= 3) {
+      const uniqueTriplets = new Set(triplets);
+      if (uniqueTriplets.size <= 1) return rejectPhone("fake_pattern");
+    }
+
+    // Alternating pattern (0101010101, 1212121212)
+    if (digits.length >= 8) {
+      let alternating = true;
+      for (let i = 2; i < digits.length; i++) {
+        if (digits[i] !== digits[i - 2]) { alternating = false; break; }
+      }
+      if (alternating && digits[0] === digits[digits.length - 2]) return rejectPhone("fake_pattern");
+    }
+
+    // Only 2 unique digits in the whole number (e.g., 0606060606, 1231231231 is ok)
+    const uniqueDigits = new Set(digits);
+    if (uniqueDigits.size <= 2 && digits.length >= 9) return rejectPhone("fake_pattern");
+
+    // Known fake French numbers (commonly used for tests)
+    const knownFakes = [
+      "0600000000", "0700000000", "0100000000", "0612345678", "0698765432",
+      "0611111111", "0622222222", "0633333333", "0644444444", "0655555555",
+      "0666666666", "0677777777", "0688888888", "0699999999",
+      "0711111111", "0722222222", "0733333333", "0744444444", "0755555555",
+      "0766666666", "0777777777", "0788888888", "0799999999",
+    ];
+    const nationalClean = "0" + national;
+    if (knownFakes.includes(nationalClean)) return rejectPhone("fake_pattern");
 
     // ── Step 6: Double-check with isValidPhoneNumber (belt & suspenders) ──
     const international = parsed.format("E.164");
