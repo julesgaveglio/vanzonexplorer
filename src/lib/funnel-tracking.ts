@@ -21,8 +21,8 @@ function getSessionId(): string {
 const META_ALL_LEADS: Record<string, string> = {
   page_view: "ViewContent",
 };
+// Lead is fired DIRECTLY in OptinForm.tsx (not here) to guarantee it fires before redirect
 const META_HOT_ONLY: Record<string, string> = {
-  optin: "Lead",
   booking_start: "Schedule",
   appel_confirme: "SubmitApplication",
   checkout: "InitiateCheckout",

@@ -249,7 +249,7 @@ export default function OptinForm() {
       saveFunnelData({ firstname, email, ...utmParams });
       try { localStorage.setItem("vba_is_hot", isHot ? "1" : "0"); } catch {}
 
-      // Track: Lead event (Pixel + Supabase)
+      // Track: optin event to Supabase (all leads)
       trackFunnel("optin", "/van-business-academy/inscription", {
         email,
         firstname,
@@ -264,8 +264,14 @@ export default function OptinForm() {
         },
       });
 
-      // Wait for Meta Pixel to fire before redirecting
-      await new Promise((r) => setTimeout(r, 800));
+      // Fire Meta Pixel Lead DIRECTLY for hot leads (bypass trackFunnel chain)
+      if (isHot && typeof window !== "undefined" && window.fbq) {
+        const eid = crypto.randomUUID();
+        window.fbq("track", "Lead", { content_name: "optin" }, { eventID: eid });
+      }
+
+      // Wait for pixel + Supabase to complete before redirecting
+      await new Promise((r) => setTimeout(r, 1000));
 
       // Redirect to VSL
       router.push("/van-business-academy/presentation");
