@@ -9,11 +9,12 @@ import { trackFunnel } from "@/lib/funnel-tracking";
 const QUESTIONS = [
   {
     key: "q_objective",
-    label: "Quel est ton objectif principal ?",
+    label: "Quel est ton objectif avec le van aménagé ?",
     options: [
-      "Gagner un complément de revenu",
-      "Construire un van pour voyager / vivre une vie de liberté",
-      "Gagner de l'argent rapidement avec un van",
+      "Générer un complément de revenus passifs avec la location",
+      "Faire une plus-value à la revente et recommencer le process",
+      "Les deux — location ET revente en boucle",
+      "Je ne sais pas encore",
     ],
   },
   {
@@ -36,7 +37,6 @@ const QUESTIONS = [
 type QKey = (typeof QUESTIONS)[number]["key"];
 
 function computeIsHot(answers: Record<QKey, string>): boolean {
-  if (answers.q_objective === "Gagner de l'argent rapidement avec un van") return false;
   if (answers.q_profile === "Retraité") return false;
   if (answers.q_budget === "Moins de 10 000 \u20AC") return false;
   return true;
