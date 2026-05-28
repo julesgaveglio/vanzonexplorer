@@ -16,11 +16,12 @@ function getSessionId(): string {
   return id;
 }
 
-// Meta Pixel events — only trackCustomEvent to avoid auto-detected standard events
-// page_view fires a CUSTOM ViewContent (not fbq "track" but fbq "trackCustom")
-// to prevent Meta from auto-detecting Subscribe/button click
-const META_EVENT_MAP: Record<string, string> = {
+// ViewContent fires for EVERYONE on the inscription page (before form)
+// All other events fire ONLY for hot leads (after form qualification)
+const META_ALL_LEADS: Record<string, string> = {
   page_view: "ViewContent",
+};
+const META_HOT_ONLY: Record<string, string> = {
   optin: "Lead",
   booking_start: "Schedule",
   appel_confirme: "SubmitApplication",
@@ -51,9 +52,19 @@ export function trackFunnel(
   // Unique event ID for Meta deduplication
   const eventId = crypto.randomUUID();
 
-  // 1. Meta Pixel — standard events, hot leads only (cold excluded)
-  const metaEvent = META_EVENT_MAP[event];
-  if (metaEvent) {
+  const pixelParams: Record<string, unknown> = { content_name: event };
+  if (options.value !== undefined) pixelParams.value = options.value;
+  if (options.currency) pixelParams.currency = options.currency;
+
+  // 1a. Meta Pixel — ViewContent for ALL visitors (page inscription)
+  const allEvent = META_ALL_LEADS[event];
+  if (allEvent) {
+    trackEvent(allEvent, pixelParams, eventId);
+  }
+
+  // 1b. Meta Pixel — Lead, Schedule, etc. ONLY for hot leads
+  const hotEvent = META_HOT_ONLY[event];
+  if (hotEvent) {
     let isHot = true;
     try {
       const stored = localStorage.getItem("vba_is_hot");
@@ -61,12 +72,7 @@ export function trackFunnel(
     } catch {}
 
     if (isHot) {
-      const pixelParams: Record<string, unknown> = {
-        content_name: event,
-      };
-      if (options.value !== undefined) pixelParams.value = options.value;
-      if (options.currency) pixelParams.currency = options.currency;
-      trackEvent(metaEvent, pixelParams, eventId);
+      trackEvent(hotEvent, pixelParams, eventId);
     }
   }
 
