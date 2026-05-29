@@ -16,8 +16,6 @@ const PERIODS = [
   { label: "90j", days: 90 },
 ] as const;
 
-const OPTIN_URL = "https://vanzonexplorer.com/van-business-academy/inscription";
-
 export default function AdsOptinClient() {
   const { activeCampaign, loading: campLoading } = useCampaign();
   const [period, setPeriod] = useState(30);
