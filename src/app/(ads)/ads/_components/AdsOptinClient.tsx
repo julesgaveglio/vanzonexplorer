@@ -86,31 +86,6 @@ export default function AdsOptinClient() {
             <KPICard label="Taux conversion" value={`${data?.total.rate ?? 0}%`} color="emerald" />
           </div>
 
-          {/* Live preview — desktop */}
-          <div className="hidden lg:block bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-            <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
-              <h2 className="text-base font-semibold text-slate-900">
-                Page Opt-in — Live
-              </h2>
-              <a
-                href={OPTIN_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs text-violet-600 hover:text-violet-800 font-medium transition-colors"
-              >
-                Ouvrir dans un nouvel onglet &rarr;
-              </a>
-            </div>
-            <div className="relative w-full bg-slate-100" style={{ height: 700 }}>
-              <iframe
-                src={OPTIN_URL}
-                className="w-full h-full border-0"
-                title="Page Opt-in live"
-                sandbox="allow-scripts allow-same-origin allow-forms"
-              />
-            </div>
-          </div>
-
           {/* A/B Test Titres */}
           <AdsTitlesClient />
         </>
