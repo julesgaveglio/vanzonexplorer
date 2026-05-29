@@ -19,7 +19,7 @@ const PERIODS = [
 ] as const;
 
 export default function AdsCallsClient() {
-  const { activeCampaign, loading: campLoading } = useCampaign();
+  const { buildQS, loading: campLoading } = useCampaign();
   const [calls, setCalls] = useState<Call[]>([]);
   const [period, setPeriod] = useState(90);
   const [loading, setLoading] = useState(true);
@@ -27,14 +27,12 @@ export default function AdsCallsClient() {
   useEffect(() => {
     if (campLoading) return;
     setLoading(true);
-    const qs = activeCampaign
-      ? `start=${activeCampaign.start_date}${activeCampaign.end_date ? `&end=${activeCampaign.end_date}` : ""}`
-      : `days=${period}`;
+    const qs = buildQS();
     fetch(`/api/ads/calls?${qs}`)
       .then((r) => r.json())
       .then((json) => setCalls(json.calls ?? []))
       .finally(() => setLoading(false));
-  }, [period, activeCampaign, campLoading]);
+  }, [period, buildQS, campLoading]);
 
   const confirmed = calls.filter((c) => c.booking_confirmed);
   const pending = calls.filter((c) => !c.booking_confirmed);

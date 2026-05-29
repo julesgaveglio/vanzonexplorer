@@ -68,7 +68,7 @@ const FUNNEL_COLORS: Record<string, string> = {
 
 /* ---------- component ---------- */
 export default function AdsDashboardClient() {
-  const { activeCampaign, activeCampaignId, isAdmin, loading: campLoading } = useCampaign();
+  const { activeCampaign, activeCampaignId, isAdmin, buildQS, loading: campLoading } = useCampaign();
   const [period, setPeriod] = useState(30);
   const [data, setData] = useState<FunnelData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -78,9 +78,7 @@ export default function AdsDashboardClient() {
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const qs = activeCampaign
-        ? `start=${activeCampaign.start_date}${activeCampaign.end_date ? `&end=${activeCampaign.end_date}` : ""}`
-        : `days=${period}`;
+      const qs = buildQS();
 
       const funnelRes = await fetch(`/api/ads/funnel?${qs}`);
       const funnelJson = await funnelRes.json();
@@ -90,7 +88,7 @@ export default function AdsDashboardClient() {
     } finally {
       setLoading(false);
     }
-  }, [period, activeCampaign]);
+  }, [period, buildQS]);
 
   useEffect(() => {
     if (!campLoading) fetchData();

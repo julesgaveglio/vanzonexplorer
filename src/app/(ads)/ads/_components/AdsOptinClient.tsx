@@ -17,7 +17,7 @@ const PERIODS = [
 ] as const;
 
 export default function AdsOptinClient() {
-  const { activeCampaign, loading: campLoading } = useCampaign();
+  const { activeCampaign, buildQS, loading: campLoading } = useCampaign();
   const [period, setPeriod] = useState(30);
   const [data, setData] = useState<OptinData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -25,9 +25,7 @@ export default function AdsOptinClient() {
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const qs = activeCampaign
-        ? `start=${activeCampaign.start_date}${activeCampaign.end_date ? `&end=${activeCampaign.end_date}` : ""}`
-        : `days=${period}`;
+      const qs = buildQS();
       const res = await fetch(`/api/ads/optin?${qs}`);
       const json = await res.json();
       setData(json);
@@ -36,7 +34,7 @@ export default function AdsOptinClient() {
     } finally {
       setLoading(false);
     }
-  }, [period, activeCampaign]);
+  }, [period, buildQS]);
 
   useEffect(() => {
     if (!campLoading) fetchData();

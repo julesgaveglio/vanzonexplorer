@@ -93,14 +93,23 @@ export function CampaignProvider({ children, role = "admin" }: { children: React
 
   const activeCampaign = campaigns.find((c) => c.id === activeCampaignId) ?? null;
 
+  // When "all" is selected, use the earliest campaign start date to cover everything
+  const earliestStart = campaigns.length > 0
+    ? campaigns.reduce((min, c) => c.start_date < min ? c.start_date : min, campaigns[0].start_date)
+    : null;
+
   const buildQS = useCallback(
     (fallbackDays = 30) => {
       if (activeCampaign) {
         return `start=${activeCampaign.start_date}${activeCampaign.end_date ? `&end=${activeCampaign.end_date}` : ""}`;
       }
+      // "All campaigns" → use earliest campaign start date
+      if (earliestStart) {
+        return `start=${earliestStart}`;
+      }
       return `days=${fallbackDays}`;
     },
-    [activeCampaign]
+    [activeCampaign, earliestStart]
   );
 
   return (

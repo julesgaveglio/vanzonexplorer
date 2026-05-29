@@ -53,7 +53,7 @@ function formatWatch(seconds: number | null): string {
 }
 
 export default function AdsLeadsClient() {
-  const { activeCampaign, loading: campLoading } = useCampaign();
+  const { buildQS, loading: campLoading } = useCampaign();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [period, setPeriod] = useState(30);
   const [search, setSearch] = useState("");
@@ -63,9 +63,7 @@ export default function AdsLeadsClient() {
 
   const fetchLeads = () => {
     setLoading(true);
-    const qs = activeCampaign
-      ? `start=${activeCampaign.start_date}${activeCampaign.end_date ? `&end=${activeCampaign.end_date}` : ""}`
-      : `days=${period}`;
+    const qs = buildQS();
     fetch(`/api/ads/leads?${qs}`)
       .then((r) => r.json())
       .then((json) => setLeads(json.leads ?? []))
@@ -75,7 +73,7 @@ export default function AdsLeadsClient() {
   useEffect(() => {
     if (!campLoading) fetchLeads();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [period, activeCampaign, campLoading]);
+  }, [period, buildQS, campLoading]);
 
   const handleDelete = async (email: string) => {
     if (!confirm(`Supprimer le lead ${email} et tous ses événements ?`)) return;

@@ -35,7 +35,7 @@ function isColdIndicator(key: "q_objective" | "q_profile" | "q_budget", value: s
 }
 
 export default function AdsFormClient() {
-  const { activeCampaign, loading: campLoading } = useCampaign();
+  const { buildQS, loading: campLoading } = useCampaign();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [period, setPeriod] = useState(30);
   const [loading, setLoading] = useState(true);
@@ -43,16 +43,14 @@ export default function AdsFormClient() {
   useEffect(() => {
     if (campLoading) return;
     setLoading(true);
-    const qs = activeCampaign
-      ? `start=${activeCampaign.start_date}${activeCampaign.end_date ? `&end=${activeCampaign.end_date}` : ""}`
-      : `days=${period}`;
+    const qs = buildQS();
     fetch(`/api/ads/qualification?${qs}`)
       .then((r) => r.json())
       .then((json) => {
         setLeads(json.leads ?? []);
       })
       .finally(() => setLoading(false));
-  }, [period, activeCampaign, campLoading]);
+  }, [period, buildQS, campLoading]);
 
   const hotCount = leads.filter((l) => l.is_hot === true).length;
   const coldCount = leads.filter((l) => l.is_hot === false).length;
