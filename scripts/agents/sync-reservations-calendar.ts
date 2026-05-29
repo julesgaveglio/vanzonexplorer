@@ -20,7 +20,7 @@ const FRENCH_MONTHS: Record<string, string> = {
 
 // Platform → Google Calendar colorId
 const PLATFORM_COLORS: Record<string, string> = {
-  yescapa: "4",      // flamingo (rose)
+  yescapa: "3",      // grape (violet raisin)
   wikicampers: "6",  // tangerine (orange)
 };
 
