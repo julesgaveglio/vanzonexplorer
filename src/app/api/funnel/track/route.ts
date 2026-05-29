@@ -39,6 +39,19 @@ export async function POST(req: NextRequest) {
 
     const supabase = createSupabaseAdmin();
 
+    // Deduplicate optin: skip if this email already has an optin event
+    if (event === "optin" && email) {
+      const { data: existing } = await supabase
+        .from("funnel_events")
+        .select("id")
+        .eq("event", "optin")
+        .eq("email", email)
+        .limit(1);
+      if (existing && existing.length > 0) {
+        return NextResponse.json({ ok: true, deduplicated: true });
+      }
+    }
+
     const { error } = await supabase.from("funnel_events").insert({
       session_id: session_id || null,
       email: email || null,
