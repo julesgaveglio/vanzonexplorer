@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdsAuth } from "@/lib/ads-auth";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
+import { fetchMetaInsights } from "@/lib/meta-ads";
 
 const FUNNEL_STEPS = [
   "page_view",
@@ -134,30 +135,19 @@ export async function GET(req: NextRequest) {
 
   const estimatedRevenue = (stepCounts.purchase ?? 0) * 997;
 
-  // Meta Ads spend from Qonto-synced transactions
-  let metaSpend = 0;
-  {
-    let q = supabase
-      .from("finance_transactions")
-      .select("amount")
-      .ilike("counterparty", "%meta%")
-      .eq("type", "expense")
-      .gte("date", since.slice(0, 10));
-    if (until) q = q.lte("date", until.slice(0, 10));
-    const { data: metaTxs } = await q;
-    metaSpend = (metaTxs ?? []).reduce((sum, t) => sum + (t.amount ?? 0), 0);
+  // Meta Ads spend — real-time from Meta Marketing API
+  const sinceDate10 = since.slice(0, 10);
+  const untilDate10 = until ? until.slice(0, 10) : new Date().toISOString().slice(0, 10);
+  const meta = await fetchMetaInsights(sinceDate10, untilDate10);
+  const metaSpend = meta.spend;
 
-    // Deduct warmup spend (25.06€) only when Campaign 1 is explicitly selected
-    if (startDate === "2026-04-24" && endDate === "2026-05-19") {
-      metaSpend = Math.max(0, metaSpend - 25.06);
-    }
-  }
   const optinCount = stepCounts.optin ?? 0;
   const pageViews = stepCounts.page_view ?? 0;
   const cpl = optinCount > 0 ? Math.round((metaSpend / optinCount) * 100) / 100 : 0;
-  const cpc = pageViews > 0 ? Math.round((metaSpend / pageViews) * 100) / 100 : 0;
-  const ctr = pageViews > 0 ? Math.round((optinCount / pageViews) * 1000) / 10 : 0;
-  const cpm = pageViews > 0 ? Math.round((metaSpend / pageViews) * 1000 * 100) / 100 : 0;
+  // Use Meta's own CPC/CPM/CTR (more accurate than our page_view count)
+  const cpc = meta.cpc ? Math.round(meta.cpc * 100) / 100 : 0;
+  const ctr = meta.ctr ? Math.round(meta.ctr * 10) / 10 : 0;
+  const cpm = meta.cpm ? Math.round(meta.cpm * 100) / 100 : 0;
   const costPerView = pageViews > 0 ? Math.round((metaSpend / pageViews) * 100) / 100 : 0;
 
   // Daily breakdown — fill in missing days with zeros, stop at today
