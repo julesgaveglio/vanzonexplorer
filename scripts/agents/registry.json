@@ -760,5 +760,32 @@
       "Manuel"
     ],
     "pipeline": "Standalone — vidéo brute → Short prêt à poster"
+  },
+  {
+    "id": "sync-reservations-calendar",
+    "name": "Agent Sync Réservations → Calendar",
+    "emoji": "📅",
+    "status": "active",
+    "description": "Toutes les 15 min : parse les emails Yescapa/Wikicampers, upsert dans Supabase, crée les événements Google Calendar (all-day, colorés par van). Gère aussi les annulations (suppression Calendar). Notification Telegram si changements.",
+    "trigger": "cron",
+    "schedule": "Toutes les 15 minutes",
+    "cronExpression": "*/15 * * * *",
+    "file": "scripts/agents/sync-reservations-calendar.ts",
+    "workflow": ".github/workflows/sync-reservations-calendar.yml",
+    "apis": [
+      "Gmail API",
+      "Google Calendar API",
+      "Supabase",
+      "Telegram Bot API"
+    ],
+    "output": "Événements Google Calendar + notification Telegram",
+    "manualCommand": "npx tsx scripts/agents/sync-reservations-calendar.ts",
+    "tags": [
+      "Location",
+      "Calendar",
+      "Gmail",
+      "Automatique"
+    ],
+    "pipeline": "Gmail emails → Supabase reservations → Google Calendar events"
   }
 ]
