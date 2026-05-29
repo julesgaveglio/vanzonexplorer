@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-const FALLBACK_TITLE = "Donne-moi 13 minutes et je te partage (vraiment) tout le process pour générer 600€/mois de revenu locatif avec un van aménagé";
+const FALLBACK_TITLE = "Donne-moi 13 minutes et je vais te montrer comment acheter un van à 15 000 € et le revendre entre 22 000 € et 27 000 €.";
 
 export default function DynamicTitle() {
   const [title, setTitle] = useState(FALLBACK_TITLE);

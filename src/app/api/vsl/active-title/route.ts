@@ -20,7 +20,7 @@ export async function GET() {
       // No active variant — return fallback
       return NextResponse.json({
         id: "fallback",
-        title: "Donne-moi 13 minutes et je te partage (vraiment) tout le process pour générer 600€/mois de revenu locatif avec un van aménagé",
+        title: "Donne-moi 13 minutes et je vais te montrer comment acheter un van à 15 000 € et le revendre entre 22 000 € et 27 000 €.",
       });
     }
 
