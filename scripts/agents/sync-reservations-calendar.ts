@@ -18,19 +18,14 @@ const FRENCH_MONTHS: Record<string, string> = {
   septembre: "09", octobre: "10", novembre: "11", décembre: "12",
 };
 
-// Van name → Google Calendar colorId
-const VAN_COLORS: Record<string, string> = {
-  yoni: "9",    // blueberry (blue)
-  xalbat: "6",  // tangerine (orange)
+// Platform → Google Calendar colorId
+const PLATFORM_COLORS: Record<string, string> = {
+  yescapa: "4",      // flamingo (rose)
+  wikicampers: "6",  // tangerine (orange)
 };
 
-function getVanColor(vanName: string | null): string {
-  if (!vanName) return "9";
-  const lower = vanName.toLowerCase();
-  for (const [key, color] of Object.entries(VAN_COLORS)) {
-    if (lower.includes(key)) return color;
-  }
-  return "9";
+function getPlatformColor(platform: string): string {
+  return PLATFORM_COLORS[platform] ?? "4";
 }
 
 // ── Gmail auth ───────────────────────────────────────────────────────────────
@@ -215,7 +210,7 @@ async function createCalendarEvent(token: string, r: Reservation): Promise<strin
     description: descLines,
     start: { date: r.start_date },
     end: { date: addOneDay(r.end_date) }, // Google all-day end is exclusive
-    colorId: getVanColor(r.van_name),
+    colorId: getPlatformColor(r.platform),
     extendedProperties: {
       private: { reservationKey: `${r.platform}:${r.platform_ref}` },
     },
