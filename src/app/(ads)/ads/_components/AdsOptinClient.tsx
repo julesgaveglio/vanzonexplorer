@@ -4,18 +4,9 @@ import { useState, useEffect, useCallback } from "react";
 import AdsTitlesClient from "./AdsTitlesClient";
 import { useCampaign } from "./CampaignContext";
 
-interface PageData {
-  slug: string;
-  label: string;
-  views: number;
-  optins: number;
-  rate: number;
-}
-
 interface OptinData {
-  pages: PageData[];
   total: { views: number; optins: number; rate: number };
-  daily: Record<string, unknown>[];
+  daily: { date: string; views: number; optins: number }[];
 }
 
 const PERIODS = [
@@ -24,6 +15,8 @@ const PERIODS = [
   { label: "30j", days: 30 },
   { label: "90j", days: 90 },
 ] as const;
+
+const OPTIN_URL = "https://vanzonexplorer.com/van-business-academy/inscription";
 
 export default function AdsOptinClient() {
   const { activeCampaign, loading: campLoading } = useCampaign();
@@ -51,11 +44,16 @@ export default function AdsOptinClient() {
     if (!campLoading) fetchData();
   }, [fetchData, campLoading]);
 
+  const campaignLabel = activeCampaign?.name ?? `${period} derniers jours`;
+
   return (
     <div className="space-y-6">
-      {/* Top bar */}
+      {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <h1 className="text-2xl font-bold text-slate-900">Opt-in</h1>
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Opt-in</h1>
+          <p className="text-sm text-slate-500 mt-0.5">{campaignLabel}</p>
+        </div>
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex bg-white rounded-xl border border-slate-200 p-0.5 shadow-sm">
             {PERIODS.map((p) => (
@@ -81,102 +79,39 @@ export default function AdsOptinClient() {
         </div>
       ) : (
         <>
-          {/* KPIs globaux */}
+          {/* KPIs */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <KPICard
-              label="Opt-in vues"
-              value={data?.total.views ?? 0}
-              color="sky"
-            />
-            <KPICard
-              label="Leads"
-              value={data?.total.optins ?? 0}
-              color="blue"
-            />
-            <KPICard
-              label="Taux conversion"
-              value={`${data?.total.rate ?? 0}%`}
-              color="emerald"
-            />
+            <KPICard label="Opt-in vues" value={data?.total.views ?? 0} color="sky" />
+            <KPICard label="Leads" value={data?.total.optins ?? 0} color="blue" />
+            <KPICard label="Taux conversion" value={`${data?.total.rate ?? 0}%`} color="emerald" />
           </div>
 
-          {/* Comparaison par version */}
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-            <div className="px-5 py-4 border-b border-slate-100">
-              <h2 className="text-base font-semibold text-slate-900">
-                Comparaison par version
-              </h2>
-            </div>
-            <div className="divide-y divide-slate-100">
-              {(data?.pages ?? []).map((p) => (
-                <div
-                  key={p.slug}
-                  className="flex flex-col sm:flex-row sm:items-center justify-between px-5 py-4 gap-3"
-                >
-                  <div>
-                    <p className="text-sm font-semibold text-slate-900">
-                      {p.label}
-                    </p>
-                    <p className="text-xs text-slate-400 mt-0.5">
-                      /van-business-academy/inscription
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-6 text-right">
-                    <div>
-                      <p className="text-xs text-slate-400">Opt-in vues</p>
-                      <p className="text-lg font-bold text-slate-900">
-                        {p.views}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-slate-400">Leads</p>
-                      <p className="text-lg font-bold text-blue-600">
-                        {p.optins}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-slate-400">Taux</p>
-                      <p
-                        className={`text-lg font-bold ${
-                          p.rate >= 20
-                            ? "text-emerald-600"
-                            : p.rate >= 10
-                              ? "text-amber-600"
-                              : "text-slate-600"
-                        }`}
-                      >
-                        {p.rate}%
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Live preview — desktop only */}
+          {/* Live preview — desktop */}
           <div className="hidden lg:block bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
             <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
-              <h2 className="text-base font-semibold text-slate-900">Page Opt-in — Live</h2>
+              <h2 className="text-base font-semibold text-slate-900">
+                Page Opt-in — Live
+              </h2>
               <a
-                href="/van-business-academy/inscription"
+                href={OPTIN_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs text-slate-400 hover:text-slate-600 transition-colors"
+                className="text-xs text-violet-600 hover:text-violet-800 font-medium transition-colors"
               >
-                Ouvrir dans un nouvel onglet
+                Ouvrir dans un nouvel onglet &rarr;
               </a>
             </div>
-            <div className="relative w-full" style={{ height: 700 }}>
+            <div className="relative w-full bg-slate-100" style={{ height: 700 }}>
               <iframe
-                src="/van-business-academy/inscription"
+                src={OPTIN_URL}
                 className="w-full h-full border-0"
                 title="Page Opt-in live"
+                sandbox="allow-scripts allow-same-origin allow-forms"
               />
             </div>
           </div>
 
-          {/* A/B Test Titres — intégré dans la page Opt-in */}
+          {/* A/B Test Titres */}
           <AdsTitlesClient />
         </>
       )}
@@ -184,21 +119,12 @@ export default function AdsOptinClient() {
   );
 }
 
-function KPICard({
-  label,
-  value,
-  color,
-}: {
-  label: string;
-  value: string | number;
-  color: string;
-}) {
+function KPICard({ label, value, color }: { label: string; value: string | number; color: string }) {
   const colors: Record<string, string> = {
     sky: "from-sky-50 to-sky-100/50 border-sky-200",
     blue: "from-blue-50 to-blue-100/50 border-blue-200",
     emerald: "from-emerald-50 to-emerald-100/50 border-emerald-200",
   };
-
   const textColors: Record<string, string> = {
     sky: "text-sky-700",
     blue: "text-blue-700",
@@ -206,13 +132,9 @@ function KPICard({
   };
 
   return (
-    <div
-      className={`bg-gradient-to-br ${colors[color] ?? colors.sky} border rounded-2xl p-4 sm:p-5`}
-    >
+    <div className={`bg-gradient-to-br ${colors[color] ?? colors.sky} border rounded-2xl p-4 sm:p-5`}>
       <p className="text-xs text-slate-500 mb-1">{label}</p>
-      <p className={`text-2xl sm:text-3xl font-bold ${textColors[color] ?? textColors.sky}`}>
-        {value}
-      </p>
+      <p className={`text-2xl sm:text-3xl font-bold ${textColors[color] ?? textColors.sky}`}>{value}</p>
     </div>
   );
 }
