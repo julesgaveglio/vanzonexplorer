@@ -46,8 +46,8 @@ const STEP_LABELS: Record<string, string> = {
   vsl_50: "VSL 50%",
   vsl_75: "VSL 75%",
   vsl_100: "VSL terminée",
-  booking_start: "Prise de RDV",
-  booking_confirmed: "Appel confirmé",
+  booking_start: "Calendly ouvert",
+  booking_confirmed: "RDV confirmé",
   checkout: "Paiement",
   purchase: "Achat validé",
 };
