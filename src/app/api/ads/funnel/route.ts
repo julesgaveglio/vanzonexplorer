@@ -141,9 +141,19 @@ export async function GET(req: NextRequest) {
   const meta = await fetchMetaInsights(sinceDate10, untilDate10);
   const metaSpend = meta.spend;
 
+  // Count hot leads only (exclude cold leads from CPL calculation)
+  let hotLeadQuery = supabase
+    .from("vba_funnel_leads")
+    .select("email", { count: "exact", head: true })
+    .eq("is_hot", true)
+    .gte("created_at", since);
+  if (until) hotLeadQuery = hotLeadQuery.lte("created_at", until);
+  const { count: hotLeadCount } = await hotLeadQuery;
+
   const optinCount = stepCounts.optin ?? 0;
+  const hotCount = hotLeadCount ?? 0;
   const pageViews = stepCounts.page_view ?? 0;
-  const cpl = optinCount > 0 ? Math.round((metaSpend / optinCount) * 100) / 100 : 0;
+  const cpl = hotCount > 0 ? Math.round((metaSpend / hotCount) * 100) / 100 : 0;
   // Use Meta's own CPC/CPM/CTR (more accurate than our page_view count)
   const cpc = meta.cpc ? Math.round(meta.cpc * 100) / 100 : 0;
   const ctr = meta.ctr ? Math.round(meta.ctr * 10) / 10 : 0;
@@ -203,6 +213,7 @@ export async function GET(req: NextRequest) {
     estimated_revenue: estimatedRevenue,
     meta_spend: Math.round(metaSpend * 100) / 100,
     cpl,
+    hot_lead_count: hotCount,
     cpc,
     ctr,
     cpm,

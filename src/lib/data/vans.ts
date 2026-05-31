@@ -53,7 +53,7 @@ export const VANS: VanData[] = [
     description:
       "Yoni a été aménagé par nos soins en 2024 — conçu, construit et utilisé dans notre propre flotte de location au Pays Basque. Chaque détail a été pensé pour le confort et la durabilité. Carnet d'entretien complet, historique traçable depuis l'origine, remise en main propre à Cambo-les-Bains.",
     whatsapp:
-      "https://wa.me/33618476378?text=Bonjour%20Jules%2C%20je%20suis%20int%C3%A9ress%C3%A9%20par%20l%27achat%20du%20van%20Yoni%20(r%C3%A9f.%20VZN-YONI-01).",
+      "https://wa.me/33745553719?text=Bonjour%20Jules%2C%20je%20suis%20int%C3%A9ress%C3%A9%20par%20l%27achat%20du%20van%20Yoni%20(r%C3%A9f.%20VZN-YONI-01).",
   },
   {
     id: "xalbat",
@@ -87,7 +87,7 @@ export const VANS: VanData[] = [
     description:
       "Xalbat est notre dernier aménagement, réalisé par nos soins en 2025. Le van le plus récent de notre flotte, avec le moins de kilomètres. Construit selon les mêmes standards que nos véhicules de location, avec historique complet depuis l'achat. Disponible à Cambo-les-Bains, remise en main propre.",
     whatsapp:
-      "https://wa.me/33618476378?text=Bonjour%20Jules%2C%20je%20suis%20int%C3%A9ress%C3%A9%20par%20l%27achat%20du%20van%20Xalbat%20(r%C3%A9f.%20VZN-XALBAT-02).",
+      "https://wa.me/33745553719?text=Bonjour%20Jules%2C%20je%20suis%20int%C3%A9ress%C3%A9%20par%20l%27achat%20du%20van%20Xalbat%20(r%C3%A9f.%20VZN-XALBAT-02).",
   },
 ];
 

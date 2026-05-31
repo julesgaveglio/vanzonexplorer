@@ -23,7 +23,7 @@ const META_ALL_LEADS: Record<string, string> = {
 };
 // Lead is fired DIRECTLY in OptinForm.tsx (not here) to guarantee it fires before redirect
 const META_HOT_ONLY: Record<string, string> = {
-  booking_start: "Schedule",
+  booking_confirmed: "Schedule",
   appel_confirme: "SubmitApplication",
   checkout: "InitiateCheckout",
   purchase: "Purchase",

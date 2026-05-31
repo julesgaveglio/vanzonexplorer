@@ -14,8 +14,14 @@ interface Variant {
   rate: number;
 }
 
+interface Unattributed {
+  views: number;
+  optins: number;
+}
+
 export default function AdsTitlesClient() {
   const [variants, setVariants] = useState<Variant[]>([]);
+  const [unattributed, setUnattributed] = useState<Unattributed>({ views: 0, optins: 0 });
   const [loading, setLoading] = useState(true);
   const [newTitle, setNewTitle] = useState("");
   const [adding, setAdding] = useState(false);
@@ -24,7 +30,10 @@ export default function AdsTitlesClient() {
     setLoading(true);
     fetch("/api/ads/titles")
       .then((r) => r.json())
-      .then((json) => setVariants(json.variants ?? []))
+      .then((json) => {
+        setVariants(json.variants ?? []);
+        setUnattributed(json.unattributed ?? { views: 0, optins: 0 });
+      })
       .finally(() => setLoading(false));
   };
 
@@ -61,6 +70,8 @@ export default function AdsTitlesClient() {
   const totalViews = variants.reduce((s, v) => s + v.views, 0);
   const totalOptins = variants.reduce((s, v) => s + v.optins, 0);
   const avgRate = totalViews > 0 ? Math.round((totalOptins / totalViews) * 1000) / 10 : 0;
+  const grandTotalViews = totalViews + unattributed.views;
+  const grandTotalOptins = totalOptins + unattributed.optins;
 
   return (
     <div className="space-y-6">
@@ -69,7 +80,7 @@ export default function AdsTitlesClient() {
         <div>
           <h1 className="text-2xl font-bold text-slate-900">A/B Test Titres</h1>
           <p className="text-sm text-slate-500 mt-1">
-            {variants.length} variante{variants.length > 1 ? "s" : ""} — rotation auto à 150 vues
+            {variants.length} variante{variants.length > 1 ? "s" : ""} — rotation auto a {variants[0]?.views_target ?? 200} vues
           </p>
         </div>
         <button
@@ -84,18 +95,23 @@ export default function AdsTitlesClient() {
       </div>
 
       {/* KPIs */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-          <p className="text-xs text-slate-500 uppercase tracking-wider font-medium mb-1">Vues totales</p>
+          <p className="text-xs text-slate-500 uppercase tracking-wider font-medium mb-1">Vues attribuees</p>
           <p className="text-2xl font-bold text-slate-700">{totalViews.toLocaleString("fr-FR")}</p>
         </div>
         <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-          <p className="text-xs text-slate-500 uppercase tracking-wider font-medium mb-1">Opt-ins totaux</p>
+          <p className="text-xs text-slate-500 uppercase tracking-wider font-medium mb-1">Opt-ins attribues</p>
           <p className="text-2xl font-bold text-blue-600">{totalOptins.toLocaleString("fr-FR")}</p>
         </div>
         <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
           <p className="text-xs text-slate-500 uppercase tracking-wider font-medium mb-1">Taux moyen</p>
           <p className="text-2xl font-bold text-amber-600">{avgRate}%</p>
+        </div>
+        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+          <p className="text-xs text-slate-500 uppercase tracking-wider font-medium mb-1">Total (all)</p>
+          <p className="text-2xl font-bold text-slate-400">{grandTotalViews.toLocaleString("fr-FR")} vues</p>
+          <p className="text-xs text-slate-400 mt-1">{grandTotalOptins} opt-ins · {unattributed.views} non-attribuees</p>
         </div>
       </div>
 
@@ -109,7 +125,7 @@ export default function AdsTitlesClient() {
           </div>
         ) : variants.length === 0 ? (
           <div className="text-center py-20 text-slate-400 text-sm">
-            Aucun titre configuré. Ajoute-en un ci-dessous.
+            Aucun titre configure. Ajoute-en un ci-dessous.
           </div>
         ) : (
           <div className="divide-y divide-slate-100">
@@ -130,7 +146,7 @@ export default function AdsTitlesClient() {
                         )}
                         {v.is_completed && (
                           <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">
-                            Terminé
+                            Termine
                           </span>
                         )}
                         {!v.is_active && !v.is_completed && (
@@ -216,7 +232,7 @@ export default function AdsTitlesClient() {
 
       {/* Add new variant */}
       <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-        <h3 className="text-sm font-semibold text-slate-900 mb-3">Ajouter un titre à tester</h3>
+        <h3 className="text-sm font-semibold text-slate-900 mb-3">Ajouter un titre a tester</h3>
         <div className="flex flex-col sm:flex-row gap-3">
           <textarea
             placeholder="Ex: Donne-moi 13 minutes et je te montre comment..."

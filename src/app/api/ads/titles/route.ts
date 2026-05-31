@@ -20,17 +20,26 @@ export async function GET() {
     return NextResponse.json({ variants: [] });
   }
 
-  // 2. Get all page_view and optin events with title_variant_id
-  const { data: allEvents } = await sb
-    .from("funnel_events")
-    .select("event, email, session_id, metadata")
-    .in("event", ["page_view", "optin"])
-    .not("email", "in", `(${EXCLUDED_EMAILS.join(",")})`)
-    .not("metadata", "is", null);
-
-  const events = allEvents ?? [];
+  // 2. Get all page_view and optin events (paginated, include all metadata)
+  const PAGE = 1000;
+  const events: { event: string; email: string | null; session_id: string | null; metadata: Record<string, unknown> | null }[] = [];
+  let offset = 0;
+  while (true) {
+    const { data } = await sb
+      .from("funnel_events")
+      .select("event, email, session_id, metadata")
+      .in("event", ["page_view", "optin"])
+      .not("email", "in", `(${EXCLUDED_EMAILS.join(",")})`)
+      .range(offset, offset + PAGE - 1);
+    if (!data || data.length === 0) break;
+    events.push(...(data as typeof events));
+    if (data.length < PAGE) break;
+    offset += PAGE;
+  }
 
   // 3. Compute stats per variant
+  const variantIds = new Set(variants.map((v) => v.id));
+
   const results = variants.map((v) => {
     const variantEvents = events.filter((e) => {
       const meta = e.metadata as Record<string, unknown> | null;
@@ -57,14 +66,27 @@ export async function GET() {
       position: v.position,
       is_active: v.is_active,
       is_completed: v.is_completed,
-      views_target: v.views_target ?? 150,
+      views_target: v.views_target ?? 200,
       views,
       optins,
       rate,
     };
   });
 
-  return NextResponse.json({ variants: results });
+  // 4. Count unattributed events (no title_variant_id or unknown)
+  const unattributed = events.filter((e) => {
+    const meta = e.metadata as Record<string, unknown> | null;
+    const vid = meta?.title_variant_id;
+    return !vid || vid === "unknown" || vid === "fallback" || !variantIds.has(vid as string);
+  });
+  const unattributedViews = new Set(
+    unattributed.filter((e) => e.event === "page_view").map((e) => e.email || e.session_id || "anon")
+  ).size;
+  const unattributedOptins = new Set(
+    unattributed.filter((e) => e.event === "optin").map((e) => e.email || e.session_id || "anon")
+  ).size;
+
+  return NextResponse.json({ variants: results, unattributed: { views: unattributedViews, optins: unattributedOptins } });
 }
 
 // PATCH — update a variant (rename, reorder, etc.)

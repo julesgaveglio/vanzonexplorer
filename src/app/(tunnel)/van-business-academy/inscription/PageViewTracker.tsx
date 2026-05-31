@@ -9,14 +9,28 @@ export default function PageViewTracker() {
   useEffect(() => {
     if (fired.current) return;
     fired.current = true;
-    // Wait a tick for DynamicTitle to store the variant_id
-    setTimeout(() => {
+
+    // Poll for title_variant_id (set by DynamicTitle after fetch)
+    // Max 3s, check every 200ms
+    let attempts = 0;
+    const maxAttempts = 15;
+
+    const poll = setInterval(() => {
+      attempts++;
       let titleVariantId: string | undefined;
-      try { titleVariantId = localStorage.getItem("vba_title_variant_id") ?? undefined; } catch {}
-      trackFunnel("page_view", "/van-business-academy/inscription", {
-        metadata: titleVariantId ? { title_variant_id: titleVariantId } : undefined,
-      });
-    }, 500);
+      try {
+        titleVariantId = localStorage.getItem("vba_title_variant_id") ?? undefined;
+      } catch {}
+
+      if (titleVariantId || attempts >= maxAttempts) {
+        clearInterval(poll);
+        trackFunnel("page_view", "/van-business-academy/inscription", {
+          metadata: { title_variant_id: titleVariantId || "unknown" },
+        });
+      }
+    }, 200);
+
+    return () => clearInterval(poll);
   }, []);
 
   return null;

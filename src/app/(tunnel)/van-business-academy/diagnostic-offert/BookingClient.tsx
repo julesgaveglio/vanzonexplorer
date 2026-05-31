@@ -22,7 +22,7 @@ export default function BookingClient() {
         body: JSON.stringify({ email: data.email, step: "booking" }),
       }).catch(() => {});
 
-      // Track: booking page view (Pixel Schedule + Supabase)
+      // Track: booking page view (Supabase only — Schedule fires on confirmed)
       trackFunnel("booking_start", "/van-business-academy/diagnostic-offert", {
         email: data.email,
         firstname: data.firstname,

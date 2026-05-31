@@ -60,7 +60,7 @@ const schema = {
   name: "Vanzon Explorer",
   description: "Location de vans aménagés tout équipés au Pays Basque. Assurance incluse, départ Cambo-les-Bains. Achat et formation vanlife.",
   url: BASE_URL,
-  telephone: "+33618476378",
+  telephone: "+33745553719",
   email: "contact@vanzonexplorer.com",
   image: "https://cdn.sanity.io/images/lewexa74/production/1f483103ef15ee3549eab14ba2801d11b32a9055-313x313.png?auto=format&q=82",
   address: {

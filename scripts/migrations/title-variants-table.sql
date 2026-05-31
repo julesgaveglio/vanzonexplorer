@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS title_variants (
   position INT NOT NULL,
   is_active BOOLEAN DEFAULT false,
   is_completed BOOLEAN DEFAULT false,
-  views_target INT DEFAULT 150,
+  views_target INT DEFAULT 200,
   created_at TIMESTAMPTZ DEFAULT now()
 );
 

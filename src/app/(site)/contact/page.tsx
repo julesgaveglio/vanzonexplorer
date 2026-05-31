@@ -53,7 +53,7 @@ export default function ContactPage() {
 
             {/* WhatsApp */}
             <a
-              href="https://wa.me/33618476378"
+              href="https://wa.me/33745553719"
               target="_blank"
               rel="noopener noreferrer"
               className="group flex flex-col gap-4 p-8 rounded-2xl border border-slate-100 bg-slate-50 hover:bg-green-50 hover:border-green-200 transition-all duration-200"
@@ -66,7 +66,7 @@ export default function ContactPage() {
               <div>
                 <p className="font-bold text-slate-900 text-lg">WhatsApp</p>
                 <p className="text-green-600 text-sm mt-1 font-medium group-hover:underline">
-                  +33 6 18 47 63 78
+                  +33 7 45 55 37 19
                 </p>
                 <p className="text-slate-400 text-xs mt-2">Reponse rapide, 7j/7</p>
               </div>
