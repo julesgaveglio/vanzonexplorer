@@ -150,7 +150,6 @@ export async function GET(req: NextRequest) {
   if (until) hotLeadQuery = hotLeadQuery.lte("created_at", until);
   const { count: hotLeadCount } = await hotLeadQuery;
 
-  const optinCount = stepCounts.optin ?? 0;
   const hotCount = hotLeadCount ?? 0;
   const pageViews = stepCounts.page_view ?? 0;
   const cpl = hotCount > 0 ? Math.round((metaSpend / hotCount) * 100) / 100 : 0;
