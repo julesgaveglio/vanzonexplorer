@@ -29,7 +29,7 @@ export async function GET() {
       .from("funnel_events")
       .select("event, email, session_id, metadata")
       .in("event", ["page_view", "optin"])
-      .not("email", "in", `(${EXCLUDED_EMAILS.join(",")})`)
+      .or(`email.is.null,email.not.in.(${EXCLUDED_EMAILS.join(",")})`)
       .range(offset, offset + PAGE - 1);
     if (!data || data.length === 0) break;
     events.push(...(data as typeof events));
