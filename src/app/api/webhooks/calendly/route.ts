@@ -133,8 +133,12 @@ async function notifyJulesWhatsApp(data: {
   phone: string | null;
   scheduledAt: string;
 }) {
-  const julesNumber = process.env.JULES_WHATSAPP_NUMBER;
-  if (!julesNumber) return;
+  const recipients = [
+    process.env.JULES_WHATSAPP_NUMBER,   // Jules
+    "33643935830",                        // Matteo (media buyer)
+  ].filter(Boolean) as string[];
+
+  if (recipients.length === 0) return;
 
   const firstName = data.name.split(" ")[0];
   const formatted = formatDateFR(data.scheduledAt);
@@ -144,16 +148,18 @@ async function notifyJulesWhatsApp(data: {
     `📅 ${formatted}\n` +
     `${data.phone ? `📱 ${data.phone}` : "📱 Pas de numéro"}`;
 
-  try {
-    await fetch("https://vanzon-wa.unhinged-lab.com/api/send", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ recipient: julesNumber, message }),
-      signal: AbortSignal.timeout(5000),
-    });
-    console.log(`[calendly] WhatsApp notification sent to Jules`);
-  } catch {
-    console.warn("[calendly] WhatsApp bridge unreachable for Jules notification");
+  for (const recipient of recipients) {
+    try {
+      await fetch("https://vanzon-wa.unhinged-lab.com/api/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ recipient, message }),
+        signal: AbortSignal.timeout(5000),
+      });
+      console.log(`[calendly] WhatsApp notification sent to ${recipient}`);
+    } catch {
+      console.warn(`[calendly] WhatsApp bridge unreachable for ${recipient}`);
+    }
   }
 }
 
