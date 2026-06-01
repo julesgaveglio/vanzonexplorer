@@ -29,11 +29,20 @@ Tu DOIS structurer ta réponse EXACTEMENT ainsi (en markdown) :
 - [action 1 concrète avec deadline si mentionnée]
 - [action 2...]
 
+## Coaching closing
+- **Score** : [X/10]
+- **Ce qui a bien marché** : [2-3 points forts du closeur]
+- **Erreurs identifiées** : [liste des erreurs de closing avec explication courte]
+- **Conseil #1** : [conseil actionnable le plus important]
+- **Conseil #2** : [deuxième conseil]
+- **Conseil #3** : [troisième conseil]
+
 RÈGLES :
 - Concision maximale. Pas de remplissage.
 - Ne garde que ce qui sert à piloter les ventes.
 - Cite les verbatims entre guillemets.
-- Si une info n'est pas dans le transcript, écris "Non mentionné".`;
+- Si une info n'est pas dans le transcript, écris "Non mentionné".
+- Pour le coaching : sois direct et honnête, pas complaisant. Note sévèrement.`;
 
 async function analyzeTranscript(transcript: string, name: string): Promise<string> {
   const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
