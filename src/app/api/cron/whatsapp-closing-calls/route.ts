@@ -90,7 +90,7 @@ export async function GET(req: NextRequest) {
     const message = buildMessage(call.name, call.scheduled_at);
 
     try {
-      const res = await fetch("http://localhost:8080/api/send", {
+      const res = await fetch("https://vanzon-wa.unhinged-lab.com/api/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ recipient: formattedPhone, message }),

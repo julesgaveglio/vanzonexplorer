@@ -104,7 +104,7 @@ async function sendWhatsApp(
   const recipient = formatPhoneForWhatsApp(phone);
 
   try {
-    const res = await fetch("http://localhost:8080/api/send", {
+    const res = await fetch("https://vanzon-wa.unhinged-lab.com/api/send", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ recipient, message }),
@@ -149,7 +149,7 @@ async function notifyJulesWhatsApp(data: {
     waLink;
 
   try {
-    await fetch("http://localhost:8080/api/send", {
+    await fetch("https://vanzon-wa.unhinged-lab.com/api/send", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ recipient: julesNumber, message }),
