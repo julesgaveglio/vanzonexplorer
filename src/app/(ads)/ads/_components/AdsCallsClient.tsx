@@ -13,6 +13,12 @@ interface Call {
   utm_campaign: string | null;
 }
 
+interface TranscriptFile {
+  filename: string;
+  name: string;
+  isAudio: boolean;
+}
+
 const PERIODS = [
   { label: "30j", days: 30 },
   { label: "90j", days: 90 },
@@ -23,6 +29,39 @@ export default function AdsCallsClient() {
   const [calls, setCalls] = useState<Call[]>([]);
   const [period, setPeriod] = useState(90);
   const [loading, setLoading] = useState(true);
+
+  // Closing summaries
+  const [transcripts, setTranscripts] = useState<TranscriptFile[]>([]);
+  const [summaries, setSummaries] = useState<Record<string, string>>({});
+  const [generating, setGenerating] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch("/api/ads/closing-summary")
+      .then((r) => r.json())
+      .then((json) => setTranscripts(json.transcripts ?? []))
+      .catch(() => {});
+  }, []);
+
+  const generateSummary = async (filename: string) => {
+    setGenerating(filename);
+    try {
+      const res = await fetch("/api/ads/closing-summary", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ filename }),
+      });
+      const json = await res.json();
+      if (json.error) {
+        setSummaries((prev) => ({ ...prev, [filename]: `**Erreur** : ${json.error}` }));
+      } else {
+        setSummaries((prev) => ({ ...prev, [filename]: json.summary }));
+      }
+    } catch {
+      setSummaries((prev) => ({ ...prev, [filename]: "**Erreur** : Impossible de générer le résumé." }));
+    } finally {
+      setGenerating(null);
+    }
+  };
 
   useEffect(() => {
     if (campLoading) return;
@@ -198,6 +237,74 @@ export default function AdsCallsClient() {
           </div>
         )}
       </div>
+
+      {/* ── Closing Summaries ── */}
+      {transcripts.length > 0 && (
+        <div className="space-y-4">
+          <h2 className="text-lg font-bold text-slate-900">Résumés closing</h2>
+          <p className="text-sm text-slate-500">
+            Fichiers dans <code className="text-xs bg-slate-100 px-1.5 py-0.5 rounded">closing-transcripts/</code>
+          </p>
+
+          {transcripts.map((t) => (
+            <div key={t.filename} className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+              <div className="p-5 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <span className="text-lg">{t.isAudio ? "🎙️" : "📝"}</span>
+                  <div>
+                    <p className="font-medium text-slate-900 capitalize">{t.name}</p>
+                    <p className="text-xs text-slate-400">{t.filename} · {t.isAudio ? "Audio → transcription + analyse" : "Texte → analyse"}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => generateSummary(t.filename)}
+                  disabled={generating === t.filename}
+                  className="px-4 py-2 text-sm font-semibold rounded-xl transition-all disabled:opacity-50 whitespace-nowrap"
+                  style={{
+                    background: summaries[t.filename] ? "rgba(16,185,129,0.08)" : "rgba(59,130,246,0.08)",
+                    color: summaries[t.filename] ? "#10B981" : "#3B82F6",
+                    border: summaries[t.filename] ? "1px solid rgba(16,185,129,0.2)" : "1px solid rgba(59,130,246,0.2)",
+                  }}
+                >
+                  {generating === t.filename ? (
+                    <span className="flex items-center gap-2">
+                      <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" fill="none" strokeDasharray="30 70" />
+                      </svg>
+                      {t.isAudio ? "Transcription..." : "Analyse..."}
+                    </span>
+                  ) : summaries[t.filename] ? (
+                    "Regénérer"
+                  ) : (
+                    "Analyser"
+                  )}
+                </button>
+              </div>
+
+              {summaries[t.filename] && (
+                <div className="border-t border-slate-100 p-5">
+                  <div
+                    className="prose prose-sm prose-slate max-w-none
+                      [&_h2]:text-base [&_h2]:font-bold [&_h2]:text-slate-900 [&_h2]:mt-5 [&_h2]:mb-2 [&_h2]:first:mt-0
+                      [&_strong]:text-slate-800
+                      [&_li]:text-slate-600 [&_li]:leading-relaxed
+                      [&_ul]:space-y-1"
+                    dangerouslySetInnerHTML={{
+                      __html: summaries[t.filename]
+                        .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+                        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                        .replace(/^- (.+)$/gm, '<li>$1</li>')
+                        .replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>')
+                        .replace(/\n{2,}/g, '<br/>')
+                        .replace(/「(.+?)」|"(.+?)"/g, '<em class="text-amber-700 not-italic">"$1$2"</em>'),
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
