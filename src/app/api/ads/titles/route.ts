@@ -96,7 +96,7 @@ export async function GET() {
       position: v.position,
       is_active: v.is_active,
       is_completed: v.is_completed,
-      views_target: v.views_target ?? 200,
+      views_target: v.views_target ?? 250,
       views,
       hot_leads: hotLeadCount,
       rate,

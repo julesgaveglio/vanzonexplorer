@@ -80,7 +80,7 @@ export default function AdsTitlesClient() {
         <div>
           <h1 className="text-2xl font-bold text-slate-900">A/B Test Titres</h1>
           <p className="text-sm text-slate-500 mt-1">
-            {variants.length} variante{variants.length > 1 ? "s" : ""} — rotation auto a {variants[0]?.views_target ?? 200} vues
+            {variants.length} variante{variants.length > 1 ? "s" : ""} — rotation auto a {variants[0]?.views_target ?? 250} vues
           </p>
         </div>
         <button

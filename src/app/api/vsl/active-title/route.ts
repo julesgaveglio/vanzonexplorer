@@ -27,7 +27,7 @@ export async function GET() {
     }
 
     // 2. Count unique page_views for this variant (cap at views_target + buffer)
-    const target = active.views_target ?? 200;
+    const target = active.views_target ?? 250;
     const PAGE = 1000;
     const allViews: { session_id: string | null; email: string | null }[] = [];
     let offset = 0;
