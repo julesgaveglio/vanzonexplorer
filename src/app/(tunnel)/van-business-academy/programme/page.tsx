@@ -135,30 +135,28 @@ const MODULES: Module[] = [
     title: "Les travaux VASP (L1H1)",
     emoji: "👷🏼‍♂️",
     description: "20 vidéos pratiques filmées en atelier — tout l'aménagement VASP d'un L1H1 de A à Z.",
-    badge: "EN TOURNAGE",
-    comingSoon: true,
-    estimatedMinutes: 200,
+    badge: "VASP",
     lessons: [
-      { title: "Nettoyage" },
-      { title: "La pose de la fenêtre" },
-      { title: "La pose des aérations" },
-      { title: "La pose du lanterneau" },
-      { title: "La pose de la structure" },
-      { title: "L'isolation Armaflex" },
-      { title: "La pose de la moquette feutrine" },
-      { title: "Construire le robinet fixe" },
-      { title: "La plaque de cuisson" },
-      { title: "Le lit peigne" },
-      { title: "Le sol" },
-      { title: "Le plafond" },
-      { title: "La pose des rideaux" },
-      { title: "Fabrication du lit" },
-      { title: "Meuble d'entrée" },
-      { title: "Meuble de cuisine et eau" },
-      { title: "Étagère arrière" },
-      { title: "Le ponçage" },
-      { title: "Installation électrique" },
-      { title: "Le vernissage" },
+      { title: "Nettoyage", duration: 8 },
+      { title: "La pose de la fenêtre", duration: 12 },
+      { title: "La pose des aérations", duration: 10 },
+      { title: "La pose du lanterneau", duration: 10 },
+      { title: "La pose de la structure", duration: 15 },
+      { title: "L'isolation Armaflex", duration: 12 },
+      { title: "La pose de la moquette feutrine", duration: 8 },
+      { title: "Construire le robinet fixe", duration: 10 },
+      { title: "La plaque de cuisson", duration: 8 },
+      { title: "Le lit peigne", duration: 12 },
+      { title: "Le sol", duration: 10 },
+      { title: "Le plafond", duration: 10 },
+      { title: "La pose des rideaux", duration: 8 },
+      { title: "Fabrication du lit", duration: 15 },
+      { title: "Meuble d'entrée", duration: 10 },
+      { title: "Meuble de cuisine et eau", duration: 12 },
+      { title: "Étagère arrière", duration: 8 },
+      { title: "Le ponçage", duration: 8 },
+      { title: "Installation électrique", duration: 15 },
+      { title: "Le vernissage", duration: 10 },
       { title: "Quiz Module 7", tag: "quiz" },
       { title: "Fiche récap PDF", tag: "pdf" },
     ],
@@ -445,6 +443,96 @@ export default function ProgrammePage() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Comparatif investissement ── */}
+      <section className="pb-20">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="text-center mb-14">
+            <span
+              className="inline-block px-4 py-2 rounded-full text-sm font-medium mb-6"
+              style={{ background: "rgba(185, 148, 95, 0.08)", border: "1px solid rgba(185, 148, 95, 0.25)", color: "rgb(185, 148, 95)" }}
+            >
+              💰 Comparatif réel
+            </span>
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
+              L&apos;investissement avec et sans accompagnement
+            </h2>
+            <p className="text-slate-400 mt-3 max-w-xl mx-auto">
+              Des chiffres réels issus de notre expérience terrain.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+            {/* SANS */}
+            <div className="rounded-2xl p-6 md:p-8 border border-slate-200 bg-slate-50">
+              <div className="flex items-center gap-2 mb-6">
+                <span className="text-xl">❌</span>
+                <h3 className="text-lg md:text-xl font-bold text-slate-900">SANS l&apos;accompagnement</h3>
+              </div>
+              <div className="mb-6">
+                <span className="inline-block px-4 py-2 rounded-lg text-xl md:text-2xl font-black text-red-700 bg-red-50 border border-red-100">
+                  23 600 €
+                </span>
+              </div>
+              <ul className="space-y-3">
+                {[
+                  { amount: "13 000 €", label: "Véhicule" },
+                  { amount: "10 600 €", label: "Aménagement" },
+                  { amount: "❌", label: "Pas d'homologation VASP" },
+                  { amount: "8 mois", label: "Temps des travaux" },
+                  { amount: "❌", label: "Pas d'exploitation à la location" },
+                  { amount: "❌", label: "Mauvaise revente" },
+                ].map((item) => (
+                  <li key={item.label} className="flex items-center gap-3 text-slate-600 text-sm md:text-base">
+                    <span className="font-bold text-red-500 flex-shrink-0 min-w-[100px]">{item.amount}</span>
+                    <span className="text-slate-300">→</span>
+                    <span>{item.label}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* AVEC */}
+            <div
+              className="rounded-2xl p-6 md:p-8 border shadow-sm"
+              style={{ borderColor: "rgba(185, 148, 95, 0.3)", background: "rgba(185, 148, 95, 0.03)" }}
+            >
+              <div className="flex items-center gap-2 mb-6">
+                <span className="text-xl">✅</span>
+                <h3 className="text-lg md:text-xl font-bold text-slate-900">AVEC l&apos;accompagnement</h3>
+              </div>
+              <div className="mb-6">
+                <span className="inline-block px-4 py-2 rounded-lg text-xl md:text-2xl font-black text-emerald-700 bg-emerald-50 border border-emerald-100">
+                  15 000 €
+                </span>
+              </div>
+              <ul className="space-y-3">
+                {[
+                  { amount: "10 000 €", label: "Véhicule négocié" },
+                  { amount: "4 300 €", label: "Aménagement" },
+                  { amount: "700 €", label: "Documents VASP pré-remplis" },
+                  { amount: "3-4 mois", label: "Temps des travaux" },
+                  { amount: "7 000 €/an", label: "Mise en location" },
+                  { amount: "Revente", label: "optimisée" },
+                  { amount: "Compétences", label: "Recommencer le process" },
+                ].map((item) => (
+                  <li key={item.label} className="flex items-center gap-3 text-slate-600 text-sm md:text-base">
+                    <span className="font-bold flex-shrink-0 min-w-[100px]" style={{ color: "rgb(22, 163, 74)" }}>{item.amount}</span>
+                    <span className="text-slate-300">→</span>
+                    <span>{item.label}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <div className="mt-10 text-center">
+            <p className="text-slate-500 text-sm">
+              Économie moyenne constatée : <span className="font-bold" style={{ color: "rgb(185, 148, 95)" }}>8 600 € + un van qui génère des revenus</span>
+            </p>
           </div>
         </div>
       </section>
