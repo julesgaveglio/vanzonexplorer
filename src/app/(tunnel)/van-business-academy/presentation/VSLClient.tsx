@@ -58,10 +58,24 @@ export default function VSLClient({ videoId, vslVersionId }: VSLClientProps) {
       hls.loadSource(HLS_URL);
       hls.attachMedia(video);
       hlsRef.current = hls;
+
+      // Force-enable captions once HLS is ready
+      hls.on(Hls.Events.MEDIA_ATTACHED, () => {
+        for (let i = 0; i < video.textTracks.length; i++) {
+          video.textTracks[i].mode = "showing";
+        }
+      });
+
       return () => { hls.destroy(); };
     } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
       // Safari native HLS
       video.src = HLS_URL;
+      // Safari: enable captions
+      video.addEventListener("loadedmetadata", () => {
+        for (let i = 0; i < video.textTracks.length; i++) {
+          video.textTracks[i].mode = "showing";
+        }
+      }, { once: true });
     }
   }, [HLS_URL]);
 
