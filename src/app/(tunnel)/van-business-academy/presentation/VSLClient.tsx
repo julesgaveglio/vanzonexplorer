@@ -29,6 +29,7 @@ export default function VSLClient({ videoId, vslVersionId }: VSLClientProps) {
   const [firstname, setFirstname] = useState("");
   const [showCTA, setShowCTA] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [captionText, setCaptionText] = useState("");
 
   // --- Get tracking opts ---
   const getTrackOpts = useCallback(
@@ -58,26 +59,47 @@ export default function VSLClient({ videoId, vslVersionId }: VSLClientProps) {
       hls.loadSource(HLS_URL);
       hls.attachMedia(video);
       hlsRef.current = hls;
-
-      // Force-enable captions once HLS is ready
-      hls.on(Hls.Events.MEDIA_ATTACHED, () => {
-        for (let i = 0; i < video.textTracks.length; i++) {
-          video.textTracks[i].mode = "showing";
-        }
-      });
-
       return () => { hls.destroy(); };
     } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
       // Safari native HLS
       video.src = HLS_URL;
-      // Safari: enable captions
-      video.addEventListener("loadedmetadata", () => {
-        for (let i = 0; i < video.textTracks.length; i++) {
-          video.textTracks[i].mode = "showing";
-        }
-      }, { once: true });
     }
   }, [HLS_URL]);
+
+  // --- Captions: fetch VTT + sync with video time ---
+  const cuesRef = useRef<{ start: number; end: number; text: string }[]>([]);
+  useEffect(() => {
+    fetch(CAPTIONS_URL)
+      .then((r) => r.text())
+      .then((vtt) => {
+        const cues: { start: number; end: number; text: string }[] = [];
+        const blocks = vtt.split("\n\n");
+        for (const block of blocks) {
+          const lines = block.trim().split("\n");
+          const timeLine = lines.find((l) => l.includes("-->"));
+          if (!timeLine) continue;
+          const [startStr, endStr] = timeLine.split("-->").map((s) => s.trim());
+          const parseTime = (t: string) => {
+            const parts = t.split(":");
+            const [sec, ms] = parts.pop()!.split(".");
+            const min = parts.pop() ?? "0";
+            const hr = parts.pop() ?? "0";
+            return +hr * 3600 + +min * 60 + +sec + (+ms || 0) / 1000;
+          };
+          const textIdx = lines.indexOf(timeLine) + 1;
+          const text = lines.slice(textIdx).join("\n").trim();
+          if (text) cues.push({ start: parseTime(startStr), end: parseTime(endStr), text });
+        }
+        cuesRef.current = cues;
+      })
+      .catch(() => {});
+  }, [CAPTIONS_URL]);
+
+  // Sync captions with video timeupdate (inside the existing timeupdate handler)
+  const updateCaption = useCallback((currentTime: number) => {
+    const cue = cuesRef.current.find((c) => currentTime >= c.start && currentTime <= c.end);
+    setCaptionText(cue?.text ?? "");
+  }, []);
 
   // --- Track vsl_view on mount ---
   useEffect(() => {
@@ -143,6 +165,7 @@ export default function VSLClient({ videoId, vslVersionId }: VSLClientProps) {
 
       lastTimeRef.current = currentTime;
       durationRef.current = duration;
+      updateCaption(currentTime);
 
       // Show CTA for cold leads after 7 min of real watch time
       if (!isHotRef.current && currentTime >= CTA_WATCH_COLD) {
@@ -185,7 +208,7 @@ export default function VSLClient({ videoId, vslVersionId }: VSLClientProps) {
       video.removeEventListener("play", onPlay);
       video.removeEventListener("pause", onPause);
     };
-  }, [getTrackOpts]);
+  }, [getTrackOpts, updateCaption]);
 
   // --- Track vsl_exit on page leave (sendBeacon for reliability) ---
   useEffect(() => {
@@ -268,14 +291,6 @@ export default function VSLClient({ videoId, vslVersionId }: VSLClientProps) {
         video::-webkit-media-controls-timeline { display: none; }
         video::-webkit-media-controls-current-time-display { display: none; }
         video::-webkit-media-controls-time-remaining-display { display: none; }
-        video::cue {
-          background: rgba(0, 0, 0, 0.7);
-          color: #fff;
-          font-size: 16px;
-          line-height: 1.4;
-          border-radius: 4px;
-          padding: 2px 6px;
-        }
       `}</style>
 
       {/* Greeting */}
@@ -316,16 +331,19 @@ export default function VSLClient({ videoId, vslVersionId }: VSLClientProps) {
           onSeeking={onSeeking}
           className="w-full h-full object-contain"
           controlsList="nodownload noplaybackrate"
-          crossOrigin="anonymous"
-        >
-          <track
-            kind="captions"
-            src={CAPTIONS_URL}
-            srcLang="fr"
-            label="Français"
-            default
-          />
-        </video>
+        />
+
+        {/* Captions overlay */}
+        {captionText && (
+          <div className="absolute bottom-4 left-0 right-0 flex justify-center pointer-events-none px-4">
+            <span
+              className="text-white text-sm sm:text-base leading-snug text-center px-3 py-1.5 rounded"
+              style={{ background: "rgba(0,0,0,0.75)", maxWidth: "90%" }}
+            >
+              {captionText}
+            </span>
+          </div>
+        )}
 
         {/* Play button overlay */}
         {!isPlaying && (
