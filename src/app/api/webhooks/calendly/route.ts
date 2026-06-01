@@ -138,15 +138,11 @@ async function notifyJulesWhatsApp(data: {
 
   const firstName = data.name.split(" ")[0];
   const formatted = formatDateFR(data.scheduledAt);
-  const waLink = data.phone
-    ? `\nhttps://wa.me/${formatPhoneForWhatsApp(data.phone)}`
-    : "";
 
   const message =
     `📞 ${firstName} vient de book un call !\n` +
     `📅 ${formatted}\n` +
-    `${data.phone ? `📱 ${data.phone}` : "📱 Pas de numéro"}` +
-    waLink;
+    `${data.phone ? `📱 ${data.phone}` : "📱 Pas de numéro"}`;
 
   try {
     await fetch("https://vanzon-wa.unhinged-lab.com/api/send", {
