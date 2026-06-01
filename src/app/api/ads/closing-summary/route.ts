@@ -1,14 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdsAuth } from "@/lib/ads-auth";
-import { readdir, readFile } from "fs/promises";
-import path from "path";
+import { createSupabaseAdmin } from "@/lib/supabase/server";
 
-const TRANSCRIPTS_DIR = path.join(process.cwd(), "closing-transcripts");
-
-const GROQ_MODELS = {
-  chat: "llama-3.3-70b-versatile",
-  whisper: "whisper-large-v3",
-};
+const GROQ_MODEL = "llama-3.3-70b-versatile";
 
 const SYSTEM_PROMPT = `Tu es un analyste commercial expert. Tu analyses des transcripts d'appels de closing pour en extraire les informations exploitables.
 
@@ -41,29 +35,7 @@ RÈGLES :
 - Cite les verbatims entre guillemets.
 - Si une info n'est pas dans le transcript, écris "Non mentionné".`;
 
-async function transcribeAudio(filePath: string): Promise<string> {
-  const audioBuffer = await readFile(filePath);
-  const formData = new FormData();
-  formData.append("file", new Blob([audioBuffer]), path.basename(filePath));
-  formData.append("model", GROQ_MODELS.whisper);
-  formData.append("language", "fr");
-  formData.append("response_format", "text");
-
-  const res = await fetch("https://api.groq.com/openai/v1/audio/transcriptions", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${process.env.GROQ_API_KEY}` },
-    body: formData,
-  });
-
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`Groq Whisper error: ${res.status} — ${err}`);
-  }
-
-  return res.text();
-}
-
-async function analyzeTranscript(transcript: string, filename: string): Promise<string> {
+async function analyzeTranscript(transcript: string, name: string): Promise<string> {
   const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
     method: "POST",
     headers: {
@@ -71,12 +43,12 @@ async function analyzeTranscript(transcript: string, filename: string): Promise<
       Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
     },
     body: JSON.stringify({
-      model: GROQ_MODELS.chat,
+      model: GROQ_MODEL,
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
         {
           role: "user",
-          content: `Voici le transcript de l'appel de closing "${filename}":\n\n${transcript}`,
+          content: `Voici le transcript de l'appel de closing de "${name}":\n\n${transcript}`,
         },
       ],
       temperature: 0.3,
@@ -86,65 +58,58 @@ async function analyzeTranscript(transcript: string, filename: string): Promise<
 
   if (!res.ok) {
     const err = await res.text();
-    throw new Error(`Groq chat error: ${res.status} — ${err}`);
+    throw new Error(`Groq error: ${res.status} — ${err}`);
   }
 
   const data = await res.json();
   return data.choices?.[0]?.message?.content ?? "Aucune analyse générée.";
 }
 
-// GET — list available transcripts
+// GET — list all closing summaries
 export async function GET() {
   const check = await requireAdsAuth();
   if (check instanceof NextResponse) return check;
 
-  try {
-    const files = await readdir(TRANSCRIPTS_DIR);
-    const transcripts = files
-      .filter((f) => /\.(txt|m4a|mp3|wav|webm)$/i.test(f))
-      .map((f) => {
-        const isAudio = /\.(m4a|mp3|wav|webm)$/i.test(f);
-        const name = f.replace(/\.(txt|m4a|mp3|wav|webm)$/i, "").replace(/[-_]/g, " ");
-        return { filename: f, name, isAudio };
-      });
+  const sb = createSupabaseAdmin();
+  const { data } = await sb
+    .from("closing_summaries")
+    .select("id, name, summary, is_audio, created_at")
+    .order("created_at", { ascending: false });
 
-    return NextResponse.json({ transcripts });
-  } catch {
-    return NextResponse.json({ transcripts: [] });
-  }
+  return NextResponse.json({ items: data ?? [] });
 }
 
-// POST — generate summary for a specific file
+// POST — generate/regenerate summary for a record
 export async function POST(req: NextRequest) {
   const check = await requireAdsAuth();
   if (check instanceof NextResponse) return check;
 
-  const { filename } = await req.json();
-  if (!filename) {
-    return NextResponse.json({ error: "filename required" }, { status: 400 });
+  const { id } = await req.json();
+  if (!id) {
+    return NextResponse.json({ error: "id required" }, { status: 400 });
   }
 
-  // Sanitize filename
-  const safe = path.basename(filename);
-  const filePath = path.join(TRANSCRIPTS_DIR, safe);
+  const sb = createSupabaseAdmin();
+  const { data: record } = await sb
+    .from("closing_summaries")
+    .select("id, name, transcript")
+    .eq("id", id)
+    .single();
+
+  if (!record || !record.transcript) {
+    return NextResponse.json({ error: "Transcript introuvable" }, { status: 404 });
+  }
 
   try {
-    let transcript: string;
-    const isAudio = /\.(m4a|mp3|wav|webm)$/i.test(safe);
+    const summary = await analyzeTranscript(record.transcript, record.name);
 
-    if (isAudio) {
-      transcript = await transcribeAudio(filePath);
-    } else {
-      transcript = await readFile(filePath, "utf-8");
-    }
+    // Save summary in DB
+    await sb
+      .from("closing_summaries")
+      .update({ summary })
+      .eq("id", id);
 
-    if (!transcript.trim()) {
-      return NextResponse.json({ error: "Transcript vide" }, { status: 400 });
-    }
-
-    const summary = await analyzeTranscript(transcript, safe);
-
-    return NextResponse.json({ summary, transcript_length: transcript.length, was_audio: isAudio });
+    return NextResponse.json({ summary });
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Unknown error";
     return NextResponse.json({ error: msg }, { status: 500 });

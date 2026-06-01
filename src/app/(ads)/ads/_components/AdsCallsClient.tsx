@@ -13,10 +13,12 @@ interface Call {
   utm_campaign: string | null;
 }
 
-interface TranscriptFile {
-  filename: string;
+interface ClosingSummary {
+  id: string;
   name: string;
-  isAudio: boolean;
+  summary: string | null;
+  is_audio: boolean;
+  created_at: string;
 }
 
 const PERIODS = [
@@ -31,33 +33,34 @@ export default function AdsCallsClient() {
   const [loading, setLoading] = useState(true);
 
   // Closing summaries
-  const [transcripts, setTranscripts] = useState<TranscriptFile[]>([]);
-  const [summaries, setSummaries] = useState<Record<string, string>>({});
+  const [closings, setClosings] = useState<ClosingSummary[]>([]);
   const [generating, setGenerating] = useState<string | null>(null);
 
-  useEffect(() => {
+  const fetchClosings = () => {
     fetch("/api/ads/closing-summary")
       .then((r) => r.json())
-      .then((json) => setTranscripts(json.transcripts ?? []))
+      .then((json) => setClosings(json.items ?? []))
       .catch(() => {});
-  }, []);
+  };
 
-  const generateSummary = async (filename: string) => {
-    setGenerating(filename);
+  useEffect(() => { fetchClosings(); }, []);
+
+  const generateSummary = async (id: string) => {
+    setGenerating(id);
     try {
       const res = await fetch("/api/ads/closing-summary", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ filename }),
+        body: JSON.stringify({ id }),
       });
       const json = await res.json();
       if (json.error) {
-        setSummaries((prev) => ({ ...prev, [filename]: `**Erreur** : ${json.error}` }));
+        setClosings((prev) => prev.map((c) => c.id === id ? { ...c, summary: `**Erreur** : ${json.error}` } : c));
       } else {
-        setSummaries((prev) => ({ ...prev, [filename]: json.summary }));
+        setClosings((prev) => prev.map((c) => c.id === id ? { ...c, summary: json.summary } : c));
       }
     } catch {
-      setSummaries((prev) => ({ ...prev, [filename]: "**Erreur** : Impossible de générer le résumé." }));
+      setClosings((prev) => prev.map((c) => c.id === id ? { ...c, summary: "**Erreur** : Impossible de générer le résumé." } : c));
     } finally {
       setGenerating(null);
     }
@@ -239,41 +242,41 @@ export default function AdsCallsClient() {
       </div>
 
       {/* ── Closing Summaries ── */}
-      {transcripts.length > 0 && (
+      {closings.length > 0 && (
         <div className="space-y-4">
           <h2 className="text-lg font-bold text-slate-900">Résumés closing</h2>
-          <p className="text-sm text-slate-500">
-            Fichiers dans <code className="text-xs bg-slate-100 px-1.5 py-0.5 rounded">closing-transcripts/</code>
-          </p>
 
-          {transcripts.map((t) => (
-            <div key={t.filename} className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+          {closings.map((c) => (
+            <div key={c.id} className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
               <div className="p-5 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <span className="text-lg">{t.isAudio ? "🎙️" : "📝"}</span>
+                  <span className="text-lg">{c.is_audio ? "🎙️" : "📝"}</span>
                   <div>
-                    <p className="font-medium text-slate-900 capitalize">{t.name}</p>
-                    <p className="text-xs text-slate-400">{t.filename} · {t.isAudio ? "Audio → transcription + analyse" : "Texte → analyse"}</p>
+                    <p className="font-medium text-slate-900">{c.name}</p>
+                    <p className="text-xs text-slate-400">
+                      {new Date(c.created_at).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" })}
+                      {c.summary ? " · Analyse disponible" : " · Non analysé"}
+                    </p>
                   </div>
                 </div>
                 <button
-                  onClick={() => generateSummary(t.filename)}
-                  disabled={generating === t.filename}
+                  onClick={() => generateSummary(c.id)}
+                  disabled={generating === c.id}
                   className="px-4 py-2 text-sm font-semibold rounded-xl transition-all disabled:opacity-50 whitespace-nowrap"
                   style={{
-                    background: summaries[t.filename] ? "rgba(16,185,129,0.08)" : "rgba(59,130,246,0.08)",
-                    color: summaries[t.filename] ? "#10B981" : "#3B82F6",
-                    border: summaries[t.filename] ? "1px solid rgba(16,185,129,0.2)" : "1px solid rgba(59,130,246,0.2)",
+                    background: c.summary ? "rgba(16,185,129,0.08)" : "rgba(59,130,246,0.08)",
+                    color: c.summary ? "#10B981" : "#3B82F6",
+                    border: c.summary ? "1px solid rgba(16,185,129,0.2)" : "1px solid rgba(59,130,246,0.2)",
                   }}
                 >
-                  {generating === t.filename ? (
+                  {generating === c.id ? (
                     <span className="flex items-center gap-2">
                       <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
                         <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" fill="none" strokeDasharray="30 70" />
                       </svg>
-                      {t.isAudio ? "Transcription..." : "Analyse..."}
+                      Analyse...
                     </span>
-                  ) : summaries[t.filename] ? (
+                  ) : c.summary ? (
                     "Regénérer"
                   ) : (
                     "Analyser"
@@ -281,7 +284,7 @@ export default function AdsCallsClient() {
                 </button>
               </div>
 
-              {summaries[t.filename] && (
+              {c.summary && (
                 <div className="border-t border-slate-100 p-5">
                   <div
                     className="prose prose-sm prose-slate max-w-none
@@ -290,7 +293,7 @@ export default function AdsCallsClient() {
                       [&_li]:text-slate-600 [&_li]:leading-relaxed
                       [&_ul]:space-y-1"
                     dangerouslySetInnerHTML={{
-                      __html: summaries[t.filename]
+                      __html: c.summary
                         .replace(/^## (.+)$/gm, '<h2>$1</h2>')
                         .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
                         .replace(/^- (.+)$/gm, '<li>$1</li>')
