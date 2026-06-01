@@ -126,6 +126,41 @@ async function sendWhatsApp(
   }
 }
 
+// ── WhatsApp notification to Jules ──
+
+async function notifyJulesWhatsApp(data: {
+  name: string;
+  phone: string | null;
+  scheduledAt: string;
+}) {
+  const julesNumber = process.env.JULES_WHATSAPP_NUMBER;
+  if (!julesNumber) return;
+
+  const firstName = data.name.split(" ")[0];
+  const formatted = formatDateFR(data.scheduledAt);
+  const waLink = data.phone
+    ? `\nhttps://wa.me/${formatPhoneForWhatsApp(data.phone)}`
+    : "";
+
+  const message =
+    `📞 ${firstName} vient de book un call !\n` +
+    `📅 ${formatted}\n` +
+    `${data.phone ? `📱 ${data.phone}` : "📱 Pas de numéro"}` +
+    waLink;
+
+  try {
+    await fetch("http://localhost:8080/api/send", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ recipient: julesNumber, message }),
+      signal: AbortSignal.timeout(5000),
+    });
+    console.log(`[calendly] WhatsApp notification sent to Jules`);
+  } catch {
+    console.warn("[calendly] WhatsApp bridge unreachable for Jules notification");
+  }
+}
+
 // ── Telegram ──
 
 async function notifyTelegram(data: {
@@ -240,7 +275,14 @@ export async function POST(req: NextRequest) {
       notes,
     });
 
-    // Send WhatsApp confirmation immediately (fire-and-forget)
+    // Notify Jules via WhatsApp (personal)
+    notifyJulesWhatsApp({
+      name: payload.name,
+      phone,
+      scheduledAt: payload.scheduled_event.start_time,
+    }).catch((err) => console.warn("[calendly] Jules WhatsApp notify failed:", err));
+
+    // Send WhatsApp confirmation to prospect
     if (phone) {
       sendWhatsApp(payload.name, phone, payload.scheduled_event.start_time, supabase).catch(
         (err) => console.warn("[calendly] WhatsApp send failed:", err)
