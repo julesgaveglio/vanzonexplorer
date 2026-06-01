@@ -10,18 +10,18 @@ interface Variant {
   is_completed: boolean;
   views_target: number;
   views: number;
-  optins: number;
+  hot_leads: number;
   rate: number;
 }
 
 interface Unattributed {
   views: number;
-  optins: number;
+  hot_leads: number;
 }
 
 export default function AdsTitlesClient() {
   const [variants, setVariants] = useState<Variant[]>([]);
-  const [unattributed, setUnattributed] = useState<Unattributed>({ views: 0, optins: 0 });
+  const [unattributed, setUnattributed] = useState<Unattributed>({ views: 0, hot_leads: 0 });
   const [loading, setLoading] = useState(true);
   const [newTitle, setNewTitle] = useState("");
   const [adding, setAdding] = useState(false);
@@ -32,7 +32,7 @@ export default function AdsTitlesClient() {
       .then((r) => r.json())
       .then((json) => {
         setVariants(json.variants ?? []);
-        setUnattributed(json.unattributed ?? { views: 0, optins: 0 });
+        setUnattributed(json.unattributed ?? { views: 0, hot_leads: 0 });
       })
       .finally(() => setLoading(false));
   };
@@ -68,10 +68,10 @@ export default function AdsTitlesClient() {
 
   const bestRate = Math.max(...variants.map((v) => v.rate), 0);
   const totalViews = variants.reduce((s, v) => s + v.views, 0);
-  const totalOptins = variants.reduce((s, v) => s + v.optins, 0);
-  const avgRate = totalViews > 0 ? Math.round((totalOptins / totalViews) * 1000) / 10 : 0;
+  const totalHotLeads = variants.reduce((s, v) => s + v.hot_leads, 0);
+  const avgRate = totalViews > 0 ? Math.round((totalHotLeads / totalViews) * 1000) / 10 : 0;
   const grandTotalViews = totalViews + unattributed.views;
-  const grandTotalOptins = totalOptins + unattributed.optins;
+  const grandTotalHotLeads = totalHotLeads + unattributed.hot_leads;
 
   return (
     <div className="space-y-6">
@@ -101,8 +101,8 @@ export default function AdsTitlesClient() {
           <p className="text-2xl font-bold text-slate-700">{totalViews.toLocaleString("fr-FR")}</p>
         </div>
         <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-          <p className="text-xs text-slate-500 uppercase tracking-wider font-medium mb-1">Opt-ins attribues</p>
-          <p className="text-2xl font-bold text-blue-600">{totalOptins.toLocaleString("fr-FR")}</p>
+          <p className="text-xs text-slate-500 uppercase tracking-wider font-medium mb-1">Leads chauds</p>
+          <p className="text-2xl font-bold text-blue-600">{totalHotLeads.toLocaleString("fr-FR")}</p>
         </div>
         <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
           <p className="text-xs text-slate-500 uppercase tracking-wider font-medium mb-1">Taux moyen</p>
@@ -111,7 +111,7 @@ export default function AdsTitlesClient() {
         <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
           <p className="text-xs text-slate-500 uppercase tracking-wider font-medium mb-1">Total (all)</p>
           <p className="text-2xl font-bold text-slate-400">{grandTotalViews.toLocaleString("fr-FR")} vues</p>
-          <p className="text-xs text-slate-400 mt-1">{grandTotalOptins} opt-ins · {unattributed.views} non-attribuees</p>
+          <p className="text-xs text-slate-400 mt-1">{grandTotalHotLeads} leads chauds · {unattributed.views} non-attribuees</p>
         </div>
       </div>
 
@@ -176,7 +176,7 @@ export default function AdsTitlesClient() {
                   <div className="mt-4 flex items-center gap-6">
                     <div className="flex items-center gap-4 text-sm">
                       <span className="text-slate-500">{v.views} <span className="text-xs">vues</span></span>
-                      <span className="text-blue-600 font-medium">{v.optins} <span className="text-xs">opt-ins</span></span>
+                      <span className="text-blue-600 font-medium">{v.hot_leads} <span className="text-xs">leads chauds</span></span>
                       <span className={`font-bold ${v.rate >= avgRate && v.rate > 0 ? "text-emerald-600" : v.rate > 0 ? "text-amber-600" : "text-slate-400"}`}>
                         {v.rate}%
                       </span>

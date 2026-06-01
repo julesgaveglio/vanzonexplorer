@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import CalendlyInline from "@/components/ui/CalendlyInline";
 import { getFunnelData } from "@/lib/hooks/useUTMParams";
@@ -10,6 +10,8 @@ export default function BookingClient() {
   const router = useRouter();
   const [firstname, setFirstname] = useState("");
   const [email, setEmail] = useState("");
+
+  const bookedRef = useRef(false);
 
   useEffect(() => {
     const data = getFunnelData();
@@ -30,8 +32,10 @@ export default function BookingClient() {
     }
 
     // Listen for Calendly booking completion
+    // Guard: Calendly can fire multiple postMessages for a single booking
     const handleMessage = (e: MessageEvent) => {
-      if (e.data?.event === "calendly.event_scheduled") {
+      if (e.data?.event === "calendly.event_scheduled" && !bookedRef.current) {
+        bookedRef.current = true;
         if (data) {
           fetch("/api/van-business-academy/inscription/step", {
             method: "PATCH",

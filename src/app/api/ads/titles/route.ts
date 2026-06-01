@@ -20,45 +20,75 @@ export async function GET() {
     return NextResponse.json({ variants: [] });
   }
 
-  // 2. Get all page_view and optin events (paginated, include all metadata)
+  // 2. Get page_view events (paginated, include metadata for variant attribution)
   const PAGE = 1000;
-  const events: { event: string; email: string | null; session_id: string | null; metadata: Record<string, unknown> | null }[] = [];
+  const pageViewEvents: { event: string; email: string | null; session_id: string | null; metadata: Record<string, unknown> | null }[] = [];
   let offset = 0;
   while (true) {
     const { data } = await sb
       .from("funnel_events")
       .select("event, email, session_id, metadata")
-      .in("event", ["page_view", "optin"])
+      .eq("event", "page_view")
       .or(`email.is.null,email.not.in.(${EXCLUDED_EMAILS.join(",")})`)
       .range(offset, offset + PAGE - 1);
     if (!data || data.length === 0) break;
-    events.push(...(data as typeof events));
+    pageViewEvents.push(...(data as typeof pageViewEvents));
     if (data.length < PAGE) break;
     offset += PAGE;
   }
 
-  // 3. Compute stats per variant
+  // 3. Get hot leads from vba_funnel_leads (the source of truth for qualification)
+  const { data: hotLeads } = await sb
+    .from("vba_funnel_leads")
+    .select("email, created_at")
+    .eq("is_hot", true)
+    .not("email", "in", `(${EXCLUDED_EMAILS.join(",")})`);
+
+  // Map hot lead emails to their optin events (to get variant attribution)
+  const hotEmails = new Set((hotLeads ?? []).map((l) => l.email));
+
+  // Get optin events for hot leads only (to retrieve title_variant_id)
+  const optinEvents: { event: string; email: string | null; session_id: string | null; metadata: Record<string, unknown> | null }[] = [];
+  offset = 0;
+  while (true) {
+    const { data } = await sb
+      .from("funnel_events")
+      .select("event, email, session_id, metadata")
+      .eq("event", "optin")
+      .or(`email.is.null,email.not.in.(${EXCLUDED_EMAILS.join(",")})`)
+      .range(offset, offset + PAGE - 1);
+    if (!data || data.length === 0) break;
+    optinEvents.push(...(data as typeof optinEvents));
+    if (data.length < PAGE) break;
+    offset += PAGE;
+  }
+
+  // Filter optin events to hot leads only
+  const hotOptinEvents = optinEvents.filter((e) => e.email && hotEmails.has(e.email));
+
+  // 4. Compute stats per variant
   const variantIds = new Set(variants.map((v) => v.id));
 
   const results = variants.map((v) => {
-    const variantEvents = events.filter((e) => {
+    const variantPageViews = pageViewEvents.filter((e) => {
+      const meta = e.metadata as Record<string, unknown> | null;
+      return meta?.title_variant_id === v.id;
+    });
+
+    const variantHotOptins = hotOptinEvents.filter((e) => {
       const meta = e.metadata as Record<string, unknown> | null;
       return meta?.title_variant_id === v.id;
     });
 
     const views = new Set(
-      variantEvents
-        .filter((e) => e.event === "page_view")
-        .map((e) => e.email || e.session_id || "anon")
+      variantPageViews.map((e) => e.email || e.session_id || "anon")
     ).size;
 
-    const optins = new Set(
-      variantEvents
-        .filter((e) => e.event === "optin")
-        .map((e) => e.email || e.session_id || "anon")
+    const hotLeadCount = new Set(
+      variantHotOptins.map((e) => e.email || e.session_id || "anon")
     ).size;
 
-    const rate = views > 0 ? Math.round((optins / views) * 1000) / 10 : 0;
+    const rate = views > 0 ? Math.round((hotLeadCount / views) * 1000) / 10 : 0;
 
     return {
       id: v.id,
@@ -68,25 +98,37 @@ export async function GET() {
       is_completed: v.is_completed,
       views_target: v.views_target ?? 200,
       views,
-      optins,
+      hot_leads: hotLeadCount,
       rate,
     };
   });
 
-  // 4. Count unattributed events (no title_variant_id or unknown)
-  const unattributed = events.filter((e) => {
+  // Sort by rate descending (best performing first)
+  results.sort((a, b) => b.rate - a.rate || b.hot_leads - a.hot_leads);
+
+  // 5. Count unattributed events
+  const unattributedPageViews = pageViewEvents.filter((e) => {
+    const meta = e.metadata as Record<string, unknown> | null;
+    const vid = meta?.title_variant_id;
+    return !vid || vid === "unknown" || vid === "fallback" || !variantIds.has(vid as string);
+  });
+  const unattributedHotOptins = hotOptinEvents.filter((e) => {
     const meta = e.metadata as Record<string, unknown> | null;
     const vid = meta?.title_variant_id;
     return !vid || vid === "unknown" || vid === "fallback" || !variantIds.has(vid as string);
   });
   const unattributedViews = new Set(
-    unattributed.filter((e) => e.event === "page_view").map((e) => e.email || e.session_id || "anon")
+    unattributedPageViews.map((e) => e.email || e.session_id || "anon")
   ).size;
-  const unattributedOptins = new Set(
-    unattributed.filter((e) => e.event === "optin").map((e) => e.email || e.session_id || "anon")
+  const unattributedHotLeads = new Set(
+    unattributedHotOptins.map((e) => e.email || e.session_id || "anon")
   ).size;
 
-  return NextResponse.json({ variants: results, unattributed: { views: unattributedViews, optins: unattributedOptins } });
+  return NextResponse.json({
+    variants: results,
+    unattributed: { views: unattributedViews, hot_leads: unattributedHotLeads },
+    total_hot_leads: hotLeads?.length ?? 0,
+  });
 }
 
 // PATCH — update a variant (rename, reorder, etc.)

@@ -16,6 +16,7 @@ interface VSLClientProps {
 
 export default function VSLClient({ videoId, vslVersionId }: VSLClientProps) {
   const HLS_URL = `https://vz-bac05373-d10.b-cdn.net/${videoId}/playlist.m3u8`;
+  const CAPTIONS_URL = `https://vz-bac05373-d10.b-cdn.net/${videoId}/captions/fr-auto.vtt`;
   const POSTER_URL = "/images/vsl2-thumbnail.png";
 
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -172,13 +173,37 @@ export default function VSLClient({ videoId, vslVersionId }: VSLClientProps) {
     };
   }, [getTrackOpts]);
 
-  // --- Track vsl_exit on page leave ---
+  // --- Track vsl_exit on page leave (sendBeacon for reliability) ---
   useEffect(() => {
     const trackExit = () => {
       if (exitTrackedRef.current || lastTimeRef.current === 0) return;
       exitTrackedRef.current = true;
 
-      trackFunnel("vsl_exit", "/van-business-academy/presentation", getTrackOpts());
+      const opts = getTrackOpts();
+      const payload = {
+        session_id: sessionStorage.getItem("vba_session_id") ?? "",
+        event: "vsl_exit",
+        page: "/van-business-academy/presentation",
+        email: opts.email,
+        firstname: opts.firstname,
+        metadata: opts.metadata,
+        referrer: document.referrer || undefined,
+      };
+
+      // sendBeacon is reliable during page unload (unlike fetch)
+      const sent = navigator.sendBeacon(
+        "/api/funnel/track",
+        new Blob([JSON.stringify(payload)], { type: "application/json" })
+      );
+      // Fallback to fetch if sendBeacon fails
+      if (!sent) {
+        fetch("/api/funnel/track", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+          keepalive: true,
+        }).catch(() => {});
+      }
     };
 
     const onVisChange = () => {
@@ -229,6 +254,14 @@ export default function VSLClient({ videoId, vslVersionId }: VSLClientProps) {
         video::-webkit-media-controls-timeline { display: none; }
         video::-webkit-media-controls-current-time-display { display: none; }
         video::-webkit-media-controls-time-remaining-display { display: none; }
+        video::cue {
+          background: rgba(0, 0, 0, 0.7);
+          color: #fff;
+          font-size: 16px;
+          line-height: 1.4;
+          border-radius: 4px;
+          padding: 2px 6px;
+        }
       `}</style>
 
       {/* Greeting */}
@@ -269,7 +302,16 @@ export default function VSLClient({ videoId, vslVersionId }: VSLClientProps) {
           onSeeking={onSeeking}
           className="w-full h-full object-contain"
           controlsList="nodownload noplaybackrate"
-        />
+          crossOrigin="anonymous"
+        >
+          <track
+            kind="captions"
+            src={CAPTIONS_URL}
+            srcLang="fr"
+            label="Français"
+            default
+          />
+        </video>
 
         {/* Play button overlay */}
         {!isPlaying && (
