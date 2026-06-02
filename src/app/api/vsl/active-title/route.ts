@@ -36,7 +36,7 @@ export async function GET() {
         .from("funnel_events")
         .select("session_id, email")
         .eq("event", "page_view")
-        .not("email", "in", `(${EXCLUDED_EMAILS.join(",")})`)
+        .or(`email.is.null,email.not.in.(${EXCLUDED_EMAILS.join(",")})`)
         .contains("metadata", { title_variant_id: active.id })
         .range(offset, offset + PAGE - 1);
       if (!data || data.length === 0) break;
