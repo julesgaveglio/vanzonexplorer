@@ -8,6 +8,8 @@ const CTA_DELAY_SECONDS = 420; // 7 min
 export default function SigmaVSLClient() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const lastTimeRef = useRef(0);
+  const milestonesRef = useRef(new Set<string>());
+  const emailRef = useRef("");
 
   const [firstname, setFirstname] = useState("");
   const [showCTA, setShowCTA] = useState(false);
@@ -19,18 +21,51 @@ export default function SigmaVSLClient() {
       if (raw) {
         const data = JSON.parse(raw);
         if (data.firstname) setFirstname(data.firstname);
+        if (data.email) emailRef.current = data.email;
+
+        // Track VSL view
+        fetch("/api/sigma/funnel/track", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            event: "vsl_view",
+            page: "/sigmafactory/presentation",
+            email: data.email,
+            firstname: data.firstname,
+          }),
+        }).catch(() => {});
       }
     } catch {}
   }, []);
 
+  const trackMilestone = useCallback((event: string) => {
+    fetch("/api/sigma/funnel/track", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        event,
+        page: "/sigmafactory/presentation",
+        email: emailRef.current || undefined,
+        metadata: { seconds: Math.round(lastTimeRef.current) },
+      }),
+    }).catch(() => {});
+  }, []);
+
   const onTimeUpdate = useCallback(() => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video || !video.duration) return;
     lastTimeRef.current = video.currentTime;
     if (video.currentTime >= CTA_DELAY_SECONDS) {
       setShowCTA(true);
     }
-  }, []);
+
+    const pct = (video.currentTime / video.duration) * 100;
+    const ms = milestonesRef.current;
+    if (pct >= 25 && !ms.has("25")) { ms.add("25"); trackMilestone("vsl_25"); }
+    if (pct >= 50 && !ms.has("50")) { ms.add("50"); trackMilestone("vsl_50"); }
+    if (pct >= 75 && !ms.has("75")) { ms.add("75"); trackMilestone("vsl_75"); }
+    if (pct >= 95 && !ms.has("100")) { ms.add("100"); trackMilestone("vsl_100"); }
+  }, [trackMilestone]);
 
   const onSeeking = () => {
     const video = videoRef.current;

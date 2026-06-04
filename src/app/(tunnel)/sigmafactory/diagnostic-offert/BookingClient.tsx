@@ -12,19 +12,45 @@ export default function SigmaBookingClient() {
   const bookedRef = useRef(false);
 
   useEffect(() => {
+    let leadEmail = "";
+    let leadFirstname = "";
     try {
       const raw = localStorage.getItem("sigma_funnel");
       if (raw) {
         const data = JSON.parse(raw);
-        if (data.firstname) setFirstname(data.firstname);
-        if (data.email) setEmail(data.email);
+        if (data.firstname) { setFirstname(data.firstname); leadFirstname = data.firstname; }
+        if (data.email) { setEmail(data.email); leadEmail = data.email; }
       }
     } catch {}
+
+    // Track booking page view
+    fetch("/api/sigma/funnel/track", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        event: "booking_start",
+        page: "/sigmafactory/diagnostic-offert",
+        email: leadEmail || undefined,
+        firstname: leadFirstname || undefined,
+      }),
+    }).catch(() => {});
 
     // Listen for Calendly booking completion
     const handleMessage = (e: MessageEvent) => {
       if (e.data?.event === "calendly.event_scheduled" && !bookedRef.current) {
         bookedRef.current = true;
+
+        fetch("/api/sigma/funnel/track", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            event: "booking_confirmed",
+            page: "/sigmafactory/diagnostic-offert",
+            email: leadEmail || undefined,
+            firstname: leadFirstname || undefined,
+          }),
+        }).catch(() => {});
+
         router.push("/sigmafactory/appel-confirme");
       }
     };

@@ -24,12 +24,19 @@ export default function SigmaOptinForm() {
     setLoading(true);
 
     try {
+      // Save to localStorage for subsequent pages
       localStorage.setItem(
         "sigma_funnel",
         JSON.stringify({ firstname, email: emailLower })
       );
 
-      await new Promise((r) => setTimeout(r, 300));
+      // Send to Supabase (sigma_leads + sigma_funnel_events)
+      await fetch("/api/sigma/optin/track", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ firstname, email: emailLower }),
+      });
+
       router.push("/sigmafactory/presentation");
     } catch {
       setError("Une erreur est survenue. Veuillez réessayer.");
