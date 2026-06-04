@@ -74,7 +74,7 @@ export default function SigmaOptinPage() {
         </ul>
 
         {/* ═══════ THUMBNAIL ═══════ */}
-        <div className="w-full rounded-xl overflow-hidden mb-6">
+        <a href="#optin-form" className="block w-full rounded-xl overflow-hidden mb-6">
           <Image
             src="/images/sigma-vsl-thumbnail.png"
             alt="Sigma Factory — Le plan précis pour devenir rentier"
@@ -83,7 +83,7 @@ export default function SigmaOptinPage() {
             unoptimized
             className="w-full h-auto"
           />
-        </div>
+        </a>
 
         {/* ═══════ CTA 1 ═══════ */}
         <ScrollCTA />
@@ -125,9 +125,6 @@ export default function SigmaOptinPage() {
             ))}
           </div>
         </div>
-
-        {/* ═══════ CTA 2 ═══════ */}
-        <ScrollCTA />
 
         {/* ═══════ FORM ═══════ */}
         <div id="optin-form" className="mt-10 mb-8">
