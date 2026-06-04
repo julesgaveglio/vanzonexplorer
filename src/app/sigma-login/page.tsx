@@ -43,9 +43,9 @@ export default function SigmaLoginPage() {
           <Image
             src="/images/sigma-factory-logo.png"
             alt="Sigma Factory"
-            width={280}
-            height={78}
-            className="h-16 w-auto mx-auto"
+            width={400}
+            height={120}
+            className="h-24 w-auto mx-auto"
             unoptimized
           />
         </div>

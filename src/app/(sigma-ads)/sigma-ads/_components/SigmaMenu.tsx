@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useSigmaCampaign } from "./SigmaCampaignContext";
 import {
@@ -84,8 +85,8 @@ export default function SigmaMenu({ email }: { email: string }) {
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100">
           <div>
-            <p className="text-sm font-semibold text-slate-900">Sigma Factory</p>
-            <p className="text-[11px] text-slate-400 mt-0.5">{email}</p>
+            <Image src="/images/sigma-factory-logo.png" alt="Sigma Factory" width={140} height={42} unoptimized />
+            <p className="text-[11px] text-slate-400 mt-1">{email}</p>
           </div>
           <button
             onClick={() => setOpen(false)}
