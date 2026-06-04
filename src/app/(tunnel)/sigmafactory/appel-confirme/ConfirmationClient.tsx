@@ -49,10 +49,10 @@ export default function SigmaConfirmationClient() {
 
       {/* Title */}
       <h1 className="text-2xl sm:text-3xl font-bold text-center leading-tight mb-3 text-slate-900">
-        C&apos;est confirme{firstname ? ` ${firstname}` : ""} !
+        C&apos;est confirmé{firstname ? ` ${firstname}` : ""} !
       </h1>
       <p className="text-center text-slate-500 text-base mb-10">
-        Ton appel strategique est reserve. Verifie ta boite email pour les details.
+        Ton appel stratégique est réservé. Vérifie ta boîte email pour les détails.
       </p>
 
       {/* What to expect */}
@@ -62,9 +62,9 @@ export default function SigmaConfirmationClient() {
         </h2>
         <div className="space-y-3">
           {[
-            "On analyse ta situation financiere et ton profil investisseur",
-            "On definit ensemble ta strategie IDRH personnalisee",
-            "On voit si l'accompagnement Sigma Factory est fait pour toi",
+            "On analyse ta situation financière et ton profil investisseur",
+            "On définit ensemble ta stratégie IDRH personnalisée",
+            "On voit si l\u2019accompagnement Sigma Factory est fait pour toi",
           ].map((text) => (
             <div key={text} className="flex items-start gap-3">
               <span
@@ -93,14 +93,14 @@ export default function SigmaConfirmationClient() {
       {/* How to prepare */}
       <div className="rounded-xl p-6 border border-slate-200 bg-slate-50">
         <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wider mb-4">
-          Comment te preparer
+          Comment te préparer
         </h2>
         <div className="space-y-3">
           {[
-            "Note tes questions sur l'investissement immobilier",
-            "Pense a ta situation financiere actuelle (revenus, credits en cours)",
-            "Reflechis a tes objectifs patrimoniaux a 3-5 ans",
-            "Installe-toi dans un endroit calme le jour de l'appel",
+            "Note tes questions sur l\u2019investissement immobilier",
+            "Pense à ta situation financière actuelle (revenus, crédits en cours)",
+            "Réfléchis à tes objectifs patrimoniaux à 3-5 ans",
+            "Installe-toi dans un endroit calme le jour de l\u2019appel",
           ].map((text) => (
             <div key={text} className="flex items-start gap-3">
               <span

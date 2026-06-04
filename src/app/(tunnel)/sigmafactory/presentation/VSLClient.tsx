@@ -69,15 +69,15 @@ export default function SigmaVSLClient() {
 
         {/* Title */}
         <h1 className="text-center text-xl sm:text-2xl md:text-3xl font-bold text-slate-900 leading-tight mb-3">
-          Decouvre la{" "}
-          <span style={{ color: "#B9945F" }}>strategie IDRH</span>{" "}
-          pour solder ton credit immobilier en{" "}
+          Découvre la{" "}
+          <span style={{ color: "#B9945F" }}>stratégie IDRH</span>{" "}
+          pour solder ton crédit immobilier en{" "}
           <span style={{ color: "#B9945F" }}>12 mois</span>
         </h1>
 
         {/* Instruction */}
         <p className="text-slate-400 text-sm text-center mb-8">
-          Active le son et regarde jusqu&apos;a la fin
+          Active le son et regarde jusqu&apos;à la fin
         </p>
 
         {/* Video player */}
@@ -117,7 +117,7 @@ export default function SigmaVSLClient() {
 
           {/* Placeholder text */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <p className="text-slate-300 text-sm">Video a venir</p>
+            <p className="text-slate-300 text-sm">Vidéo à venir</p>
           </div>
         </div>
 
@@ -130,7 +130,7 @@ export default function SigmaVSLClient() {
                 className="inline-block w-full sm:w-auto px-8 py-4 rounded-lg text-white font-semibold text-sm uppercase tracking-wide hover:opacity-90 transition-opacity"
                 style={{ background: "#B9945F" }}
               >
-                Reserver mon appel strategique gratuit
+                Réserver mon appel stratégique gratuit
               </a>
               <p className="text-xs text-slate-400 mt-3">
                 30 minutes &middot; Gratuit &middot; Sans engagement
@@ -138,7 +138,7 @@ export default function SigmaVSLClient() {
             </div>
           ) : (
             <p className="text-slate-300 text-sm italic">
-              Un bouton apparaitra ici apres quelques minutes...
+              Un bouton apparaîtra ici après quelques minutes...
             </p>
           )}
         </div>

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import ConfirmationClient from "./ConfirmationClient";
 
 export const metadata: Metadata = {
-  title: "Appel confirme | Sigma Factory",
+  title: "Appel confirmé | Sigma Factory",
   robots: { index: false, follow: false },
 };
 

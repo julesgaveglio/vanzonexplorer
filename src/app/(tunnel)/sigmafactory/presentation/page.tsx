@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import VSLClient from "./VSLClient";
 
 export const metadata: Metadata = {
-  title: "Video Presentation | Sigma Factory",
+  title: "Vidéo Présentation | Sigma Factory",
   robots: { index: false, follow: false },
 };
 

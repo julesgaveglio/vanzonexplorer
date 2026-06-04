@@ -4,9 +4,9 @@ import Image from "next/image";
 import OptinForm from "./OptinForm";
 
 export const metadata: Metadata = {
-  title: "Sigma Factory | Strategie IDRH",
+  title: "Sigma Factory | Stratégie IDRH",
   description:
-    "La methode qui permet de solder 60 a 100% de son credit immobilier en moins de 12 mois.",
+    "La méthode qui permet de solder 60 à 100% de son crédit immobilier en moins de 12 mois.",
   robots: { index: false, follow: false },
 };
 
@@ -27,8 +27,8 @@ export default function SigmaOptinPage() {
 
           {/* Headline */}
           <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 text-center leading-tight mb-6">
-            La methode qui permet de solder{" "}
-            <span style={{ color: "#B9945F" }}>60 a 100%</span> de son credit
+            La méthode qui permet de solder{" "}
+            <span style={{ color: "#B9945F" }}>60 à 100%</span> de son crédit
             immobilier en moins de{" "}
             <span style={{ color: "#B9945F" }}>12 mois</span>
           </h1>
@@ -37,8 +37,8 @@ export default function SigmaOptinPage() {
           <ul className="flex flex-col gap-3 mb-10 w-full">
             {[
               "Sans apport",
-              "Meme refuse par ta banque",
-              "Meme avec un petit salaire",
+              "Même refusé par ta banque",
+              "Même avec un petit salaire",
               "Sans prendre de risque financier",
             ].map((text) => (
               <li key={text} className="flex items-center gap-3">
@@ -58,7 +58,7 @@ export default function SigmaOptinPage() {
           {/* Form card */}
           <div className="w-full rounded-xl p-6 sm:p-8 border border-slate-200 bg-slate-50">
             <p className="text-slate-900 font-semibold text-base sm:text-lg text-center mb-1">
-              Accede a la video de presentation
+              Accède à la vidéo de présentation
             </p>
             <p className="text-slate-400 text-xs text-center mb-6">
               C&apos;est gratuit — entre tes informations ci-dessous

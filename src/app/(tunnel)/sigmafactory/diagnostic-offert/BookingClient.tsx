@@ -49,13 +49,13 @@ export default function SigmaBookingClient() {
       {/* Title */}
       <h1 className="text-2xl sm:text-3xl font-bold text-center leading-tight mb-2" style={{ color: "#0F172A" }}>
         {firstname
-          ? `${firstname}, reserve ton appel strategique`
-          : "Reserve ton appel strategique"}
+          ? `${firstname}, réserve ton appel stratégique`
+          : "Réserve ton appel stratégique"}
       </h1>
 
       <p className="text-center text-slate-500 text-sm sm:text-base mb-6 leading-relaxed">
-        On regarde ensemble ta situation et comment la strategie IDRH
-        peut t&apos;aider a construire ton patrimoine immobilier.
+        On regarde ensemble ta situation et comment la stratégie IDRH
+        peut t&apos;aider à construire ton patrimoine immobilier.
       </p>
 
       {/* Badges */}
@@ -86,7 +86,7 @@ export default function SigmaBookingClient() {
       {/* Reassurance */}
       <div className="mt-8 text-center space-y-2">
         <p className="text-sm text-slate-500">
-          Tu parleras directement avec un expert de l&apos;equipe{" "}
+          Tu parleras directement avec un expert de l&apos;équipe{" "}
           <strong className="text-slate-700">Sigma Factory</strong>.
         </p>
         <p className="text-xs text-slate-400">
