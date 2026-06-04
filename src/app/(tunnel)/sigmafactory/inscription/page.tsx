@@ -71,20 +71,27 @@ export default function SigmaOptinPage() {
           </span>
 
           {/* Headline */}
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 leading-tight mb-5">
-            Acheter un immeuble, en revendre 2 lots, garder 3 en{" "}
-            <span style={{ color: "#B9945F" }}>cash-flow net de dette</span>.
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 leading-tight mb-6">
+            La méthode qui permet de solder{" "}
+            <span style={{ color: "#B9945F" }}>60 à 100%</span> de son crédit
+            immobilier en moins de{" "}
+            <span style={{ color: "#B9945F" }}>12 mois</span>
           </h1>
 
-          <p className="text-slate-600 text-base sm:text-lg leading-relaxed max-w-2xl mx-auto mb-4">
-            La méthode pour construire un patrimoine immobilier rentable dès la deuxième année
-            — sans s&apos;endetter sur 25 ans, sans gérer les travaux,
-            sans devenir expert en immobilier.
-          </p>
-
-          <p className="text-sm text-slate-400 mb-10">
-            Pour salariés bien rémunérés et chefs d&apos;entreprise avec 10 000 € d&apos;apport disponible.
-          </p>
+          {/* Objections */}
+          <ul className="flex flex-col gap-2.5 mb-10 text-left max-w-md mx-auto">
+            {[
+              "Sans apport",
+              "Même refusé par ta banque",
+              "Même avec un petit salaire",
+              "Sans prendre de risque financier",
+            ].map((text) => (
+              <li key={text} className="flex items-center gap-3">
+                <span className="text-sm flex-shrink-0 font-bold" style={{ color: "#B9945F" }}>&#10003;</span>
+                <span className="text-slate-600 text-sm sm:text-base">{text}</span>
+              </li>
+            ))}
+          </ul>
 
           {/* CTA */}
           <CTABlock />
