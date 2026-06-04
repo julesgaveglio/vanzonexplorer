@@ -52,7 +52,7 @@ export default function SigmaOptinPage() {
       <div className="max-w-lg mx-auto px-4 py-6">
 
         {/* ═══════ TITRE + OBJECTIONS ═══════ */}
-        <h1 className="text-xl sm:text-2xl font-bold text-white text-center leading-tight mb-5">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white text-center leading-tight mb-5">
           La méthode qui permet de solder{" "}
           <span style={{ color: "#B9945F" }}>60 à 100%</span> de son crédit
           immobilier en moins de{" "}
