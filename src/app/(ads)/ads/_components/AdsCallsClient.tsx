@@ -37,6 +37,7 @@ interface StructuredAnalysis {
   strengths: string[];
   weaknesses: string[];
   improvements: string[];
+  pareto?: string[];
   next_steps: string[];
   annotated_transcript: TranscriptSegment[];
 }
@@ -70,6 +71,91 @@ function ScoreBadge({ score }: { score: number }) {
   return (
     <div className={`flex items-center justify-center w-10 h-10 rounded-full ${c.bg} text-white font-bold text-lg ring-4 ${c.ring}`}>
       {score}
+    </div>
+  );
+}
+
+function ParetoSection({ analysis }: { analysis: StructuredAnalysis }) {
+  const paretoItems = analysis.pareto ?? [];
+  const badCount = analysis.annotated_transcript.filter((s) => s.status === "bad").length;
+  const goodCount = analysis.annotated_transcript.filter((s) => s.status === "good").length;
+
+  return (
+    <div className="space-y-5">
+      {/* Score + résumé rapide */}
+      <div className="flex items-start gap-4">
+        <ScoreBadge score={analysis.score} />
+        <div className="flex-1">
+          <p className="text-sm text-slate-700 font-medium">{analysis.score_rationale}</p>
+          <div className="flex gap-4 mt-2 text-xs text-slate-500">
+            <span className="flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-red-500" />
+              {badCount} erreur{badCount > 1 ? "s" : ""}
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+              {goodCount} bon{goodCount > 1 ? "s" : ""} réflexe{goodCount > 1 ? "s" : ""}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Pareto */}
+      {paretoItems.length > 0 && (
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+          <h4 className="text-sm font-bold text-amber-800 uppercase tracking-wider mb-3">
+            Les 20% qui changent 80% de ton prochain appel
+          </h4>
+          <div className="space-y-2.5">
+            {paretoItems.map((item, i) => (
+              <div key={i} className="flex items-start gap-3">
+                <span className="flex items-center justify-center w-6 h-6 rounded-full bg-amber-500 text-white text-xs font-bold shrink-0 mt-0.5">
+                  {i + 1}
+                </span>
+                <p className="text-sm text-amber-900 font-medium leading-snug">{item}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Top 3 erreurs les plus coûteuses */}
+      <div>
+        <h4 className="text-sm font-semibold text-red-700 uppercase tracking-wider mb-2">Erreurs les plus coûteuses</h4>
+        <div className="space-y-2">
+          {analysis.annotated_transcript
+            .filter((s) => s.status === "bad" && s.comment)
+            .slice(0, 3)
+            .map((seg, i) => (
+              <div key={i} className="bg-red-50 border border-red-100 rounded-lg p-3">
+                <p className="text-xs text-red-500 font-medium mb-1">
+                  {seg.speaker} a dit :
+                </p>
+                <p className="text-sm text-red-800 italic">&quot;{seg.text.length > 120 ? seg.text.substring(0, 120) + "..." : seg.text}&quot;</p>
+                <p className="text-xs text-red-600 mt-1.5">{seg.comment}</p>
+                {seg.suggestion && (
+                  <div className="mt-2 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
+                    <p className="text-xs text-emerald-700 font-medium">Dis plutôt :</p>
+                    <p className="text-sm text-emerald-800 italic">&quot;{seg.suggestion}&quot;</p>
+                  </div>
+                )}
+              </div>
+            ))}
+        </div>
+      </div>
+
+      {/* Forces à garder */}
+      <div>
+        <h4 className="text-sm font-semibold text-emerald-700 uppercase tracking-wider mb-2">Continue de faire ça</h4>
+        <div className="space-y-1.5">
+          {analysis.strengths.map((s, i) => (
+            <div key={i} className="flex items-start gap-2 pl-3 border-l-2 border-emerald-400">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0" />
+              <p className="text-sm text-slate-700">{s}</p>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
@@ -269,7 +355,7 @@ function ClosingCard({
   const analysis = closing.structured_analysis;
   const hasAnalysis = !!analysis;
   const hasSummary = !!closing.summary;
-  const [activeTab, setActiveTab] = useState<"prospect" | "coaching" | "transcript" | "next">("coaching");
+  const [activeTab, setActiveTab] = useState<"pareto" | "prospect" | "coaching" | "transcript" | "next">("pareto");
 
   return (
     <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
@@ -331,6 +417,7 @@ function ClosingCard({
               {/* Tabs */}
               <div className="flex border-b border-slate-100 px-5 pt-3 gap-1">
                 {([
+                  { key: "pareto" as const, label: "Pareto 80/20" },
                   { key: "coaching" as const, label: "Coaching" },
                   { key: "prospect" as const, label: "Prospect" },
                   { key: "transcript" as const, label: "Transcript" },
@@ -351,6 +438,7 @@ function ClosingCard({
               </div>
               {/* Tab content */}
               <div className="p-5">
+                {activeTab === "pareto" && <ParetoSection analysis={analysis} />}
                 {activeTab === "prospect" && <ProspectSection prospect={analysis.prospect} />}
                 {activeTab === "coaching" && <CoachingSection analysis={analysis} />}
                 {activeTab === "transcript" && <TranscriptSection segments={analysis.annotated_transcript} />}
