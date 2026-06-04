@@ -2,18 +2,19 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import Image from "next/image";
 import OptinForm from "./OptinForm";
+import VideoPreview from "./VideoPreview";
 
 export const metadata: Metadata = {
   title: "Vidéo Gratuite | Sigma Factory — Stratégie IDRH",
   description:
-    "Acheter un immeuble, en revendre 2 lots, garder 3 en cash-flow net de dette. La méthode pour construire un patrimoine immobilier rentable dès la deuxième année.",
+    "La méthode qui permet de solder 60 à 100% de son crédit immobilier en moins de 12 mois.",
   robots: { index: false, follow: false },
 };
 
 /* ── Reusable CTA block ── */
 function CTABlock() {
   return (
-    <div className="w-full max-w-lg mx-auto">
+    <div id="optin-form" className="w-full max-w-lg mx-auto">
       <div className="rounded-xl p-6 sm:p-8 border border-slate-200 bg-slate-50">
         <Suspense>
           <OptinForm />
@@ -26,20 +27,21 @@ function CTABlock() {
   );
 }
 
-/* ── Step card ── */
-function Step({ num, title, desc }: { num: string; title: string; desc: string }) {
+/* ── Trustpilot-style star row ── */
+function Stars() {
   return (
-    <div className="flex gap-4">
-      <div
-        className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm"
-        style={{ background: "#B9945F" }}
-      >
-        {num}
-      </div>
-      <div>
-        <p className="font-semibold text-slate-900 text-sm sm:text-base">{title}</p>
-        <p className="text-slate-500 text-sm mt-1">{desc}</p>
-      </div>
+    <div className="flex gap-0.5">
+      {[...Array(5)].map((_, i) => (
+        <div
+          key={i}
+          className="w-5 h-5 flex items-center justify-center"
+          style={{ background: "#00B67A" }}
+        >
+          <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 text-white" fill="currentColor">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+          </svg>
+        </div>
+      ))}
     </div>
   );
 }
@@ -79,7 +81,7 @@ export default function SigmaOptinPage() {
           </h1>
 
           {/* Objections */}
-          <ul className="flex flex-col gap-2.5 mb-10 text-left max-w-md mx-auto">
+          <ul className="flex flex-col gap-2.5 mb-8 text-left max-w-md mx-auto">
             {[
               "Sans apport",
               "Même refusé par ta banque",
@@ -92,6 +94,11 @@ export default function SigmaOptinPage() {
               </li>
             ))}
           </ul>
+
+          {/* Video preview — muted, click scrolls to form */}
+          <div className="w-full max-w-2xl mx-auto mb-10">
+            <VideoPreview />
+          </div>
 
           {/* CTA */}
           <CTABlock />
@@ -116,205 +123,15 @@ export default function SigmaOptinPage() {
         </div>
       </section>
 
-      {/* ═══════════════════ PROBLÈME ═══════════════════ */}
-      <section className="px-4 py-16 sm:py-20 bg-slate-50 border-y border-slate-200">
-        <div className="max-w-2xl mx-auto">
-          <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "#B9945F" }}>
-            Le problème
-          </p>
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 leading-tight mb-6">
-            Tu veux investir en immobilier. Mais tu ne veux pas te tromper.
-          </h2>
-          <div className="text-slate-600 text-sm sm:text-base leading-relaxed space-y-4">
-            <p>
-              Tu es salarié bien payé ou chef d&apos;entreprise. Tu as économisé. Tu sens que laisser
-              ton argent dormir, c&apos;est perdre du terrain face à l&apos;inflation.
-            </p>
-            <p>Tu as regardé l&apos;immobilier locatif classique. Et tu as vite vu les limites :</p>
-          </div>
-
-          <div className="mt-6 space-y-4">
-            {[
-              "Un crédit sur 25 ans, qui plombe ta capacité d\u2019emprunt et te suit jusqu\u2019à la retraite.",
-              "Un cash-flow ridicule, parfois négatif, qui te transforme en gestionnaire à temps partiel.",
-              "Des biens à trouver, des travaux à gérer, des locataires à filtrer — alors que tu as déjà un boulot prenant.",
-              "Des banques de plus en plus dures, qui refusent même les bons dossiers.",
-            ].map((text) => (
-              <div key={text} className="flex items-start gap-3">
-                <span className="text-red-400 text-sm mt-0.5 flex-shrink-0">&#10005;</span>
-                <p className="text-slate-600 text-sm sm:text-base">{text}</p>
-              </div>
-            ))}
-          </div>
-
-          <p className="text-slate-600 text-sm sm:text-base leading-relaxed mt-6">
-            Pendant ce temps, les mois passent. Et le patrimoine que tu veux construire
-            — pour lever le pied, préparer ta retraite ou transmettre à tes enfants —
-            il reste une idée. Pas une réalité.
-          </p>
-        </div>
-      </section>
-
-      {/* ═══════════════════ LA MÉTHODE ═══════════════════ */}
-      <section className="px-4 py-16 sm:py-20">
-        <div className="max-w-2xl mx-auto">
-          <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "#B9945F" }}>
-            La méthode
-          </p>
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 leading-tight mb-4">
-            Et s&apos;il existait une autre façon de faire ?
-          </h2>
-          <p className="text-slate-600 text-sm sm:text-base leading-relaxed mb-10">
-            Pas un crédit sur 25 ans. Pas un bien à gérer seul. Pas un investissement
-            qui ne rapporte que dans 20 ans. Une méthode différente, utilisée par les investisseurs
-            qui veulent du cash-flow réel, vite, et un patrimoine net de dette.
-          </p>
-
-          <div className="space-y-8">
-            <Step
-              num="01"
-              title="Tu acquiers un immeuble de 5 appartements à rénover."
-              desc="Sélectionné dans une zone à fort potentiel, validé par notre équipe. On s'occupe de ton financement."
-            />
-            <Step
-              num="02"
-              title="On prend en charge la rénovation complète."
-              desc="Tu ne lèves pas le petit doigt. Nos artisans, notre suivi, notre contrôle qualité."
-            />
-            <Step
-              num="03"
-              title="On revend 2 appartements une fois rénovés."
-              desc="La plus-value rembourse l'intégralité du prêt."
-            />
-            <Step
-              num="04"
-              title="Il te reste 3 appartements payés, qui génèrent du cash-flow."
-              desc="Pour le reste de ta vie."
-            />
-          </div>
-
-          <div className="mt-10 p-5 rounded-xl border border-slate-200 bg-slate-50">
-            <p className="text-slate-700 text-sm sm:text-base leading-relaxed">
-              En <strong>12 mois</strong>, tu passes d&apos;épargnant à propriétaire d&apos;un patrimoine
-              immobilier qui te paie. Sans avoir géré un seul chantier ni cherché un seul bien.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════ COMPARATIF ═══════════════════ */}
+      {/* ═══════════════════ SOCIAL PROOF — TRUSTPILOT STYLE ═══════════════════ */}
       <section className="px-4 py-16 sm:py-20 bg-slate-50 border-y border-slate-200">
         <div className="max-w-3xl mx-auto">
-          <p className="text-xs font-semibold uppercase tracking-widest mb-3 text-center" style={{ color: "#B9945F" }}>
-            Le comparatif
-          </p>
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 text-center leading-tight mb-10">
-            Pourquoi cette méthode plutôt qu&apos;une autre ?
-          </h2>
-
-          {/* Table */}
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr>
-                  <th className="text-left py-3 px-4 text-slate-400 font-medium"></th>
-                  <th className="py-3 px-4 text-slate-400 font-medium">Locatif classique</th>
-                  <th className="py-3 px-4 font-semibold" style={{ color: "#B9945F" }}>Méthode Sigma</th>
-                  <th className="py-3 px-4 text-slate-400 font-medium">Achat-revente</th>
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  { label: "Endettement", classic: "20 à 25 ans", sigma: "12 mois", ar: "Variable" },
-                  { label: "Cash-flow", classic: "Faible ou négatif", sigma: "3 loyers nets", ar: "Aucun" },
-                  { label: "Patrimoine", classic: "1 bien endetté", sigma: "3 apparts payés", ar: "0 bien" },
-                  { label: "Travaux", classic: "À ta charge", sigma: "100% délégué", ar: "Délégué" },
-                  { label: "Accompagnement", classic: "Aucun", sigma: "Personnalisé", ar: "Standardisé" },
-                ].map((row) => (
-                  <tr key={row.label} className="border-t border-slate-200">
-                    <td className="py-3 px-4 font-medium text-slate-700">{row.label}</td>
-                    <td className="py-3 px-4 text-center text-slate-500">{row.classic}</td>
-                    <td className="py-3 px-4 text-center font-semibold text-slate-900" style={{ background: "rgba(185,148,95,0.05)" }}>{row.sigma}</td>
-                    <td className="py-3 px-4 text-center text-slate-500">{row.ar}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          <p className="text-slate-600 text-sm sm:text-base text-center mt-8 leading-relaxed max-w-xl mx-auto">
-            Tu n&apos;achètes pas un bien. Tu construis un actif qui te paie pour le reste
-            de ta vie — et qui ne te coûte plus rien dès le 13e mois.
-          </p>
-        </div>
-      </section>
-
-      {/* ═══════════════════ CE QUE TU VAS DÉCOUVRIR ═══════════════════ */}
-      <section className="px-4 py-16 sm:py-20">
-        <div className="max-w-2xl mx-auto">
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 text-center leading-tight mb-10">
-            Ce que tu vas découvrir en 60 minutes :
-          </h2>
-
-          <div className="space-y-8">
-            {[
-              {
-                num: "1",
-                title: "Le modèle complet, chiffres à l\u2019appui.",
-                desc: "Le détail d\u2019une opération réelle : prix d\u2019achat, travaux, reventes, cash-flow final. Tu repars avec les ordres de grandeur exacts pour ton propre projet.",
-              },
-              {
-                num: "2",
-                title: "Les 3 régions où la méthode performe le mieux en 2026.",
-                desc: "Pas une carte théorique. Les villes précises où nos opérations cartonnent — et pourquoi.",
-              },
-              {
-                num: "3",
-                title: "Le profil financier qui passe en banque.",
-                desc: "Comment présenter ton dossier pour décrocher le financement, même quand les banques sont en mode « refus systématique ».",
-              },
-              {
-                num: "4",
-                title: "Les 2 erreurs qui plantent 80% des investisseurs.",
-                desc: "Celles que personne n\u2019ose te dire — et qui transforment un bon deal en cauchemar.",
-              },
-            ].map((item) => (
-              <div key={item.num} className="flex gap-4">
-                <div
-                  className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-xs"
-                  style={{ background: "#B9945F" }}
-                >
-                  {item.num}
-                </div>
-                <div>
-                  <p className="font-semibold text-slate-900 text-sm sm:text-base">{item.title}</p>
-                  <p className="text-slate-500 text-sm mt-1">{item.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <p className="text-slate-600 text-sm sm:text-base text-center mt-10 leading-relaxed">
-            À la fin de la vidéo, tu sauras si cette méthode est faite pour toi.
-            Et si oui, comment démarrer ta première opération.
-          </p>
-
-          {/* CTA */}
-          <div className="mt-10">
-            <CTABlock />
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════ SOCIAL PROOF ═══════════════════ */}
-      <section className="px-4 py-16 sm:py-20 bg-slate-50 border-y border-slate-200">
-        <div className="max-w-3xl mx-auto">
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 text-center mb-10">
-            Ils l&apos;ont fait avec nous :
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 text-center mb-4">
+            Ce qu&apos;ils pensent de nous
           </h2>
 
           {/* Stats */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 mb-14">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 mb-12">
             {[
               { num: "50+", label: "investisseurs accompagnés" },
               { num: "120+", label: "opérations finalisées" },
@@ -328,63 +145,75 @@ export default function SigmaOptinPage() {
             ))}
           </div>
 
-          {/* Testimonials */}
-          <div className="space-y-6">
+          {/* Testimonials — Trustpilot style */}
+          <div className="space-y-5">
             {[
               {
+                initials: "T",
                 name: "Thomas Raymond",
-                role: "Cadre, Lyon",
-                apport: "15 000 €",
-                operation: "Immeuble 5 lots à Roanne",
-                solde: "11 mois",
-                cashflow: "1 250 € / mois",
-                quote: "J\u2019avais peur de m\u2019endetter sur 25 ans. La méthode Sigma m\u2019a permis de me constituer un patrimoine sans sacrifier ma capacité d\u2019emprunt. L\u2019équipe a tout géré, je n\u2019ai eu qu\u2019à signer chez le notaire.",
+                location: "FR · 1 avis",
+                date: "15 mars 2026",
+                title: "Patrimoine sans sacrifier ma capacité d\u2019emprunt",
+                quote: "J\u2019avais peur de m\u2019endetter sur 25 ans. La méthode Sigma m\u2019a permis de me constituer un patrimoine sans sacrifier ma capacité d\u2019emprunt. L\u2019équipe a tout géré, je n\u2019ai eu qu\u2019à signer chez le notaire. Aujourd\u2019hui, j\u2019ai 3 appartements qui me rapportent tous les mois.",
+                detail: "Cadre, Lyon · Apport 15 000 € · Crédit soldé en 11 mois · Cash-flow : 1 250 €/mois",
               },
               {
+                initials: "C",
                 name: "Christian Randria",
-                role: "Chef d\u2019entreprise, Paris",
-                apport: "20 000 €",
-                operation: "Immeuble 6 lots à Saint-Étienne",
-                solde: "13 mois",
-                cashflow: "1 580 € / mois",
-                quote: "En tant qu\u2019entrepreneur, je n\u2019ai pas le temps de gérer des travaux ou chercher des locataires. Ce qui m\u2019a convaincu, c\u2019est le modèle clé en main et la rentabilité immédiate.",
+                location: "FR · 1 avis",
+                date: "2 janv. 2026",
+                title: "Modèle clé en main et rentabilité immédiate",
+                quote: "En tant qu\u2019entrepreneur, je n\u2019ai pas le temps de gérer des travaux ou chercher des locataires. Ce qui m\u2019a convaincu, c\u2019est le modèle clé en main et la rentabilité immédiate. Une fois les 2 lots revendus, le stress du crédit a disparu.",
+                detail: "Chef d\u2019entreprise, Paris · Apport 20 000 € · Crédit soldé en 13 mois · Cash-flow : 1 580 €/mois",
               },
               {
+                initials: "B",
                 name: "Ben",
-                role: "Ingénieur, Toulouse",
-                apport: "12 000 €",
-                operation: "Immeuble 4 lots à Perpignan",
-                solde: "9 mois",
-                cashflow: "950 € / mois",
-                quote: "Je cherchais un moyen de préparer ma retraite sereinement. L\u2019accompagnement de Mario et son équipe a été exceptionnel. Ils ont trouvé une pépite, géré la rénovation à distance.",
+                location: "FR · 1 avis",
+                date: "18 nov. 2025",
+                title: "Accompagnement exceptionnel de A à Z",
+                quote: "Je cherchais un moyen de préparer ma retraite sereinement. L\u2019accompagnement de Mario et son équipe a été exceptionnel. Ils ont trouvé une pépite, géré la rénovation à distance, et j\u2019ai récupéré mon capital de départ après la première revente.",
+                detail: "Ingénieur, Toulouse · Apport 12 000 € · Crédit soldé en 9 mois · Cash-flow : 950 €/mois",
               },
             ].map((t) => (
-              <div key={t.name} className="rounded-xl border border-slate-200 bg-white p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-sm font-bold text-slate-500">
-                    {t.name.split(" ").map(w => w[0]).join("")}
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-slate-900">{t.name}</p>
-                    <p className="text-xs text-slate-400">{t.role}</p>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
-                  {[
-                    { label: "Apport", value: t.apport },
-                    { label: "Opération", value: t.operation },
-                    { label: "Crédit soldé en", value: t.solde },
-                    { label: "Cash-flow net", value: t.cashflow },
-                  ].map((d) => (
-                    <div key={d.label}>
-                      <p className="text-[10px] uppercase tracking-wider text-slate-400">{d.label}</p>
-                      <p className="text-xs font-semibold text-slate-700">{d.value}</p>
+              <div
+                key={t.name}
+                className="rounded-xl p-5 sm:p-6 bg-white border border-slate-200"
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <div
+                      className="w-9 h-9 rounded-full flex items-center justify-center text-white text-sm font-bold"
+                      style={{ background: "#00B67A" }}
+                    >
+                      {t.initials}
                     </div>
-                  ))}
+                    <div>
+                      <p className="text-slate-900 text-sm font-semibold">{t.name}</p>
+                      <p className="text-slate-400 text-xs">{t.location}</p>
+                    </div>
+                  </div>
+                  <p className="text-slate-400 text-xs">{t.date}</p>
                 </div>
-                <p className="text-sm text-slate-600 leading-relaxed italic">&ldquo;{t.quote}&rdquo;</p>
+                <Stars />
+                <p className="text-slate-900 text-sm font-semibold mt-3 mb-2">{t.title}</p>
+                <p className="text-slate-600 text-sm leading-relaxed">{t.quote}</p>
+                <p className="text-slate-400 text-xs mt-3 italic">{t.detail}</p>
               </div>
             ))}
+          </div>
+
+          {/* Trustpilot badge */}
+          <div className="flex flex-col items-center gap-3 mt-8">
+            <Image
+              src="/images/trustpilot-logo.png"
+              alt="Trustpilot"
+              width={280}
+              height={40}
+              unoptimized
+              className="opacity-70"
+            />
+            <span className="text-slate-400 text-sm font-medium">5 sur 5</span>
           </div>
         </div>
       </section>
