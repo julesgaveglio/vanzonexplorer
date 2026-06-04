@@ -51,6 +51,28 @@ export default function SigmaOptinPage() {
     <div className="min-h-screen" style={{ background: "#0A0A0A" }}>
       <div className="max-w-lg mx-auto px-4 py-6">
 
+        {/* ═══════ TITRE + OBJECTIONS ═══════ */}
+        <h1 className="text-xl sm:text-2xl font-bold text-white text-center leading-tight mb-5">
+          La méthode qui permet de solder{" "}
+          <span style={{ color: "#B9945F" }}>60 à 100%</span> de son crédit
+          immobilier en moins de{" "}
+          <span style={{ color: "#B9945F" }}>12 mois</span>
+        </h1>
+
+        <ul className="flex flex-col gap-2 mb-8">
+          {[
+            "Sans apport",
+            "Même refusé par ta banque",
+            "Même avec un petit salaire",
+            "Sans prendre de risque financier",
+          ].map((text) => (
+            <li key={text} className="flex items-center gap-3">
+              <span className="text-sm flex-shrink-0 font-bold" style={{ color: "#B9945F" }}>&#10003;</span>
+              <span className="text-white/70 text-sm">{text}</span>
+            </li>
+          ))}
+        </ul>
+
         {/* ═══════ THUMBNAIL ═══════ */}
         <div className="w-full rounded-xl overflow-hidden mb-6">
           <Image
@@ -118,13 +140,6 @@ export default function SigmaOptinPage() {
             </Suspense>
           </div>
         </div>
-
-        {/* ═══════ DISCLAIMER ═══════ */}
-        <p className="text-white/20 text-[10px] text-center leading-relaxed mb-12 px-4">
-          Ce site n&apos;est ni affilié à Facebook™, Meta Platforms Inc., YouTube™ ou Google LLC,
-          ni approuvé ou sponsorisé par eux. Les marques citées sont la propriété de leurs
-          détenteurs respectifs.
-        </p>
 
         {/* ═══════ TRUSTPILOT REVIEWS ═══════ */}
         <div className="mb-8">
