@@ -24,13 +24,11 @@ export default function SigmaOptinForm() {
     setLoading(true);
 
     try {
-      // Save to localStorage for subsequent pages
       localStorage.setItem(
         "sigma_funnel",
         JSON.stringify({ firstname, email: emailLower })
       );
 
-      // Send to Supabase (sigma_leads + sigma_funnel_events)
       await fetch("/api/sigma/optin/track", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -54,7 +52,8 @@ export default function SigmaOptinForm() {
         required
         minLength={2}
         maxLength={50}
-        className="w-full px-4 py-3.5 rounded-lg text-slate-900 text-sm placeholder:text-slate-400 outline-none border border-slate-200 bg-white focus:border-[#B9945F] transition-colors"
+        className="w-full px-4 py-3.5 rounded-lg text-white text-sm placeholder:text-white/40 outline-none transition-colors"
+        style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)" }}
       />
       <input
         type="email"
@@ -62,21 +61,30 @@ export default function SigmaOptinForm() {
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         required
-        className="w-full px-4 py-3.5 rounded-lg text-slate-900 text-sm placeholder:text-slate-400 outline-none border border-slate-200 bg-white focus:border-[#B9945F] transition-colors"
+        className="w-full px-4 py-3.5 rounded-lg text-white text-sm placeholder:text-white/40 outline-none transition-colors"
+        style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)" }}
       />
 
-      {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+      {error && <p className="text-red-400 text-sm text-center">{error}</p>}
 
       <button
         type="submit"
         disabled={loading}
-        className="w-full mt-2 px-6 py-3.5 rounded-lg text-white font-semibold text-sm uppercase tracking-wide disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 transition-opacity"
+        className="w-full mt-1 rounded-xl py-5 text-center disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 transition-opacity"
         style={{ background: "#B9945F" }}
       >
-        {loading ? "Chargement..." : "JE RÉSERVE MA PLACE GRATUITE"}
+        <div className="flex items-center justify-center gap-2 mb-1">
+          <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M8 5v14l11-7z" />
+          </svg>
+          <span className="text-white font-black text-base uppercase tracking-wider">
+            {loading ? "Chargement..." : "Accéder à la vidéo"}
+          </span>
+        </div>
+        <span className="text-white/70 text-xs uppercase tracking-widest">100% gratuite</span>
       </button>
 
-      <p className="text-slate-400 text-xs text-center mt-2">
+      <p className="text-white/25 text-xs text-center mt-2">
         Tes données restent 100% confidentielles. Pas de spam.
       </p>
     </form>
