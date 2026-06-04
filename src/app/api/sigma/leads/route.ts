@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
 
   // Fetch last funnel events per lead for VSL watch time
   const emails = (leads ?? []).map((l) => l.email).filter(Boolean);
-  let watchTimeMap = new Map<string, number>();
+  const watchTimeMap = new Map<string, number>();
 
   if (emails.length > 0) {
     const { data: vslEvents } = await supabase
