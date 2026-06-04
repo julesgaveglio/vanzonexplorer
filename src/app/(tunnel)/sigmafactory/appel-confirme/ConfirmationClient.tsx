@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 export default function SigmaConfirmationClient() {
   const [firstname, setFirstname] = useState("");
@@ -19,11 +20,12 @@ export default function SigmaConfirmationClient() {
     <div className="max-w-lg mx-auto px-4 py-16">
       {/* Logo */}
       <div className="flex justify-center mb-8">
-        <img
+        <Image
           src="/images/sigma-factory-logo.png"
           alt="Sigma Factory"
           width={160}
           height={48}
+          unoptimized
         />
       </div>
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef, useCallback } from "react";
+import Image from "next/image";
 
 const CTA_DELAY_SECONDS = 420; // 7 min
 
@@ -42,7 +43,7 @@ export default function SigmaVSLClient() {
   const togglePlay = () => {
     const video = videoRef.current;
     if (!video) return;
-    video.paused ? video.play() : video.pause();
+    if (video.paused) { video.play(); } else { video.pause(); }
   };
 
   return (
@@ -50,11 +51,12 @@ export default function SigmaVSLClient() {
       <div className="max-w-3xl mx-auto px-4 pb-16">
         {/* Logo */}
         <div className="flex justify-center mb-6">
-          <img
+          <Image
             src="/images/sigma-factory-logo.png"
             alt="Sigma Factory"
             width={160}
             height={48}
+            unoptimized
           />
         </div>
 

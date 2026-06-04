@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import CalendlyInline from "@/components/ui/CalendlyInline";
 
 export default function SigmaBookingClient() {
@@ -36,11 +37,12 @@ export default function SigmaBookingClient() {
     <div className="max-w-2xl mx-auto px-4 pb-12">
       {/* Logo */}
       <div className="flex justify-center mt-8 mb-6">
-        <img
+        <Image
           src="/images/sigma-factory-logo.png"
           alt="Sigma Factory"
           width={160}
           height={48}
+          unoptimized
         />
       </div>
 
