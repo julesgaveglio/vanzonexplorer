@@ -95,15 +95,6 @@ Retourne UNIQUEMENT un JSON valide :
   "next_steps": ["string — max 4, actions concrètes post-appel"]
 }`;
 
-function extractJSON(raw: string): StructuredAnalysis {
-  // Strip markdown code fences if present
-  let cleaned = raw.trim();
-  if (cleaned.startsWith("```")) {
-    cleaned = cleaned.replace(/^```(?:json)?\s*\n?/, "").replace(/\n?```\s*$/, "");
-  }
-  return JSON.parse(cleaned);
-}
-
 function analysisToMarkdown(analysis: StructuredAnalysis): string {
   const lines: string[] = [];
   lines.push(`## Données prospect`);
