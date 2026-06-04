@@ -24,9 +24,9 @@ export default async function SigmaAdsLayout({ children }: { children: React.Rea
                 <Image
                   src="/images/sigma-factory-logo.png"
                   alt="Sigma Factory"
-                  width={180}
-                  height={50}
-                  className="h-9 sm:h-11 w-auto"
+                  width={280}
+                  height={84}
+                  className="h-14 sm:h-16 w-auto"
                   unoptimized
                 />
               </Link>
