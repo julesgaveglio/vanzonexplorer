@@ -74,6 +74,7 @@ export default function ClosingCallsPanel({
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [syncing, setSyncing] = useState(false);
+  const [transcriptOpen, setTranscriptOpen] = useState<string | null>(null);
   const [syncMessage, setSyncMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
 
   // ── Filtered data ──
@@ -477,6 +478,121 @@ export default function ClosingCallsPanel({
                                 <p className="text-slate-700 bg-white rounded-lg px-3 py-2 border border-slate-200 text-sm whitespace-pre-wrap">
                                   {c.whatsapp_message}
                                 </p>
+                              </div>
+                            )}
+
+                            {/* ── Transcript (collapsible) ── */}
+                            {c.transcript && (
+                              <div className="col-span-2 sm:col-span-4">
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setTranscriptOpen(transcriptOpen === c.id ? null : c.id);
+                                  }}
+                                  className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1 hover:text-slate-600 transition-colors"
+                                >
+                                  <svg
+                                    className={`w-3.5 h-3.5 transition-transform ${transcriptOpen === c.id ? "rotate-90" : ""}`}
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                    strokeWidth="2.5"
+                                  >
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                                  </svg>
+                                  Transcript
+                                </button>
+                                {transcriptOpen === c.id && (
+                                  <div className="text-slate-700 bg-white rounded-lg px-3 py-2 border border-slate-200 text-sm whitespace-pre-wrap max-h-96 overflow-y-auto font-mono text-xs leading-relaxed">
+                                    {c.transcript}
+                                  </div>
+                                )}
+                              </div>
+                            )}
+
+                            {/* ── Analysis ── */}
+                            {c.analysis && (
+                              <div className="col-span-2 sm:col-span-4">
+                                <p className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3">
+                                  Analyse du closing
+                                </p>
+                                <div className="glass-card rounded-xl p-4 space-y-4">
+                                  {/* Score + Summary */}
+                                  <div className="flex items-start gap-3">
+                                    <span
+                                      className={`inline-flex items-center justify-center w-12 h-12 rounded-xl text-lg font-black text-white shrink-0 ${
+                                        c.analysis.score >= 7
+                                          ? "bg-emerald-500"
+                                          : c.analysis.score >= 4
+                                          ? "bg-orange-500"
+                                          : "bg-red-500"
+                                      }`}
+                                    >
+                                      {c.analysis.score}
+                                    </span>
+                                    <div>
+                                      <p className="text-xs font-semibold text-slate-400 mb-0.5">Resume</p>
+                                      <p className="text-sm text-slate-700">{c.analysis.summary}</p>
+                                    </div>
+                                  </div>
+
+                                  {/* Good points */}
+                                  {c.analysis.good.length > 0 && (
+                                    <div>
+                                      <p className="text-xs font-semibold uppercase tracking-wider text-emerald-600 mb-2">Points forts</p>
+                                      <div className="space-y-1.5">
+                                        {c.analysis.good.map((item, i) => (
+                                          <div key={i} className="flex items-start gap-2 pl-3 border-l-2 border-emerald-400">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0" />
+                                            <p className="text-sm text-slate-700">{item}</p>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {/* Bad points */}
+                                  {c.analysis.bad.length > 0 && (
+                                    <div>
+                                      <p className="text-xs font-semibold uppercase tracking-wider text-red-600 mb-2">Points faibles</p>
+                                      <div className="space-y-1.5">
+                                        {c.analysis.bad.map((item, i) => (
+                                          <div key={i} className="flex items-start gap-2 pl-3 border-l-2 border-red-400">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-red-500 mt-1.5 shrink-0" />
+                                            <p className="text-sm text-slate-700">{item}</p>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {/* Improvements */}
+                                  {c.analysis.improvements.length > 0 && (
+                                    <div>
+                                      <p className="text-xs font-semibold uppercase tracking-wider text-orange-600 mb-2">Axes d&apos;amelioration</p>
+                                      <div className="space-y-1.5">
+                                        {c.analysis.improvements.map((item, i) => (
+                                          <div key={i} className="flex items-start gap-2 pl-3 border-l-2 border-orange-400">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-orange-500 mt-1.5 shrink-0" />
+                                            <p className="text-sm text-slate-700">{item}</p>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {/* Next steps */}
+                                  {c.analysis.next_steps.length > 0 && (
+                                    <div>
+                                      <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">Prochaines etapes</p>
+                                      <ul className="space-y-1 pl-4 list-disc list-outside">
+                                        {c.analysis.next_steps.map((item, i) => (
+                                          <li key={i} className="text-sm text-slate-700">{item}</li>
+                                        ))}
+                                      </ul>
+                                    </div>
+                                  )}
+                                </div>
                               </div>
                             )}
                           </div>

@@ -18,6 +18,15 @@ export interface ClosingCall {
   status: "upcoming" | "completed" | "no_show" | "cancelled";
   whatsapp_sent_at: string | null;
   whatsapp_message: string | null;
+  transcript: string | null;
+  analysis: {
+    summary: string;
+    score: number;
+    good: string[];
+    bad: string[];
+    improvements: string[];
+    next_steps: string[];
+  } | null;
   created_at: string;
   updated_at: string;
 }
