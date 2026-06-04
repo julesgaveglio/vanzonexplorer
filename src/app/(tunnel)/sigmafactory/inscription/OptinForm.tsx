@@ -73,7 +73,7 @@ export default function SigmaOptinForm() {
         className="w-full mt-2 px-6 py-3.5 rounded-lg text-white font-semibold text-sm uppercase tracking-wide disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 transition-opacity"
         style={{ background: "#B9945F" }}
       >
-        {loading ? "Chargement..." : "ACCÉDER À LA VIDÉO GRATUITE"}
+        {loading ? "Chargement..." : "JE RÉSERVE MA PLACE GRATUITE"}
       </button>
 
       <p className="text-slate-400 text-xs text-center mt-2">
