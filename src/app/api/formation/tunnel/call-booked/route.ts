@@ -4,6 +4,10 @@ import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+const VIDEO_ID = "uY6pgzXhOPk";
+const VIDEO_THUMB = `https://img.youtube.com/vi/${VIDEO_ID}/maxresdefault.jpg`;
+const VIDEO_LINK = `https://youtu.be/${VIDEO_ID}`;
+
 export async function POST(req: NextRequest) {
   try {
     const { email, firstname, calendly_event_uri } = await req.json();
@@ -14,7 +18,6 @@ export async function POST(req: NextRequest) {
 
     const supabase = createSupabaseAdmin();
 
-    // Store booking reminder
     await supabase.from("vba_call_reminders").insert({
       email,
       firstname: firstname || null,
@@ -22,25 +25,25 @@ export async function POST(req: NextRequest) {
       email_confirm_sent: true,
     });
 
-    // Send confirmation email (Email 1)
     const name = firstname || "là";
 
     await resend.emails.send({
       from: "Jules · Vanzon Explorer <jules@vanzonexplorer.com>",
       to: email,
       subject: "Ton appel avec Jules est confirmé ✅",
-      html: `<div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.6;color:#1a1a1a;max-width:600px;margin:0 auto;padding:20px">
-<p>Salut ${name},</p>
-<p>Ton appel est bien réservé. Tu recevras un email Calendly avec la date et l'heure exactes.</p>
-<p>D'ici là je te conseille de regarder la vidéo en entier si ce n'est pas encore fait — on aura un échange bien plus riche.</p>
-<p>À très vite</p>
-<p>Jules</p>
+      html: `<div style="font-family:sans-serif;font-size:15px;color:#1a1a1a">
+Salut ${name},<br><br>
+Ton appel est bien réservé. Tu recevras un email Calendly avec la date et l'heure exactes.<br><br>
+D'ici là je te conseille de regarder la vidéo en entier si ce n'est pas encore fait — on aura un échange bien plus riche :<br><br>
+<a href="${VIDEO_LINK}" style="display:block;text-decoration:none"><img src="${VIDEO_THUMB}" alt="Regarder la vidéo" style="width:100%;max-width:480px;border-radius:8px"></a><br>
+À très vite<br>
+Jules
 </div>`,
     });
 
     return NextResponse.json({ ok: true });
   } catch (err) {
-    console.error("[call-booked] Error:", err);
+    console.error("[call-booked]", err);
     return NextResponse.json({ error: "Internal error" }, { status: 500 });
   }
 }
