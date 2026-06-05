@@ -8,8 +8,8 @@ const VIDEO_THUMB = `https://img.youtube.com/vi/${VIDEO_ID}/maxresdefault.jpg`;
 const VIDEO_LINK = `https://youtu.be/${VIDEO_ID}`;
 
 export async function GET() {
-  const testEmail = "gavegliojules@gmail.com";
-  const firstname = "Jules";
+  const testEmail = "mateogb.ads@gmail.com";
+  const firstname = "Matéo";
   const callDate = "vendredi 6 juin";
   const callHeure = "14h30";
 
