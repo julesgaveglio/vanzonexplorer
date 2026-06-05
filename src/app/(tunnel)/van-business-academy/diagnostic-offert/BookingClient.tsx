@@ -48,6 +48,18 @@ export default function BookingClient() {
             email: data.email,
             firstname: data.firstname,
           });
+
+          // Send confirmation email (Email 1 — rappel call)
+          const eventUri = e.data?.payload?.event?.uri || null;
+          fetch("/api/formation/tunnel/call-booked", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              email: data.email,
+              firstname: data.firstname,
+              calendly_event_uri: eventUri,
+            }),
+          }).catch(() => {});
         }
         router.push("/van-business-academy/appel-confirme");
       }
