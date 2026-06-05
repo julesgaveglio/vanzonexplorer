@@ -112,31 +112,23 @@ async function notifyTelegram(
   const chatId = process.env.TELEGRAM_CHAT_ID;
   if (!token || !chatId) return;
 
-  const hotLabel = isHot ? "\u2705 HOT" : "\u274C COLD";
+  const dot = isHot ? "🟢" : "🔴";
 
-  let text =
-    `\uD83C\uDF93 <b>Nouveau lead VBA Tunnel !</b>\n` +
-    `\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n` +
-    `<b>Pr\u00E9nom :</b> ${firstname}\n` +
-    `<b>Email :</b> ${email}\n`;
+  let text = `${dot} <b>Nouveau lead VBA !</b>\n${firstname} — ${email}\n`;
 
-  if (phone) text += `<b>T\u00E9l :</b> ${phone}\n`;
+  if (phone) text += `Tél : ${phone}\n`;
 
-  text += `\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n`;
+  text += `\n`;
 
-  if (q_objective) text += `<b>Objectif :</b> ${q_objective}\n`;
-  if (q_frein) text += `<b>Frein :</b> ${q_frein}${q_frein_autre ? ` (${q_frein_autre})` : ""}\n`;
-  if (q_budget) text += `<b>Budget :</b> ${q_budget}\n`;
+  if (q_objective) text += `Objectif : ${q_objective}\n`;
+  if (q_frein) text += `Frein : ${q_frein}${q_frein_autre ? ` (${q_frein_autre})` : ""}\n`;
+  if (q_budget) text += `Budget : ${q_budget}\n`;
 
-  text +=
-    `\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n` +
-    `<b>Qualification :</b> ${hotLabel}\n` +
-    `\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n` +
-    `<a href="https://vanzonexplorer.com/admin/formation">\uD83D\uDC49 Voir dans l'admin</a>`;
+  text += `\nQualification : ${isHot ? "HOT 🟢" : "COLD 🔴"}`;
 
   await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ chat_id: chatId, text, parse_mode: "HTML" }),
+    body: JSON.stringify({ chat_id: chatId, text, parse_mode: "HTML", disable_web_page_preview: true }),
   });
 }
