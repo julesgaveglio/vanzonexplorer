@@ -34,14 +34,7 @@ export async function GET() {
     });
     results.push(`Email 2: ${e2.data?.id}`);
 
-    // ── Email 3: Rappel 1h avant ──
-    const e3 = await resend.emails.send({
-      from: "Jules · Vanzon Explorer <jules@vanzonexplorer.com>",
-      to: testEmail,
-      subject: `On se parle dans 1h ${firstname} 👋`,
-      html: `Salut ${firstname}, on se parle dans <b>1h</b>. À tout à l'heure 👋`,
-    });
-    results.push(`Email 3: ${e3.data?.id}`);
+    // Email 3 (SMS 1h avant) — à brancher via Twilio ou WhatsApp Business API
 
     return NextResponse.json({ ok: true, results });
   } catch (err) {
