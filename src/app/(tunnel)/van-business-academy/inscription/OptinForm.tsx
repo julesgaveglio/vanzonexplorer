@@ -18,9 +18,14 @@ const QUESTIONS = [
     ],
   },
   {
-    key: "q_profile",
-    label: "Quel est ton profil actuel ?",
-    options: ["Salarié", "Entrepreneur", "Retraité", "Autre"],
+    key: "q_frein",
+    label: "Qu'est-ce qui te freine le plus aujourd'hui ?",
+    options: [
+      "Je ne sais pas par où commencer",
+      "L'homologation VASP",
+      "Les travaux d'aménagement",
+      "Autre",
+    ],
   },
   {
     key: "q_budget",
@@ -37,7 +42,6 @@ const QUESTIONS = [
 type QKey = (typeof QUESTIONS)[number]["key"];
 
 function computeIsHot(answers: Record<QKey, string>): boolean {
-  if (answers.q_profile === "Retraité") return false;
   if (answers.q_budget === "Moins de 10 000 \u20AC") return false;
   return true;
 }
@@ -50,9 +54,10 @@ export default function OptinForm() {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Record<QKey, string>>({
     q_objective: "",
-    q_profile: "",
+    q_frein: "",
     q_budget: "",
   });
+  const [freinAutre, setFreinAutre] = useState("");
 
   const [firstname, setFirstname] = useState("");
   const [email, setEmail] = useState("");
@@ -65,7 +70,8 @@ export default function OptinForm() {
 
   const handleSelect = (key: QKey, value: string) => {
     setAnswers((prev) => ({ ...prev, [key]: value }));
-    // Auto-advance after selection
+    // Don't auto-advance if "Autre" selected on q_frein (wait for text input)
+    if (key === "q_frein" && value === "Autre") return;
     setTimeout(() => setStep((s) => s + 1), 250);
   };
 
@@ -230,7 +236,8 @@ export default function OptinForm() {
           email,
           phone: phone || undefined,
           q_objective: answers.q_objective,
-          q_profile: answers.q_profile,
+          q_frein: answers.q_frein,
+          q_frein_autre: answers.q_frein === "Autre" ? freinAutre : undefined,
           q_budget: answers.q_budget,
           ...utmParams,
         }),
@@ -256,7 +263,8 @@ export default function OptinForm() {
         ...utmParams,
         metadata: {
           q_objective: answers.q_objective,
-          q_profile: answers.q_profile,
+          q_frein: answers.q_frein,
+          q_frein_autre: answers.q_frein === "Autre" ? freinAutre : undefined,
           q_budget: answers.q_budget,
           phone: phone || undefined,
           title_variant_id: (() => { try { return localStorage.getItem("vba_title_variant_id") ?? undefined; } catch { return undefined; } })(),
@@ -320,6 +328,31 @@ export default function OptinForm() {
               </button>
             );
           })}
+          {/* "Autre" text field for q_frein */}
+          {QUESTIONS[step].key === "q_frein" && answers.q_frein === "Autre" && (
+            <div className="flex flex-col gap-2 mt-1">
+              <input
+                type="text"
+                placeholder="Précise ce qui te freine..."
+                value={freinAutre}
+                onChange={(e) => setFreinAutre(e.target.value)}
+                className="w-full px-4 py-3.5 rounded-xl text-white text-sm placeholder:text-white/40 transition-all outline-none focus:ring-2 focus:ring-[#B9945F]/40"
+                style={{
+                  background: "rgba(255,255,255,0.06)",
+                  border: "1px solid rgba(255,255,255,0.10)",
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => setStep((s) => s + 1)}
+                className="w-full px-4 py-3 rounded-xl text-white text-sm font-semibold transition-all"
+                style={{ background: "rgba(185,148,95,0.3)", border: "1px solid rgba(185,148,95,0.5)" }}
+              >
+                Continuer →
+              </button>
+            </div>
+          )}
+
           {/* Back button */}
           {step > 0 && (
             <button

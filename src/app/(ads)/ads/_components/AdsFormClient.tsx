@@ -8,7 +8,8 @@ interface Lead {
   email: string;
   phone: string | null;
   q_objective: string | null;
-  q_profile: string | null;
+  q_frein: string | null;
+  q_frein_autre: string | null;
   q_budget: string | null;
   is_hot: boolean | null;
   utm_campaign: string | null;
@@ -23,13 +24,11 @@ const PERIODS = [
 ] as const;
 
 const COLD_OBJECTIVE = "Gagner de l'argent rapidement avec un van";
-const COLD_PROFILE = "Retraité";
 const COLD_BUDGET = "Moins de 10 000 \u20AC";
 
-function isColdIndicator(key: "q_objective" | "q_profile" | "q_budget", value: string | null): boolean {
+function isColdIndicator(key: "q_objective" | "q_budget", value: string | null): boolean {
   if (!value) return false;
   if (key === "q_objective" && value === COLD_OBJECTIVE) return true;
-  if (key === "q_profile" && value === COLD_PROFILE) return true;
   if (key === "q_budget" && value === COLD_BUDGET) return true;
   return false;
 }
@@ -118,7 +117,7 @@ export default function AdsFormClient() {
                   <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium">Email</th>
                   <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium hidden lg:table-cell">T&eacute;l</th>
                   <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium">Objectif</th>
-                  <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium hidden sm:table-cell">Profil</th>
+                  <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium hidden sm:table-cell">Frein</th>
                   <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium hidden sm:table-cell">Budget</th>
                   <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium">Date</th>
                 </tr>
@@ -176,15 +175,11 @@ export default function AdsFormClient() {
                       )}
                     </td>
                     <td className="px-4 py-3 hidden sm:table-cell">
-                      {lead.q_profile ? (
-                        <span
-                          className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${
-                            isColdIndicator("q_profile", lead.q_profile)
-                              ? "bg-red-50 text-red-600 border border-red-100"
-                              : "bg-slate-100 text-slate-600"
-                          }`}
-                        >
-                          {lead.q_profile}
+                      {lead.q_frein ? (
+                        <span className="inline-flex px-2 py-0.5 text-xs font-medium rounded-full bg-amber-50 text-amber-700 border border-amber-100">
+                          {lead.q_frein === "Autre" && lead.q_frein_autre
+                            ? `Autre : ${lead.q_frein_autre.length > 25 ? lead.q_frein_autre.slice(0, 25) + "\u2026" : lead.q_frein_autre}`
+                            : lead.q_frein}
                         </span>
                       ) : (
                         <span className="text-slate-300 text-xs">\u2014</span>

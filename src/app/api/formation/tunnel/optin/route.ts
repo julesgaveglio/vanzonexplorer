@@ -9,7 +9,8 @@ const schema = z.object({
   email: z.string().email("Email invalide"),
   phone: z.string().optional(),
   q_objective: z.string().optional(),
-  q_profile: z.string().optional(),
+  q_frein: z.string().optional(),
+  q_frein_autre: z.string().optional(),
   q_budget: z.string().optional(),
   utm_source: z.string().optional(),
   utm_medium: z.string().optional(),
@@ -19,11 +20,9 @@ const schema = z.object({
 
 function computeIsHot(data: {
   q_objective?: string;
-  q_profile?: string;
   q_budget?: string;
 }): boolean {
   if (data.q_objective === "Gagner de l'argent rapidement avec un van") return false;
-  if (data.q_profile === "Retraité") return false;
   if (data.q_budget === "Moins de 10 000 \u20AC") return false;
   return true;
 }
@@ -42,7 +41,8 @@ export async function POST(req: Request) {
         email: data.email,
         phone: data.phone ?? null,
         q_objective: data.q_objective ?? null,
-        q_profile: data.q_profile ?? null,
+        q_frein: data.q_frein ?? null,
+        q_frein_autre: data.q_frein_autre ?? null,
         q_budget: data.q_budget ?? null,
         is_hot: isHot,
         utm_source: data.utm_source ?? null,
@@ -65,7 +65,7 @@ export async function POST(req: Request) {
     );
 
     // Telegram notification
-    notifyTelegram(data.firstname, data.email, data.phone, data.q_objective, data.q_profile, data.q_budget, isHot).catch(() => {});
+    notifyTelegram(data.firstname, data.email, data.phone, data.q_objective, data.q_frein, data.q_frein_autre, data.q_budget, isHot).catch(() => {});
 
     return NextResponse.json({ success: true });
   } catch (err) {
@@ -103,7 +103,8 @@ async function notifyTelegram(
   email: string,
   phone?: string,
   q_objective?: string,
-  q_profile?: string,
+  q_frein?: string,
+  q_frein_autre?: string,
   q_budget?: string,
   isHot?: boolean,
 ) {
@@ -124,7 +125,7 @@ async function notifyTelegram(
   text += `\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n`;
 
   if (q_objective) text += `<b>Objectif :</b> ${q_objective}\n`;
-  if (q_profile) text += `<b>Profil :</b> ${q_profile}\n`;
+  if (q_frein) text += `<b>Frein :</b> ${q_frein}${q_frein_autre ? ` (${q_frein_autre})` : ""}\n`;
   if (q_budget) text += `<b>Budget :</b> ${q_budget}\n`;
 
   text +=
