@@ -31,14 +31,7 @@ export async function POST(req: NextRequest) {
       from: "Jules · Vanzon Explorer <jules@vanzonexplorer.com>",
       to: email,
       subject: "Ton appel avec Jules est confirmé ✅",
-      html: `<div style="font-family:sans-serif;font-size:15px;color:#1a1a1a">
-Salut ${name},<br><br>
-Ton appel est bien réservé. Tu recevras un email Calendly avec la date et l'heure exactes.<br><br>
-D'ici là je te conseille de regarder la vidéo en entier si ce n'est pas encore fait — on aura un échange bien plus riche :<br><br>
-<a href="${VIDEO_LINK}" style="display:block;text-decoration:none"><img src="${VIDEO_THUMB}" alt="Regarder la vidéo" style="width:100%;max-width:480px;border-radius:8px"></a><br>
-À très vite<br>
-Jules
-</div>`,
+      html: `Salut ${name},<br><br>Ton appel est bien réservé. Tu recevras un email Calendly avec la <b>date et l'heure exactes</b>.<br><br>D'ici là, je te conseille de regarder la vidéo dans son intégralité si ce n'est pas encore fait. Ça nous permettra d'avoir un <b>échange plus riche</b> !<br><br><a href="${VIDEO_LINK}"><img src="${VIDEO_THUMB}" alt="Regarder la vidéo" style="width:100%;max-width:480px;border-radius:8px"></a><br><br>À très vite !<br>Jules`,
     });
 
     return NextResponse.json({ ok: true });
