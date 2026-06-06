@@ -17,6 +17,7 @@ interface Lead {
   q_profile: string | null;
   q_budget: string | null;
   is_hot: boolean | null;
+  lead_status: string;
   utm_source: string | null;
   utm_campaign: string | null;
   utm_content: string | null;
@@ -25,6 +26,13 @@ interface Lead {
   email_history: EmailEntry[];
   last_email: EmailEntry | null;
 }
+
+const STATUS_OPTIONS = [
+  { value: "new", label: "Nouveau", color: "bg-slate-100 text-slate-600" },
+  { value: "call_booked", label: "Call booké", color: "bg-blue-50 text-blue-700" },
+  { value: "blacklist", label: "Liste rouge", color: "bg-red-50 text-red-600" },
+  { value: "validated", label: "Validé", color: "bg-emerald-50 text-emerald-700" },
+] as const;
 
 const PERIODS = [
   { label: "7j", days: 7 },
@@ -163,6 +171,7 @@ export default function AdsLeadsClient() {
                   <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium">Qualification</th>
                   <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium">VSL</th>
                   <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium hidden lg:table-cell">Source</th>
+                  <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium">Statut</th>
                   <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium">Date</th>
                   <th className="px-3 py-3 w-10"></th>
                 </tr>
@@ -266,6 +275,25 @@ export default function AdsLeadsClient() {
                         ) : (
                           <span className="text-slate-300">direct</span>
                         )}
+                      </td>
+                      <td className="px-4 py-3 align-top">
+                        <select
+                          value={lead.lead_status || "new"}
+                          onChange={async (ev) => {
+                            const newStatus = ev.target.value;
+                            setLeads((prev) => prev.map((l) => l.email === lead.email ? { ...l, lead_status: newStatus } : l));
+                            await fetch(`/api/ads/leads`, {
+                              method: "PATCH",
+                              headers: { "Content-Type": "application/json" },
+                              body: JSON.stringify({ email: lead.email, lead_status: newStatus }),
+                            });
+                          }}
+                          className={`text-xs font-medium px-2 py-1 rounded-full border-0 cursor-pointer ${STATUS_OPTIONS.find((s) => s.value === (lead.lead_status || "new"))?.color ?? "bg-slate-100 text-slate-600"}`}
+                        >
+                          {STATUS_OPTIONS.map((s) => (
+                            <option key={s.value} value={s.value}>{s.label}</option>
+                          ))}
+                        </select>
                       </td>
                       <td className="px-4 py-3 text-slate-400 text-xs align-top">
                         {new Date(lead.created_at).toLocaleDateString("fr-FR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}

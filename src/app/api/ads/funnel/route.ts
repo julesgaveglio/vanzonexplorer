@@ -133,8 +133,8 @@ export async function GET(req: NextRequest) {
       ? Math.round((stepCounts.optin / stepCounts.page_view) * 100 * 10) / 10
       : 0;
 
-  // Sum real amounts from purchase events (metadata.value or fallback 997)
-  const purchaseEvents = allEvents.filter((e) => e.event === "purchase");
+  // Sum real amounts from purchase events (skip ghost events without email)
+  const purchaseEvents = allEvents.filter((e) => e.event === "purchase" && e.email);
   const estimatedRevenue = purchaseEvents.reduce((sum, e) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const meta = ((e as any).metadata ?? {}) as Record<string, unknown>;

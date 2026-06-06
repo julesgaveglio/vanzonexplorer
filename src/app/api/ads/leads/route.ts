@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
   const { data: funnelLeads } = emails.length > 0
     ? await supabase
         .from("vba_funnel_leads")
-        .select("email, firstname, phone, q_objective, q_profile, q_budget, is_hot")
+        .select("email, firstname, phone, q_objective, q_profile, q_budget, is_hot, lead_status")
         .in("email", emails)
     : { data: [] };
   const firstnameMap = new Map(
@@ -64,6 +64,7 @@ export async function GET(req: NextRequest) {
       q_profile: l.q_profile as string | null,
       q_budget: l.q_budget as string | null,
       is_hot: l.is_hot as boolean | null,
+      lead_status: (l.lead_status as string | null) ?? "new",
     }])
   );
 
@@ -133,6 +134,7 @@ export async function GET(req: NextRequest) {
       q_profile: qual?.q_profile ?? null,
       q_budget: qual?.q_budget ?? null,
       is_hot: qual?.is_hot ?? null,
+      lead_status: qual?.lead_status ?? "new",
       utm_source: row.utm_source,
       utm_campaign: row.utm_campaign,
       utm_content: row.utm_content,
@@ -144,6 +146,24 @@ export async function GET(req: NextRequest) {
   });
 
   return NextResponse.json({ leads });
+}
+
+export async function PATCH(req: NextRequest) {
+  const check = await requireAdsAuth();
+  if (check instanceof NextResponse) return check;
+
+  const { email, lead_status } = await req.json();
+  if (!email || !lead_status) return NextResponse.json({ error: "email and lead_status required" }, { status: 400 });
+
+  const VALID_STATUSES = ["new", "call_booked", "blacklist", "validated"];
+  if (!VALID_STATUSES.includes(lead_status)) {
+    return NextResponse.json({ error: "invalid status" }, { status: 400 });
+  }
+
+  const supabase = createSupabaseAdmin();
+  await supabase.from("vba_funnel_leads").update({ lead_status }).eq("email", email);
+
+  return NextResponse.json({ ok: true });
 }
 
 export async function DELETE(req: NextRequest) {
