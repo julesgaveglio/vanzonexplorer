@@ -45,7 +45,7 @@ export async function GET(req: NextRequest) {
   while (true) {
     let q = supabase
       .from("funnel_events")
-      .select("event, email, session_id, created_at, utm_source, utm_campaign, utm_content")
+      .select("event, email, session_id, created_at, utm_source, utm_campaign, utm_content, metadata")
       .gte("created_at", since)
       .or(`email.is.null,email.not.in.(${EXCLUDED_EMAILS.join(",")})`)
       .order("created_at", { ascending: false })
@@ -136,7 +136,9 @@ export async function GET(req: NextRequest) {
   // Sum real amounts from purchase events (metadata.value or fallback 997)
   const purchaseEvents = allEvents.filter((e) => e.event === "purchase");
   const estimatedRevenue = purchaseEvents.reduce((sum, e) => {
-    const val = e.metadata?.value ?? e.metadata?.amount ?? 997;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const meta = ((e as any).metadata ?? {}) as Record<string, unknown>;
+    const val = meta.value ?? meta.amount ?? 997;
     return sum + Number(val);
   }, 0);
 
