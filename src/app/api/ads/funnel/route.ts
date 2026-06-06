@@ -133,7 +133,12 @@ export async function GET(req: NextRequest) {
       ? Math.round((stepCounts.optin / stepCounts.page_view) * 100 * 10) / 10
       : 0;
 
-  const estimatedRevenue = (stepCounts.purchase ?? 0) * 997;
+  // Sum real amounts from purchase events (metadata.value or fallback 997)
+  const purchaseEvents = allEvents.filter((e) => e.event === "purchase");
+  const estimatedRevenue = purchaseEvents.reduce((sum, e) => {
+    const val = e.metadata?.value ?? e.metadata?.amount ?? 997;
+    return sum + Number(val);
+  }, 0);
 
   // Meta Ads spend — real-time from Meta Marketing API
   const sinceDate10 = since.slice(0, 10);

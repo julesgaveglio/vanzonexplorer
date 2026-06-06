@@ -242,7 +242,7 @@ export default function AdsDashboardClient() {
         <KPICard label="CPL" value={cpl > 0 ? `${cpl.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €` : "—"} subtitle={`${sc.optin ?? 0} leads`} color="amber" />
         <KPICard label="CPM" value={cpm > 0 ? `${cpm.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €` : "—"} subtitle="coût pour 1000 vues" color="slate" />
         <KPICard label="Coût / View" value={costPerView > 0 ? `${costPerView.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €` : "—"} subtitle={`${sc.page_view ?? 0} content views`} color="blue" />
-        <KPICard label="CA estimé" value={`${revenue.toLocaleString("fr-FR")} €`} subtitle={`${sc.purchase ?? 0} vente${(sc.purchase ?? 0) > 1 ? "s" : ""} × 997 €`} color="emerald" />
+        <KPICard label="CA estimé" value={`${revenue.toLocaleString("fr-FR")} €`} subtitle={`${sc.purchase ?? 0} vente${(sc.purchase ?? 0) > 1 ? "s" : ""}`} color="emerald" />
       </div>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <KPICard label="Vues opt-in" value={sc.page_view ?? 0} subtitle={`${data?.total_events ?? 0} events totaux`} color="slate" />
