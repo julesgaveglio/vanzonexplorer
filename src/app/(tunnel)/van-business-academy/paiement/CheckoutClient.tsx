@@ -15,6 +15,7 @@ const FEATURES = [
 
 const PROMO_PRICES: Record<string, { total: number; label: string; savings: string }> = {
   LANCEMENT: { total: 99700, label: "997", savings: "500" },
+  JACQUE: { total: 25000, label: "250", savings: "747" },
 };
 
 const DEFAULT_TOTAL = 149700;
