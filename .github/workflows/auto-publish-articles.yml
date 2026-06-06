@@ -1,12 +1,10 @@
 name: Auto-publish blog articles
 
 on:
-  # PAUSED — En attente indexation Google (mai 2026)
-  # schedule:
-  #   - cron: "0 7 * * 1"   # Lundi
-  #   - cron: "0 7 * * 3"   # Mercredi
-  #   - cron: "0 7 * * 5"   # Vendredi
-  workflow_dispatch: # Déclenchement manuel uniquement
+  schedule:
+    - cron: "0 7 * * 1"   # Lundi
+    - cron: "0 7 * * 4"   # Jeudi
+  workflow_dispatch: # Déclenchement manuel
 
 jobs:
   publish:
