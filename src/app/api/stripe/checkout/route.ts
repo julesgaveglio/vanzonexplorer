@@ -4,6 +4,7 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 
 const PROMO_CODES: Record<string, number> = {
   LANCEMENT: 99700, // 997 €
+  JACQUE: 25000, // 250 €
 };
 
 const DEFAULT_PRICE = 149700; // 1497 €
