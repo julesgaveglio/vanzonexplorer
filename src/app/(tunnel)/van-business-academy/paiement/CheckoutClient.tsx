@@ -18,6 +18,8 @@ const PROMO_PRICES: Record<string, { total: number; label: string; savings: stri
   JACQUE: { total: 25000, label: "250", savings: "747" },
 };
 
+const FREE_CODES = ["OFFREDELANCEMENT"];
+
 const DEFAULT_TOTAL = 149700;
 const DEFAULT_LABEL = "1 497";
 
@@ -41,9 +43,10 @@ export default function CheckoutClient() {
     });
   }, []);
 
+  const isFreeCode = FREE_CODES.includes(appliedCode);
   const promo = PROMO_PRICES[appliedCode];
-  const totalAmount = promo ? promo.total : DEFAULT_TOTAL;
-  const displayPrice = promo ? promo.label : DEFAULT_LABEL;
+  const totalAmount = isFreeCode ? 0 : promo ? promo.total : DEFAULT_TOTAL;
+  const displayPrice = isFreeCode ? "0" : promo ? promo.label : DEFAULT_LABEL;
   const installmentRaw = totalAmount / 4 / 100; // ex: 249.25
   const installmentPrice = Number.isInteger(installmentRaw)
     ? String(installmentRaw)
@@ -51,7 +54,10 @@ export default function CheckoutClient() {
 
   const handleApplyPromo = () => {
     const code = promoCode.toUpperCase().trim();
-    if (PROMO_PRICES[code]) {
+    if (FREE_CODES.includes(code)) {
+      setAppliedCode(code);
+      setPromoError("");
+    } else if (PROMO_PRICES[code]) {
       setAppliedCode(code);
       setPromoError("");
     } else if (code) {
@@ -69,6 +75,23 @@ export default function CheckoutClient() {
   const handleCheckout = async () => {
     setLoading(true);
     try {
+      // Free promo code — bypass Stripe, activate directly
+      if (FREE_CODES.includes(appliedCode)) {
+        const res = await fetch("/api/stripe/free-access", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ code: appliedCode }),
+        });
+        const data = await res.json();
+        if (data.ok) {
+          window.location.href = "/van-business-academy/paiement-confirme";
+        } else {
+          alert(data.error || "Erreur lors de l'activation.");
+          setLoading(false);
+        }
+        return;
+      }
+
       const res = await fetch("/api/stripe/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
