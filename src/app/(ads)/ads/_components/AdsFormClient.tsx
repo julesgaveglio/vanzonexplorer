@@ -8,6 +8,7 @@ interface Lead {
   email: string;
   phone: string | null;
   q_objective: string | null;
+  q_profile: string | null;
   q_frein: string | null;
   q_frein_autre: string | null;
   q_budget: string | null;
@@ -117,6 +118,7 @@ export default function AdsFormClient() {
                   <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium">Email</th>
                   <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium hidden lg:table-cell">T&eacute;l</th>
                   <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium">Objectif</th>
+                  <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium hidden sm:table-cell">Profil</th>
                   <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium hidden sm:table-cell">Frein</th>
                   <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium hidden sm:table-cell">Budget</th>
                   <th className="text-left text-xs text-slate-500 uppercase tracking-wider px-4 py-3 font-medium">Date</th>
@@ -172,6 +174,15 @@ export default function AdsFormClient() {
                         </span>
                       ) : (
                         <span className="text-slate-300 text-xs">\u2014</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 hidden sm:table-cell">
+                      {lead.q_profile ? (
+                        <span className="inline-flex px-2 py-0.5 text-xs font-medium rounded-full bg-slate-100 text-slate-600">
+                          {lead.q_profile}
+                        </span>
+                      ) : (
+                        <span className="text-slate-300 text-xs">{"\u2014"}</span>
                       )}
                     </td>
                     <td className="px-4 py-3 hidden sm:table-cell">

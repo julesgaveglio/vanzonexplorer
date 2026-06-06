@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
 
   let query = supabase
     .from("vba_funnel_leads")
-    .select("firstname, email, phone, q_objective, q_frein, q_frein_autre, q_budget, is_hot, utm_campaign, created_at")
+    .select("firstname, email, phone, q_objective, q_profile, q_frein, q_frein_autre, q_budget, is_hot, utm_campaign, created_at")
     .gte("created_at", since)
     .not("email", "in", `(${EXCLUDED_EMAILS.join(",")})`)
     .order("created_at", { ascending: false });
