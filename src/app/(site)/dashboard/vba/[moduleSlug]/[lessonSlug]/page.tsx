@@ -151,14 +151,6 @@ export default async function LessonPage({
       <div className="flex-1 overflow-y-auto min-w-0">
         {/* Top bar */}
         <div className="flex items-center gap-3 px-4 sm:px-6 py-3 border-b border-slate-100 bg-white">
-          <Link
-            href="/dashboard/vba"
-            className="text-sm text-slate-500 hover:text-slate-700 transition-colors flex items-center gap-1"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span className="hidden sm:inline">Retour</span>
-          </Link>
-          <span className="text-slate-300">|</span>
           <span className="text-sm text-slate-400 truncate">{currentModule.title}</span>
         </div>
 
