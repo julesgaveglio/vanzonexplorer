@@ -70,7 +70,30 @@ export default async function VBAPage() {
     }
   }
 
-  // Fetch modules, lessons, progress
+  // Redirect to first lesson directly (skip hub page)
+  const { data: firstModule } = await supabase
+    .from("vba_modules")
+    .select("id, slug")
+    .eq("is_published", true)
+    .order("order")
+    .limit(1)
+    .single();
+
+  if (firstModule) {
+    const { data: firstLesson } = await supabase
+      .from("vba_lessons")
+      .select("slug")
+      .eq("module_id", firstModule.id)
+      .order("order")
+      .limit(1)
+      .single();
+
+    if (firstLesson) {
+      redirect(`/dashboard/vba/${firstModule.slug}/${firstLesson.slug}`);
+    }
+  }
+
+  // Fallback: Fetch modules, lessons, progress (if no first lesson found)
   const [modulesRes, lessonsRes, progressRes] = await Promise.all([
     supabase
       .from("vba_modules")
