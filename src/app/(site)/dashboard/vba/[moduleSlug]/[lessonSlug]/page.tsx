@@ -48,7 +48,7 @@ export default async function LessonPage({
   const [modulesRes, lessonsRes, progressRes] = await Promise.all([
     supabase
       .from("vba_modules")
-      .select("id, title, slug, description, order")
+      .select("id, title, slug, description, order, section")
       .eq("is_published", true)
       .order("order"),
     supabase

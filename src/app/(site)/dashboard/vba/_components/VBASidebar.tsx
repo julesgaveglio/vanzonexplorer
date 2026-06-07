@@ -23,6 +23,7 @@ interface Module {
   title: string;
   slug: string;
   order: number;
+  section?: string;
 }
 
 interface Lesson {
@@ -32,6 +33,8 @@ interface Lesson {
   slug: string;
   duration_seconds: number | null;
   order: number;
+  bunny_video_id?: string | null;
+  description?: string | null;
 }
 
 interface SidebarProps {
@@ -105,103 +108,135 @@ export default function VBASidebar({
         </div>
       </div>
 
-      {/* Modules accordion */}
+      {/* Modules accordion with section headers */}
       <div className="py-2">
-        {modules.map((mod) => {
-          const modLessons = lessons
-            .filter((l) => l.module_id === mod.id)
-            .sort((a, b) => a.order - b.order);
-          const isOpen = openModules.has(mod.id);
+        {(() => {
+          let lastSection = "";
+          return modules.map((mod) => {
+            const modLessons = lessons
+              .filter((l) => l.module_id === mod.id)
+              .sort((a, b) => a.order - b.order);
+            const isOpen = openModules.has(mod.id);
+            const availableLessons = modLessons.filter((l) => l.bunny_video_id);
+            const hasLessons = modLessons.length > 0;
+            const moduleNumber = mod.title.match(/Module (\d+)/)?.[1] ?? "";
+            const moduleSubtitle = mod.title.replace(/^Module \d+\s*[—–-]\s*/, "");
+            const allCompleted = availableLessons.length > 0 && availableLessons.every((l) => completedLessonIds.has(l.id));
 
-          const iconSrc = MODULE_ICONS[mod.order];
-
-          return (
-            <div key={mod.id}>
-              <button
-                onClick={() => toggleModule(mod.id)}
-                className="w-full flex items-center gap-2.5 px-4 py-3 text-left hover:bg-slate-50/60 transition-colors"
-              >
-                <ChevronDown
-                  className={`w-4 h-4 text-slate-400 transition-transform flex-shrink-0 ${
-                    isOpen ? "" : "-rotate-90"
-                  }`}
-                />
-                {iconSrc && (
-                  <Image
-                    src={iconSrc}
-                    alt=""
-                    width={18}
-                    height={18}
-                    className="w-[18px] h-[18px] flex-shrink-0"
-                    unoptimized
-                  />
-                )}
-                <div className="flex-1 leading-snug">
-                  <span className="text-sm font-bold text-slate-800 block">
-                    Module {mod.order}
-                  </span>
-                  <span className="text-xs text-slate-500">
-                    {mod.title.replace(/^Module \d+\s*[—–-]\s*/, "")}
-                  </span>
+            // Section header
+            const section = mod.section ?? "vasp";
+            let sectionHeader = null;
+            if (section !== lastSection) {
+              lastSection = section;
+              sectionHeader = (
+                <div key={`section-${section}`} className="px-4 pt-4 pb-2">
+                  <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: section === "vasp" ? "#B9945F" : "#3B82F6" }}>
+                    {section === "vasp" ? "Projet VASP" : "Projet non VASP"}
+                  </p>
                 </div>
-              </button>
+              );
+            }
 
-              {isOpen && (
-                <div className="pb-1">
-                  {modLessons.map((lesson) => {
-                    const isCompleted = completedLessonIds.has(lesson.id);
-                    const isCurrent = lesson.id === currentLessonId;
-
-                    return (
-                      <Link
-                        key={lesson.id}
-                        href={`/dashboard/vba/${mod.slug}/${lesson.slug}`}
-                        className={`flex items-center gap-2 pl-10 pr-4 py-2 text-sm transition-colors ${
-                          isCurrent
-                            ? "bg-amber-50 text-slate-900 font-medium"
-                            : "text-slate-600 hover:bg-slate-50"
-                        }`}
-                      >
-                        {isCompleted ? (
-                          <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-                        ) : isCurrent ? (
-                          <Play className="w-4 h-4 text-amber-600 flex-shrink-0" />
-                        ) : (
-                          <Circle className="w-4 h-4 text-slate-300 flex-shrink-0" />
-                        )}
-                        <span className="flex-1 leading-snug">{lesson.title}</span>
-                        {lesson.duration_seconds && (
-                          <span className="text-xs text-slate-400 flex-shrink-0">
-                            {formatDuration(lesson.duration_seconds)}
-                          </span>
-                        )}
-                      </Link>
-                    );
-                  })}
-
-                  {/* PDF recap */}
-                  <a
-                    href={`/vba/pdf/vba-module-${mod.order}-recap.pdf`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 pl-10 pr-4 py-2 text-sm hover:bg-amber-50/40 transition-colors"
-                  >
-                    <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="#B9945F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                      <polyline points="14 2 14 8 20 8" />
-                      <line x1="12" y1="18" x2="12" y2="12" />
-                      <polyline points="9 15 12 18 15 15" />
-                    </svg>
-                    <span className="flex-1 leading-snug" style={{ color: "#B9945F" }}>
-                      Fiche recap
+            return (
+              <div key={mod.id}>
+                {sectionHeader}
+                <button
+                  onClick={() => hasLessons && toggleModule(mod.id)}
+                  className={`w-full flex items-center gap-2.5 px-4 py-3 text-left transition-colors ${hasLessons ? "hover:bg-slate-50/60" : "opacity-50 cursor-default"}`}
+                >
+                  {hasLessons ? (
+                    <ChevronDown
+                      className={`w-4 h-4 text-slate-400 transition-transform flex-shrink-0 ${isOpen ? "" : "-rotate-90"}`}
+                    />
+                  ) : (
+                    <Circle className="w-4 h-4 text-slate-200 flex-shrink-0" />
+                  )}
+                  <div className="flex-1 leading-snug">
+                    <span className="text-sm font-bold text-slate-800 flex items-center gap-1.5">
+                      {moduleNumber ? `Module ${section === "non_vasp" ? mod.order - 20 : mod.order}` : moduleSubtitle}
+                      {allCompleted && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 inline-block" />}
                     </span>
-                    <span className="text-xs text-slate-400 flex-shrink-0">PDF</span>
-                  </a>
-                </div>
-              )}
-            </div>
-          );
-        })}
+                    {moduleNumber && (
+                      <span className="text-xs text-slate-500 block">{moduleSubtitle}</span>
+                    )}
+                    {!hasLessons && (
+                      <span className="text-[10px] text-amber-500 font-medium block mt-0.5">Arrive très prochainement</span>
+                    )}
+                  </div>
+                </button>
+
+                {isOpen && hasLessons && (
+                  <div className="pb-1">
+                    {modLessons.map((lesson) => {
+                      const isCompleted = completedLessonIds.has(lesson.id);
+                      const isCurrent = lesson.id === currentLessonId;
+                      const isQuiz = lesson.description?.startsWith("QUIZ:");
+                      const isComingSoon = !lesson.bunny_video_id && !isQuiz;
+
+                      if (isComingSoon) {
+                        return (
+                          <div
+                            key={lesson.id}
+                            className="flex items-center gap-2 pl-10 pr-4 py-2 text-sm opacity-40 cursor-default"
+                          >
+                            <Circle className="w-4 h-4 text-slate-200 flex-shrink-0" />
+                            <span className="flex-1 leading-snug text-slate-400">{lesson.title}</span>
+                            <span className="text-[10px] text-amber-500 font-medium flex-shrink-0">Bientôt</span>
+                          </div>
+                        );
+                      }
+
+                      return (
+                        <Link
+                          key={lesson.id}
+                          href={`/dashboard/vba/${mod.slug}/${lesson.slug}`}
+                          className={`flex items-center gap-2 pl-10 pr-4 py-2 text-sm transition-colors ${
+                            isCurrent
+                              ? "bg-amber-50 text-slate-900 font-medium"
+                              : "text-slate-600 hover:bg-slate-50"
+                          }`}
+                        >
+                          {isCompleted ? (
+                            <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                          ) : isCurrent ? (
+                            <Play className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                          ) : (
+                            <Circle className="w-4 h-4 text-slate-300 flex-shrink-0" />
+                          )}
+                          <span className="flex-1 leading-snug">{lesson.title}</span>
+                          {lesson.duration_seconds && (
+                            <span className="text-xs text-slate-400 flex-shrink-0">
+                              {formatDuration(lesson.duration_seconds)}
+                            </span>
+                          )}
+                        </Link>
+                      );
+                    })}
+
+                    {/* PDF recap */}
+                    <a
+                      href={`/vba/pdf/vba-module-${mod.order}-recap.pdf`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 pl-10 pr-4 py-2 text-sm hover:bg-amber-50/40 transition-colors"
+                    >
+                      <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="#B9945F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                        <line x1="12" y1="18" x2="12" y2="12" />
+                        <polyline points="9 15 12 18 15 15" />
+                      </svg>
+                      <span className="flex-1 leading-snug" style={{ color: "#B9945F" }}>
+                        Fiche recap
+                      </span>
+                      <span className="text-xs text-slate-400 flex-shrink-0">PDF</span>
+                    </a>
+                  </div>
+                )}
+              </div>
+            );
+          });
+        })()}
       </div>
     </aside>
   );
