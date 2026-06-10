@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, LayoutDashboard, MousePointerClick, Users, ClipboardList, Play, FileText, LogOut } from "lucide-react";
+import { Menu, X, LayoutDashboard, MousePointerClick, Users, ClipboardList, Play, FileText, CreditCard, LogOut } from "lucide-react";
 
 const LINKS = [
   { href: "/ads", label: "Dashboard", icon: LayoutDashboard, exact: true },
@@ -12,6 +12,7 @@ const LINKS = [
   { href: "/ads/formulaire", label: "Formulaire", icon: ClipboardList },
   { href: "/ads/vsl", label: "VSL", icon: Play, exact: true },
   { href: "/ads/vsl/transcript", label: "Transcript", icon: FileText },
+  { href: "/ads/ventes", label: "Ventes", icon: CreditCard },
 ];
 
 export default function AdsMobileMenu({ email }: { email: string }) {
