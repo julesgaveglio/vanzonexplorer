@@ -121,6 +121,8 @@ export async function POST(req: Request) {
               amount: session.amount_total ? session.amount_total / 100 : 0,
               stripe_session_id: session.id,
               payment_status: session.payment_status,
+              payment_type: session.metadata?.payment_type ?? null,
+              promo_code: session.metadata?.promo_code ?? null,
             },
           });
         }
