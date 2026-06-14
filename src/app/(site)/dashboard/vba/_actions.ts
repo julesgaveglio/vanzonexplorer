@@ -66,3 +66,57 @@ export async function markLessonIncomplete(lessonId: string) {
 
   revalidatePath("/dashboard/vba");
 }
+
+// ---------- VBA Comments ----------
+
+export async function addComment(lessonId: string, content: string) {
+  const userId = await requireVBAAccess();
+
+  const trimmed = content.trim();
+  if (!trimmed || trimmed.length > 2000) {
+    throw new Error("Commentaire invalide");
+  }
+
+  const supabase = createSupabaseAdmin();
+
+  const { error } = await supabase.from("vba_comments").insert({
+    lesson_id: lessonId,
+    user_id: userId,
+    content: trimmed,
+  });
+
+  if (error) throw new Error("Erreur lors de l'ajout du commentaire");
+
+  revalidatePath("/dashboard/vba");
+}
+
+export async function deleteComment(commentId: string) {
+  const userId = await requireVBAAccess();
+
+  const supabase = createSupabaseAdmin();
+
+  // Check ownership or admin
+  const user = await currentUser();
+  const email = user?.emailAddresses?.[0]?.emailAddress;
+  const isAdmin = !!email && ADMIN_EMAILS.includes(email);
+
+  if (!isAdmin) {
+    const { data: comment } = await supabase
+      .from("vba_comments")
+      .select("user_id")
+      .eq("id", commentId)
+      .single();
+    if (comment?.user_id !== userId) {
+      throw new Error("Non autorisé");
+    }
+  }
+
+  const { error } = await supabase
+    .from("vba_comments")
+    .delete()
+    .eq("id", commentId);
+
+  if (error) throw new Error("Erreur lors de la suppression");
+
+  revalidatePath("/dashboard/vba");
+}

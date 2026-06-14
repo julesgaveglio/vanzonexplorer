@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { Camera, Loader2 } from "lucide-react";
 
 type Profile = {
   id: string;
@@ -9,6 +10,7 @@ type Profile = {
   email: string | null;
   phone: string | null;
   avatar_url: string | null;
+  display_name: string | null;
   van_model: string | null;
   van_year: number | null;
   plan: string;
@@ -27,8 +29,37 @@ export default function ProfileTab({ profile, userEmail, userName }: Props) {
   const [saved, setSaved] = useState(false);
 
   const [phone, setPhone] = useState(profile?.phone ?? "");
+  const [displayName, setDisplayName] = useState(profile?.display_name ?? "");
   const [vanModel, setVanModel] = useState(profile?.van_model ?? "");
   const [vanYear, setVanYear] = useState(profile?.van_year?.toString() ?? "");
+  const [avatarUrl, setAvatarUrl] = useState(profile?.avatar_url ?? "");
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingAvatar(true);
+    try {
+      const formData = new FormData();
+      formData.append("avatar", file);
+
+      const res = await fetch("/api/profile/avatar", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (res.ok) {
+        const { avatar_url } = await res.json();
+        setAvatarUrl(avatar_url);
+      }
+    } catch (err) {
+      console.error("Avatar upload error:", err);
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
 
   const handleSave = async () => {
     setSaving(true);
@@ -38,6 +69,7 @@ export default function ProfileTab({ profile, userEmail, userName }: Props) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           phone: phone || null,
+          display_name: displayName || null,
           van_model: vanModel || null,
           van_year: vanYear ? parseInt(vanYear) : null,
         }),
@@ -86,6 +118,74 @@ export default function ProfileTab({ profile, userEmail, userName }: Props) {
 
   return (
     <div className="space-y-6">
+      {/* Carte avatar + pseudo */}
+      <div className="bg-white rounded-2xl border border-slate-100 p-6">
+        <h2 className="text-base font-bold text-slate-900 mb-6">Photo & pseudo</h2>
+        <div className="flex flex-col sm:flex-row items-start gap-6">
+          {/* Avatar */}
+          <div className="relative group">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              onChange={handleAvatarUpload}
+              className="hidden"
+            />
+            {avatarUrl ? (
+              <img
+                src={avatarUrl}
+                alt="Avatar"
+                className="w-20 h-20 rounded-full object-cover border-2 border-slate-100"
+              />
+            ) : (
+              <div
+                className="w-20 h-20 rounded-full flex items-center justify-center text-white text-2xl font-bold"
+                style={{
+                  background: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
+                }}
+              >
+                {(displayName || userName || "?")[0]?.toUpperCase()}
+              </div>
+            )}
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploadingAvatar}
+              className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center shadow-lg hover:bg-slate-700 transition-colors disabled:opacity-50"
+            >
+              {uploadingAvatar ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Camera className="w-4 h-4" />
+              )}
+            </button>
+          </div>
+
+          {/* Display name */}
+          <div className="flex-1 w-full">
+            <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+              Pseudo (visible dans les commentaires)
+            </label>
+            {editing ? (
+              <input
+                type="text"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                placeholder={userName || "Mon pseudo"}
+                maxLength={30}
+                className="w-full px-4 py-2.5 text-sm text-slate-900 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-accent-blue/30 focus:border-accent-blue transition-colors"
+              />
+            ) : (
+              <p className="text-sm text-slate-700 py-2.5 px-4 bg-slate-50 rounded-xl">
+                {displayName || userName || <span className="text-slate-400 italic">Non renseigné</span>}
+              </p>
+            )}
+            <p className="text-xs text-slate-400 mt-1.5">
+              Ce nom sera affiché dans vos commentaires de la formation.
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Carte infos personnelles */}
       <div className="bg-white rounded-2xl border border-slate-100 p-6">
         <div className="flex items-center justify-between mb-6">

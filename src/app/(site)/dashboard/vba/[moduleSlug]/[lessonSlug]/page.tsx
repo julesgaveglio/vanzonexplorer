@@ -12,6 +12,7 @@ import VBAPaywall from "../../_components/VBAPaywall";
 import VBAQuiz, { type QuizQuestion } from "../../_components/VBAQuiz";
 import VBAVideoPlayer from "../../_components/VBAVideoPlayer";
 import VBALessonContent from "../../_components/VBALessonContent";
+import VBAComments from "../../_components/VBAComments";
 
 interface Resource {
   type: "pdf" | "image" | "link";
@@ -45,7 +46,7 @@ export default async function LessonPage({
   }
 
   // Fetch all data in parallel
-  const [modulesRes, lessonsRes, progressRes] = await Promise.all([
+  const [modulesRes, lessonsRes, progressRes, profileRes] = await Promise.all([
     supabase
       .from("vba_modules")
       .select("id, title, slug, description, order, section")
@@ -60,11 +61,17 @@ export default async function LessonPage({
       .from("vba_progress")
       .select("lesson_id, completed")
       .eq("user_id", userId),
+    supabase
+      .from("profiles")
+      .select("display_name, full_name, avatar_url")
+      .eq("clerk_id", userId)
+      .single(),
   ]);
 
   const modules = modulesRes.data ?? [];
   const allLessons = lessonsRes.data ?? [];
   const progress = progressRes.data ?? [];
+  const currentUserProfile = profileRes.data ?? { display_name: null, full_name: null, avatar_url: null };
 
   // Find current module + lesson
   const currentModule = modules.find((m) => m.slug === moduleSlug);
@@ -80,6 +87,39 @@ export default async function LessonPage({
     progress.filter((p) => p.completed).map((p) => p.lesson_id)
   );
   const isCompleted = completedSet.has(currentLesson.id);
+
+  // Fetch comments for this lesson with author profiles
+  const { data: rawComments } = await supabase
+    .from("vba_comments")
+    .select("id, content, created_at, user_id")
+    .eq("lesson_id", currentLesson.id)
+    .order("created_at", { ascending: true });
+
+  // Fetch profiles for comment authors
+  const commentUserIds = Array.from(new Set((rawComments ?? []).map((c) => c.user_id)));
+  const profilesMap = new Map<string, { display_name: string | null; full_name: string | null; avatar_url: string | null }>();
+
+  if (commentUserIds.length > 0) {
+    const { data: profiles } = await supabase
+      .from("profiles")
+      .select("clerk_id, display_name, full_name, avatar_url")
+      .in("clerk_id", commentUserIds);
+
+    for (const p of profiles ?? []) {
+      profilesMap.set(p.clerk_id, {
+        display_name: p.display_name,
+        full_name: p.full_name,
+        avatar_url: p.avatar_url,
+      });
+    }
+  }
+
+  const comments = (rawComments ?? []).map((c) => ({
+    ...c,
+    profile: profilesMap.get(c.user_id) ?? null,
+  }));
+
+  const isAdmin = !!email && ADMIN_EMAILS.includes(email);
 
   // Build flat ordered list for prev/next navigation
   const orderedLessons = modules.flatMap((mod) =>
@@ -227,6 +267,17 @@ export default async function LessonPage({
               </div>
             </div>
           )}
+
+          {/* Comments */}
+          <div className="mb-4 sm:mb-6">
+            <VBAComments
+              lessonId={currentLesson.id}
+              initialComments={comments}
+              currentUserId={userId}
+              isAdmin={isAdmin}
+              currentUserProfile={currentUserProfile}
+            />
+          </div>
 
           {/* Prev/Next navigation */}
           <div className="flex items-center justify-between gap-3 border-t border-slate-100 pt-4 sm:pt-6 pb-20 lg:pb-6">

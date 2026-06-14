@@ -7,6 +7,7 @@ const updateSchema = z.object({
   phone: z.string().nullable().optional(),
   van_model: z.string().nullable().optional(),
   van_year: z.number().int().min(1990).max(2030).nullable().optional(),
+  display_name: z.string().max(30).nullable().optional(),
 });
 
 export async function PATCH(req: Request) {
