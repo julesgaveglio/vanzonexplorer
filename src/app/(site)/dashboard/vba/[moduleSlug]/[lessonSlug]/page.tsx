@@ -91,7 +91,7 @@ export default async function LessonPage({
   // Fetch comments for this lesson with author profiles
   const { data: rawComments } = await supabase
     .from("vba_comments")
-    .select("id, content, created_at, user_id")
+    .select("id, content, created_at, user_id, parent_id")
     .eq("lesson_id", currentLesson.id)
     .order("created_at", { ascending: true });
 

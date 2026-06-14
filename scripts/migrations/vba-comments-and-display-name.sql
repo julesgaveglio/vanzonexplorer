@@ -17,5 +17,9 @@ CREATE TABLE IF NOT EXISTS public.vba_comments (
 CREATE INDEX IF NOT EXISTS vba_comments_lesson_id_idx ON public.vba_comments(lesson_id);
 CREATE INDEX IF NOT EXISTS vba_comments_user_id_idx ON public.vba_comments(user_id);
 
+-- 3. Parent_id for threaded replies
+ALTER TABLE public.vba_comments ADD COLUMN IF NOT EXISTS parent_id UUID REFERENCES public.vba_comments(id) ON DELETE CASCADE;
+CREATE INDEX IF NOT EXISTS vba_comments_parent_id_idx ON public.vba_comments(parent_id);
+
 -- Enable RLS (we bypass with service_role anyway)
 ALTER TABLE public.vba_comments ENABLE ROW LEVEL SECURITY;

@@ -69,7 +69,7 @@ export async function markLessonIncomplete(lessonId: string) {
 
 // ---------- VBA Comments ----------
 
-export async function addComment(lessonId: string, content: string) {
+export async function addComment(lessonId: string, content: string, parentId?: string) {
   const userId = await requireVBAAccess();
 
   const trimmed = content.trim();
@@ -83,6 +83,7 @@ export async function addComment(lessonId: string, content: string) {
     lesson_id: lessonId,
     user_id: userId,
     content: trimmed,
+    parent_id: parentId ?? null,
   });
 
   if (error) throw new Error("Erreur lors de l'ajout du commentaire");
