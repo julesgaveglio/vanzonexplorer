@@ -198,32 +198,6 @@
     "pipeline": "Standalone"
   },
   {
-    "id": "pinterest-research",
-    "name": "Agent Pinterest Research",
-    "emoji": "📌",
-    "status": "active",
-    "description": "Récupère les boards Pinterest, analyse 7 keywords vanlife clés, et génère via Groq une stratégie complète : recommandations de boards + content queue de 10-15 pins. Compte actuellement en Trial (lecture seule) — le posting sera activé après upgrade Standard.",
-    "trigger": "manual",
-    "schedule": "Manuel (via /admin/pinterest ou CLI)",
-    "cronExpression": null,
-    "file": "scripts/agents/pinterest-research-agent.ts",
-    "workflow": null,
-    "apis": [
-      "Pinterest API v5",
-      "Groq",
-      "Supabase"
-    ],
-    "output": "Données dans pinterest_boards, pinterest_keyword_opportunities, pinterest_board_recommendations, pinterest_content_queue",
-    "manualCommand": "npx tsx scripts/agents/pinterest-research-agent.ts",
-    "tags": [
-      "Pinterest",
-      "Social",
-      "Recherche",
-      "Manuel"
-    ],
-    "pipeline": "Standalone"
-  },
-  {
     "id": "link-optimizer-monthly",
     "name": "Agent Link Optimizer",
     "emoji": "🔗",
@@ -353,34 +327,6 @@
     "pipeline": "road_trip_requests (sent) → enrichissement → Sanity (review)"
   },
   {
-    "id": "seed-poi-pays-basque",
-    "name": "Seed POI Pays Basque",
-    "emoji": "📍",
-    "status": "active",
-    "description": "Script manuel de premier scraping pour pré-remplir la table poi_cache côté Pays Basque. Phase 1 : spots de nuit van (parking gratuit, aires camping-car, campings van, spots sauvages). Phase 2 : activités/restos/culture/nature/plages. Pour chaque requête : Tavily → Groq (extraction JSON strict) → upsert Supabase idempotent sur (name, location_city).",
-    "trigger": "manual",
-    "schedule": "Manuel uniquement (seed initial)",
-    "cronExpression": null,
-    "file": "scripts/agents/seed-poi-pays-basque.ts",
-    "workflow": null,
-    "apis": [
-      "Tavily",
-      "Groq",
-      "Gemini",
-      "Supabase"
-    ],
-    "output": "Table poi_cache pré-remplie (spots de nuit + POI Pays Basque)",
-    "manualCommand": "npx tsx scripts/agents/seed-poi-pays-basque.ts",
-    "tags": [
-      "Road Trip",
-      "Seed",
-      "POI",
-      "Pays Basque",
-      "Manuel"
-    ],
-    "pipeline": "Standalone — alimente le wizard /road-trip-personnalise (cache-first)"
-  },
-  {
     "id": "road-trip-seed",
     "name": "Agent Road Trip Seed",
     "emoji": "🌱",
@@ -430,77 +376,6 @@
       "Automatique"
     ],
     "pipeline": "Standalone — rattrapage nocturne + webhook temps réel"
-  },
-  {
-    "id": "memory-obsidian-sync",
-    "name": "Sync Mémoire → Obsidian",
-    "emoji": "🧠",
-    "status": "active",
-    "description": "Synchronise les notes vocales sauvegardées en Supabase vers les fichiers Markdown Obsidian (Vanzon Memory Database/). À lancer localement — ne fonctionne pas sur Vercel.",
-    "trigger": "manual",
-    "schedule": "Manuel uniquement",
-    "cronExpression": null,
-    "file": "scripts/agents/memory-obsidian-sync.ts",
-    "workflow": null,
-    "apis": [
-      "Supabase"
-    ],
-    "output": "Fichiers Markdown dans Vanzon Memory Database/",
-    "manualCommand": "npx tsx scripts/agents/memory-obsidian-sync.ts",
-    "tags": [
-      "Mémoire",
-      "Obsidian",
-      "Manuel"
-    ],
-    "pipeline": "Standalone"
-  },
-  {
-    "id": "generate-facebook-schedule",
-    "name": "Agent Planning Facebook",
-    "emoji": "📅",
-    "status": "active",
-    "description": "Génère le planning des 4 prochaines semaines pour les posts Facebook vanlife. Charge les groupes actifs (priorité), les templates disponibles et respecte un cooldown de 28 jours par groupe. Crée des slots (1 post toutes les 4 jours, hors week-end) dans facebook_outreach_schedule.",
-    "trigger": "manual",
-    "schedule": "Manuel (avant chaque nouvelle période de 4 semaines)",
-    "cronExpression": null,
-    "file": "scripts/agents/generate-facebook-schedule.ts",
-    "workflow": null,
-    "apis": [
-      "Supabase"
-    ],
-    "output": "Slots insérés dans facebook_outreach_schedule (status=pending)",
-    "manualCommand": "npx tsx scripts/agents/generate-facebook-schedule.ts [--days 28]",
-    "tags": [
-      "Facebook",
-      "Social",
-      "Planning",
-      "Manuel"
-    ],
-    "pipeline": "Standalone — à lancer avant facebook-outreach-poster"
-  },
-  {
-    "id": "seed-facebook-groups",
-    "name": "Agent Seed Groupes Facebook",
-    "emoji": "🌱",
-    "status": "active",
-    "description": "Insère la liste initiale des 12 groupes Facebook vanlife/van aménagé dans la table facebook_groups. Vérifie les doublons par URL avant insertion. Priorités 3-5 selon affinité avec la cible Vanzon.",
-    "trigger": "manual",
-    "schedule": "Manuel uniquement (seed initial)",
-    "cronExpression": null,
-    "file": "scripts/agents/seed-facebook-groups.ts",
-    "workflow": null,
-    "apis": [
-      "Supabase"
-    ],
-    "output": "12 groupes insérés dans facebook_groups",
-    "manualCommand": "npx tsx scripts/agents/seed-facebook-groups.ts",
-    "tags": [
-      "Facebook",
-      "Social",
-      "Seed",
-      "Manuel"
-    ],
-    "pipeline": "Standalone — seed initial requis avant generate-facebook-schedule"
   },
   {
     "id": "cmo-weekly-agent",
@@ -555,31 +430,6 @@
     "pipeline": "Standalone"
   },
   {
-    "id": "pinterest-poster-agent",
-    "name": "Agent Pinterest Poster",
-    "emoji": "📌",
-    "status": "inactive",
-    "description": "Phase 2 (skeleton) — Publiera des pins depuis pinterest_content_queue vers Pinterest. Actuellement désactivé : compte Pinterest en Trial (read-only). Activer après upgrade Standard en définissant PINTEREST_WRITE_ENABLED=true.",
-    "trigger": "manual",
-    "schedule": "Manuel (désactivé — requiert PINTEREST_WRITE_ENABLED=true)",
-    "cronExpression": null,
-    "file": "scripts/agents/pinterest-poster-agent.ts",
-    "workflow": null,
-    "apis": [
-      "Pinterest API v5",
-      "Supabase"
-    ],
-    "output": "Pins publiés sur Pinterest + status=published dans pinterest_content_queue",
-    "manualCommand": "PINTEREST_WRITE_ENABLED=true npx tsx scripts/agents/pinterest-poster-agent.ts",
-    "tags": [
-      "Pinterest",
-      "Social",
-      "Phase2",
-      "Inactif"
-    ],
-    "pipeline": "Standalone — suite de pinterest-research"
-  },
-  {
     "id": "strategic-director",
     "name": "Agent Strategic Director",
     "emoji": "🎯",
@@ -599,33 +449,6 @@
       "Manuel"
     ],
     "pipeline": "Standalone — lit Vanzon Memory Database/🔒 INTERNE/strategie/"
-  },
-  {
-    "id": "strategic-review-daily",
-    "name": "Agent Review Stratégique Quotidien",
-    "emoji": "📋",
-    "status": "paused",
-    "description": "[REMPLACE PAR /boss] Tous les jours à 7h Paris : collecte contexte (git log 24h + stats Supabase + état projet), analyse Groq, nettoie les tâches Todoist obsolètes, crée 5 nouvelles tâches priorisées par impact, envoie un récap Telegram.",
-    "trigger": "cron",
-    "schedule": "Tous les jours à 7h Paris (5h UTC)",
-    "cronExpression": "0 5 * * *",
-    "file": "scripts/agents/strategic-review-daily.ts",
-    "workflow": ".github/workflows/strategic-review-daily.yml",
-    "apis": [
-      "Supabase",
-      "Groq",
-      "Todoist",
-      "Telegram"
-    ],
-    "output": "5 tâches Todoist priorisées + nettoyage + Telegram récap",
-    "manualCommand": "npx tsx scripts/agents/strategic-review-daily.ts",
-    "tags": [
-      "Stratégie",
-      "Todoist",
-      "Automatique",
-      "Quotidien"
-    ],
-    "pipeline": "Standalone — lit état projet + stats + git log → Groq → Todoist"
   },
   {
     "id": "backlinks-weekly-agent",
@@ -656,57 +479,6 @@
     "pipeline": "1 → alimente backlinks-daily-outreach"
   },
   {
-    "id": "social-trend-scraper",
-    "name": "Social Trend Scraper",
-    "emoji": "🔍",
-    "status": "active",
-    "description": "Analyse les tendances vanlife Instagram et génère 10 idées de Reels. Utilise Groq pour analyser les formats performants et produire des concepts reproductibles avec les clips existants.",
-    "trigger": "cron",
-    "schedule": "Chaque lundi à 9h UTC",
-    "cronExpression": "0 9 * * 1",
-    "file": "scripts/agents/social-trend-scraper.ts",
-    "workflow": null,
-    "apis": [
-      "Groq"
-    ],
-    "output": "10 idées ajoutées à Vanzon Memory Database/🌐 PUBLIC/social/📋 Reel Ideas Bank.md",
-    "manualCommand": "npx tsx scripts/agents/social-trend-scraper.ts",
-    "tags": [
-      "Social",
-      "Instagram",
-      "Reels",
-      "Automatique"
-    ],
-    "pipeline": "1 → alimente reel-producer"
-  },
-  {
-    "id": "reel-producer",
-    "name": "Reel Producer",
-    "emoji": "🎬",
-    "status": "active",
-    "description": "Produit un Reel Instagram à partir de la banque d'idées. Sélectionne la prochaine idée, planifie le montage via Groq, découpe et assemble les clips avec ffmpeg, ajoute la musique, envoie sur Telegram pour validation.",
-    "trigger": "cron",
-    "schedule": "Lundi, Mercredi, Vendredi à 10h UTC",
-    "cronExpression": "0 10 * * 1,3,5",
-    "file": "scripts/agents/reel-producer.ts",
-    "workflow": null,
-    "apis": [
-      "Groq",
-      "Telegram",
-      "ffmpeg"
-    ],
-    "output": "Reel MP4 envoyé sur Telegram + idée marquée 🎬 dans la banque",
-    "manualCommand": "npx tsx scripts/agents/reel-producer.ts",
-    "tags": [
-      "Social",
-      "Instagram",
-      "Reels",
-      "Production",
-      "Automatique"
-    ],
-    "pipeline": "2 → consomme les idées du social-trend-scraper"
-  },
-  {
     "id": "boss",
     "name": "Boss — Business Operating System",
     "emoji": "🧠",
@@ -730,36 +502,6 @@
       "Manuel"
     ],
     "pipeline": "Lit les Core files (boss/) + donnees dynamiques Supabase + GSC"
-  },
-  {
-    "id": "shorts-editor",
-    "name": "YouTube Shorts Editor",
-    "emoji": "🎬",
-    "status": "active",
-    "description": "Prend une vidéo face-cam brute (1-3 min) et produit un YouTube Short (<60s) avec suppression des silences, validation QC par Claude Haiku (cohérence des phrases), sous-titres animés style CapCut (pycaps), et musique de fond. Pipeline : auto-editor → whisper → Claude QC → FFmpeg cuts → pycaps subtitles → FFmpeg export → Telegram.",
-    "trigger": "manual",
-    "schedule": "Manuel uniquement",
-    "cronExpression": null,
-    "file": "scripts/agents/shorts-editor-agent.ts",
-    "workflow": null,
-    "apis": [
-      "Anthropic Claude (Haiku)",
-      "Telegram Bot API",
-      "ffmpeg/ffprobe",
-      "OpenAI Whisper (local)",
-      "auto-editor",
-      "pycaps"
-    ],
-    "output": "YouTube Short MP4 envoyé sur Telegram",
-    "manualCommand": "npx tsx scripts/agents/shorts-editor-agent.ts /path/to/video.mp4",
-    "tags": [
-      "YouTube",
-      "Shorts",
-      "Video",
-      "VBA",
-      "Manuel"
-    ],
-    "pipeline": "Standalone — vidéo brute → Short prêt à poster"
   },
   {
     "id": "sync-reservations-calendar",
