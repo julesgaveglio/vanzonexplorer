@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import FloatingCTA from "@/components/layout/FloatingCTA";
@@ -13,20 +12,14 @@ export default function SiteLayout({
 }) {
   return (
     <ArticleCategoryProvider>
-      <Suspense>
-        <AdLandingGuard>
-          <Navbar />
-        </AdLandingGuard>
-      </Suspense>
-      <Suspense>
-        <MainWithPadding>{children}</MainWithPadding>
-      </Suspense>
-      <Suspense>
-        <AdLandingGuard>
-          <Footer />
-          <FloatingCTA />
-        </AdLandingGuard>
-      </Suspense>
+      <AdLandingGuard>
+        <Navbar />
+      </AdLandingGuard>
+      <MainWithPadding>{children}</MainWithPadding>
+      <AdLandingGuard>
+        <Footer />
+        <FloatingCTA />
+      </AdLandingGuard>
     </ArticleCategoryProvider>
   );
 }
