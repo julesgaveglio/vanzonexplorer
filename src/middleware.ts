@@ -31,6 +31,7 @@ const GONE_PREFIXES = [
   "/galerie",
   "/author/",
   "/category/",
+  "/club",
 ];
 
 function isGonePath(pathname: string): boolean {

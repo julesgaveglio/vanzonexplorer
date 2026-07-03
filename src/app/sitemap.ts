@@ -7,6 +7,8 @@ import { slugify } from "@/lib/slugify";
 
 const BASE_URL = "https://vanzonexplorer.com";
 
+export const revalidate = 3600;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const vanSlugs = await sanityFetch<{ slug: string; updatedAt?: string }[]>(getAllVanSlugsQuery) ?? [];
   const articleSlugs = await sanityFetch<{ slug: string; updatedAt?: string }[]>(getAllArticleSlugsQuery) ?? [];
@@ -25,10 +27,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/formation`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
     { url: `${BASE_URL}/achat`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
     ...VANS.map((v) => ({ url: `${BASE_URL}/achat/${v.id}`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.8 })),
-    // Club retiré du nav (mai 2026) — pages restent accessibles mais plus dans le sitemap
+    // Club supprimé du site (juillet 2026) — routes /club en 410 via middleware
     { url: `${BASE_URL}/pays-basque`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     // Road Trip Pays Basque — hub + 12 pages finales (les 3 pages durée seules sont des filtres sans contenu unique)
     { url: `${BASE_URL}/road-trip-pays-basque-van`, lastModified: new Date("2026-04-11"), changeFrequency: "weekly", priority: 0.9 },
+    { url: `${BASE_URL}/road-trip-pays-basque-van/1-jour/solo`, lastModified: new Date("2026-04-11"), changeFrequency: "monthly", priority: 0.7 },
+    { url: `${BASE_URL}/road-trip-pays-basque-van/1-jour/couple`, lastModified: new Date("2026-04-11"), changeFrequency: "monthly", priority: 0.7 },
+    { url: `${BASE_URL}/road-trip-pays-basque-van/1-jour/amis`, lastModified: new Date("2026-04-11"), changeFrequency: "monthly", priority: 0.7 },
+    { url: `${BASE_URL}/road-trip-pays-basque-van/1-jour/famille`, lastModified: new Date("2026-04-11"), changeFrequency: "monthly", priority: 0.7 },
     { url: `${BASE_URL}/road-trip-pays-basque-van/weekend/solo`, lastModified: new Date("2026-04-11"), changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE_URL}/road-trip-pays-basque-van/weekend/couple`, lastModified: new Date("2026-04-11"), changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE_URL}/road-trip-pays-basque-van/weekend/amis`, lastModified: new Date("2026-04-11"), changeFrequency: "monthly", priority: 0.8 },

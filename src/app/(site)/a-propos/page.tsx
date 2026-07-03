@@ -5,7 +5,7 @@ import LiquidButton from "@/components/ui/LiquidButton";
 import CalendlyButton from "@/components/ui/CalendlyButton";
 import { sanityFetch } from "@/lib/sanity/client";
 import { groq } from "next-sanity";
-import { getBrands } from "@/lib/club/data";
+import { createSupabaseAnon } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
   title: { absolute: "À propos — Vanzon Explorer | Écosystème Vanlife Pays Basque" },
@@ -79,13 +79,17 @@ const VALUES = [
 
 export default async function AProposPage() {
   // Données dynamiques
-  const [vanCount, brands] = await Promise.all([
+  const [vanCount, { count: partnerBrandCount }] = await Promise.all([
     sanityFetch<number>(locationVansCountQuery).catch(() => null),
-    getBrands({ partnerOnly: true }).catch(() => []),
+    createSupabaseAnon()
+      .from("brands")
+      .select("*", { count: "exact", head: true })
+      .eq("status", "active")
+      .eq("is_partner", true),
   ]);
 
   const fleetCount = vanCount ?? 2;
-  const brandCount = brands.length > 0 ? brands.length : "—";
+  const brandCount = partnerBrandCount || "—";
 
   return (
     <>

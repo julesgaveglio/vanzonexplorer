@@ -198,7 +198,7 @@ Génère une stratégie Pinterest complète en JSON avec exactement cette struct
 }
 
 Crée 3-5 boards recommendations et 10-15 pins dans la content_queue.
-Les destination_url doivent pointer vers vanzonexplorer.com avec des paths réalistes (/location, /blog/..., /pays-basque, /club, etc).
+Les destination_url doivent pointer vers vanzonexplorer.com avec des paths réalistes (/location, /blog/..., /pays-basque, etc).
 Réponds UNIQUEMENT avec le JSON, sans texte autour.`;
 
   let strategy: GroqStrategyResponse = {

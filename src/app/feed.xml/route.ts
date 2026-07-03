@@ -1,6 +1,8 @@
 import { sanityFetch } from "@/lib/sanity/client";
 import { groq } from "next-sanity";
 
+export const revalidate = 3600;
+
 const BASE_URL = "https://vanzonexplorer.com";
 
 const recentArticlesQuery = groq`
