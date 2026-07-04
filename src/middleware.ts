@@ -1,5 +1,6 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
+import type { NextFetchEvent, NextRequest } from "next/server";
 
 const isAdminRoute = createRouteMatcher(["/admin(.*)"]);
 const isAdminLogin = createRouteMatcher(["/admin/login"]);
@@ -17,6 +18,22 @@ const isFormationRoute = createRouteMatcher(["/dashboard/formations(.*)"]);
 const isProtectedRoute = createRouteMatcher([
   "/dashboard/vba(.*)",
   "/user(.*)",
+]);
+
+// Routes qui ont réellement besoin de Clerk côté serveur. Tout le reste
+// (pages publiques SEO) ne doit JAMAIS passer par clerkMiddleware : en
+// instance de développement, Clerk répond aux navigations sans cookie par
+// un 307 handshake vers accounts.dev — invisible pour un humain, mais
+// Googlebot le reçoit et classe toutes les pages en "Redirect error".
+const needsClerk = createRouteMatcher([
+  "/dashboard(.*)",
+  "/user(.*)",
+  "/admin(.*)",
+  "/proprietaire(.*)",
+  "/formations(.*)",
+  "/pixel-agents(.*)",
+  "/api(.*)",
+  "/trpc(.*)",
 ]);
 
 // Old WordPress paths that no longer exist — return 410 Gone
@@ -45,17 +62,7 @@ function isWordPressGhost(pathname: string, searchParams: string): boolean {
   return false;
 }
 
-export default clerkMiddleware(async (auth, req) => {
-  // Old WordPress URLs — 410 Gone (tell Google to stop crawling)
-  if (isGonePath(req.nextUrl.pathname)) {
-    return new NextResponse("Gone", { status: 410 });
-  }
-
-  // WordPress ghost URLs with ?action=register or /blogs/category/ — 410 Gone
-  if (isWordPressGhost(req.nextUrl.pathname, req.nextUrl.search)) {
-    return new NextResponse("Gone", { status: 410 });
-  }
-
+const clerkHandler = clerkMiddleware(async (auth, req) => {
   // Dev-only routes (pixel-agents) — pass through, they have their own NODE_ENV guard
   if (isDevOnlyRoute(req)) return NextResponse.next();
 
@@ -112,6 +119,21 @@ export default clerkMiddleware(async (auth, req) => {
     await auth.protect();
   }
 });
+
+export default function middleware(req: NextRequest, event: NextFetchEvent) {
+  // Old WordPress URLs + /club — 410 Gone (tell Google to stop crawling)
+  if (isGonePath(req.nextUrl.pathname)) {
+    return new NextResponse("Gone", { status: 410 });
+  }
+  if (isWordPressGhost(req.nextUrl.pathname, req.nextUrl.search)) {
+    return new NextResponse("Gone", { status: 410 });
+  }
+
+  // Pages publiques : ne jamais invoquer Clerk (cf. commentaire needsClerk)
+  if (!needsClerk(req)) return NextResponse.next();
+
+  return clerkHandler(req, event);
+}
 
 export const config = {
   matcher: [
