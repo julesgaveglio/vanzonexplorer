@@ -29,7 +29,9 @@ const needsClerk = createRouteMatcher([
   "/dashboard(.*)",
   "/user(.*)",
   "/admin(.*)",
-  "/proprietaire(.*)",
+  // /proprietaire tout court est une landing publique (dans le sitemap) —
+  // seuls les sous-chemins (inscription, connexion, dashboard) passent par Clerk
+  "/proprietaire/(.*)",
   "/formations(.*)",
   "/pixel-agents(.*)",
   "/api(.*)",
