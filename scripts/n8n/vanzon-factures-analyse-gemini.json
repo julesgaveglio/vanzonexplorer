@@ -1,0 +1,57 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key={{ $env.GEMINI_API_KEY }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"contents\":[{\"parts\":[{\"text\":\"Tu es un comptable expert. Analyse cette facture et extrais les données au format JSON strict.\\nRÈGLES :\\n- HT + TVA = TTC doit TOUJOURS être vérifié\\n- Un montant exonéré de TVA est quand même du HT (TVA = 0€)\\n- TVA récupérable = true sauf vendeur hors UE ou TVA 0% non facturée\\n- Catégories possibles : Aménagement van, Équipement van, Entretien / Réparation, Fournitures, Électricité / Solaire, Marketing / Design, Abonnement / Service, Cuisine / Sanitaire, Décoration, Autre\\n- Entités possibles : Yoni, Xalbat, VBA, Vanzon\\n- Sources possibles : Amazon Business, Amazon Perso, Fournisseur direct, Magasin\\n\\nAttribution entité :\\n- Achats 2024-2025 (sauf Trafic/Xalbat explicite) → Yoni\\n- Mentions Renault Trafic, EL-225-WJ, Roady → Xalbat\\n- Microphone, livres, Business Prime → VBA\\n- Affiche, design → Vanzon\\n\\nRéponds UNIQUEMENT avec du JSON valide, sans markdown :\\n{\\\"date\\\":\\\"YYYY-MM-DD\\\",\\\"numero_facture\\\":\\\"string\\\",\\\"fournisseur\\\":\\\"string\\\",\\\"description\\\":\\\"tous les articles détaillés\\\",\\\"montant_ht\\\":0,\\\"tva\\\":0,\\\"montant_ttc\\\":0,\\\"taux_tva\\\":\\\"20%\\\",\\\"tva_recuperable\\\":true,\\\"categorie\\\":\\\"string\\\",\\\"entite\\\":\\\"string\\\",\\\"source\\\":\\\"string\\\",\\\"vendeur\\\":null,\\\"numero_commande\\\":null}\"},{\"inlineData\":{\"mimeType\":\"{{ $json.mimeType }}\",\"data\":\"{{ $json.base64 }}\"}}]}],\"generationConfig\":{\"temperature\":0.1}}",
+        "options": {
+          "response": {
+            "response": {}
+          },
+          "timeout": 60000
+        }
+      },
+      "id": "gemini-api",
+      "name": "Gemini — Analyser facture",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [496, 160],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parser la réponse Gemini et préparer les données\nconst FACTURES_ROOT = '1AMLGJVhCzU0dJBtzVBx-2gpZrxuiF7rB';\nconst FACTURES_2026 = '1VfwFurXDhOoQEPzRezGTlQOR3s84XmCE';\nconst INBOX_FOLDER = '1q7o8oe07UvhqwNm1VKjhK0Vht832P3Pg';\n\nconst geminiResponse = $input.first().json;\nconst text = geminiResponse.candidates?.[0]?.content?.parts?.[0]?.text || '';\n\nconst jsonMatch = text.match(/\\{[\\s\\S]*\\}/);\nif (!jsonMatch) throw new Error('Gemini n\\'a pas retourné de JSON valide: ' + text.substring(0, 300));\n\nconst inv = JSON.parse(jsonMatch[0]);\n\n// Vérifier HT + TVA = TTC\nconst diff = Math.abs((inv.montant_ht + inv.tva) - inv.montant_ttc);\nif (diff > 0.05) throw new Error('Erreur comptable: HT(' + inv.montant_ht + ') + TVA(' + inv.tva + ') != TTC(' + inv.montant_ttc + ')');\n\n// Nom fichier standardisé\n// Gemini renvoie parfois \"description\" en tableau d'articles (au lieu d'une string) : on gère les deux cas\nconst descText = Array.isArray(inv.description)\n  ? inv.description.map(item => item.article).filter(Boolean).join(', ')\n  : String(inv.description || '');\nconst desc = descText.substring(0, 50).replace(/[^a-zA-Z0-9àâéèêëïîôùûç -]/g, '').trim().replace(/ /g, '-');\nconst driveFileName = inv.date + '_' + inv.fournisseur.replace(/ /g, '-') + '_' + inv.montant_ttc.toFixed(2) + 'EUR_' + desc;\n\n// Dossier destination\nconst year = inv.date.split('-')[0];\nconst month = parseInt(inv.date.split('-')[1]);\nconst monthNames = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];\nconst monthFolder = month.toString().padStart(2, '0') + ' — ' + monthNames[month - 1];\nconst yearFolderId = year === '2026' ? FACTURES_2026 : FACTURES_ROOT;\n\n// Préparer la query de recherche du dossier mois\nconst searchQuery = \"name='\" + monthFolder + \"' and '\" + yearFolderId + \"' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false\";\n\n// Garder le fileId original pour le move\nconst originalFileId = $('Extraire base64').first().json.originalFileId;\n\nreturn [{\n  json: {\n    ...inv,\n    originalFileId,\n    driveFileName,\n    monthFolder,\n    year,\n    yearFolderId,\n    searchQuery,\n    inboxFolder: INBOX_FOLDER\n  }\n}];"
+      },
+      "id": "parse-gemini",
+      "name": "Parser réponse Gemini",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [672, 160]
+    }
+  ],
+  "connections": {
+    "Gemini — Analyser facture": {
+      "main": [
+        [
+          {
+            "node": "Parser réponse Gemini",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parser réponse Gemini": {
+      "main": [[]]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}
