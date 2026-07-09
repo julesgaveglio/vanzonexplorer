@@ -12,15 +12,16 @@ export const RESOURCES: Record<string, ResourceConfig> = {
     title: "Le business du van amenage",
     description:
       "Acheter, amenager, louer et revendre un van amenage — la methode et les vrais chiffres.",
-    fileUrl: "/docs/guide-business-van-amenage.pdf",
-    fileName: "vanzon-guide-business-van-amenage.pdf",
+    fileUrl: "/docs/business-vente-van-amenage.pdf",
+    fileName: "vanzon-business-vente-van-amenage.pdf",
   },
   liste: {
     slug: "liste",
-    title: "La liste",
-    description: "Ressource a venir.",
-    fileUrl: "/docs/guide-business-van-amenage.pdf",
-    fileName: "vanzon-liste.pdf",
+    title: "La liste materiel amenagement VASP",
+    description:
+      "Tout le materiel necessaire pour un amenagement aux normes VASP.",
+    fileUrl: "/docs/liste-materiel-amenagement-vasp.pdf",
+    fileName: "vanzon-liste-materiel-amenagement-vasp.pdf",
   },
 };
 
