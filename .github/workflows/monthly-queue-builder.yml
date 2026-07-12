@@ -25,15 +25,15 @@ jobs:
 
       - name: Run queue builder agent
         env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          # Boucle de feedback GSC (striking distance)
+          GOOGLE_GSC_CLIENT_ID: ${{ secrets.GOOGLE_GSC_CLIENT_ID }}
+          GOOGLE_GSC_CLIENT_SECRET: ${{ secrets.GOOGLE_GSC_CLIENT_SECRET }}
+          GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: npx tsx scripts/agents/queue-builder-monthly.ts
-
-      - name: Commit updated article queue
-        run: |
-          git config user.name "Vanzon Agent"
-          git config user.email "agent@vanzonexplorer.com"
-          git add scripts/data/article-queue.json
-          git diff --staged --quiet || git commit -m "chore: queue enrichie — $(date +%B\ %Y) [skip ci]"
-          git push
+      # (la queue vit dans Supabase — plus de commit de article-queue.json)

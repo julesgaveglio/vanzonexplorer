@@ -1,11 +1,8 @@
-name: Quarterly Keyword Research
+name: Monthly Keyword Research
 
 on:
   schedule:
-    - cron: "0 6 1 1 *"   # 1er janvier 6h UTC
-    - cron: "0 6 1 4 *"   # 1er avril 6h UTC
-    - cron: "0 6 1 7 *"   # 1er juillet 6h UTC
-    - cron: "0 6 1 10 *"  # 1er octobre 6h UTC
+    - cron: "0 6 1 * *"   # 1er de chaque mois 6h UTC (avant le queue-builder de 8h)
   workflow_dispatch:       # déclenchement manuel possible
 
 jobs:

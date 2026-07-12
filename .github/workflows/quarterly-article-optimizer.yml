@@ -1,11 +1,8 @@
-name: Quarterly Article Optimizer
+name: Monthly Article Optimizer
 
 on:
   schedule:
-    - cron: "0 7 15 2 *"   # 15 février 7h UTC
-    - cron: "0 7 15 5 *"   # 15 mai 7h UTC
-    - cron: "0 7 15 8 *"   # 15 août 7h UTC
-    - cron: "0 7 15 11 *"  # 15 novembre 7h UTC
+    - cron: "0 7 15 * *"   # 15 de chaque mois 7h UTC — fraîcheur GEO : les moteurs IA privilégient le contenu récent
   workflow_dispatch:
 
 jobs:
