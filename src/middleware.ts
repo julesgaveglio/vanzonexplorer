@@ -51,6 +51,8 @@ const GONE_PREFIXES = [
   "/author/",
   "/category/",
   "/club",
+  // Article Sanity supprimé avec le Club (juillet 2026)
+  "/articles/club-prive-vanzon-liste-attente",
 ];
 
 function isGonePath(pathname: string): boolean {

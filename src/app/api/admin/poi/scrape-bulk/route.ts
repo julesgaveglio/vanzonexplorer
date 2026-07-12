@@ -1,6 +1,6 @@
 // src/app/api/admin/poi/scrape-bulk/route.ts
 // Scraping en masse par catégorie : Tavily → Jina/content → Groq → upsert
-// SSE streaming via createSSEResponse (pattern identique à /api/admin/club/prospect/discover)
+// SSE streaming via createSSEResponse (SSE streaming)
 
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAdmin } from '@/lib/auth'
