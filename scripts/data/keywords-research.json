@@ -1,192 +1,289 @@
 {
-  "generatedAt": "2026-07-01T09:45:25.886Z",
+  "generatedAt": "2026-07-12T21:23:31.730Z",
   "quarter": "Q3-2026",
   "segments": [
     {
       "segment": "location",
       "label": "Location de van",
-      "generatedAt": "2026-07-01T09:45:20.404Z",
+      "generatedAt": "2026-07-12T21:23:25.423Z",
       "keywords": [
         {
           "keyword": "location van",
           "searchVolume": 18100,
           "competitionLevel": "HIGH",
-          "cpc": 1.25,
-          "score": 9050
-        },
-        {
-          "keyword": "louer camping car",
-          "searchVolume": 5400,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.68,
-          "score": 5400
-        },
-        {
-          "keyword": "location fourgon aménagé",
-          "searchVolume": 5400,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.87,
-          "score": 5400
-        },
-        {
-          "keyword": "location de camping car",
-          "searchVolume": 4400,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.59,
-          "score": 4400
-        },
-        {
-          "keyword": "permis camping car",
-          "searchVolume": 1900,
-          "competitionLevel": "LOW",
-          "cpc": 0.18,
-          "score": 2850
+          "cpc": 1.24,
+          "difficulty": 38,
+          "intent": "transactional",
+          "score": 16833
         },
         {
           "keyword": "camping car d'occasion",
           "searchVolume": 5400,
           "competitionLevel": "HIGH",
           "cpc": 0.21,
-          "score": 2700
+          "difficulty": 16,
+          "intent": "transactional",
+          "score": 6804
         },
         {
-          "keyword": "location de camping car tarif",
-          "searchVolume": 880,
-          "competitionLevel": "LOW",
-          "cpc": 0.38,
-          "score": 1320
+          "keyword": "location fourgon aménagé",
+          "searchVolume": 5400,
+          "competitionLevel": "MEDIUM",
+          "cpc": 0.87,
+          "difficulty": 57,
+          "intent": "transactional",
+          "score": 3483
         },
         {
-          "keyword": "vacance en camping car",
-          "searchVolume": 590,
-          "competitionLevel": "LOW",
-          "cpc": 0.54,
-          "score": 885
+          "keyword": "van aménagé location",
+          "searchVolume": 2900,
+          "competitionLevel": "HIGH",
+          "cpc": 0.96,
+          "difficulty": 51,
+          "intent": "transactional",
+          "score": 2132
         },
         {
-          "keyword": "voyager en camping car",
-          "searchVolume": 590,
+          "keyword": "permis camping car",
+          "searchVolume": 1900,
           "competitionLevel": "LOW",
+          "cpc": 0.18,
+          "difficulty": 0,
+          "intent": "informational",
+          "score": 1900
+        },
+        {
+          "keyword": "location de camping car",
+          "searchVolume": 4400,
+          "competitionLevel": "MEDIUM",
           "cpc": 0.59,
-          "score": 885
-        },
-        {
-          "keyword": "service camping-car",
-          "searchVolume": 590,
-          "competitionLevel": "LOW",
-          "cpc": 0.91,
-          "score": 885
+          "difficulty": 72,
+          "intent": "transactional",
+          "score": 1848
         },
         {
           "keyword": "camping car pas cher",
           "searchVolume": 1600,
           "competitionLevel": "HIGH",
-          "cpc": 0.23,
-          "score": 800
+          "cpc": 0.25,
+          "difficulty": 12,
+          "intent": "commercial",
+          "score": 1830
+        },
+        {
+          "keyword": "louer camping car",
+          "searchVolume": 5400,
+          "competitionLevel": "MEDIUM",
+          "cpc": 0.66,
+          "difficulty": 81,
+          "intent": "transactional",
+          "score": 1539
+        },
+        {
+          "keyword": "camping car pour 2 personnes",
+          "searchVolume": 1000,
+          "competitionLevel": "HIGH",
+          "cpc": 0.43,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 1500
+        },
+        {
+          "keyword": "location camping-car toulouse",
+          "searchVolume": 1000,
+          "competitionLevel": "HIGH",
+          "cpc": 1.23,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 1500
+        },
+        {
+          "keyword": "achat camping car occasion",
+          "searchVolume": 1000,
+          "competitionLevel": "HIGH",
+          "cpc": 0.41,
+          "difficulty": 7,
+          "intent": "transactional",
+          "score": 1395
+        },
+        {
+          "keyword": "camping car 4 personnes",
+          "searchVolume": 480,
+          "competitionLevel": "HIGH",
+          "cpc": 0.53,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 720
+        },
+        {
+          "keyword": "camping car pour 6 personnes",
+          "searchVolume": 480,
+          "competitionLevel": "HIGH",
+          "cpc": 0.4,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 720
         },
         {
           "keyword": "location camping car longue durée",
           "searchVolume": 480,
           "competitionLevel": "LOW",
           "cpc": 0.51,
+          "difficulty": 0,
+          "intent": "transactional",
           "score": 720
         },
         {
-          "keyword": "camping car en suisse",
-          "searchVolume": 480,
+          "keyword": "location de camping car tarif",
+          "searchVolume": 880,
           "competitionLevel": "LOW",
-          "cpc": 0.34,
-          "score": 720
-        },
-        {
-          "keyword": "autriche en camping-car",
-          "searchVolume": 480,
-          "competitionLevel": "LOW",
-          "cpc": 0.74,
-          "score": 720
-        },
-        {
-          "keyword": "camping-car en suisse",
-          "searchVolume": 480,
-          "competitionLevel": "LOW",
-          "cpc": 0.34,
-          "score": 720
+          "cpc": 0.43,
+          "difficulty": 38,
+          "intent": "commercial",
+          "score": 709
         },
         {
           "keyword": "voiture camping car",
           "searchVolume": 590,
           "competitionLevel": "MEDIUM",
           "cpc": 0.23,
-          "score": 590
+          "difficulty": 29,
+          "intent": "transactional",
+          "score": 628
         },
         {
-          "keyword": "camping car pour 2 personnes",
-          "searchVolume": 1000,
+          "keyword": "camping car poid lourd occasion particulier",
+          "searchVolume": 390,
+          "competitionLevel": "LOW",
+          "cpc": 0.27,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 585
+        },
+        {
+          "keyword": "camping car occasion poid lourd particulier",
+          "searchVolume": 390,
+          "competitionLevel": "LOW",
+          "cpc": 0.25,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 585
+        },
+        {
+          "keyword": "voyager en camping car",
+          "searchVolume": 590,
+          "competitionLevel": "LOW",
+          "cpc": 0.59,
+          "difficulty": 9,
+          "intent": "informational",
+          "score": 537
+        },
+        {
+          "keyword": "camping car en suisse",
+          "searchVolume": 480,
+          "competitionLevel": "LOW",
+          "cpc": 0.34,
+          "difficulty": 0,
+          "intent": "informational",
+          "score": 480
+        },
+        {
+          "keyword": "autriche en camping-car",
+          "searchVolume": 480,
+          "competitionLevel": "LOW",
+          "cpc": 0.61,
+          "difficulty": 0,
+          "intent": "informational",
+          "score": 480
+        },
+        {
+          "keyword": "camping-car en suisse",
+          "searchVolume": 480,
+          "competitionLevel": "LOW",
+          "cpc": 0.34,
+          "difficulty": 0,
+          "intent": "informational",
+          "score": 480
+        },
+        {
+          "keyword": "louer son camping car",
+          "searchVolume": 320,
+          "competitionLevel": "MEDIUM",
+          "cpc": 3.53,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 480
+        },
+        {
+          "keyword": "location camping car vendée",
+          "searchVolume": 320,
           "competitionLevel": "HIGH",
-          "cpc": 0.45,
-          "score": 500
+          "cpc": 0.58,
+          "difficulty": 1,
+          "intent": "transactional",
+          "score": 475
         },
         {
-          "keyword": "location camping-car toulouse",
-          "searchVolume": 1000,
-          "competitionLevel": "HIGH",
-          "cpc": 1.31,
-          "score": 500
-        },
-        {
-          "keyword": "achat camping car occasion",
-          "searchVolume": 1000,
-          "competitionLevel": "HIGH",
-          "cpc": 0.39,
-          "score": 500
-        },
-        {
-          "keyword": "location camping-car professionnel",
+          "keyword": "vacance en camping car",
           "searchVolume": 480,
           "competitionLevel": "MEDIUM",
-          "cpc": 0.89,
-          "score": 480
+          "cpc": 0.67,
+          "difficulty": 3,
+          "intent": "informational",
+          "score": 466
+        },
+        {
+          "keyword": "tarif camping-car",
+          "searchVolume": 320,
+          "competitionLevel": "HIGH",
+          "cpc": 0.43,
+          "difficulty": 0,
+          "intent": "commercial",
+          "score": 416
         },
         {
           "keyword": "prix camping car poids lourd",
           "searchVolume": 320,
           "competitionLevel": "LOW",
           "cpc": 0.51,
-          "score": 480
+          "difficulty": 0,
+          "intent": "commercial",
+          "score": 416
         },
         {
-          "keyword": "camping car poids lourd prix",
-          "searchVolume": 320,
-          "competitionLevel": "LOW",
-          "cpc": 0.51,
-          "score": 480
-        },
-        {
-          "keyword": "location d'un camping car",
-          "searchVolume": 390,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.34,
+          "keyword": "location camping car italie",
+          "searchVolume": 260,
+          "competitionLevel": "HIGH",
+          "cpc": 1.39,
+          "difficulty": 0,
+          "intent": "transactional",
           "score": 390
         },
         {
-          "keyword": "location d'un camping-car",
-          "searchVolume": 390,
+          "keyword": "location camping car sardaigne",
+          "searchVolume": 260,
           "competitionLevel": "MEDIUM",
-          "cpc": 0.34,
+          "cpc": 2.25,
+          "difficulty": 0,
+          "intent": "transactional",
           "score": 390
         },
         {
-          "keyword": "location camping car vendée",
-          "searchVolume": 390,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.63,
+          "keyword": "location camping-car espagne",
+          "searchVolume": 260,
+          "competitionLevel": "HIGH",
+          "cpc": 2.41,
+          "difficulty": 0,
+          "intent": "transactional",
           "score": 390
         },
         {
           "keyword": "location camping-car poids lourd",
           "searchVolume": 260,
           "competitionLevel": "LOW",
-          "cpc": 0.51,
+          "cpc": 0.63,
+          "difficulty": 0,
+          "intent": "transactional",
           "score": 390
         },
         {
@@ -194,97 +291,143 @@
           "searchVolume": 260,
           "competitionLevel": "LOW",
           "cpc": 0.51,
+          "difficulty": 0,
+          "intent": "transactional",
           "score": 390
         },
         {
-          "keyword": "vienne camping-car",
+          "keyword": "location camping car nouvelle zelande",
           "searchVolume": 260,
-          "competitionLevel": "LOW",
-          "cpc": 3.69,
+          "competitionLevel": "HIGH",
+          "cpc": 2.57,
+          "difficulty": 0,
+          "intent": "transactional",
           "score": 390
-        },
-        {
-          "keyword": "location camping-car 6 personnes",
-          "searchVolume": 320,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.44,
-          "score": 320
-        },
-        {
-          "keyword": "location camping-car espagne",
-          "searchVolume": 320,
-          "competitionLevel": "MEDIUM",
-          "cpc": 1.87,
-          "score": 320
-        },
-        {
-          "keyword": "louer son camping car",
-          "searchVolume": 320,
-          "competitionLevel": "MEDIUM",
-          "cpc": 3.53,
-          "score": 320
-        },
-        {
-          "keyword": "allemagne en camping car",
-          "searchVolume": 320,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.36,
-          "score": 320
-        },
-        {
-          "keyword": "location camping-car km illimité",
-          "searchVolume": 210,
-          "competitionLevel": "LOW",
-          "cpc": 0.82,
-          "score": 315
-        },
-        {
-          "keyword": "location camping car 4 personnes",
-          "searchVolume": 210,
-          "competitionLevel": "LOW",
-          "cpc": 0.65,
-          "score": 315
-        },
-        {
-          "keyword": "location camping-car 4 personnes",
-          "searchVolume": 210,
-          "competitionLevel": "LOW",
-          "cpc": 0.65,
-          "score": 315
-        },
-        {
-          "keyword": "tarif autoroute camping car",
-          "searchVolume": 210,
-          "competitionLevel": "LOW",
-          "cpc": 0.15,
-          "score": 315
-        },
-        {
-          "keyword": "location camping car italie",
-          "searchVolume": 260,
-          "competitionLevel": "MEDIUM",
-          "cpc": 2.51,
-          "score": 260
-        },
-        {
-          "keyword": "location camping car sardaigne",
-          "searchVolume": 260,
-          "competitionLevel": "MEDIUM",
-          "cpc": 2.25,
-          "score": 260
         },
         {
           "keyword": "louer camping car islande",
           "searchVolume": 260,
           "competitionLevel": "MEDIUM",
           "cpc": 2.75,
-          "score": 260
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 390
+        },
+        {
+          "keyword": "camping-car vidéo",
+          "searchVolume": 260,
+          "competitionLevel": "LOW",
+          "cpc": 0.03,
+          "difficulty": 3,
+          "intent": "transactional",
+          "score": 378
+        },
+        {
+          "keyword": "location camping-car 6 personnes",
+          "searchVolume": 320,
+          "competitionLevel": "MEDIUM",
+          "cpc": 0.44,
+          "difficulty": 26,
+          "intent": "transactional",
+          "score": 355
+        },
+        {
+          "keyword": "camping car poids lourd prix",
+          "searchVolume": 260,
+          "competitionLevel": "LOW",
+          "cpc": 0.22,
+          "difficulty": 0,
+          "intent": "commercial",
+          "score": 338
+        },
+        {
+          "keyword": "tarif camping car",
+          "searchVolume": 260,
+          "competitionLevel": "HIGH",
+          "cpc": 0.35,
+          "difficulty": 3,
+          "intent": "commercial",
+          "score": 328
+        },
+        {
+          "keyword": "camping car tarif",
+          "searchVolume": 260,
+          "competitionLevel": "HIGH",
+          "cpc": 0.35,
+          "difficulty": 3,
+          "intent": "commercial",
+          "score": 328
+        },
+        {
+          "keyword": "allemagne en camping car",
+          "searchVolume": 320,
+          "competitionLevel": "MEDIUM",
+          "cpc": 0.36,
+          "difficulty": 0,
+          "intent": "informational",
+          "score": 320
+        },
+        {
+          "keyword": "location camping car gironde",
+          "searchVolume": 210,
+          "competitionLevel": "MEDIUM",
+          "cpc": 0.99,
+          "difficulty": 1,
+          "intent": "transactional",
+          "score": 312
+        },
+        {
+          "keyword": "avis location camping car",
+          "searchVolume": 210,
+          "competitionLevel": "MEDIUM",
+          "cpc": 0.87,
+          "difficulty": 8,
+          "intent": "transactional",
+          "score": 290
+        },
+        {
+          "keyword": "tarif autoroute camping car",
+          "searchVolume": 210,
+          "competitionLevel": "LOW",
+          "cpc": 0.15,
+          "difficulty": 0,
+          "intent": "commercial",
+          "score": 273
+        },
+        {
+          "keyword": "location camping car valenciennes",
+          "searchVolume": 170,
+          "competitionLevel": "MEDIUM",
+          "cpc": 0.53,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 255
+        },
+        {
+          "keyword": "camping car 8 personnes",
+          "searchVolume": 170,
+          "competitionLevel": "MEDIUM",
+          "cpc": 0.28,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 255
+        },
+        {
+          "keyword": "camping car intégral d'occasion",
+          "searchVolume": 170,
+          "competitionLevel": "HIGH",
+          "cpc": 0.25,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 255
         },
         {
           "keyword": "location camping-car croatie",
           "searchVolume": 170,
           "competitionLevel": "LOW",
           "cpc": 1.84,
+          "difficulty": 0,
+          "intent": "transactional",
           "score": 255
         },
         {
@@ -292,27 +435,8 @@
           "searchVolume": 170,
           "competitionLevel": "LOW",
           "cpc": 1.84,
-          "score": 255
-        },
-        {
-          "keyword": "location camping car boite automatique",
-          "searchVolume": 170,
-          "competitionLevel": "LOW",
-          "cpc": 0.4,
-          "score": 255
-        },
-        {
-          "keyword": "location camping car de luxe",
-          "searchVolume": 170,
-          "competitionLevel": "LOW",
-          "cpc": 0.53,
-          "score": 255
-        },
-        {
-          "keyword": "location camping-car de luxe",
-          "searchVolume": 170,
-          "competitionLevel": "LOW",
-          "cpc": 0.53,
+          "difficulty": 0,
+          "intent": "transactional",
           "score": 255
         },
         {
@@ -320,97 +444,260 @@
           "searchVolume": 170,
           "competitionLevel": "LOW",
           "cpc": 1.84,
+          "difficulty": 0,
+          "intent": "transactional",
           "score": 255
+        },
+        {
+          "keyword": "camping car australie",
+          "searchVolume": 170,
+          "competitionLevel": "HIGH",
+          "cpc": 3.93,
+          "difficulty": 3,
+          "intent": "transactional",
+          "score": 247
+        },
+        {
+          "keyword": "location camping car 4 personnes",
+          "searchVolume": 210,
+          "competitionLevel": "LOW",
+          "cpc": 0.65,
+          "difficulty": 24,
+          "intent": "transactional",
+          "score": 239
+        },
+        {
+          "keyword": "location camping-car de luxe",
+          "searchVolume": 170,
+          "competitionLevel": "LOW",
+          "cpc": 0.53,
+          "difficulty": 7,
+          "intent": "transactional",
+          "score": 237
+        },
+        {
+          "keyword": "location camping car de luxe",
+          "searchVolume": 170,
+          "competitionLevel": "MEDIUM",
+          "cpc": 0.55,
+          "difficulty": 9,
+          "intent": "transactional",
+          "score": 232
+        },
+        {
+          "keyword": "location camping-car km illimité",
+          "searchVolume": 210,
+          "competitionLevel": "LOW",
+          "cpc": 0.82,
+          "difficulty": 29,
+          "intent": "transactional",
+          "score": 224
         },
         {
           "keyword": "location camping-car boite automatique",
           "searchVolume": 170,
           "competitionLevel": "LOW",
           "cpc": 0.4,
-          "score": 255
+          "difficulty": 14,
+          "intent": "transactional",
+          "score": 219
         },
         {
-          "keyword": "camping car 4 personnes",
-          "searchVolume": 480,
-          "competitionLevel": "HIGH",
-          "cpc": 0.48,
-          "score": 240
-        },
-        {
-          "keyword": "camping car pour 6 personnes",
-          "searchVolume": 480,
-          "competitionLevel": "HIGH",
-          "cpc": 0.34,
-          "score": 240
-        },
-        {
-          "keyword": "avis location camping car",
-          "searchVolume": 210,
+          "keyword": "location camping-car professionnel",
+          "searchVolume": 390,
           "competitionLevel": "MEDIUM",
-          "cpc": 0.88,
-          "score": 210
+          "cpc": 1.14,
+          "difficulty": 64,
+          "intent": "transactional",
+          "score": 211
         },
         {
           "keyword": "louer camping car particulier",
           "searchVolume": 210,
+          "competitionLevel": "HIGH",
+          "cpc": 0.73,
+          "difficulty": 33,
+          "intent": "transactional",
+          "score": 211
+        },
+        {
+          "keyword": "location camping car moselle",
+          "searchVolume": 140,
           "competitionLevel": "MEDIUM",
-          "cpc": 0.89,
+          "cpc": 0.59,
+          "difficulty": 0,
+          "intent": "transactional",
           "score": 210
         },
         {
-          "keyword": "location camping car gironde",
+          "keyword": "acheter un camping car en allemagne",
+          "searchVolume": 140,
+          "competitionLevel": "HIGH",
+          "cpc": 0.33,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 210
+        },
+        {
+          "keyword": "location camping car norvège",
+          "searchVolume": 140,
+          "competitionLevel": "MEDIUM",
+          "cpc": 2.65,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 210
+        },
+        {
+          "keyword": "location camping-car norvège",
+          "searchVolume": 140,
+          "competitionLevel": "MEDIUM",
+          "cpc": 2.65,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 210
+        },
+        {
+          "keyword": "location camping car tromso",
+          "searchVolume": 140,
+          "competitionLevel": "MEDIUM",
+          "cpc": 4.35,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 210
+        },
+        {
+          "keyword": "location camping car dunkerque",
+          "searchVolume": 140,
+          "competitionLevel": "MEDIUM",
+          "cpc": 0.47,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 210
+        },
+        {
+          "keyword": "location camping-car belgique",
+          "searchVolume": 140,
+          "competitionLevel": "MEDIUM",
+          "cpc": 2.39,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 210
+        },
+        {
+          "keyword": "achat camping car allemagne",
+          "searchVolume": 140,
+          "competitionLevel": "HIGH",
+          "cpc": 0.48,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 210
+        },
+        {
+          "keyword": "le portugal en camping car",
           "searchVolume": 210,
           "competitionLevel": "MEDIUM",
-          "cpc": 0.99,
-          "score": 210
+          "cpc": 0.96,
+          "difficulty": 1,
+          "intent": "informational",
+          "score": 208
         },
         {
-          "keyword": "permis de conduire camping car",
+          "keyword": "location camping car boite automatique",
           "searchVolume": 140,
+          "competitionLevel": "MEDIUM",
+          "cpc": 0.48,
+          "difficulty": 8,
+          "intent": "transactional",
+          "score": 193
+        },
+        {
+          "keyword": "location camping-car 4 personnes",
+          "searchVolume": 210,
           "competitionLevel": "LOW",
-          "cpc": 0.33,
-          "score": 210
+          "cpc": 0.65,
+          "difficulty": 39,
+          "intent": "transactional",
+          "score": 192
         },
         {
-          "keyword": "location camping car valenciennes",
-          "searchVolume": 170,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.53,
-          "score": 170
+          "keyword": "camping car 2 personnes occasion",
+          "searchVolume": 140,
+          "competitionLevel": "HIGH",
+          "cpc": 0.21,
+          "difficulty": 12,
+          "intent": "transactional",
+          "score": 185
         },
         {
-          "keyword": "camping car 8 personnes",
-          "searchVolume": 170,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.28,
-          "score": 170
-        },
-        {
-          "keyword": "camping car australie",
-          "searchVolume": 170,
-          "competitionLevel": "MEDIUM",
-          "cpc": 2.91,
-          "score": 170
-        },
-        {
-          "keyword": "location camping-car 7 personnes",
+          "keyword": "concessionnaire camping car clermont-ferrand",
           "searchVolume": 110,
-          "competitionLevel": "LOW",
-          "cpc": 0.41,
+          "competitionLevel": "MEDIUM",
+          "cpc": 0.32,
+          "difficulty": 0,
+          "intent": "transactional",
           "score": 165
         },
         {
-          "keyword": "camping car park tarif",
+          "keyword": "concessionnaire camping-car clermont-ferrand",
           "searchVolume": 110,
-          "competitionLevel": "LOW",
-          "cpc": 0,
-          "score": 165
-        },
-        {
-          "keyword": "camping car maison",
-          "searchVolume": 110,
-          "competitionLevel": "LOW",
+          "competitionLevel": "MEDIUM",
           "cpc": 0.27,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 165
+        },
+        {
+          "keyword": "location camping car en allemagne",
+          "searchVolume": 110,
+          "competitionLevel": "MEDIUM",
+          "cpc": 2.17,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 165
+        },
+        {
+          "keyword": "rachat camping car occasion",
+          "searchVolume": 110,
+          "competitionLevel": "HIGH",
+          "cpc": 2.1,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 165
+        },
+        {
+          "keyword": "location camping car finistere",
+          "searchVolume": 110,
+          "competitionLevel": "MEDIUM",
+          "cpc": 0.67,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 165
+        },
+        {
+          "keyword": "location camping-car lisbonne",
+          "searchVolume": 110,
+          "competitionLevel": "MEDIUM",
+          "cpc": 4.12,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 165
+        },
+        {
+          "keyword": "location camping car albanie",
+          "searchVolume": 110,
+          "competitionLevel": "MEDIUM",
+          "cpc": 0.7,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 165
+        },
+        {
+          "keyword": "location camping-car albanie",
+          "searchVolume": 110,
+          "competitionLevel": "MEDIUM",
+          "cpc": 0.7,
+          "difficulty": 0,
+          "intent": "transactional",
           "score": 165
         },
         {
@@ -418,20 +705,53 @@
           "searchVolume": 110,
           "competitionLevel": "LOW",
           "cpc": 2.84,
+          "difficulty": 0,
+          "intent": "transactional",
           "score": 165
         },
         {
-          "keyword": "camping car bavaria prix",
+          "keyword": "location camping-car ajaccio",
           "searchVolume": 110,
-          "competitionLevel": "LOW",
-          "cpc": 0.49,
+          "competitionLevel": "HIGH",
+          "cpc": 0.98,
+          "difficulty": 0,
+          "intent": "transactional",
           "score": 165
         },
         {
-          "keyword": "camping-car bavaria prix",
+          "keyword": "location camping car evreux",
           "searchVolume": 110,
-          "competitionLevel": "LOW",
-          "cpc": 0.49,
+          "competitionLevel": "MEDIUM",
+          "cpc": 0.71,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 165
+        },
+        {
+          "keyword": "location camping car auxerre",
+          "searchVolume": 110,
+          "competitionLevel": "MEDIUM",
+          "cpc": 0.57,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 165
+        },
+        {
+          "keyword": "location camping-car faro",
+          "searchVolume": 110,
+          "competitionLevel": "HIGH",
+          "cpc": 4.29,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 165
+        },
+        {
+          "keyword": "location camping car lisbonne",
+          "searchVolume": 110,
+          "competitionLevel": "MEDIUM",
+          "cpc": 4.12,
+          "difficulty": 0,
+          "intent": "transactional",
           "score": 165
         },
         {
@@ -439,6 +759,8 @@
           "searchVolume": 110,
           "competitionLevel": "LOW",
           "cpc": 0.89,
+          "difficulty": 0,
+          "intent": "transactional",
           "score": 165
         },
         {
@@ -446,300 +768,323 @@
           "searchVolume": 110,
           "competitionLevel": "LOW",
           "cpc": 0.63,
-          "score": 165
-        },
-        {
-          "keyword": "location camping-car à l'année",
-          "searchVolume": 110,
-          "competitionLevel": "LOW",
-          "cpc": 0.63,
-          "score": 165
-        },
-        {
-          "keyword": "tarif camping car",
-          "searchVolume": 320,
-          "competitionLevel": "HIGH",
-          "cpc": 0.43,
-          "score": 160
-        },
-        {
-          "keyword": "camping car tarif",
-          "searchVolume": 320,
-          "competitionLevel": "HIGH",
-          "cpc": 0.43,
-          "score": 160
-        },
-        {
-          "keyword": "tarif camping-car",
-          "searchVolume": 320,
-          "competitionLevel": "HIGH",
-          "cpc": 0.43,
-          "score": 160
-        },
-        {
-          "keyword": "camping-car avignon",
-          "searchVolume": 320,
-          "competitionLevel": "HIGH",
-          "cpc": 0.79,
-          "score": 160
-        },
-        {
-          "keyword": "camping car avignon",
-          "searchVolume": 320,
-          "competitionLevel": "HIGH",
-          "cpc": 0.79,
-          "score": 160
-        },
-        {
-          "keyword": "location camping car moselle",
-          "searchVolume": 140,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.74,
-          "score": 140
-        },
-        {
-          "keyword": "carte camping car",
-          "searchVolume": 140,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.25,
-          "score": 140
+          "difficulty": 5,
+          "intent": "transactional",
+          "score": 157
         },
         {
           "keyword": "location camping-car suisse",
-          "searchVolume": 140,
-          "competitionLevel": "MEDIUM",
-          "cpc": 1.56,
-          "score": 140
-        },
-        {
-          "keyword": "location camping car norvège",
-          "searchVolume": 140,
-          "competitionLevel": "MEDIUM",
-          "cpc": 2.65,
-          "score": 140
-        },
-        {
-          "keyword": "location camping-car norvège",
-          "searchVolume": 140,
-          "competitionLevel": "MEDIUM",
-          "cpc": 2.65,
-          "score": 140
-        },
-        {
-          "keyword": "location camping car tromso",
-          "searchVolume": 140,
-          "competitionLevel": "MEDIUM",
-          "cpc": 4.35,
-          "score": 140
-        },
-        {
-          "keyword": "location camping-car belgique",
-          "searchVolume": 140,
-          "competitionLevel": "MEDIUM",
-          "cpc": 2.39,
-          "score": 140
-        },
-        {
-          "keyword": "location camping-car tromso",
-          "searchVolume": 140,
-          "competitionLevel": "MEDIUM",
-          "cpc": 4.35,
-          "score": 140
-        },
-        {
-          "keyword": "location camping car dunkerque",
-          "searchVolume": 140,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.47,
-          "score": 140
-        },
-        {
-          "keyword": "location camping-car profilé",
-          "searchVolume": 90,
-          "competitionLevel": "LOW",
-          "cpc": 1.21,
-          "score": 135
-        },
-        {
-          "keyword": "location camping car profilé",
-          "searchVolume": 90,
-          "competitionLevel": "LOW",
-          "cpc": 1.21,
-          "score": 135
-        },
-        {
-          "keyword": "prix camping car adria",
-          "searchVolume": 90,
-          "competitionLevel": "LOW",
-          "cpc": 0.28,
-          "score": 135
-        },
-        {
-          "keyword": "location camping-car danemark",
-          "searchVolume": 90,
-          "competitionLevel": "LOW",
-          "cpc": 3.22,
-          "score": 135
-        },
-        {
-          "keyword": "location camping car vienne",
-          "searchVolume": 90,
-          "competitionLevel": "LOW",
-          "cpc": 2.85,
-          "score": 135
-        },
-        {
-          "keyword": "location camping-car vienne",
-          "searchVolume": 90,
-          "competitionLevel": "LOW",
-          "cpc": 2.85,
-          "score": 135
-        },
-        {
-          "keyword": "location camping car nouvelle zelande",
-          "searchVolume": 260,
+          "searchVolume": 110,
           "competitionLevel": "HIGH",
-          "cpc": 2.57,
-          "score": 130
+          "cpc": 1.72,
+          "difficulty": 6,
+          "intent": "transactional",
+          "score": 155
         },
         {
-          "keyword": "concessionnaire camping car clermont-ferrand",
-          "searchVolume": 110,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.32,
-          "score": 110
-        },
-        {
-          "keyword": "concessionnaire camping-car clermont-ferrand",
-          "searchVolume": 110,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.32,
-          "score": 110
-        },
-        {
-          "keyword": "location camping car en allemagne",
-          "searchVolume": 110,
-          "competitionLevel": "MEDIUM",
-          "cpc": 2.17,
-          "score": 110
+          "keyword": "service camping-car",
+          "searchVolume": 590,
+          "competitionLevel": "LOW",
+          "cpc": 0.91,
+          "difficulty": 18,
+          "intent": "navigational",
+          "score": 145
         },
         {
           "keyword": "concessionnaire camping car en allemagne",
           "searchVolume": 110,
           "competitionLevel": "MEDIUM",
           "cpc": 0.21,
-          "score": 110
+          "difficulty": 0,
+          "intent": "commercial",
+          "score": 143
         },
         {
-          "keyword": "location camping car finistere",
+          "keyword": "camping car bavaria prix",
           "searchVolume": 110,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.67,
-          "score": 110
+          "competitionLevel": "LOW",
+          "cpc": 0.49,
+          "difficulty": 0,
+          "intent": "commercial",
+          "score": 143
         },
         {
-          "keyword": "location camping-car lisbonne",
+          "keyword": "camping-car bavaria prix",
           "searchVolume": 110,
-          "competitionLevel": "MEDIUM",
-          "cpc": 4.12,
-          "score": 110
+          "competitionLevel": "LOW",
+          "cpc": 0.49,
+          "difficulty": 0,
+          "intent": "commercial",
+          "score": 143
         },
         {
-          "keyword": "location camping car albanie",
+          "keyword": "location camping-car 7 personnes",
           "searchVolume": 110,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.7,
-          "score": 110
+          "competitionLevel": "LOW",
+          "cpc": 0.41,
+          "difficulty": 14,
+          "intent": "transactional",
+          "score": 142
         },
         {
-          "keyword": "location camping-car albanie",
-          "searchVolume": 110,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.7,
-          "score": 110
+          "keyword": "permis de conduire camping car",
+          "searchVolume": 140,
+          "competitionLevel": "LOW",
+          "cpc": 0.13,
+          "difficulty": 0,
+          "intent": "informational",
+          "score": 140
         },
         {
-          "keyword": "location camping car evreux",
+          "keyword": "location camping-car à l'année",
           "searchVolume": 110,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.71,
-          "score": 110
+          "competitionLevel": "LOW",
+          "cpc": 0.43,
+          "difficulty": 17,
+          "intent": "transactional",
+          "score": 137
         },
         {
-          "keyword": "location camping car auxerre",
-          "searchVolume": 110,
+          "keyword": "location camping car majorque",
+          "searchVolume": 90,
+          "competitionLevel": "HIGH",
+          "cpc": 2.41,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 135
+        },
+        {
+          "keyword": "camping car en leasing",
+          "searchVolume": 90,
+          "competitionLevel": "HIGH",
+          "cpc": 0.26,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 135
+        },
+        {
+          "keyword": "camping car compact 2 personnes occasion",
+          "searchVolume": 90,
+          "competitionLevel": "HIGH",
+          "cpc": 0.2,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 135
+        },
+        {
+          "keyword": "meuble camping car occasion",
+          "searchVolume": 90,
+          "competitionLevel": "HIGH",
+          "cpc": 0.15,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 135
+        },
+        {
+          "keyword": "location camping-car biarritz",
+          "searchVolume": 90,
           "competitionLevel": "MEDIUM",
-          "cpc": 0.57,
-          "score": 110
+          "cpc": 1.41,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 135
         },
         {
           "keyword": "location camping-car vaucluse",
-          "searchVolume": 110,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.7,
-          "score": 110
+          "searchVolume": 90,
+          "competitionLevel": "HIGH",
+          "cpc": 0.65,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 135
         },
         {
-          "keyword": "location camping-car faro",
-          "searchVolume": 110,
+          "keyword": "location camping-car tromso",
+          "searchVolume": 90,
           "competitionLevel": "MEDIUM",
-          "cpc": 2.71,
-          "score": 110
+          "cpc": 3.46,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 135
         },
         {
-          "keyword": "location camping car lisbonne",
-          "searchVolume": 110,
+          "keyword": "location camping-car haguenau",
+          "searchVolume": 90,
           "competitionLevel": "MEDIUM",
-          "cpc": 4.12,
-          "score": 110
+          "cpc": 0.48,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 135
         },
         {
-          "keyword": "agence location camping car",
-          "searchVolume": 110,
+          "keyword": "location camping-car cambrai",
+          "searchVolume": 90,
           "competitionLevel": "MEDIUM",
-          "cpc": 0.77,
-          "score": 110
+          "cpc": 1,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 135
+        },
+        {
+          "keyword": "location camping car haguenau",
+          "searchVolume": 90,
+          "competitionLevel": "MEDIUM",
+          "cpc": 0.48,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 135
+        },
+        {
+          "keyword": "location camping-car vienne",
+          "searchVolume": 90,
+          "competitionLevel": "MEDIUM",
+          "cpc": 1.11,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 135
+        },
+        {
+          "keyword": "voyager en camping car en espagne",
+          "searchVolume": 90,
+          "competitionLevel": "LOW",
+          "cpc": 0.24,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 135
+        },
+        {
+          "keyword": "location camping car indre et loire",
+          "searchVolume": 90,
+          "competitionLevel": "MEDIUM",
+          "cpc": 0.74,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 135
+        },
+        {
+          "keyword": "location camping-car profilé",
+          "searchVolume": 90,
+          "competitionLevel": "LOW",
+          "cpc": 1.21,
+          "difficulty": 1,
+          "intent": "transactional",
+          "score": 134
+        },
+        {
+          "keyword": "camping car 1 personne",
+          "searchVolume": 90,
+          "competitionLevel": "HIGH",
+          "cpc": 0.22,
+          "difficulty": 4,
+          "intent": "transactional",
+          "score": 130
+        },
+        {
+          "keyword": "camping car pour 1 personne",
+          "searchVolume": 90,
+          "competitionLevel": "HIGH",
+          "cpc": 0.22,
+          "difficulty": 4,
+          "intent": "transactional",
+          "score": 130
+        },
+        {
+          "keyword": "louer un camping car en bretagne",
+          "searchVolume": 90,
+          "competitionLevel": "MEDIUM",
+          "cpc": 0.63,
+          "difficulty": 5,
+          "intent": "transactional",
+          "score": 128
         },
         {
           "keyword": "camping car pas cher neuf",
           "searchVolume": 110,
           "competitionLevel": "MEDIUM",
           "cpc": 0.47,
-          "score": 110
+          "difficulty": 11,
+          "intent": "commercial",
+          "score": 127
+        },
+        {
+          "keyword": "location camping car vienne",
+          "searchVolume": 90,
+          "competitionLevel": "LOW",
+          "cpc": 2.85,
+          "difficulty": 9,
+          "intent": "transactional",
+          "score": 123
+        },
+        {
+          "keyword": "camping car park tarif",
+          "searchVolume": 110,
+          "competitionLevel": "LOW",
+          "cpc": 0,
+          "difficulty": 16,
+          "intent": "commercial",
+          "score": 120
+        },
+        {
+          "keyword": "camping car avec voiture embarquée prix",
+          "searchVolume": 90,
+          "competitionLevel": "LOW",
+          "cpc": 1,
+          "difficulty": 0,
+          "intent": "commercial",
+          "score": 117
+        },
+        {
+          "keyword": "camping car neuf tarif",
+          "searchVolume": 90,
+          "competitionLevel": "MEDIUM",
+          "cpc": 0.54,
+          "difficulty": 2,
+          "intent": "commercial",
+          "score": 115
+        },
+        {
+          "keyword": "tarif camping car neuf",
+          "searchVolume": 90,
+          "competitionLevel": "MEDIUM",
+          "cpc": 0.47,
+          "difficulty": 5,
+          "intent": "commercial",
+          "score": 111
         },
         {
           "keyword": "location de camping car particulier",
           "searchVolume": 110,
           "competitionLevel": "MEDIUM",
           "cpc": 0.52,
-          "score": 110
+          "difficulty": 34,
+          "intent": "transactional",
+          "score": 109
         },
         {
-          "keyword": "location camping-car 8 personnes",
+          "keyword": "location camping car finlande",
           "searchVolume": 70,
-          "competitionLevel": "LOW",
-          "cpc": 0.41,
+          "competitionLevel": "HIGH",
+          "cpc": 2.22,
+          "difficulty": 0,
+          "intent": "transactional",
           "score": 105
         },
         {
-          "keyword": "camping car 10 personnes",
+          "keyword": "location camping-car minorque",
           "searchVolume": 70,
-          "competitionLevel": "LOW",
-          "cpc": 1.89,
+          "competitionLevel": "MEDIUM",
+          "cpc": 1.46,
+          "difficulty": 0,
+          "intent": "transactional",
           "score": 105
         },
         {
-          "keyword": "rome en camping car",
+          "keyword": "location camping car hambourg",
           "searchVolume": 70,
-          "competitionLevel": "LOW",
-          "cpc": 1.06,
-          "score": 105
-        },
-        {
-          "keyword": "camping car pour 10 personnes",
-          "searchVolume": 70,
-          "competitionLevel": "LOW",
-          "cpc": 1.89,
+          "competitionLevel": "HIGH",
+          "cpc": 4.7,
+          "difficulty": 0,
+          "intent": "transactional",
           "score": 105
         },
         {
@@ -747,6 +1092,26 @@
           "searchVolume": 70,
           "competitionLevel": "LOW",
           "cpc": 1.74,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 105
+        },
+        {
+          "keyword": "location camping-car danemark",
+          "searchVolume": 70,
+          "competitionLevel": "MEDIUM",
+          "cpc": 1.75,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 105
+        },
+        {
+          "keyword": "location camping car minorque",
+          "searchVolume": 70,
+          "competitionLevel": "MEDIUM",
+          "cpc": 1.46,
+          "difficulty": 0,
+          "intent": "transactional",
           "score": 105
         },
         {
@@ -754,125 +1119,125 @@
           "searchVolume": 70,
           "competitionLevel": "LOW",
           "cpc": 1.74,
+          "difficulty": 0,
+          "intent": "transactional",
           "score": 105
         },
         {
-          "keyword": "camping car neuf tarif",
+          "keyword": "concessionnaire camping car avignon",
           "searchVolume": 90,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.47,
-          "score": 90
-        },
-        {
-          "keyword": "tarif camping car neuf",
-          "searchVolume": 90,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.47,
-          "score": 90
-        },
-        {
-          "keyword": "location camping-car biarritz",
-          "searchVolume": 90,
-          "competitionLevel": "MEDIUM",
-          "cpc": 1.41,
-          "score": 90
-        },
-        {
-          "keyword": "location camping-car minorque",
-          "searchVolume": 90,
-          "competitionLevel": "MEDIUM",
-          "cpc": 1.05,
-          "score": 90
-        },
-        {
-          "keyword": "location camping car minorque",
-          "searchVolume": 90,
-          "competitionLevel": "MEDIUM",
-          "cpc": 1.05,
-          "score": 90
-        },
-        {
-          "keyword": "location camping-car haguenau",
-          "searchVolume": 90,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.48,
-          "score": 90
-        },
-        {
-          "keyword": "location camping-car cambrai",
-          "searchVolume": 90,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.84,
-          "score": 90
-        },
-        {
-          "keyword": "location camping car haguenau",
-          "searchVolume": 90,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.48,
-          "score": 90
-        },
-        {
-          "keyword": "camping car intégral d'occasion",
-          "searchVolume": 170,
           "competitionLevel": "HIGH",
-          "cpc": 0.19,
-          "score": 85
+          "cpc": 1.31,
+          "difficulty": 12,
+          "intent": "commercial",
+          "score": 103
         },
         {
-          "keyword": "essai camping car",
-          "searchVolume": 50,
-          "competitionLevel": "LOW",
-          "cpc": 4.07,
-          "score": 75
-        },
-        {
-          "keyword": "location camping-car besançon",
-          "searchVolume": 50,
-          "competitionLevel": "LOW",
-          "cpc": 0.93,
-          "score": 75
-        },
-        {
-          "keyword": "location camping car roumanie",
-          "searchVolume": 50,
-          "competitionLevel": "LOW",
-          "cpc": 0.65,
-          "score": 75
-        },
-        {
-          "keyword": "conduite camping car",
-          "searchVolume": 50,
-          "competitionLevel": "LOW",
-          "cpc": 0.17,
-          "score": 75
-        },
-        {
-          "keyword": "camping car 2 personnes occasion",
-          "searchVolume": 140,
+          "keyword": "achat camping car d'occasion",
+          "searchVolume": 70,
           "competitionLevel": "HIGH",
-          "cpc": 0.21,
-          "score": 70
+          "cpc": 0.3,
+          "difficulty": 7,
+          "intent": "transactional",
+          "score": 98
         },
         {
-          "keyword": "acheter un camping car en allemagne",
-          "searchVolume": 140,
+          "keyword": "camping car 3 personnes",
+          "searchVolume": 70,
           "competitionLevel": "HIGH",
-          "cpc": 0.33,
-          "score": 70
+          "cpc": 0.5,
+          "difficulty": 11,
+          "intent": "transactional",
+          "score": 93
         },
         {
-          "keyword": "achat camping car allemagne",
-          "searchVolume": 140,
+          "keyword": "camping-car avignon",
+          "searchVolume": 320,
           "competitionLevel": "HIGH",
-          "cpc": 0.29,
-          "score": 70
+          "cpc": 0.79,
+          "difficulty": 5,
+          "intent": "navigational",
+          "score": 91
+        },
+        {
+          "keyword": "camping car avignon",
+          "searchVolume": 320,
+          "competitionLevel": "HIGH",
+          "cpc": 0.79,
+          "difficulty": 5,
+          "intent": "navigational",
+          "score": 91
         },
         {
           "keyword": "camping-car occasion autour de moi",
           "searchVolume": 140,
           "competitionLevel": "HIGH",
           "cpc": 0.28,
+          "difficulty": 50,
+          "intent": "commercial",
+          "score": 91
+        },
+        {
+          "keyword": "prix camping car adria",
+          "searchVolume": 70,
+          "competitionLevel": "LOW",
+          "cpc": 0.24,
+          "difficulty": 0,
+          "intent": "commercial",
+          "score": 91
+        },
+        {
+          "keyword": "camping car maison",
+          "searchVolume": 110,
+          "competitionLevel": "LOW",
+          "cpc": 0.27,
+          "difficulty": 46,
+          "intent": "transactional",
+          "score": 89
+        },
+        {
+          "keyword": "camping car pour 10 personnes",
+          "searchVolume": 70,
+          "competitionLevel": "LOW",
+          "cpc": 1.89,
+          "difficulty": 21,
+          "intent": "transactional",
+          "score": 83
+        },
+        {
+          "keyword": "location camping car profilé",
+          "searchVolume": 70,
+          "competitionLevel": "HIGH",
+          "cpc": 1.64,
+          "difficulty": 24,
+          "intent": "transactional",
+          "score": 80
+        },
+        {
+          "keyword": "camping-car 60 beauvais",
+          "searchVolume": 260,
+          "competitionLevel": "LOW",
+          "cpc": 0.39,
+          "difficulty": 0,
+          "intent": "navigational",
+          "score": 78
+        },
+        {
+          "keyword": "location d'un camping car",
+          "searchVolume": 390,
+          "competitionLevel": "MEDIUM",
+          "cpc": 0.34,
+          "difficulty": 88,
+          "intent": "transactional",
+          "score": 70
+        },
+        {
+          "keyword": "location d'un camping-car",
+          "searchVolume": 390,
+          "competitionLevel": "MEDIUM",
+          "cpc": 0.34,
+          "difficulty": 88,
+          "intent": "transactional",
           "score": 70
         },
         {
@@ -880,147 +1245,117 @@
           "searchVolume": 70,
           "competitionLevel": "MEDIUM",
           "cpc": 4.23,
+          "difficulty": 0,
+          "intent": "informational",
           "score": 70
         },
         {
-          "keyword": "location camping car finlande",
+          "keyword": "vienne camping-car",
+          "searchVolume": 260,
+          "competitionLevel": "LOW",
+          "cpc": 3.69,
+          "difficulty": 19,
+          "intent": "navigational",
+          "score": 63
+        },
+        {
+          "keyword": "camping car 10 personnes",
           "searchVolume": 70,
-          "competitionLevel": "MEDIUM",
-          "cpc": 1.93,
-          "score": 70
+          "competitionLevel": "LOW",
+          "cpc": 1.89,
+          "difficulty": 40,
+          "intent": "transactional",
+          "score": 63
         },
         {
-          "keyword": "location camping-car copenhague",
-          "searchVolume": 70,
-          "competitionLevel": "MEDIUM",
-          "cpc": 1.93,
-          "score": 70
-        },
-        {
-          "keyword": "petit camping car d'occasion",
-          "searchVolume": 110,
+          "keyword": "camping car beauvais",
+          "searchVolume": 210,
           "competitionLevel": "HIGH",
+          "cpc": 0.41,
+          "difficulty": 2,
+          "intent": "navigational",
+          "score": 62
+        },
+        {
+          "keyword": "camping car allemagne prix",
+          "searchVolume": 70,
+          "competitionLevel": "MEDIUM",
           "cpc": 0.11,
+          "difficulty": null,
+          "intent": "commercial",
           "score": 55
         },
         {
-          "keyword": "location camping-car ajaccio",
-          "searchVolume": 110,
-          "competitionLevel": "HIGH",
-          "cpc": 1.34,
-          "score": 55
+          "keyword": "location camping-car 8 personnes",
+          "searchVolume": 70,
+          "competitionLevel": "LOW",
+          "cpc": 0.41,
+          "difficulty": 49,
+          "intent": "transactional",
+          "score": 54
         },
         {
-          "keyword": "concessionnaire camping car avignon",
-          "searchVolume": 110,
-          "competitionLevel": "HIGH",
-          "cpc": 1.01,
-          "score": 55
-        },
-        {
-          "keyword": "location camping car luxembourg",
-          "searchVolume": 50,
+          "keyword": "camping-car en bretagne",
+          "searchVolume": 170,
           "competitionLevel": "MEDIUM",
-          "cpc": 0.72,
-          "score": 50
+          "cpc": 0.54,
+          "difficulty": 0,
+          "intent": "navigational",
+          "score": 51
         },
         {
-          "keyword": "location camping car sarreguemines",
-          "searchVolume": 50,
+          "keyword": "camping car en bretagne",
+          "searchVolume": 170,
           "competitionLevel": "MEDIUM",
-          "cpc": 0.49,
-          "score": 50
+          "cpc": 0.54,
+          "difficulty": 0,
+          "intent": "navigational",
+          "score": 51
         },
         {
-          "keyword": "location van aménagé faro",
-          "searchVolume": 50,
-          "competitionLevel": "MEDIUM",
-          "cpc": 3.89,
-          "score": 50
+          "keyword": "capfun : camping-car",
+          "searchVolume": 140,
+          "competitionLevel": "LOW",
+          "cpc": 0.52,
+          "difficulty": 5,
+          "intent": "navigational",
+          "score": 40
         },
         {
-          "keyword": "location camping car majorque",
-          "searchVolume": 90,
+          "keyword": "carte camping car",
+          "searchVolume": 140,
           "competitionLevel": "HIGH",
-          "cpc": 2.41,
-          "score": 45
-        },
-        {
-          "keyword": "camping car en leasing",
-          "searchVolume": 90,
-          "competitionLevel": "HIGH",
-          "cpc": 0.23,
-          "score": 45
-        },
-        {
-          "keyword": "rachat camping car occasion",
-          "searchVolume": 90,
-          "competitionLevel": "HIGH",
-          "cpc": 2.38,
-          "score": 45
-        },
-        {
-          "keyword": "camping car compact 2 personnes occasion",
-          "searchVolume": 90,
-          "competitionLevel": "HIGH",
-          "cpc": 0.2,
-          "score": 45
+          "cpc": 0.32,
+          "difficulty": 27,
+          "intent": "navigational",
+          "score": 31
         },
         {
           "keyword": "camping car aubagne",
           "searchVolume": 90,
           "competitionLevel": "HIGH",
           "cpc": 0.6,
-          "score": 45
-        },
-        {
-          "keyword": "meuble camping car occasion",
-          "searchVolume": 90,
-          "competitionLevel": "HIGH",
-          "cpc": 0.15,
-          "score": 45
-        },
-        {
-          "keyword": "camping car 3 personnes",
-          "searchVolume": 70,
-          "competitionLevel": "HIGH",
-          "cpc": 0.5,
-          "score": 35
-        },
-        {
-          "keyword": "achat camping car d'occasion",
-          "searchVolume": 70,
-          "competitionLevel": "HIGH",
-          "cpc": 0.3,
-          "score": 35
+          "difficulty": 0,
+          "intent": "navigational",
+          "score": 27
         },
         {
           "keyword": "concessionnaire camping car rouen",
           "searchVolume": 70,
           "competitionLevel": "HIGH",
-          "cpc": 0.42,
-          "score": 35
+          "cpc": 0.37,
+          "difficulty": 22,
+          "intent": "navigational",
+          "score": 16
         },
         {
-          "keyword": "meilleur camping car pour 4 personnes",
-          "searchVolume": 50,
-          "competitionLevel": "HIGH",
-          "cpc": 0.63,
-          "score": 25
-        },
-        {
-          "keyword": "location van ou camping car",
-          "searchVolume": 50,
-          "competitionLevel": "HIGH",
-          "cpc": 0.8,
-          "score": 25
-        },
-        {
-          "keyword": "location van ou camping-car",
-          "searchVolume": 50,
-          "competitionLevel": "HIGH",
-          "cpc": 0.8,
-          "score": 25
+          "keyword": "agence location camping car",
+          "searchVolume": 110,
+          "competitionLevel": "MEDIUM",
+          "cpc": 0.77,
+          "difficulty": 72,
+          "intent": "navigational",
+          "score": 9
         }
       ],
       "topOpportunities": [
@@ -1028,457 +1363,151 @@
           "keyword": "location van",
           "searchVolume": 18100,
           "competitionLevel": "HIGH",
-          "cpc": 1.25,
-          "score": 9050
-        },
-        {
-          "keyword": "louer camping car",
-          "searchVolume": 5400,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.68,
-          "score": 5400
-        },
-        {
-          "keyword": "location fourgon aménagé",
-          "searchVolume": 5400,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.87,
-          "score": 5400
-        },
-        {
-          "keyword": "location de camping car",
-          "searchVolume": 4400,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.59,
-          "score": 4400
-        },
-        {
-          "keyword": "permis camping car",
-          "searchVolume": 1900,
-          "competitionLevel": "LOW",
-          "cpc": 0.18,
-          "score": 2850
+          "cpc": 1.24,
+          "difficulty": 38,
+          "intent": "transactional",
+          "score": 16833
         },
         {
           "keyword": "camping car d'occasion",
           "searchVolume": 5400,
           "competitionLevel": "HIGH",
           "cpc": 0.21,
-          "score": 2700
+          "difficulty": 16,
+          "intent": "transactional",
+          "score": 6804
         },
         {
-          "keyword": "location de camping car tarif",
-          "searchVolume": 880,
-          "competitionLevel": "LOW",
-          "cpc": 0.38,
-          "score": 1320
+          "keyword": "location fourgon aménagé",
+          "searchVolume": 5400,
+          "competitionLevel": "MEDIUM",
+          "cpc": 0.87,
+          "difficulty": 57,
+          "intent": "transactional",
+          "score": 3483
         },
         {
-          "keyword": "vacance en camping car",
-          "searchVolume": 590,
-          "competitionLevel": "LOW",
-          "cpc": 0.54,
-          "score": 885
+          "keyword": "van aménagé location",
+          "searchVolume": 2900,
+          "competitionLevel": "HIGH",
+          "cpc": 0.96,
+          "difficulty": 51,
+          "intent": "transactional",
+          "score": 2132
         },
         {
-          "keyword": "voyager en camping car",
-          "searchVolume": 590,
+          "keyword": "permis camping car",
+          "searchVolume": 1900,
           "competitionLevel": "LOW",
+          "cpc": 0.18,
+          "difficulty": 0,
+          "intent": "informational",
+          "score": 1900
+        },
+        {
+          "keyword": "location de camping car",
+          "searchVolume": 4400,
+          "competitionLevel": "MEDIUM",
           "cpc": 0.59,
-          "score": 885
+          "difficulty": 72,
+          "intent": "transactional",
+          "score": 1848
         },
         {
-          "keyword": "service camping-car",
-          "searchVolume": 590,
-          "competitionLevel": "LOW",
-          "cpc": 0.91,
-          "score": 885
+          "keyword": "camping car pas cher",
+          "searchVolume": 1600,
+          "competitionLevel": "HIGH",
+          "cpc": 0.25,
+          "difficulty": 12,
+          "intent": "commercial",
+          "score": 1830
+        },
+        {
+          "keyword": "louer camping car",
+          "searchVolume": 5400,
+          "competitionLevel": "MEDIUM",
+          "cpc": 0.66,
+          "difficulty": 81,
+          "intent": "transactional",
+          "score": 1539
+        },
+        {
+          "keyword": "camping car pour 2 personnes",
+          "searchVolume": 1000,
+          "competitionLevel": "HIGH",
+          "cpc": 0.43,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 1500
+        },
+        {
+          "keyword": "location camping-car toulouse",
+          "searchVolume": 1000,
+          "competitionLevel": "HIGH",
+          "cpc": 1.23,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 1500
         }
       ]
     },
     {
       "segment": "achat",
       "label": "Achat de van",
-      "generatedAt": "2026-07-01T09:45:21.884Z",
+      "generatedAt": "2026-07-12T21:23:26.633Z",
       "keywords": [
         {
           "keyword": "camping car dacia 2025 prix neuf",
-          "searchVolume": 260,
-          "competitionLevel": "LOW",
-          "cpc": 0,
-          "score": 390
-        },
-        {
-          "keyword": "prix dacia logan pick-up neuf",
           "searchVolume": 210,
           "competitionLevel": "LOW",
-          "cpc": 0.79,
-          "score": 315
+          "cpc": 0,
+          "difficulty": 0,
+          "intent": "commercial",
+          "score": 273
         },
         {
           "keyword": "4l fourgonnette occasion",
           "searchVolume": 170,
           "competitionLevel": "LOW",
           "cpc": 0.11,
+          "difficulty": 0,
+          "intent": "transactional",
           "score": 255
-        },
-        {
-          "keyword": "prix kangoo utilitaire neuf diesel",
-          "searchVolume": 170,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.59,
-          "score": 170
-        },
-        {
-          "keyword": "prix kangoo neuf diesel utilitaire",
-          "searchVolume": 170,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.59,
-          "score": 170
-        },
-        {
-          "keyword": "kia camper van 2026",
-          "searchVolume": 110,
-          "competitionLevel": "LOW",
-          "cpc": 0.03,
-          "score": 165
-        },
-        {
-          "keyword": "dodge power wagon prix",
-          "searchVolume": 110,
-          "competitionLevel": "LOW",
-          "cpc": 0,
-          "score": 165
-        },
-        {
-          "keyword": "prix courroie de distribution camping-car fiat ducato",
-          "searchVolume": 110,
-          "competitionLevel": "LOW",
-          "cpc": 1.81,
-          "score": 165
-        },
-        {
-          "keyword": "prix courroie de distribution camping car fiat ducato",
-          "searchVolume": 110,
-          "competitionLevel": "LOW",
-          "cpc": 1.81,
-          "score": 165
-        },
-        {
-          "keyword": "ford transit custom ms rt prix",
-          "searchVolume": 140,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.1,
-          "score": 140
-        },
-        {
-          "keyword": "prix hayon elevateur pour fourgon",
-          "searchVolume": 90,
-          "competitionLevel": "LOW",
-          "cpc": 1.12,
-          "score": 135
-        },
-        {
-          "keyword": "camping car fiat ducato occasion 2000",
-          "searchVolume": 90,
-          "competitionLevel": "LOW",
-          "cpc": 0.36,
-          "score": 135
-        },
-        {
-          "keyword": "renault master l2h2 plan amenagement fourgon l2h2",
-          "searchVolume": 110,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.29,
-          "score": 110
-        },
-        {
-          "keyword": "4x4 occasion 7 places",
-          "searchVolume": 210,
-          "competitionLevel": "HIGH",
-          "cpc": 0.24,
-          "score": 105
-        },
-        {
-          "keyword": "ford transit custom occasion 6 places",
-          "searchVolume": 210,
-          "competitionLevel": "HIGH",
-          "cpc": 0.15,
-          "score": 105
-        },
-        {
-          "keyword": "dacia solenza camper van 2026 prix",
-          "searchVolume": 70,
-          "competitionLevel": "LOW",
-          "cpc": 0.57,
-          "score": 105
-        },
-        {
-          "keyword": "206 van",
-          "searchVolume": 70,
-          "competitionLevel": "LOW",
-          "cpc": 0,
-          "score": 105
-        },
-        {
-          "keyword": "dodge ram van 2026",
-          "searchVolume": 70,
-          "competitionLevel": "LOW",
-          "cpc": 0,
-          "score": 105
-        },
-        {
-          "keyword": "mercedes sprinter 4x4 camping car prix",
-          "searchVolume": 70,
-          "competitionLevel": "LOW",
-          "cpc": 0.35,
-          "score": 105
-        },
-        {
-          "keyword": "prix camping-car renault master neuf",
-          "searchVolume": 70,
-          "competitionLevel": "LOW",
-          "cpc": 0.53,
-          "score": 105
-        },
-        {
-          "keyword": "nouveau dacia pick-up 2026 prix",
-          "searchVolume": 70,
-          "competitionLevel": "LOW",
-          "cpc": 0,
-          "score": 105
-        },
-        {
-          "keyword": "nouveauté fourgon aménagé 2025",
-          "searchVolume": 90,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.07,
-          "score": 90
-        },
-        {
-          "keyword": "stylevan equinox 4-occasion",
-          "searchVolume": 90,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.31,
-          "score": 90
-        },
-        {
-          "keyword": "stylevan equinox 4 occasion",
-          "searchVolume": 90,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.31,
-          "score": 90
-        },
-        {
-          "keyword": "fourgon ford transit occasion",
-          "searchVolume": 170,
-          "competitionLevel": "HIGH",
-          "cpc": 0.09,
-          "score": 85
-        },
-        {
-          "keyword": "prix ford transit neuf",
-          "searchVolume": 170,
-          "competitionLevel": "HIGH",
-          "cpc": 0.93,
-          "score": 85
-        },
-        {
-          "keyword": "kia 7 places sorento prix",
-          "searchVolume": 170,
-          "competitionLevel": "HIGH",
-          "cpc": 0.41,
-          "score": 85
-        },
-        {
-          "keyword": "hyundai h1 van dimensions",
-          "searchVolume": 50,
-          "competitionLevel": "LOW",
-          "cpc": 0,
-          "score": 75
-        },
-        {
-          "keyword": "quel van série le voyageur",
-          "searchVolume": 50,
-          "competitionLevel": "LOW",
-          "cpc": 0,
-          "score": 75
-        },
-        {
-          "keyword": "camping car dacia dokker 2025 prix",
-          "searchVolume": 50,
-          "competitionLevel": "LOW",
-          "cpc": 0,
-          "score": 75
-        },
-        {
-          "keyword": "camping-car dacia dokker 2025 prix",
-          "searchVolume": 50,
-          "competitionLevel": "LOW",
-          "cpc": 0,
-          "score": 75
         },
         {
           "keyword": "fourgon ford transit prix",
           "searchVolume": 140,
           "competitionLevel": "HIGH",
-          "cpc": 1.07,
-          "score": 70
+          "cpc": 0.61,
+          "difficulty": 0,
+          "intent": "commercial",
+          "score": 182
         },
         {
           "keyword": "prix fourgon ford transit",
           "searchVolume": 140,
           "competitionLevel": "HIGH",
           "cpc": 1.07,
-          "score": 70
+          "difficulty": 0,
+          "intent": "commercial",
+          "score": 182
         },
         {
-          "keyword": "ford s max occasion 7 places",
+          "keyword": "renault master l2h2 plan amenagement fourgon l2h2",
           "searchVolume": 110,
-          "competitionLevel": "HIGH",
-          "cpc": 0.24,
-          "score": 55
-        },
-        {
-          "keyword": "chevrolet captiva occasion 7 places",
-          "searchVolume": 90,
-          "competitionLevel": "HIGH",
-          "cpc": 0.15,
-          "score": 45
-        },
-        {
-          "keyword": "x5 7 places occasion",
-          "searchVolume": 90,
-          "competitionLevel": "HIGH",
-          "cpc": 0.23,
-          "score": 45
-        },
-        {
-          "keyword": "x5 7 place occasion",
-          "searchVolume": 90,
-          "competitionLevel": "HIGH",
-          "cpc": 0.23,
-          "score": 45
-        },
-        {
-          "keyword": "ford transit connect prix neuf",
-          "searchVolume": 90,
-          "competitionLevel": "HIGH",
-          "cpc": 0.73,
-          "score": 45
-        },
-        {
-          "keyword": "porte arrière kangoo 2 occasion",
-          "searchVolume": 70,
-          "competitionLevel": "HIGH",
-          "cpc": 0.19,
-          "score": 35
-        },
-        {
-          "keyword": "ford galaxy occasion 7 places",
-          "searchVolume": 70,
-          "competitionLevel": "HIGH",
-          "cpc": 0.13,
-          "score": 35
-        },
-        {
-          "keyword": "minibus occasion 16 places",
-          "searchVolume": 70,
-          "competitionLevel": "HIGH",
-          "cpc": 0.22,
-          "score": 35
-        },
-        {
-          "keyword": "minibus occasion 22 places",
-          "searchVolume": 70,
-          "competitionLevel": "HIGH",
-          "cpc": 0.66,
-          "score": 35
-        },
-        {
-          "keyword": "siège avant kangoo 2 occasion",
-          "searchVolume": 70,
-          "competitionLevel": "HIGH",
-          "cpc": 0.15,
-          "score": 35
-        },
-        {
-          "keyword": "kia carnival occasion 7 places",
-          "searchVolume": 50,
-          "competitionLevel": "HIGH",
-          "cpc": 0.95,
-          "score": 25
-        },
-        {
-          "keyword": "kangoo occasion essence 5 places",
-          "searchVolume": 50,
-          "competitionLevel": "HIGH",
-          "cpc": 0.23,
-          "score": 25
-        },
-        {
-          "keyword": "minibus occasion 15 places",
-          "searchVolume": 50,
-          "competitionLevel": "HIGH",
-          "cpc": 0.18,
-          "score": 25
-        },
-        {
-          "keyword": "207 sw occasion diesel",
-          "searchVolume": 50,
-          "competitionLevel": "HIGH",
-          "cpc": 0.14,
-          "score": 25
-        }
-      ],
-      "topOpportunities": [
-        {
-          "keyword": "camping car dacia 2025 prix neuf",
-          "searchVolume": 260,
-          "competitionLevel": "LOW",
-          "cpc": 0,
-          "score": 390
-        },
-        {
-          "keyword": "prix dacia logan pick-up neuf",
-          "searchVolume": 210,
-          "competitionLevel": "LOW",
-          "cpc": 0.79,
-          "score": 315
-        },
-        {
-          "keyword": "4l fourgonnette occasion",
-          "searchVolume": 170,
-          "competitionLevel": "LOW",
-          "cpc": 0.11,
-          "score": 255
-        },
-        {
-          "keyword": "prix kangoo utilitaire neuf diesel",
-          "searchVolume": 170,
           "competitionLevel": "MEDIUM",
-          "cpc": 0.59,
-          "score": 170
-        },
-        {
-          "keyword": "prix kangoo neuf diesel utilitaire",
-          "searchVolume": 170,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.59,
-          "score": 170
+          "cpc": 0.29,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 165
         },
         {
           "keyword": "kia camper van 2026",
           "searchVolume": 110,
           "competitionLevel": "LOW",
-          "cpc": 0.03,
-          "score": 165
-        },
-        {
-          "keyword": "dodge power wagon prix",
-          "searchVolume": 110,
-          "competitionLevel": "LOW",
           "cpc": 0,
+          "difficulty": 0,
+          "intent": "transactional",
           "score": 165
         },
         {
@@ -1486,2216 +1515,668 @@
           "searchVolume": 110,
           "competitionLevel": "LOW",
           "cpc": 1.81,
-          "score": 165
+          "difficulty": 0,
+          "intent": "commercial",
+          "score": 143
         },
         {
           "keyword": "prix courroie de distribution camping car fiat ducato",
           "searchVolume": 110,
           "competitionLevel": "LOW",
           "cpc": 1.81,
-          "score": 165
+          "difficulty": 0,
+          "intent": "commercial",
+          "score": 143
         },
         {
-          "keyword": "ford transit custom ms rt prix",
-          "searchVolume": 140,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.1,
-          "score": 140
-        }
-      ]
-    },
-    {
-      "segment": "club",
-      "label": "Club Privé — Équipement",
-      "generatedAt": "2026-07-01T09:45:22.979Z",
-      "keywords": [
-        {
-          "keyword": "batterie externe",
-          "searchVolume": 90500,
-          "competitionLevel": "HIGH",
-          "cpc": 0.37,
-          "score": 45250
-        },
-        {
-          "keyword": "batterie solide",
-          "searchVolume": 9900,
-          "competitionLevel": "LOW",
-          "cpc": 0.45,
-          "score": 14850
-        },
-        {
-          "keyword": "batterie electronique",
-          "searchVolume": 12100,
-          "competitionLevel": "HIGH",
-          "cpc": 0.58,
-          "score": 6050
-        },
-        {
-          "keyword": "chargeur batterie",
-          "searchVolume": 9900,
-          "competitionLevel": "HIGH",
-          "cpc": 0.4,
-          "score": 4950
-        },
-        {
-          "keyword": "batterie virtuelle",
-          "searchVolume": 4400,
-          "competitionLevel": "MEDIUM",
-          "cpc": 1.96,
-          "score": 4400
-        },
-        {
-          "keyword": "batterie nomade",
-          "searchVolume": 8100,
-          "competitionLevel": "HIGH",
-          "cpc": 1.34,
-          "score": 4050
-        },
-        {
-          "keyword": "batterie de merville",
-          "searchVolume": 2400,
-          "competitionLevel": "LOW",
-          "cpc": 0.04,
-          "score": 3600
-        },
-        {
-          "keyword": "batterie longues sur mer",
-          "searchVolume": 2400,
-          "competitionLevel": "LOW",
-          "cpc": 0.08,
-          "score": 3600
-        },
-        {
-          "keyword": "chargeur de batterie",
-          "searchVolume": 6600,
-          "competitionLevel": "HIGH",
-          "cpc": 0.33,
-          "score": 3300
-        },
-        {
-          "keyword": "partition batterie",
-          "searchVolume": 2900,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.49,
-          "score": 2900
-        },
-        {
-          "keyword": "batterie prix",
-          "searchVolume": 1900,
-          "competitionLevel": "LOW",
-          "cpc": 0.47,
-          "score": 2850
-        },
-        {
-          "keyword": "la batterie",
-          "searchVolume": 1900,
-          "competitionLevel": "LOW",
-          "cpc": 0.56,
-          "score": 2850
-        },
-        {
-          "keyword": "batterie de maisy",
-          "searchVolume": 1900,
-          "competitionLevel": "LOW",
-          "cpc": 0,
-          "score": 2850
-        },
-        {
-          "keyword": "batterie agm",
-          "searchVolume": 5400,
-          "competitionLevel": "HIGH",
-          "cpc": 0.42,
-          "score": 2700
-        },
-        {
-          "keyword": "batterie lithium ion",
-          "searchVolume": 4400,
-          "competitionLevel": "HIGH",
-          "cpc": 0.82,
-          "score": 2200
-        },
-        {
-          "keyword": "batterie portable",
-          "searchVolume": 4400,
-          "competitionLevel": "HIGH",
-          "cpc": 0.74,
-          "score": 2200
-        },
-        {
-          "keyword": "boulanger batterie externe",
-          "searchVolume": 4400,
-          "competitionLevel": "HIGH",
-          "cpc": 0.1,
-          "score": 2200
-        },
-        {
-          "keyword": "batterie semi solide",
-          "searchVolume": 1300,
-          "competitionLevel": "LOW",
-          "cpc": 0.26,
-          "score": 1950
-        },
-        {
-          "keyword": "fort de la batterie",
-          "searchVolume": 1300,
-          "competitionLevel": "LOW",
-          "cpc": 0.35,
-          "score": 1950
-        },
-        {
-          "keyword": "booster de batterie",
-          "searchVolume": 3600,
-          "competitionLevel": "HIGH",
-          "cpc": 0.44,
-          "score": 1800
-        },
-        {
-          "keyword": "batterie électrique",
-          "searchVolume": 3600,
-          "competitionLevel": "HIGH",
-          "cpc": 0.55,
-          "score": 1800
-        },
-        {
-          "keyword": "batterie decharge lente",
-          "searchVolume": 3600,
-          "competitionLevel": "HIGH",
-          "cpc": 0.49,
-          "score": 1800
-        },
-        {
-          "keyword": "batterie faible damso",
-          "searchVolume": 1000,
-          "competitionLevel": "LOW",
-          "cpc": 0.03,
-          "score": 1500
-        },
-        {
-          "keyword": "batterie montgallet",
-          "searchVolume": 1000,
-          "competitionLevel": "LOW",
-          "cpc": 0.17,
-          "score": 1500
-        },
-        {
-          "keyword": "durée de vie batterie",
-          "searchVolume": 1000,
+          "keyword": "camping car fiat ducato occasion 2000",
+          "searchVolume": 90,
           "competitionLevel": "LOW",
           "cpc": 0.36,
-          "score": 1500
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 135
         },
         {
-          "keyword": "batterie lifepo4",
-          "searchVolume": 2900,
-          "competitionLevel": "HIGH",
-          "cpc": 0.97,
-          "score": 1450
-        },
-        {
-          "keyword": "meilleur batterie externe",
-          "searchVolume": 2900,
-          "competitionLevel": "HIGH",
-          "cpc": 0.37,
-          "score": 1450
-        },
-        {
-          "keyword": "batterie externe fnac",
-          "searchVolume": 2900,
-          "competitionLevel": "HIGH",
-          "cpc": 0.07,
-          "score": 1450
-        },
-        {
-          "keyword": "batterie apple",
-          "searchVolume": 2900,
-          "competitionLevel": "HIGH",
-          "cpc": 0.18,
-          "score": 1450
-        },
-        {
-          "keyword": "maintien de charge batterie",
-          "searchVolume": 2900,
-          "competitionLevel": "HIGH",
-          "cpc": 0.33,
-          "score": 1450
-        },
-        {
-          "keyword": "batterie lithium avion",
-          "searchVolume": 880,
+          "keyword": "prix hayon elevateur pour fourgon",
+          "searchVolume": 90,
           "competitionLevel": "LOW",
-          "cpc": 0.61,
-          "score": 1320
+          "cpc": 1.12,
+          "difficulty": 0,
+          "intent": "commercial",
+          "score": 117
         },
         {
-          "keyword": "batterie nmc",
-          "searchVolume": 880,
+          "keyword": "mercedes sprinter 4x4 camping car prix",
+          "searchVolume": 70,
           "competitionLevel": "LOW",
-          "cpc": 0.47,
-          "score": 1320
+          "cpc": 0.13,
+          "difficulty": 0,
+          "intent": "commercial",
+          "score": 91
         },
         {
-          "keyword": "batterie gonflée",
-          "searchVolume": 880,
-          "competitionLevel": "LOW",
-          "cpc": 0,
-          "score": 1320
-        },
-        {
-          "keyword": "rennes batterie",
-          "searchVolume": 880,
-          "competitionLevel": "LOW",
-          "cpc": 0.98,
-          "score": 1320
-        },
-        {
-          "keyword": "ouest batterie",
-          "searchVolume": 880,
-          "competitionLevel": "LOW",
-          "cpc": 0.49,
-          "score": 1320
-        },
-        {
-          "keyword": "batterie qui gonfle",
-          "searchVolume": 880,
-          "competitionLevel": "LOW",
-          "cpc": 0,
-          "score": 1320
-        },
-        {
-          "keyword": "batterie virtuelle edf",
-          "searchVolume": 1300,
+          "keyword": "nouveauté fourgon aménagé 2025",
+          "searchVolume": 90,
           "competitionLevel": "MEDIUM",
-          "cpc": 0.73,
-          "score": 1300
+          "cpc": 0.07,
+          "difficulty": 0,
+          "intent": "informational",
+          "score": 90
         },
         {
-          "keyword": "batterie magsafe",
-          "searchVolume": 2400,
-          "competitionLevel": "HIGH",
-          "cpc": 0.28,
-          "score": 1200
-        },
-        {
-          "keyword": "batterie en ligne",
-          "searchVolume": 720,
+          "keyword": "prix camping-car renault master neuf",
+          "searchVolume": 70,
           "competitionLevel": "LOW",
-          "cpc": 1.45,
-          "score": 1080
-        },
-        {
-          "keyword": "batterie de portable",
-          "searchVolume": 720,
-          "competitionLevel": "LOW",
-          "cpc": 0.19,
-          "score": 1080
-        },
-        {
-          "keyword": "var batterie",
-          "searchVolume": 720,
-          "competitionLevel": "LOW",
-          "cpc": 0.81,
-          "score": 1080
-        },
-        {
-          "keyword": "batterie hybride",
-          "searchVolume": 720,
-          "competitionLevel": "LOW",
-          "cpc": 0.45,
-          "score": 1080
-        },
-        {
-          "keyword": "vannes batterie",
-          "searchVolume": 720,
-          "competitionLevel": "LOW",
-          "cpc": 0.4,
-          "score": 1080
-        },
-        {
-          "keyword": "batterie magasin",
-          "searchVolume": 720,
-          "competitionLevel": "LOW",
-          "cpc": 0.7,
-          "score": 1080
-        },
-        {
-          "keyword": "batterie lidl",
-          "searchVolume": 1900,
-          "competitionLevel": "HIGH",
-          "cpc": 0.23,
-          "score": 950
-        },
-        {
-          "keyword": "baguette batterie",
-          "searchVolume": 1900,
-          "competitionLevel": "HIGH",
           "cpc": 0.44,
-          "score": 950
+          "difficulty": 10,
+          "intent": "commercial",
+          "score": 82
         },
         {
-          "keyword": "batterie lfp",
-          "searchVolume": 1900,
-          "competitionLevel": "HIGH",
-          "cpc": 0.54,
-          "score": 950
+          "keyword": "camping car dacia dokker 2025 prix",
+          "searchVolume": 50,
+          "competitionLevel": "LOW",
+          "cpc": 0,
+          "difficulty": 0,
+          "intent": "commercial",
+          "score": 65
         },
         {
-          "keyword": "batterie photovoltaique",
-          "searchVolume": 1900,
-          "competitionLevel": "HIGH",
-          "cpc": 1.58,
-          "score": 950
+          "keyword": "dacia solenza camper van 2026 prix",
+          "searchVolume": 70,
+          "competitionLevel": "LOW",
+          "cpc": 0,
+          "difficulty": null,
+          "intent": "commercial",
+          "score": 55
         },
         {
-          "keyword": "onduleur batterie",
-          "searchVolume": 1900,
-          "competitionLevel": "HIGH",
-          "cpc": 0.45,
-          "score": 950
-        },
-        {
-          "keyword": "batterie carter cash",
-          "searchVolume": 1900,
+          "keyword": "fourgon ford transit occasion",
+          "searchVolume": 170,
           "competitionLevel": "HIGH",
           "cpc": 0.09,
-          "score": 950
+          "difficulty": 0,
+          "intent": "navigational",
+          "score": 51
         },
         {
-          "keyword": "batterie externe darty",
-          "searchVolume": 1900,
-          "competitionLevel": "HIGH",
-          "cpc": 0.1,
-          "score": 950
-        },
-        {
-          "keyword": "hyeres batterie",
-          "searchVolume": 590,
-          "competitionLevel": "LOW",
-          "cpc": 1.43,
-          "score": 885
-        },
-        {
-          "keyword": "batterie au lithium",
-          "searchVolume": 1600,
-          "competitionLevel": "HIGH",
-          "cpc": 0.65,
-          "score": 800
-        },
-        {
-          "keyword": "batterie autonome",
-          "searchVolume": 1600,
-          "competitionLevel": "HIGH",
-          "cpc": 1.19,
-          "score": 800
-        },
-        {
-          "keyword": "batterie carrefour",
-          "searchVolume": 1600,
-          "competitionLevel": "HIGH",
-          "cpc": 0.21,
-          "score": 800
-        },
-        {
-          "keyword": "batterie téléphone portable",
-          "searchVolume": 1600,
-          "competitionLevel": "HIGH",
-          "cpc": 0.33,
-          "score": 800
-        },
-        {
-          "keyword": "recyclage batterie",
-          "searchVolume": 480,
-          "competitionLevel": "LOW",
-          "cpc": 1.34,
-          "score": 720
-        },
-        {
-          "keyword": "soc batterie",
-          "searchVolume": 480,
-          "competitionLevel": "LOW",
-          "cpc": 0.2,
-          "score": 720
-        },
-        {
-          "keyword": "batterie amovible",
-          "searchVolume": 480,
-          "competitionLevel": "LOW",
-          "cpc": 0.34,
-          "score": 720
-        },
-        {
-          "keyword": "batterie panneau photovoltaique",
-          "searchVolume": 1300,
-          "competitionLevel": "HIGH",
-          "cpc": 1.89,
-          "score": 650
-        },
-        {
-          "keyword": "elagueuse batterie",
-          "searchVolume": 1300,
-          "competitionLevel": "HIGH",
-          "cpc": 0.37,
-          "score": 650
-        },
-        {
-          "keyword": "batterie inox",
-          "searchVolume": 1300,
-          "competitionLevel": "HIGH",
-          "cpc": 0.79,
-          "score": 650
-        },
-        {
-          "keyword": "batterie c3",
-          "searchVolume": 1300,
-          "competitionLevel": "HIGH",
-          "cpc": 0.7,
-          "score": 650
-        },
-        {
-          "keyword": "batterie quad",
-          "searchVolume": 1300,
-          "competitionLevel": "HIGH",
-          "cpc": 0.4,
-          "score": 650
-        },
-        {
-          "keyword": "recyclage batterie lithium",
-          "searchVolume": 390,
-          "competitionLevel": "LOW",
-          "cpc": 1.63,
-          "score": 585
-        },
-        {
-          "keyword": "test batterie",
-          "searchVolume": 390,
-          "competitionLevel": "LOW",
-          "cpc": 0.31,
-          "score": 585
-        },
-        {
-          "keyword": "batterie gel",
-          "searchVolume": 1000,
-          "competitionLevel": "HIGH",
-          "cpc": 0.46,
-          "score": 500
-        },
-        {
-          "keyword": "batterie au plomb",
-          "searchVolume": 1000,
-          "competitionLevel": "HIGH",
-          "cpc": 0.38,
-          "score": 500
-        },
-        {
-          "keyword": "compresseur batterie",
-          "searchVolume": 1000,
-          "competitionLevel": "HIGH",
-          "cpc": 0.31,
-          "score": 500
-        },
-        {
-          "keyword": "batterie casserole",
-          "searchVolume": 1000,
-          "competitionLevel": "HIGH",
-          "cpc": 0.51,
-          "score": 500
-        },
-        {
-          "keyword": "batterie externe carrefour",
-          "searchVolume": 1000,
-          "competitionLevel": "HIGH",
-          "cpc": 0.12,
-          "score": 500
-        },
-        {
-          "keyword": "partition de batterie",
-          "searchVolume": 480,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.76,
-          "score": 480
-        },
-        {
-          "keyword": "batterie horizon zero dawn",
-          "searchVolume": 320,
+          "keyword": "hyundai h1 van dimensions",
+          "searchVolume": 50,
           "competitionLevel": "LOW",
           "cpc": 0,
-          "score": 480
+          "difficulty": 0,
+          "intent": "informational",
+          "score": 50
         },
         {
-          "keyword": "batterie solaire lithium",
-          "searchVolume": 880,
-          "competitionLevel": "HIGH",
-          "cpc": 0.93,
-          "score": 440
+          "keyword": "quel van série le voyageur",
+          "searchVolume": 50,
+          "competitionLevel": "LOW",
+          "cpc": 0,
+          "difficulty": 1,
+          "intent": "informational",
+          "score": 50
         },
         {
-          "keyword": "batterie externe decathlon",
-          "searchVolume": 880,
+          "keyword": "dodge ram van 2026",
+          "searchVolume": 70,
+          "competitionLevel": "LOW",
+          "cpc": 0,
+          "difficulty": null,
+          "intent": "informational",
+          "score": 42
+        },
+        {
+          "keyword": "kia camper van 2026 prix",
+          "searchVolume": 50,
+          "competitionLevel": "LOW",
+          "cpc": 0.58,
+          "difficulty": null,
+          "intent": "commercial",
+          "score": 39
+        },
+        {
+          "keyword": "206 van",
+          "searchVolume": 50,
+          "competitionLevel": "LOW",
+          "cpc": 0,
+          "difficulty": 52,
+          "intent": "transactional",
+          "score": 36
+        },
+        {
+          "keyword": "renault master fourgon dimensions",
+          "searchVolume": 40,
+          "competitionLevel": "LOW",
+          "cpc": 3.81,
+          "difficulty": null,
+          "intent": "transactional",
+          "score": 36
+        },
+        {
+          "keyword": "2026 kia camper van",
+          "searchVolume": 20,
+          "competitionLevel": "LOW",
+          "cpc": 0,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 30
+        },
+        {
+          "keyword": "205 van",
+          "searchVolume": 30,
+          "competitionLevel": "LOW",
+          "cpc": 0,
+          "difficulty": null,
+          "intent": "transactional",
+          "score": 27
+        },
+        {
+          "keyword": "prix camping-car dacia dokker 2025",
+          "searchVolume": 20,
+          "competitionLevel": "UNKNOWN",
+          "cpc": 0,
+          "difficulty": 0,
+          "intent": "commercial",
+          "score": 26
+        },
+        {
+          "keyword": "camping-car dacia dokker 2025 prix",
+          "searchVolume": 20,
+          "competitionLevel": "LOW",
+          "cpc": 0,
+          "difficulty": 0,
+          "intent": "commercial",
+          "score": 26
+        },
+        {
+          "keyword": "quelle voiture pour tracter van 2 places",
+          "searchVolume": 20,
+          "competitionLevel": "MEDIUM",
+          "cpc": 0,
+          "difficulty": 0,
+          "intent": "commercial",
+          "score": 26
+        },
+        {
+          "keyword": "dimension van ifor williams hb505",
+          "searchVolume": 40,
+          "competitionLevel": "LOW",
+          "cpc": 0,
+          "difficulty": null,
+          "intent": "informational",
+          "score": 24
+        },
+        {
+          "keyword": "dimension fourgon ford transit",
+          "searchVolume": 40,
+          "competitionLevel": "LOW",
+          "cpc": 0,
+          "difficulty": 42,
+          "intent": "informational",
+          "score": 23
+        },
+        {
+          "keyword": "fourgon fiat ducato camping car",
+          "searchVolume": 30,
           "competitionLevel": "HIGH",
           "cpc": 0.1,
-          "score": 440
+          "difficulty": null,
+          "intent": "commercial",
+          "score": 23
         },
         {
-          "keyword": "meilleur booster batterie",
-          "searchVolume": 880,
+          "keyword": "kia camper van 2025 prix",
+          "searchVolume": 30,
           "competitionLevel": "HIGH",
-          "cpc": 0.63,
-          "score": 440
+          "cpc": 0,
+          "difficulty": null,
+          "intent": "commercial",
+          "score": 23
         },
         {
-          "keyword": "batterie cuisine céramique",
-          "searchVolume": 880,
-          "competitionLevel": "HIGH",
-          "cpc": 0.52,
-          "score": 440
-        },
-        {
-          "keyword": "groupe electrogene batterie",
-          "searchVolume": 880,
-          "competitionLevel": "HIGH",
-          "cpc": 0.84,
-          "score": 440
-        },
-        {
-          "keyword": "batterie auxiliaire",
-          "searchVolume": 880,
-          "competitionLevel": "HIGH",
-          "cpc": 0.61,
-          "score": 440
-        },
-        {
-          "keyword": "batterie caisse claire",
-          "searchVolume": 880,
-          "competitionLevel": "HIGH",
-          "cpc": 0.37,
-          "score": 440
-        },
-        {
-          "keyword": "feu batterie lithium",
-          "searchVolume": 260,
-          "competitionLevel": "LOW",
-          "cpc": 0.24,
-          "score": 390
-        },
-        {
-          "keyword": "prix batterie c3",
-          "searchVolume": 260,
-          "competitionLevel": "LOW",
-          "cpc": 0.92,
-          "score": 390
-        },
-        {
-          "keyword": "batterie zoe prix",
-          "searchVolume": 260,
-          "competitionLevel": "LOW",
-          "cpc": 0.83,
-          "score": 390
-        },
-        {
-          "keyword": "partition batterie gratuite",
-          "searchVolume": 260,
-          "competitionLevel": "LOW",
-          "cpc": 1.49,
-          "score": 390
-        },
-        {
-          "keyword": "batterie électronique occasion",
-          "searchVolume": 720,
-          "competitionLevel": "HIGH",
-          "cpc": 0.28,
-          "score": 360
-        },
-        {
-          "keyword": "batterie hp",
-          "searchVolume": 720,
-          "competitionLevel": "HIGH",
-          "cpc": 0.42,
-          "score": 360
-        },
-        {
-          "keyword": "batterie électronique alesis",
-          "searchVolume": 720,
-          "competitionLevel": "HIGH",
-          "cpc": 0.41,
-          "score": 360
-        },
-        {
-          "keyword": "batterie occasion",
-          "searchVolume": 720,
-          "competitionLevel": "HIGH",
-          "cpc": 0.24,
-          "score": 360
-        },
-        {
-          "keyword": "batterie millenium",
-          "searchVolume": 720,
-          "competitionLevel": "HIGH",
-          "cpc": 0.33,
-          "score": 360
-        },
-        {
-          "keyword": "batterie de stockage",
-          "searchVolume": 720,
-          "competitionLevel": "HIGH",
-          "cpc": 1.38,
-          "score": 360
-        },
-        {
-          "keyword": "batterie a decharge lente",
-          "searchVolume": 720,
-          "competitionLevel": "HIGH",
-          "cpc": 0.47,
-          "score": 360
-        },
-        {
-          "keyword": "baguette de batterie",
-          "searchVolume": 720,
-          "competitionLevel": "HIGH",
-          "cpc": 0.38,
-          "score": 360
-        },
-        {
-          "keyword": "batterie poids lourd",
-          "searchVolume": 720,
-          "competitionLevel": "HIGH",
-          "cpc": 0.5,
-          "score": 360
-        },
-        {
-          "keyword": "batterie perceuse",
-          "searchVolume": 720,
-          "competitionLevel": "HIGH",
-          "cpc": 0.22,
-          "score": 360
-        },
-        {
-          "keyword": "batterie pc",
-          "searchVolume": 320,
+          "keyword": "quelle voiture pour tracter un van 2 places avec b96",
+          "searchVolume": 30,
           "competitionLevel": "MEDIUM",
-          "cpc": 0.57,
-          "score": 320
+          "cpc": 0,
+          "difficulty": 49,
+          "intent": "commercial",
+          "score": 20
         },
         {
-          "keyword": "batterie seche",
-          "searchVolume": 320,
+          "keyword": "2010 transit van",
+          "searchVolume": 30,
+          "competitionLevel": "LOW",
+          "cpc": 0,
+          "difficulty": null,
+          "intent": "informational",
+          "score": 18
+        },
+        {
+          "keyword": "ford transit van 2010",
+          "searchVolume": 30,
+          "competitionLevel": "LOW",
+          "cpc": 0,
+          "difficulty": null,
+          "intent": "informational",
+          "score": 18
+        },
+        {
+          "keyword": "dacia jogger camper van 2026",
+          "searchVolume": 30,
+          "competitionLevel": "HIGH",
+          "cpc": 0.09,
+          "difficulty": null,
+          "intent": "informational",
+          "score": 18
+        },
+        {
+          "keyword": "toyota proace fourgon dimensions",
+          "searchVolume": 20,
           "competitionLevel": "MEDIUM",
-          "cpc": 0.32,
-          "score": 320
+          "cpc": 0.19,
+          "difficulty": null,
+          "intent": "transactional",
+          "score": 18
         },
         {
-          "keyword": "tabouret batterie",
-          "searchVolume": 590,
-          "competitionLevel": "HIGH",
-          "cpc": 0.45,
-          "score": 295
+          "keyword": "ford transit fourgon dimensions",
+          "searchVolume": 30,
+          "competitionLevel": "LOW",
+          "cpc": 0,
+          "difficulty": 42,
+          "intent": "informational",
+          "score": 17
         },
         {
-          "keyword": "ampli batterie electronique",
-          "searchVolume": 590,
-          "competitionLevel": "HIGH",
-          "cpc": 0.44,
-          "score": 295
-        },
-        {
-          "keyword": "batterie externe lidl",
-          "searchVolume": 590,
-          "competitionLevel": "HIGH",
-          "cpc": 0.14,
-          "score": 295
-        },
-        {
-          "keyword": "petite batterie externe",
-          "searchVolume": 590,
-          "competitionLevel": "HIGH",
-          "cpc": 0.24,
-          "score": 295
-        },
-        {
-          "keyword": "batterie externe comparatif",
-          "searchVolume": 590,
-          "competitionLevel": "HIGH",
-          "cpc": 0.41,
-          "score": 295
-        },
-        {
-          "keyword": "comparatif batterie externe",
-          "searchVolume": 590,
-          "competitionLevel": "HIGH",
-          "cpc": 0.41,
-          "score": 295
-        },
-        {
-          "keyword": "batterie portative",
-          "searchVolume": 590,
+          "keyword": "peugeot partner fourgon dimensions",
+          "searchVolume": 30,
           "competitionLevel": "HIGH",
           "cpc": 0.81,
-          "score": 295
+          "difficulty": 48,
+          "intent": "informational",
+          "score": 16
         },
         {
-          "keyword": "taille bordure a batterie",
-          "searchVolume": 590,
-          "competitionLevel": "HIGH",
-          "cpc": 0.33,
-          "score": 295
-        },
-        {
-          "keyword": "midas batterie prix",
-          "searchVolume": 170,
-          "competitionLevel": "LOW",
-          "cpc": 0.57,
-          "score": 255
-        },
-        {
-          "keyword": "feu de batterie lithium",
-          "searchVolume": 170,
-          "competitionLevel": "LOW",
-          "cpc": 0.26,
-          "score": 255
-        },
-        {
-          "keyword": "batterie tama",
-          "searchVolume": 480,
-          "competitionLevel": "HIGH",
-          "cpc": 0.31,
-          "score": 240
-        },
-        {
-          "keyword": "batterie mt07",
-          "searchVolume": 480,
-          "competitionLevel": "HIGH",
-          "cpc": 0.47,
-          "score": 240
-        },
-        {
-          "keyword": "achat batterie",
-          "searchVolume": 480,
-          "competitionLevel": "HIGH",
-          "cpc": 1.16,
-          "score": 240
-        },
-        {
-          "keyword": "batterie stockage",
-          "searchVolume": 480,
-          "competitionLevel": "HIGH",
-          "cpc": 1.02,
-          "score": 240
-        },
-        {
-          "keyword": "batterie lithium gonflée",
-          "searchVolume": 140,
+          "keyword": "dacia camper van 2026 prix",
+          "searchVolume": 20,
           "competitionLevel": "LOW",
           "cpc": 0,
-          "score": 210
+          "difficulty": null,
+          "intent": "commercial",
+          "score": 16
         },
         {
-          "keyword": "ancienne batterie palia",
-          "searchVolume": 140,
+          "keyword": "dodge ram van b250 consommation",
+          "searchVolume": 20,
           "competitionLevel": "LOW",
           "cpc": 0,
-          "score": 210
+          "difficulty": null,
+          "intent": "commercial",
+          "score": 16
         },
         {
-          "keyword": "damso batterie faible titres",
-          "searchVolume": 140,
-          "competitionLevel": "LOW",
-          "cpc": 0.04,
-          "score": 210
-        },
-        {
-          "keyword": "durée de vie batterie lithium",
-          "searchVolume": 140,
-          "competitionLevel": "LOW",
-          "cpc": 0,
-          "score": 210
-        },
-        {
-          "keyword": "batterie def",
-          "searchVolume": 140,
-          "competitionLevel": "LOW",
-          "cpc": 0,
-          "score": 210
-        },
-        {
-          "keyword": "batterie aluminium ion",
-          "searchVolume": 140,
-          "competitionLevel": "LOW",
-          "cpc": 0.65,
-          "score": 210
-        },
-        {
-          "keyword": "agm batterie",
-          "searchVolume": 390,
+          "keyword": "fourgon l4h2 dimensions",
+          "searchVolume": 20,
           "competitionLevel": "HIGH",
-          "cpc": 0.42,
-          "score": 195
+          "cpc": 0.83,
+          "difficulty": null,
+          "intent": "informational",
+          "score": 12
         },
         {
-          "keyword": "batterie ordinateur",
-          "searchVolume": 390,
-          "competitionLevel": "HIGH",
-          "cpc": 0.58,
-          "score": 195
-        },
-        {
-          "keyword": "mainteneur de charge batterie",
-          "searchVolume": 390,
-          "competitionLevel": "HIGH",
-          "cpc": 0.26,
-          "score": 195
-        },
-        {
-          "keyword": "test batterie externe",
-          "searchVolume": 170,
+          "keyword": "ford transit v363 fourgon",
+          "searchVolume": 20,
           "competitionLevel": "MEDIUM",
-          "cpc": 1.05,
-          "score": 170
-        },
-        {
-          "keyword": "risque batterie lithium",
-          "searchVolume": 110,
-          "competitionLevel": "LOW",
-          "cpc": 1.34,
-          "score": 165
-        },
-        {
-          "keyword": "batterie lithium explose",
-          "searchVolume": 110,
-          "competitionLevel": "LOW",
-          "cpc": 0,
-          "score": 165
-        },
-        {
-          "keyword": "meilleure batterie nomade",
-          "searchVolume": 320,
-          "competitionLevel": "HIGH",
-          "cpc": 1.52,
-          "score": 160
-        },
-        {
-          "keyword": "charger une batterie lithium",
-          "searchVolume": 320,
-          "competitionLevel": "HIGH",
-          "cpc": 0.33,
-          "score": 160
-        },
-        {
-          "keyword": "batterie dw",
-          "searchVolume": 320,
-          "competitionLevel": "HIGH",
-          "cpc": 0.27,
-          "score": 160
-        },
-        {
-          "keyword": "graisse cosse batterie",
-          "searchVolume": 320,
-          "competitionLevel": "HIGH",
-          "cpc": 0.43,
-          "score": 160
-        },
-        {
-          "keyword": "batterie bordeaux",
-          "searchVolume": 140,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.89,
-          "score": 140
-        },
-        {
-          "keyword": "batterie lithium soufre",
-          "searchVolume": 90,
-          "competitionLevel": "LOW",
-          "cpc": 0,
-          "score": 135
-        },
-        {
-          "keyword": "batterie lithium trop déchargée",
-          "searchVolume": 90,
-          "competitionLevel": "LOW",
-          "cpc": 0,
-          "score": 135
-        },
-        {
-          "keyword": "batterie c1",
-          "searchVolume": 260,
-          "competitionLevel": "HIGH",
-          "cpc": 0.51,
-          "score": 130
-        },
-        {
-          "keyword": "batterie steco avis",
-          "searchVolume": 260,
-          "competitionLevel": "HIGH",
           "cpc": 0.24,
-          "score": 130
+          "difficulty": null,
+          "intent": "informational",
+          "score": 12
         },
         {
-          "keyword": "stockage batterie lithium",
-          "searchVolume": 260,
-          "competitionLevel": "HIGH",
-          "cpc": 2.17,
-          "score": 130
+          "keyword": "van transit ford 2012",
+          "searchVolume": 20,
+          "competitionLevel": "LOW",
+          "cpc": 0,
+          "difficulty": null,
+          "intent": "informational",
+          "score": 12
         },
         {
-          "keyword": "tronçonneuse batterie parkside",
-          "searchVolume": 260,
-          "competitionLevel": "HIGH",
-          "cpc": 0.17,
-          "score": 130
-        },
-        {
-          "keyword": "choisir batterie externe",
-          "searchVolume": 260,
-          "competitionLevel": "HIGH",
-          "cpc": 0.22,
-          "score": 130
-        },
-        {
-          "keyword": "batterie banner avis",
-          "searchVolume": 260,
-          "competitionLevel": "HIGH",
-          "cpc": 0.49,
-          "score": 130
-        },
-        {
-          "keyword": "fabrication batterie lithium",
-          "searchVolume": 110,
+          "keyword": "ford transit van 2014",
+          "searchVolume": 20,
           "competitionLevel": "MEDIUM",
-          "cpc": 1.38,
-          "score": 110
-        },
-        {
-          "keyword": "reconditionnement batterie lithium",
-          "searchVolume": 210,
-          "competitionLevel": "HIGH",
-          "cpc": 1.05,
-          "score": 105
-        },
-        {
-          "keyword": "prix batterie polo",
-          "searchVolume": 70,
-          "competitionLevel": "LOW",
-          "cpc": 0.33,
-          "score": 105
-        },
-        {
-          "keyword": "batterie energie",
-          "searchVolume": 210,
-          "competitionLevel": "HIGH",
-          "cpc": 0.83,
-          "score": 105
-        },
-        {
-          "keyword": "cellule batterie lithium",
-          "searchVolume": 210,
-          "competitionLevel": "HIGH",
-          "cpc": 0.35,
-          "score": 105
-        },
-        {
-          "keyword": "cellules batterie lithium",
-          "searchVolume": 210,
-          "competitionLevel": "HIGH",
-          "cpc": 0.35,
-          "score": 105
-        },
-        {
-          "keyword": "enceinte batterie electronique",
-          "searchVolume": 210,
-          "competitionLevel": "HIGH",
-          "cpc": 0.38,
-          "score": 105
-        },
-        {
-          "keyword": "batterie onduleur eaton",
-          "searchVolume": 170,
-          "competitionLevel": "HIGH",
-          "cpc": 0.66,
-          "score": 85
-        },
-        {
-          "keyword": "fr-batterie",
-          "searchVolume": 50,
-          "competitionLevel": "LOW",
           "cpc": 0,
-          "score": 75
+          "difficulty": null,
+          "intent": "informational",
+          "score": 12
         },
         {
-          "keyword": "batterie ionique subnautica",
-          "searchVolume": 50,
+          "keyword": "fourgon dodge ram van",
+          "searchVolume": 20,
           "competitionLevel": "LOW",
-          "cpc": 0,
-          "score": 75
+          "cpc": 0.02,
+          "difficulty": 49,
+          "intent": "informational",
+          "score": 10
         },
         {
-          "keyword": "explosion batterie lithium téléphone",
-          "searchVolume": 50,
-          "competitionLevel": "LOW",
-          "cpc": 0,
-          "score": 75
-        },
-        {
-          "keyword": "courtemanche batterie",
-          "searchVolume": 50,
-          "competitionLevel": "LOW",
-          "cpc": 0,
-          "score": 75
-        },
-        {
-          "keyword": "meilleure batterie portable",
-          "searchVolume": 140,
-          "competitionLevel": "HIGH",
-          "cpc": 0.83,
-          "score": 70
-        },
-        {
-          "keyword": "batterie lithium polymère",
-          "searchVolume": 140,
-          "competitionLevel": "HIGH",
-          "cpc": 0.1,
-          "score": 70
-        },
-        {
-          "keyword": "assemblage batterie lithium",
-          "searchVolume": 70,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.11,
-          "score": 70
-        },
-        {
-          "keyword": "avantage batterie lithium",
-          "searchVolume": 70,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.1,
-          "score": 70
-        },
-        {
-          "keyword": "meilleure marque batterie externe",
-          "searchVolume": 110,
-          "competitionLevel": "HIGH",
-          "cpc": 0.27,
-          "score": 55
-        },
-        {
-          "keyword": "testeur batterie lithium",
-          "searchVolume": 110,
-          "competitionLevel": "HIGH",
-          "cpc": 0.3,
-          "score": 55
-        },
-        {
-          "keyword": "batterie decharge lente lithium",
-          "searchVolume": 110,
-          "competitionLevel": "HIGH",
-          "cpc": 0.66,
-          "score": 55
-        },
-        {
-          "keyword": "batterie lithium décharge lente",
-          "searchVolume": 110,
-          "competitionLevel": "HIGH",
-          "cpc": 0.63,
-          "score": 55
-        },
-        {
-          "keyword": "meilleure batterie",
-          "searchVolume": 110,
-          "competitionLevel": "HIGH",
-          "cpc": 0.99,
-          "score": 55
-        },
-        {
-          "keyword": "meilleure batterie lithium",
-          "searchVolume": 70,
-          "competitionLevel": "HIGH",
-          "cpc": 0.78,
-          "score": 35
-        },
-        {
-          "keyword": "batterie velo lithium",
-          "searchVolume": 70,
-          "competitionLevel": "HIGH",
-          "cpc": 0.35,
-          "score": 35
-        },
-        {
-          "keyword": "meilleure marque de batterie",
-          "searchVolume": 70,
+          "keyword": "ford transit sport van 6 places",
+          "searchVolume": 20,
           "competitionLevel": "HIGH",
           "cpc": 0,
-          "score": 35
+          "difficulty": 49,
+          "intent": "informational",
+          "score": 10
         },
         {
-          "keyword": "batterie moto lithium avis",
-          "searchVolume": 70,
-          "competitionLevel": "HIGH",
-          "cpc": 0.18,
-          "score": 35
+          "keyword": "chevy van g20 interior",
+          "searchVolume": 30,
+          "competitionLevel": "LOW",
+          "cpc": 0,
+          "difficulty": 51,
+          "intent": "navigational",
+          "score": 4
         },
         {
-          "keyword": "avis batterie lithium moto",
-          "searchVolume": 70,
-          "competitionLevel": "HIGH",
-          "cpc": 0.18,
-          "score": 35
-        },
-        {
-          "keyword": "batterie apc",
-          "searchVolume": 70,
-          "competitionLevel": "HIGH",
-          "cpc": 2.39,
-          "score": 35
-        },
-        {
-          "keyword": "batterie électronique ou acoustique",
-          "searchVolume": 50,
-          "competitionLevel": "HIGH",
-          "cpc": 0.54,
-          "score": 25
+          "keyword": "dacia logan van dimensions coffre",
+          "searchVolume": 20,
+          "competitionLevel": "LOW",
+          "cpc": 0,
+          "difficulty": null,
+          "intent": "navigational",
+          "score": 4
         }
       ],
       "topOpportunities": [
         {
-          "keyword": "batterie externe",
-          "searchVolume": 90500,
-          "competitionLevel": "HIGH",
-          "cpc": 0.37,
-          "score": 45250
-        },
-        {
-          "keyword": "batterie solide",
-          "searchVolume": 9900,
+          "keyword": "camping car dacia 2025 prix neuf",
+          "searchVolume": 210,
           "competitionLevel": "LOW",
-          "cpc": 0.45,
-          "score": 14850
+          "cpc": 0,
+          "difficulty": 0,
+          "intent": "commercial",
+          "score": 273
         },
         {
-          "keyword": "batterie electronique",
-          "searchVolume": 12100,
+          "keyword": "4l fourgonnette occasion",
+          "searchVolume": 170,
+          "competitionLevel": "LOW",
+          "cpc": 0.11,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 255
+        },
+        {
+          "keyword": "fourgon ford transit prix",
+          "searchVolume": 140,
           "competitionLevel": "HIGH",
-          "cpc": 0.58,
-          "score": 6050
+          "cpc": 0.61,
+          "difficulty": 0,
+          "intent": "commercial",
+          "score": 182
         },
         {
-          "keyword": "chargeur batterie",
-          "searchVolume": 9900,
+          "keyword": "prix fourgon ford transit",
+          "searchVolume": 140,
           "competitionLevel": "HIGH",
-          "cpc": 0.4,
-          "score": 4950
+          "cpc": 1.07,
+          "difficulty": 0,
+          "intent": "commercial",
+          "score": 182
         },
         {
-          "keyword": "batterie virtuelle",
-          "searchVolume": 4400,
+          "keyword": "renault master l2h2 plan amenagement fourgon l2h2",
+          "searchVolume": 110,
           "competitionLevel": "MEDIUM",
-          "cpc": 1.96,
-          "score": 4400
+          "cpc": 0.29,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 165
         },
         {
-          "keyword": "batterie nomade",
-          "searchVolume": 8100,
-          "competitionLevel": "HIGH",
-          "cpc": 1.34,
-          "score": 4050
-        },
-        {
-          "keyword": "batterie de merville",
-          "searchVolume": 2400,
+          "keyword": "kia camper van 2026",
+          "searchVolume": 110,
           "competitionLevel": "LOW",
-          "cpc": 0.04,
-          "score": 3600
+          "cpc": 0,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 165
         },
         {
-          "keyword": "batterie longues sur mer",
-          "searchVolume": 2400,
+          "keyword": "prix courroie de distribution camping-car fiat ducato",
+          "searchVolume": 110,
           "competitionLevel": "LOW",
-          "cpc": 0.08,
-          "score": 3600
+          "cpc": 1.81,
+          "difficulty": 0,
+          "intent": "commercial",
+          "score": 143
         },
         {
-          "keyword": "chargeur de batterie",
-          "searchVolume": 6600,
-          "competitionLevel": "HIGH",
-          "cpc": 0.33,
-          "score": 3300
+          "keyword": "prix courroie de distribution camping car fiat ducato",
+          "searchVolume": 110,
+          "competitionLevel": "LOW",
+          "cpc": 1.81,
+          "difficulty": 0,
+          "intent": "commercial",
+          "score": 143
         },
         {
-          "keyword": "partition batterie",
-          "searchVolume": 2900,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.49,
-          "score": 2900
+          "keyword": "camping car fiat ducato occasion 2000",
+          "searchVolume": 90,
+          "competitionLevel": "LOW",
+          "cpc": 0.36,
+          "difficulty": 0,
+          "intent": "transactional",
+          "score": 135
+        },
+        {
+          "keyword": "prix hayon elevateur pour fourgon",
+          "searchVolume": 90,
+          "competitionLevel": "LOW",
+          "cpc": 1.12,
+          "difficulty": 0,
+          "intent": "commercial",
+          "score": 117
         }
       ]
     },
     {
       "segment": "formation",
       "label": "Formation — Business Van",
-      "generatedAt": "2026-07-01T09:45:25.886Z",
+      "generatedAt": "2026-07-12T21:23:29.936Z",
       "keywords": [
-        {
-          "keyword": "location de vacances",
-          "searchVolume": 40500,
-          "competitionLevel": "LOW",
-          "cpc": 1.91,
-          "score": 60750
-        },
-        {
-          "keyword": "le bon coin location vacances",
-          "searchVolume": 9900,
-          "competitionLevel": "LOW",
-          "cpc": 1.13,
-          "score": 14850
-        },
-        {
-          "keyword": "location de ski",
-          "searchVolume": 5400,
-          "competitionLevel": "LOW",
-          "cpc": 1.19,
-          "score": 8100
-        },
-        {
-          "keyword": "location chalet montagne",
-          "searchVolume": 6600,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.91,
-          "score": 6600
-        },
-        {
-          "keyword": "activité marrakech",
-          "searchVolume": 5400,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.94,
-          "score": 5400
-        },
-        {
-          "keyword": "activité lyon",
-          "searchVolume": 9900,
-          "competitionLevel": "HIGH",
-          "cpc": 0.83,
-          "score": 4950
-        },
-        {
-          "keyword": "location gite",
-          "searchVolume": 4400,
-          "competitionLevel": "MEDIUM",
-          "cpc": 1.23,
-          "score": 4400
-        },
-        {
-          "keyword": "location vacances bretagne",
-          "searchVolume": 4400,
-          "competitionLevel": "MEDIUM",
-          "cpc": 1.4,
-          "score": 4400
-        },
-        {
-          "keyword": "location ski chamrousse",
-          "searchVolume": 2900,
-          "competitionLevel": "LOW",
-          "cpc": 0.99,
-          "score": 4350
-        },
-        {
-          "keyword": "activité bordeaux",
-          "searchVolume": 8100,
-          "competitionLevel": "HIGH",
-          "cpc": 0.75,
-          "score": 4050
-        },
-        {
-          "keyword": "activité toulouse",
-          "searchVolume": 8100,
-          "competitionLevel": "HIGH",
-          "cpc": 0.62,
-          "score": 4050
-        },
-        {
-          "keyword": "location ile de ré",
-          "searchVolume": 8100,
-          "competitionLevel": "HIGH",
-          "cpc": 1.27,
-          "score": 4050
-        },
-        {
-          "keyword": "abritel location vacances",
-          "searchVolume": 3600,
-          "competitionLevel": "MEDIUM",
-          "cpc": 2,
-          "score": 3600
-        },
-        {
-          "keyword": "location chaine neige",
-          "searchVolume": 2400,
-          "competitionLevel": "LOW",
-          "cpc": 0.31,
-          "score": 3600
-        },
-        {
-          "keyword": "activité montpellier",
-          "searchVolume": 6600,
-          "competitionLevel": "HIGH",
-          "cpc": 0.73,
-          "score": 3300
-        },
-        {
-          "keyword": "location chateau gonflable",
-          "searchVolume": 6600,
-          "competitionLevel": "HIGH",
-          "cpc": 0.62,
-          "score": 3300
-        },
-        {
-          "keyword": "location la plagne",
-          "searchVolume": 2900,
-          "competitionLevel": "MEDIUM",
-          "cpc": 1.92,
-          "score": 2900
-        },
-        {
-          "keyword": "formation sncf",
-          "searchVolume": 1900,
-          "competitionLevel": "LOW",
-          "cpc": 0.52,
-          "score": 2850
-        },
-        {
-          "keyword": "location ski cauterets",
-          "searchVolume": 1900,
-          "competitionLevel": "LOW",
-          "cpc": 0.92,
-          "score": 2850
-        },
-        {
-          "keyword": "location ski super besse",
-          "searchVolume": 1900,
-          "competitionLevel": "LOW",
-          "cpc": 0.76,
-          "score": 2850
-        },
-        {
-          "keyword": "activité nantes",
-          "searchVolume": 5400,
-          "competitionLevel": "HIGH",
-          "cpc": 0.8,
-          "score": 2700
-        },
-        {
-          "keyword": "activité marseille",
-          "searchVolume": 5400,
-          "competitionLevel": "HIGH",
-          "cpc": 0.62,
-          "score": 2700
-        },
-        {
-          "keyword": "location maison vacances",
-          "searchVolume": 5400,
-          "competitionLevel": "HIGH",
-          "cpc": 2.12,
-          "score": 2700
-        },
-        {
-          "keyword": "activité dubai",
-          "searchVolume": 2400,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.86,
-          "score": 2400
-        },
-        {
-          "keyword": "location vacances corse",
-          "searchVolume": 2400,
-          "competitionLevel": "MEDIUM",
-          "cpc": 1.67,
-          "score": 2400
-        },
-        {
-          "keyword": "location appartement cannes",
-          "searchVolume": 2400,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.86,
-          "score": 2400
-        },
-        {
-          "keyword": "location vosges",
-          "searchVolume": 2400,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.89,
-          "score": 2400
-        },
-        {
-          "keyword": "activité strasbourg",
-          "searchVolume": 4400,
-          "competitionLevel": "HIGH",
-          "cpc": 0.64,
-          "score": 2200
-        },
-        {
-          "keyword": "activité rennes",
-          "searchVolume": 4400,
-          "competitionLevel": "HIGH",
-          "cpc": 0.95,
-          "score": 2200
-        },
-        {
-          "keyword": "location sableuse",
-          "searchVolume": 4400,
-          "competitionLevel": "HIGH",
-          "cpc": 0.31,
-          "score": 2200
-        },
-        {
-          "keyword": "location saint malo",
-          "searchVolume": 4400,
-          "competitionLevel": "HIGH",
-          "cpc": 1.15,
-          "score": 2200
-        },
-        {
-          "keyword": "location la rochelle",
-          "searchVolume": 4400,
-          "competitionLevel": "HIGH",
-          "cpc": 1.26,
-          "score": 2200
-        },
-        {
-          "keyword": "location super besse",
-          "searchVolume": 4400,
-          "competitionLevel": "HIGH",
-          "cpc": 1.2,
-          "score": 2200
-        },
-        {
-          "keyword": "location vacances espagne",
-          "searchVolume": 4400,
-          "competitionLevel": "HIGH",
-          "cpc": 1.24,
-          "score": 2200
-        },
-        {
-          "keyword": "location maison avec piscine",
-          "searchVolume": 4400,
-          "competitionLevel": "HIGH",
-          "cpc": 1.07,
-          "score": 2200
-        },
-        {
-          "keyword": "location ski villard de lans",
-          "searchVolume": 1300,
-          "competitionLevel": "LOW",
-          "cpc": 1.58,
-          "score": 1950
-        },
-        {
-          "keyword": "location ski ax les thermes",
-          "searchVolume": 1300,
-          "competitionLevel": "LOW",
-          "cpc": 0.96,
-          "score": 1950
-        },
-        {
-          "keyword": "activité guadeloupe",
-          "searchVolume": 1900,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.7,
-          "score": 1900
-        },
-        {
-          "keyword": "location montagne",
-          "searchVolume": 1900,
-          "competitionLevel": "MEDIUM",
-          "cpc": 1.31,
-          "score": 1900
-        },
-        {
-          "keyword": "location villard de lans",
-          "searchVolume": 1900,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.94,
-          "score": 1900
-        },
-        {
-          "keyword": "location chalet pyrénées",
-          "searchVolume": 1900,
-          "competitionLevel": "MEDIUM",
-          "cpc": 1.22,
-          "score": 1900
-        },
-        {
-          "keyword": "activité barcelone",
-          "searchVolume": 3600,
-          "competitionLevel": "HIGH",
-          "cpc": 0.64,
-          "score": 1800
-        },
-        {
-          "keyword": "location ile d'oleron",
-          "searchVolume": 3600,
-          "competitionLevel": "HIGH",
-          "cpc": 1.46,
-          "score": 1800
-        },
-        {
-          "keyword": "location villa espagne",
-          "searchVolume": 3600,
-          "competitionLevel": "HIGH",
-          "cpc": 1.39,
-          "score": 1800
-        },
-        {
-          "keyword": "activité malte",
-          "searchVolume": 1600,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.73,
-          "score": 1600
-        },
-        {
-          "keyword": "activité ile maurice",
-          "searchVolume": 1600,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.66,
-          "score": 1600
-        },
-        {
-          "keyword": "activité cap d'agde",
-          "searchVolume": 1600,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.27,
-          "score": 1600
-        },
-        {
-          "keyword": "activité caen",
-          "searchVolume": 2900,
-          "competitionLevel": "HIGH",
-          "cpc": 0.44,
-          "score": 1450
-        },
-        {
-          "keyword": "activité angers",
-          "searchVolume": 2900,
-          "competitionLevel": "HIGH",
-          "cpc": 0.81,
-          "score": 1450
-        },
-        {
-          "keyword": "activité londres",
-          "searchVolume": 2900,
-          "competitionLevel": "HIGH",
-          "cpc": 0.72,
-          "score": 1450
-        },
-        {
-          "keyword": "location noirmoutier",
-          "searchVolume": 2900,
-          "competitionLevel": "HIGH",
-          "cpc": 1.52,
-          "score": 1450
-        },
-        {
-          "keyword": "location de voiture guadeloupe",
-          "searchVolume": 2900,
-          "competitionLevel": "HIGH",
-          "cpc": 2.15,
-          "score": 1450
-        },
-        {
-          "keyword": "location les menuires",
-          "searchVolume": 2900,
-          "competitionLevel": "HIGH",
-          "cpc": 2.12,
-          "score": 1450
-        },
-        {
-          "keyword": "location belle ile en mer",
-          "searchVolume": 2900,
-          "competitionLevel": "HIGH",
-          "cpc": 1.11,
-          "score": 1450
-        },
-        {
-          "keyword": "location cap d'agde",
-          "searchVolume": 2900,
-          "competitionLevel": "HIGH",
-          "cpc": 1.26,
-          "score": 1450
-        },
-        {
-          "keyword": "formation vtc uber 20€",
-          "searchVolume": 1300,
-          "competitionLevel": "MEDIUM",
-          "cpc": 3.6,
-          "score": 1300
-        },
-        {
-          "keyword": "activité dijon",
-          "searchVolume": 2400,
-          "competitionLevel": "HIGH",
-          "cpc": 0.63,
-          "score": 1200
-        },
-        {
-          "keyword": "activité tours",
-          "searchVolume": 2400,
-          "competitionLevel": "HIGH",
-          "cpc": 0.88,
-          "score": 1200
-        },
-        {
-          "keyword": "activité grenoble",
-          "searchVolume": 2400,
-          "competitionLevel": "HIGH",
-          "cpc": 0.78,
-          "score": 1200
-        },
-        {
-          "keyword": "location sardaigne",
-          "searchVolume": 2400,
-          "competitionLevel": "HIGH",
-          "cpc": 1.43,
-          "score": 1200
-        },
-        {
-          "keyword": "location font romeu",
-          "searchVolume": 2400,
-          "competitionLevel": "HIGH",
-          "cpc": 1.58,
-          "score": 1200
-        },
-        {
-          "keyword": "la rochelle location vacances",
-          "searchVolume": 2400,
-          "competitionLevel": "HIGH",
-          "cpc": 1.41,
-          "score": 1200
-        },
-        {
-          "keyword": "location maison espagne",
-          "searchVolume": 2400,
-          "competitionLevel": "HIGH",
-          "cpc": 1.25,
-          "score": 1200
-        },
-        {
-          "keyword": "location berck sur mer",
-          "searchVolume": 2400,
-          "competitionLevel": "HIGH",
-          "cpc": 0.74,
-          "score": 1200
-        },
-        {
-          "keyword": "location vacances annecy",
-          "searchVolume": 2400,
-          "competitionLevel": "HIGH",
-          "cpc": 1.14,
-          "score": 1200
-        },
-        {
-          "keyword": "location ski chatel",
-          "searchVolume": 720,
-          "competitionLevel": "LOW",
-          "cpc": 1.68,
-          "score": 1080
-        },
-        {
-          "keyword": "formation bibliothécaire",
-          "searchVolume": 1000,
-          "competitionLevel": "MEDIUM",
-          "cpc": 1.06,
-          "score": 1000
-        },
-        {
-          "keyword": "location annemasse",
-          "searchVolume": 1000,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.68,
-          "score": 1000
-        },
-        {
-          "keyword": "location ski valloire",
-          "searchVolume": 1000,
-          "competitionLevel": "MEDIUM",
-          "cpc": 1.4,
-          "score": 1000
-        },
-        {
-          "keyword": "activité metz",
-          "searchVolume": 1900,
-          "competitionLevel": "HIGH",
-          "cpc": 0.57,
-          "score": 950
-        },
-        {
-          "keyword": "activité perpignan",
-          "searchVolume": 1900,
-          "competitionLevel": "HIGH",
-          "cpc": 0.39,
-          "score": 950
-        },
-        {
-          "keyword": "activité nancy",
-          "searchVolume": 1900,
-          "competitionLevel": "HIGH",
-          "cpc": 0.64,
-          "score": 950
-        },
-        {
-          "keyword": "activité deauville",
-          "searchVolume": 1900,
-          "competitionLevel": "HIGH",
-          "cpc": 0.46,
-          "score": 950
-        },
-        {
-          "keyword": "activité arcachon",
-          "searchVolume": 1900,
-          "competitionLevel": "HIGH",
-          "cpc": 0.39,
-          "score": 950
-        },
-        {
-          "keyword": "location péniche canal du midi",
-          "searchVolume": 1900,
-          "competitionLevel": "HIGH",
-          "cpc": 1.25,
-          "score": 950
-        },
-        {
-          "keyword": "location loudenvielle",
-          "searchVolume": 1900,
-          "competitionLevel": "HIGH",
-          "cpc": 1.18,
-          "score": 950
-        },
-        {
-          "keyword": "location baie de somme",
-          "searchVolume": 1900,
-          "competitionLevel": "HIGH",
-          "cpc": 1.03,
-          "score": 950
-        },
-        {
-          "keyword": "location saint ouen",
-          "searchVolume": 590,
-          "competitionLevel": "LOW",
-          "cpc": 0.52,
-          "score": 885
-        },
-        {
-          "keyword": "activité niort",
-          "searchVolume": 880,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.37,
-          "score": 880
-        },
-        {
-          "keyword": "location ski la toussuire",
-          "searchVolume": 880,
-          "competitionLevel": "MEDIUM",
-          "cpc": 1.29,
-          "score": 880
-        },
-        {
-          "keyword": "activité la réunion",
-          "searchVolume": 880,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.72,
-          "score": 880
-        },
-        {
-          "keyword": "activité poitiers",
-          "searchVolume": 1600,
-          "competitionLevel": "HIGH",
-          "cpc": 0.34,
-          "score": 800
-        },
-        {
-          "keyword": "location utilitaire lyon",
-          "searchVolume": 1600,
-          "competitionLevel": "HIGH",
-          "cpc": 2.05,
-          "score": 800
-        },
-        {
-          "keyword": "activité geneve",
-          "searchVolume": 1600,
-          "competitionLevel": "HIGH",
-          "cpc": 0.61,
-          "score": 800
-        },
-        {
-          "keyword": "location jet privé",
-          "searchVolume": 1600,
-          "competitionLevel": "HIGH",
-          "cpc": 3.02,
-          "score": 800
-        },
-        {
-          "keyword": "location maison saint malo",
-          "searchVolume": 720,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.48,
-          "score": 720
-        },
         {
           "keyword": "location van aménagé lyon",
           "searchVolume": 720,
           "competitionLevel": "MEDIUM",
           "cpc": 1.72,
-          "score": 720
+          "difficulty": 9,
+          "intent": "transactional",
+          "score": 983
         },
         {
-          "keyword": "location dunkerque",
-          "searchVolume": 720,
+          "keyword": "assurance location camping car entre particulier",
+          "searchVolume": 40,
           "competitionLevel": "MEDIUM",
-          "cpc": 0.8,
-          "score": 720
+          "cpc": 4,
+          "difficulty": 0,
+          "intent": "commercial",
+          "score": 52
         },
         {
-          "keyword": "sixt location utilitaire",
-          "searchVolume": 720,
+          "keyword": "assurance location camping-car entre particulier",
+          "searchVolume": 40,
           "competitionLevel": "MEDIUM",
-          "cpc": 1.53,
-          "score": 720
+          "cpc": 4,
+          "difficulty": 0,
+          "intent": "commercial",
+          "score": 52
         },
         {
-          "keyword": "activité tenerife",
-          "searchVolume": 1300,
-          "competitionLevel": "HIGH",
-          "cpc": 0.95,
-          "score": 650
-        },
-        {
-          "keyword": "activité limoges",
-          "searchVolume": 1300,
-          "competitionLevel": "HIGH",
-          "cpc": 0.79,
-          "score": 650
-        },
-        {
-          "keyword": "location utilitaire marseille",
-          "searchVolume": 1300,
-          "competitionLevel": "HIGH",
-          "cpc": 1.74,
-          "score": 650
-        },
-        {
-          "keyword": "activité toulon",
-          "searchVolume": 1300,
-          "competitionLevel": "HIGH",
-          "cpc": 0.45,
-          "score": 650
-        },
-        {
-          "keyword": "activité belfort",
-          "searchVolume": 590,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.97,
-          "score": 590
-        },
-        {
-          "keyword": "activité dordogne",
-          "searchVolume": 1000,
-          "competitionLevel": "HIGH",
-          "cpc": 0.29,
-          "score": 500
-        },
-        {
-          "keyword": "activité malaga",
-          "searchVolume": 1000,
-          "competitionLevel": "HIGH",
-          "cpc": 0.78,
-          "score": 500
-        },
-        {
-          "keyword": "location utilitaire bordeaux",
-          "searchVolume": 1000,
-          "competitionLevel": "HIGH",
-          "cpc": 2.14,
-          "score": 500
-        },
-        {
-          "keyword": "activité valenciennes",
-          "searchVolume": 1000,
-          "competitionLevel": "HIGH",
-          "cpc": 0.94,
-          "score": 500
-        },
-        {
-          "keyword": "activité new york",
-          "searchVolume": 1000,
-          "competitionLevel": "HIGH",
-          "cpc": 1.57,
-          "score": 500
-        },
-        {
-          "keyword": "location vacances royan",
-          "searchVolume": 1000,
-          "competitionLevel": "HIGH",
-          "cpc": 1.18,
-          "score": 500
-        },
-        {
-          "keyword": "activité ile de ré",
-          "searchVolume": 1000,
-          "competitionLevel": "HIGH",
-          "cpc": 0.42,
-          "score": 500
-        },
-        {
-          "keyword": "formation uber 20€",
-          "searchVolume": 480,
-          "competitionLevel": "MEDIUM",
-          "cpc": 2.92,
-          "score": 480
-        },
-        {
-          "keyword": "location gaillac",
-          "searchVolume": 320,
+          "keyword": "uber van tarif",
+          "searchVolume": 40,
           "competitionLevel": "LOW",
-          "cpc": 0.57,
-          "score": 480
+          "cpc": 0.98,
+          "difficulty": 0,
+          "intent": "informational",
+          "score": 40
         },
         {
-          "keyword": "activité tahiti",
-          "searchVolume": 480,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.95,
-          "score": 480
-        },
-        {
-          "keyword": "activité chartres",
-          "searchVolume": 880,
-          "competitionLevel": "HIGH",
-          "cpc": 0.27,
-          "score": 440
-        },
-        {
-          "keyword": "location utilitaire nice",
-          "searchVolume": 880,
-          "competitionLevel": "HIGH",
-          "cpc": 1.92,
-          "score": 440
-        },
-        {
-          "keyword": "activité carcassonne",
-          "searchVolume": 880,
-          "competitionLevel": "HIGH",
-          "cpc": 0.32,
-          "score": 440
-        },
-        {
-          "keyword": "location rainureuse",
-          "searchVolume": 880,
-          "competitionLevel": "HIGH",
-          "cpc": 0.43,
-          "score": 440
-        },
-        {
-          "keyword": "location jet privé tarif",
-          "searchVolume": 320,
-          "competitionLevel": "MEDIUM",
-          "cpc": 2.06,
-          "score": 320
-        },
-        {
-          "keyword": "location vacances andernos les bains",
-          "searchVolume": 320,
-          "competitionLevel": "MEDIUM",
-          "cpc": 1.4,
-          "score": 320
-        },
-        {
-          "keyword": "location croatie",
-          "searchVolume": 590,
-          "competitionLevel": "HIGH",
-          "cpc": 1.62,
-          "score": 295
-        },
-        {
-          "keyword": "activité lyon couple",
-          "searchVolume": 590,
-          "competitionLevel": "HIGH",
-          "cpc": 0.92,
-          "score": 295
-        },
-        {
-          "keyword": "activité versailles",
-          "searchVolume": 590,
-          "competitionLevel": "HIGH",
-          "cpc": 0.53,
-          "score": 295
-        },
-        {
-          "keyword": "foncia location lille",
-          "searchVolume": 170,
-          "competitionLevel": "LOW",
-          "cpc": 1.39,
-          "score": 255
-        },
-        {
-          "keyword": "activité rovaniemi",
-          "searchVolume": 480,
-          "competitionLevel": "HIGH",
-          "cpc": 1.53,
-          "score": 240
-        },
-        {
-          "keyword": "location dordogne avec piscine",
-          "searchVolume": 480,
-          "competitionLevel": "HIGH",
-          "cpc": 1.44,
-          "score": 240
-        },
-        {
-          "keyword": "location vacances cheques vacances",
-          "searchVolume": 390,
-          "competitionLevel": "HIGH",
-          "cpc": 1.29,
-          "score": 195
-        },
-        {
-          "keyword": "activité paris soir",
-          "searchVolume": 390,
-          "competitionLevel": "HIGH",
-          "cpc": 0.73,
-          "score": 195
-        },
-        {
-          "keyword": "metz activité",
-          "searchVolume": 390,
-          "competitionLevel": "HIGH",
-          "cpc": 0.43,
-          "score": 195
-        },
-        {
-          "keyword": "location maison isolée foret",
-          "searchVolume": 170,
-          "competitionLevel": "MEDIUM",
-          "cpc": 0.86,
-          "score": 170
-        },
-        {
-          "keyword": "provins location materiel",
-          "searchVolume": 110,
-          "competitionLevel": "LOW",
-          "cpc": 0,
-          "score": 165
-        },
-        {
-          "keyword": "activité herault",
-          "searchVolume": 320,
-          "competitionLevel": "HIGH",
-          "cpc": 0.53,
-          "score": 160
-        },
-        {
-          "keyword": "parkadom location de parking entre particuliers",
-          "searchVolume": 70,
-          "competitionLevel": "LOW",
-          "cpc": 0,
-          "score": 105
-        },
-        {
-          "keyword": "activité marbella",
-          "searchVolume": 210,
-          "competitionLevel": "HIGH",
-          "cpc": 0.46,
-          "score": 105
-        },
-        {
-          "keyword": "location voiture compte comptable",
+          "keyword": "vanlife et decouverte",
           "searchVolume": 50,
           "competitionLevel": "LOW",
           "cpc": 0,
-          "score": 75
+          "difficulty": null,
+          "intent": "informational",
+          "score": 30
         },
         {
-          "keyword": "durée formation taxi",
-          "searchVolume": 50,
+          "keyword": "location van haute garonne",
+          "searchVolume": 30,
           "competitionLevel": "LOW",
-          "cpc": 2.1,
-          "score": 75
+          "cpc": 1.38,
+          "difficulty": null,
+          "intent": "transactional",
+          "score": 27
         },
         {
-          "keyword": "comptabilisation location vehicule",
-          "searchVolume": 50,
-          "competitionLevel": "LOW",
-          "cpc": 0,
-          "score": 75
-        },
-        {
-          "keyword": "activité volcanique dofus",
-          "searchVolume": 50,
-          "competitionLevel": "LOW",
-          "cpc": 0,
-          "score": 75
+          "keyword": "assurance camping car location particulier",
+          "searchVolume": 20,
+          "competitionLevel": "HIGH",
+          "cpc": 4.12,
+          "difficulty": null,
+          "intent": "commercial",
+          "score": 16
         }
       ],
       "topOpportunities": [
         {
-          "keyword": "location de vacances",
-          "searchVolume": 40500,
-          "competitionLevel": "LOW",
-          "cpc": 1.91,
-          "score": 60750
-        },
-        {
-          "keyword": "le bon coin location vacances",
-          "searchVolume": 9900,
-          "competitionLevel": "LOW",
-          "cpc": 1.13,
-          "score": 14850
-        },
-        {
-          "keyword": "location de ski",
-          "searchVolume": 5400,
-          "competitionLevel": "LOW",
-          "cpc": 1.19,
-          "score": 8100
-        },
-        {
-          "keyword": "location chalet montagne",
-          "searchVolume": 6600,
+          "keyword": "location van aménagé lyon",
+          "searchVolume": 720,
           "competitionLevel": "MEDIUM",
-          "cpc": 0.91,
-          "score": 6600
+          "cpc": 1.72,
+          "difficulty": 9,
+          "intent": "transactional",
+          "score": 983
         },
         {
-          "keyword": "activité marrakech",
-          "searchVolume": 5400,
+          "keyword": "assurance location camping car entre particulier",
+          "searchVolume": 40,
           "competitionLevel": "MEDIUM",
-          "cpc": 0.94,
-          "score": 5400
+          "cpc": 4,
+          "difficulty": 0,
+          "intent": "commercial",
+          "score": 52
         },
         {
-          "keyword": "activité lyon",
-          "searchVolume": 9900,
+          "keyword": "assurance location camping-car entre particulier",
+          "searchVolume": 40,
+          "competitionLevel": "MEDIUM",
+          "cpc": 4,
+          "difficulty": 0,
+          "intent": "commercial",
+          "score": 52
+        },
+        {
+          "keyword": "uber van tarif",
+          "searchVolume": 40,
+          "competitionLevel": "LOW",
+          "cpc": 0.98,
+          "difficulty": 0,
+          "intent": "informational",
+          "score": 40
+        },
+        {
+          "keyword": "vanlife et decouverte",
+          "searchVolume": 50,
+          "competitionLevel": "LOW",
+          "cpc": 0,
+          "difficulty": null,
+          "intent": "informational",
+          "score": 30
+        },
+        {
+          "keyword": "location van haute garonne",
+          "searchVolume": 30,
+          "competitionLevel": "LOW",
+          "cpc": 1.38,
+          "difficulty": null,
+          "intent": "transactional",
+          "score": 27
+        },
+        {
+          "keyword": "assurance camping car location particulier",
+          "searchVolume": 20,
           "competitionLevel": "HIGH",
-          "cpc": 0.83,
-          "score": 4950
-        },
+          "cpc": 4.12,
+          "difficulty": null,
+          "intent": "commercial",
+          "score": 16
+        }
+      ]
+    },
+    {
+      "segment": "marketplace",
+      "label": "Marketplace — Location entre particuliers",
+      "generatedAt": "2026-07-12T21:23:31.730Z",
+      "keywords": [
         {
-          "keyword": "location gite",
-          "searchVolume": 4400,
-          "competitionLevel": "MEDIUM",
-          "cpc": 1.23,
-          "score": 4400
-        },
-        {
-          "keyword": "location vacances bretagne",
-          "searchVolume": 4400,
-          "competitionLevel": "MEDIUM",
-          "cpc": 1.4,
-          "score": 4400
-        },
-        {
-          "keyword": "location ski chamrousse",
-          "searchVolume": 2900,
+          "keyword": "location fourgon brico dépôt",
+          "searchVolume": 50,
           "competitionLevel": "LOW",
-          "cpc": 0.99,
-          "score": 4350
+          "cpc": 1.2,
+          "difficulty": null,
+          "intent": "transactional",
+          "score": 45
         },
         {
-          "keyword": "activité bordeaux",
-          "searchVolume": 8100,
+          "keyword": "moving van rental",
+          "searchVolume": 30,
           "competitionLevel": "HIGH",
-          "cpc": 0.75,
-          "score": 4050
+          "cpc": 4.8,
+          "difficulty": null,
+          "intent": "transactional",
+          "score": 27
+        },
+        {
+          "keyword": "location pick up aménagé",
+          "searchVolume": 30,
+          "competitionLevel": "MEDIUM",
+          "cpc": 0.64,
+          "difficulty": null,
+          "intent": "transactional",
+          "score": 27
+        }
+      ],
+      "topOpportunities": [
+        {
+          "keyword": "location fourgon brico dépôt",
+          "searchVolume": 50,
+          "competitionLevel": "LOW",
+          "cpc": 1.2,
+          "difficulty": null,
+          "intent": "transactional",
+          "score": 45
+        },
+        {
+          "keyword": "moving van rental",
+          "searchVolume": 30,
+          "competitionLevel": "HIGH",
+          "cpc": 4.8,
+          "difficulty": null,
+          "intent": "transactional",
+          "score": 27
+        },
+        {
+          "keyword": "location pick up aménagé",
+          "searchVolume": 30,
+          "competitionLevel": "MEDIUM",
+          "cpc": 0.64,
+          "difficulty": null,
+          "intent": "transactional",
+          "score": 27
         }
       ]
     }

@@ -121,7 +121,10 @@ Sends emails from `jules@vanzonexplorer.com` via Gmail API OAuth2. Automatically
 
 22 agents registered in `scripts/agents/registry.json` (visible at `/admin/agents`). Key agents:
 
-- `blog-writer-agent.ts` — 2 articles SEO/semaine (lundi + jeudi) via Gemini → Sanity. **Markdown tables are forbidden in prompts** — use bullet lists instead. Réactivé en juin 2026 après la pause indexation.
+- `blog-writer-agent.ts` — 2 articles SEO/semaine (lundi + jeudi), rédigés par **claude-sonnet-5** (streaming + thinking adaptatif) → Sanity. Enrichi DataForSEO (volume + difficulté organique + intention de recherche injectés dans le prompt), SERP + PAA, sources Tavily, images SerpAPI avec fallback Pexels (requêtes traduites en anglais via Gemini), IndexNow au publish. **Markdown tables are forbidden in prompts** — use bullet lists instead.
+- `keyword-research-quarterly.ts` — **mensuel** (1er du mois, malgré le nom du fichier). Scoring 2026 : volume × (1 − difficulté organique/100) × facteur d'intention (`bulk_keyword_difficulty` + `search_intent` DataForSEO Labs — PAS `competition_level` qui mesure la concurrence Google Ads). Filtre thématique van/vanlife + exclusion marques. Segments : location, achat, formation, marketplace (le segment club est supprimé).
+- `queue-builder-monthly.ts` — 1er du mois 8h. **Boucle de feedback GSC** : requêtes en striking distance (position 4-25, ≥15 impressions/28j) traitées en priorité 95. Puis gaps du rapport keywords (MIN_SCORE 40 sur la nouvelle échelle). La queue vit dans Supabase (`article_queue`), pas dans le JSON.
+- `article-optimizer-quarterly.ts` — **mensuel** (15 du mois) : fraîcheur GEO. Réécritures via claude-sonnet-5 (thinking désactivé, budget court).
 - `backlinks-daily-outreach.ts` — Mar-Ven 9h30 Paris. 4 phases : reply detection (Gmail threads + Groq sentiment) → follow-up J+4 → 5 nouveaux outreach/jour (email discovery + Groq email + Gmail API) → label BACKLINKS + Telegram recap.
 - `backlinks-weekly-agent.ts` — Lundi 8h. Decouvre prospects via Tavily (rotation 4 methodes), score Groq >=5, insere dans `backlink_prospects`.
 - `road-trip-publisher-agent.ts` — Toutes les 4h. Transforme les road trips generes en articles SEO Sanity.

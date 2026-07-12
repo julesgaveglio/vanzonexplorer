@@ -20,17 +20,6 @@
       "fourgon aménagé pas cher"
     ]
   },
-  "club": {
-    "label": "Club Privé — Équipement",
-    "seeds": [
-      "batterie lithium van",
-      "panneau solaire camping-car",
-      "frigo 12v van",
-      "kit solaire van complet",
-      "réduction équipement van",
-      "bon plan vanlife"
-    ]
-  },
   "formation": {
     "label": "Formation — Business Van",
     "seeds": [
@@ -39,6 +28,16 @@
       "créer activité location van",
       "formation vanlife revenus",
       "rentabiliser van location"
+    ]
+  },
+  "marketplace": {
+    "label": "Marketplace — Location entre particuliers",
+    "seeds": [
+      "louer son van a des particuliers",
+      "location van entre particuliers",
+      "rentabiliser son van amenage",
+      "mettre son van en location",
+      "combien rapporte la location d'un van"
     ]
   }
 }

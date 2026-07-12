@@ -67,15 +67,14 @@ const DEFAULT_SEGMENTS: Record<string, { label: string; seeds: string[] }> = {
       "fourgon aménagé pas cher",
     ],
   },
-  club: {
-    label: "Club Privé — Équipement",
+  marketplace: {
+    label: "Marketplace — Location entre particuliers",
     seeds: [
-      "batterie lithium van",
-      "panneau solaire camping-car",
-      "frigo 12v van",
-      "kit solaire van complet",
-      "réduction équipement van",
-      "bon plan vanlife",
+      "louer son van a des particuliers",
+      "location van entre particuliers",
+      "rentabiliser son van amenage",
+      "mettre son van en location",
+      "combien rapporte la location d'un van",
     ],
   },
   formation: {
@@ -99,7 +98,9 @@ interface KeywordResult {
   searchVolume: number;
   competitionLevel: string;
   cpc: number;
-  score: number; // volume × difficulty factor
+  difficulty: number | null; // difficulté SEO organique 0-100 (bulk_keyword_difficulty)
+  intent: string | null; // informational | commercial | transactional | navigational
+  score: number; // volume × (1 − difficulté/100) × facteur d'intention
 }
 
 interface SegmentReport {
@@ -125,47 +126,110 @@ function getDfsAuthHeader(): string {
   return "Basic " + Buffer.from(`${login}:${password}`).toString("base64");
 }
 
-async function fetchKeywordIdeas(seeds: string[]): Promise<KeywordResult[]> {
-  const res = await fetch(`${DFS_BASE}/dataforseo_labs/google/keyword_ideas/live`, {
+async function dfsLabsPost<T>(endpoint: string, body: unknown): Promise<T> {
+  const res = await fetch(`${DFS_BASE}${endpoint}`, {
     method: "POST",
     headers: {
       Authorization: getDfsAuthHeader(),
       "Content-Type": "application/json",
     },
-    body: JSON.stringify([
-      {
-        keywords: seeds,
-        language_code: DFS_LANGUAGE_CODE,
-        location_code: DFS_LOCATION_CODE,
-        include_serp_info: false,
-        limit: 200,
-      },
-    ]),
+    body: JSON.stringify(body),
   });
-
   if (!res.ok) throw new Error(`DataForSEO HTTP ${res.status}: ${await res.text()}`);
   const json = await res.json();
   if (json.status_code !== 20000) throw new Error(`DataForSEO: ${json.status_message}`);
+  return json.tasks?.[0]?.result?.[0] as T;
+}
 
-  const items = json.tasks?.[0]?.result?.[0]?.items ?? [];
+// L'intention transactionnelle/commerciale vaut plus pour le business que
+// l'informationnel pur ; le navigationnel (recherche de marque) ne vaut rien.
+const INTENT_FACTOR: Record<string, number> = {
+  transactional: 1.5,
+  commercial: 1.3,
+  informational: 1.0,
+  navigational: 0.3,
+};
 
-  const COMPETITION_FACTOR: Record<string, number> = { LOW: 1.5, MEDIUM: 1.0, HIGH: 0.5, TOP: 0.3 };
+async function fetchKeywordIdeas(seeds: string[]): Promise<KeywordResult[]> {
+  // 1. Idées de mots-clés (volume + données Google Ads)
+  const ideasResult = await dfsLabsPost<{
+    items?: Array<{
+      keyword: string;
+      keyword_info?: { search_volume?: number; competition_level?: string; cpc?: number };
+    }>;
+  }>("/dataforseo_labs/google/keyword_ideas/live", [
+    {
+      keywords: seeds,
+      language_code: DFS_LANGUAGE_CODE,
+      location_code: DFS_LOCATION_CODE,
+      include_serp_info: false,
+      limit: 300,
+    },
+  ]);
 
-  return (items as Array<{
-    keyword: string;
-    keyword_info?: { search_volume?: number; competition_level?: string; cpc?: number };
-  }>)
-    .filter((item) => (item.keyword_info?.search_volume ?? 0) >= 50)
+  // Filtre de pertinence : keyword_ideas élargit beaucoup (remorques,
+  // utilitaires, marques) — on ne garde que le champ van/vanlife.
+  const TOPICAL = /\bvans?\b|fourgon|camping[- ]?car|vanlife|campervan|am[ée]nag/i;
+  const BRANDS = /le ?bon ?coin|leboncoin|yescapa|wikicampers|paulcamper|goboony|blacksheep|indie ?campers/i;
+
+  // Seuil bas : sur une niche comme la vanlife FR, la longue traîne à 20-50
+  // recherches/mois avec une difficulté faible est là où on gagne.
+  const candidates = (ideasResult?.items ?? [])
+    .filter((item) => (item.keyword_info?.search_volume ?? 0) >= 20)
+    .filter((item) => TOPICAL.test(item.keyword) && !BRANDS.test(item.keyword))
+    .sort((a, b) => (b.keyword_info?.search_volume ?? 0) - (a.keyword_info?.search_volume ?? 0))
+    .slice(0, 150);
+
+  if (candidates.length === 0) return [];
+  const keywords = candidates.map((c) => c.keyword);
+
+  // 2. Difficulté SEO organique (0-100) — la vraie mesure de "peut-on ranker"
+  //    (competition_level = concurrence Google ADS, trompeuse pour le SEO)
+  const difficultyByKeyword = new Map<string, number>();
+  try {
+    const kdResult = await dfsLabsPost<{
+      items?: Array<{ keyword: string; keyword_difficulty?: number }>;
+    }>("/dataforseo_labs/google/bulk_keyword_difficulty/live", [
+      { keywords, language_code: DFS_LANGUAGE_CODE, location_code: DFS_LOCATION_CODE },
+    ]);
+    for (const item of kdResult?.items ?? []) {
+      if (item.keyword_difficulty != null) difficultyByKeyword.set(item.keyword, item.keyword_difficulty);
+    }
+  } catch (err) {
+    console.warn(`  ⚠️ bulk_keyword_difficulty indisponible : ${(err as Error).message}`);
+  }
+
+  // 3. Intention de recherche
+  const intentByKeyword = new Map<string, string>();
+  try {
+    const intentResult = await dfsLabsPost<{
+      items?: Array<{ keyword: string; keyword_intent?: { label?: string } }>;
+    }>("/dataforseo_labs/google/search_intent/live", [
+      { keywords, language_code: DFS_LANGUAGE_CODE },
+    ]);
+    for (const item of intentResult?.items ?? []) {
+      if (item.keyword_intent?.label) intentByKeyword.set(item.keyword, item.keyword_intent.label);
+    }
+  } catch (err) {
+    console.warn(`  ⚠️ search_intent indisponible : ${(err as Error).message}`);
+  }
+
+  // 4. Score final : volume × accessibilité organique × valeur business
+  return candidates
     .map((item) => {
       const vol = item.keyword_info?.search_volume ?? 0;
-      const comp = item.keyword_info?.competition_level ?? "MEDIUM";
-      const factor = COMPETITION_FACTOR[comp] ?? 1;
+      const difficulty = difficultyByKeyword.get(item.keyword) ?? null;
+      const intent = intentByKeyword.get(item.keyword) ?? null;
+      const difficultyFactor = difficulty != null ? Math.max(0.05, 1 - difficulty / 100) : 0.6;
+      const intentFactor = intent ? INTENT_FACTOR[intent] ?? 1.0 : 1.0;
       return {
         keyword: item.keyword,
         searchVolume: vol,
-        competitionLevel: comp,
+        competitionLevel: item.keyword_info?.competition_level ?? "UNKNOWN",
         cpc: item.keyword_info?.cpc ?? 0,
-        score: Math.round(vol * factor),
+        difficulty,
+        intent,
+        score: Math.round(vol * difficultyFactor * intentFactor),
       };
     })
     .sort((a, b) => b.score - a.score);

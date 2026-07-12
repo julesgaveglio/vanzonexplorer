@@ -35,8 +35,10 @@ function loadAgentPrompt(name: string): string | null {
 
 // Max new articles to add per run (pour éviter une queue trop dense)
 const MAX_NEW_ARTICLES = 12;
-// Min score pour qu'un mot-clé soit retenu
-const MIN_SCORE = 100;
+// Min score pour qu'un mot-clé soit retenu.
+// Échelle post-refonte : volume × (1 − difficulté/100) × facteur d'intention
+// (ex. vol 60, difficulté 30, commercial → 60 × 0,7 × 1,3 ≈ 55)
+const MIN_SCORE = 40;
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -44,6 +46,8 @@ interface KeywordResult {
   keyword: string;
   searchVolume: number;
   competitionLevel: string;
+  difficulty?: number | null;
+  intent?: string | null;
   score: number;
 }
 
@@ -77,7 +81,7 @@ interface GeminiArticleMeta {
 
 const POWER_WORDS = [
   "guide", "méthode", "étape par étape", "erreurs", "rentable",
-  "2025", "comparatif", "comment", "pourquoi",
+  "2026", "comparatif", "comment", "pourquoi",
 ];
 
 function scoreTitleSeo(title: string, keyword: string): number {
@@ -176,8 +180,9 @@ async function generateArticleBrief(
   const SEGMENT_CONTEXT: Record<string, string> = {
     location: "Location de van aménagé au Pays Basque — cible les touristes et voyageurs qui veulent louer un van. CTA vers /location.",
     achat: "Achat de van aménagé — cible les acheteurs en recherche. CTA vers /achat.",
-    club: "Club Privé Vanzon — deals et codes promo sur équipements vanlife. CTA vers /club.",
+    marketplace: "Location entre particuliers — cible les propriétaires de vans qui veulent les rentabiliser. Double CTA : /proprietaire (référencer son van) et /formation (aller plus loin).",
     formation: "Formation Van Business Academy — apprendre à créer une activité de location de van. CTA vers /formation.",
+    gsc: "OPPORTUNITÉ GOOGLE SEARCH CONSOLE : le site apparaît déjà sur cette requête (position 4-25) sans article dédié. Un article ciblé et complet peut prendre le top 3 rapidement. Choisis le CTA selon le sujet (location, achat ou formation).",
   };
 
   const baseInstructions = loadAgentPrompt("queue-builder-monthly") ??
@@ -226,7 +231,7 @@ Segment : ${segmentLabel}
 Critères à respecter :
 - Intègre naturellement le mot-clé cible
 - 50-70 caractères
-- Inclure un power word parmi : guide, méthode, étape par étape, erreurs, rentable, 2025, comparatif, comment, pourquoi
+- Inclure un power word parmi : guide, méthode, étape par étape, erreurs, rentable, 2026, comparatif, comment, pourquoi
 - Bénéfice ou promesse explicite
 - Ancrage Vanzon : van, location, formation, Pays Basque, Biarritz, business, aménagé
 - Français naturel (pas de Title Case anglais)
@@ -270,11 +275,76 @@ function isAlreadyCovered(keyword: string, queue: ArticleQueueItem[]): boolean {
 // ── Priority by segment ───────────────────────────────────────────────────────
 
 const SEGMENT_BASE_PRIORITY: Record<string, number> = {
+  gsc: 95, // striking distance GSC — le plus fort levier court terme
   location: 90,
-  achat: 60,
-  club: 40,
   formation: 70,
+  marketplace: 65,
+  achat: 60,
 };
+
+// ── GSC striking distance ─────────────────────────────────────────────────────
+// Requêtes où le site apparaît déjà en position 4-25 : un contenu dédié peut
+// prendre le top 3. C'est la boucle de feedback données réelles → contenu.
+
+interface GscOpportunity {
+  query: string;
+  impressions: number;
+  position: number;
+}
+
+async function fetchGscStrikingDistance(): Promise<GscOpportunity[]> {
+  const clientId = process.env.GOOGLE_GSC_CLIENT_ID;
+  const clientSecret = process.env.GOOGLE_GSC_CLIENT_SECRET;
+  const refreshToken = process.env.GOOGLE_GSC_REFRESH_TOKEN ?? process.env.GOOGLE_REFRESH_TOKEN;
+  if (!clientId || !clientSecret || !refreshToken) {
+    console.log("  (GSC non configuré — striking distance ignoré)");
+    return [];
+  }
+
+  try {
+    const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        client_id: clientId,
+        client_secret: clientSecret,
+        refresh_token: refreshToken,
+        grant_type: "refresh_token",
+      }),
+    });
+    const { access_token: accessToken } = (await tokenRes.json()) as { access_token?: string };
+    if (!accessToken) throw new Error("token GSC introuvable");
+
+    const end = new Date();
+    const start = new Date(end.getTime() - 28 * 86400000);
+    const res = await fetch(
+      `https://searchconsole.googleapis.com/webmasters/v3/sites/${encodeURIComponent("sc-domain:vanzonexplorer.com")}/searchAnalytics/query`,
+      {
+        method: "POST",
+        headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          startDate: start.toISOString().slice(0, 10),
+          endDate: end.toISOString().slice(0, 10),
+          dimensions: ["query"],
+          rowLimit: 250,
+        }),
+      }
+    );
+    const data = (await res.json()) as {
+      rows?: Array<{ keys: string[]; impressions: number; position: number }>;
+    };
+
+    return (data.rows ?? [])
+      .filter((r) => r.position >= 4 && r.position <= 25 && r.impressions >= 15)
+      .filter((r) => !/vanzon/i.test(r.keys[0])) // exclure les requêtes de marque
+      .sort((a, b) => b.impressions - a.impressions)
+      .slice(0, 15)
+      .map((r) => ({ query: r.keys[0], impressions: r.impressions, position: Math.round(r.position * 10) / 10 }));
+  } catch (err) {
+    console.warn(`  ⚠️ GSC striking distance indisponible : ${(err as Error).message}`);
+    return [];
+  }
+}
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 
@@ -299,6 +369,25 @@ async function main() {
 
   // Collect all opportunities across segments
   const opportunities: Array<{ keyword: KeywordResult; segment: string; segmentLabel: string }> = [];
+
+  // Boucle de feedback GSC : requêtes déjà positionnées 4-25 sans article dédié
+  console.log("🔎 Recherche d'opportunités striking distance (GSC, 28 derniers jours)...");
+  const gscOpportunities = await fetchGscStrikingDistance();
+  console.log(`  ${gscOpportunities.length} requête(s) striking distance trouvée(s)`);
+  for (const opp of gscOpportunities) {
+    if (!isAlreadyCovered(opp.query, queue)) {
+      opportunities.push({
+        keyword: {
+          keyword: opp.query,
+          searchVolume: opp.impressions,
+          competitionLevel: `GSC pos. ${opp.position}`,
+          score: 1000 + opp.impressions, // toujours traité en priorité
+        },
+        segment: "gsc",
+        segmentLabel: `Striking distance GSC (position ${opp.position})`,
+      });
+    }
+  }
 
   for (const segmentReport of research.segments) {
     const candidates = segmentReport.keywords

@@ -148,6 +148,8 @@ interface KeywordData {
   search_volume?: number;
   competition_level?: string;
   cpc?: number;
+  keyword_difficulty?: number; // difficulté SEO organique 0-100 (DataForSEO Labs)
+  main_intent?: string; // informational | commercial | transactional | navigational
 }
 
 // ── Sanity client (write access) ───────────────────────────────────────────────
@@ -546,9 +548,21 @@ async function getKeywordData(keyword: string): Promise<{ data: KeywordData; dfs
         },
       ]
     );
-    const data = (result as unknown as { items?: KeywordData[] })?.items?.[0] ?? {};
+    type OverviewItem = KeywordData & {
+      keyword_info?: { search_volume?: number; competition_level?: string; cpc?: number };
+      keyword_properties?: { keyword_difficulty?: number };
+      search_intent_info?: { main_intent?: string };
+    };
+    const item = ((result as unknown as { items?: OverviewItem[] })?.items?.[0] ?? {}) as OverviewItem;
+    const data: KeywordData = {
+      search_volume: item.search_volume ?? item.keyword_info?.search_volume,
+      competition_level: item.competition_level ?? item.keyword_info?.competition_level,
+      cpc: item.cpc ?? item.keyword_info?.cpc,
+      keyword_difficulty: item.keyword_properties?.keyword_difficulty,
+      main_intent: item.search_intent_info?.main_intent,
+    };
     console.log(
-      `  Keyword data: volume=${data.search_volume ?? "N/A"}, competition=${data.competition_level ?? "N/A"}, cpc=${data.cpc ?? "N/A"}`
+      `  Keyword data: volume=${data.search_volume ?? "N/A"}, competition=${data.competition_level ?? "N/A"}, difficulté=${data.keyword_difficulty ?? "N/A"}/100, intent=${data.main_intent ?? "N/A"}`
     );
     return { data, dfsCost };
   } catch (err) {
@@ -623,12 +637,15 @@ async function callClaude(prompt: string, opts: { maxTokens?: number } = {}): Pr
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) throw new Error("ANTHROPIC_API_KEY is required");
 
+  // claude-sonnet-5 : thinking adaptatif par défaut (améliore la structure des
+  // articles) ; streaming obligatoire pour les max_tokens élevés sans timeout.
   const client = new Anthropic({ apiKey });
-  const response = await client.messages.create({
-    model: "claude-sonnet-4-5",
+  const stream = client.messages.stream({
+    model: "claude-sonnet-5",
     max_tokens: opts.maxTokens ?? 8000,
     messages: [{ role: "user", content: prompt }],
   });
+  const response = await stream.finalMessage();
 
   const text = response.content
     .filter((b) => b.type === "text")
@@ -963,7 +980,8 @@ DONNÉES SEO
 Keyword principal: "${article.targetKeyword}"
 Keywords secondaires: ${article.secondaryKeywords.join(", ")}
 Volume mensuel: ${keywordData.search_volume ?? "inconnu"} recherches/mois
-Concurrence: ${keywordData.competition_level ?? "inconnue"}
+Difficulté SEO organique: ${keywordData.keyword_difficulty != null ? `${keywordData.keyword_difficulty}/100${keywordData.keyword_difficulty > 50 ? " (difficile — différencie-toi par des données originales Vanzon et un angle unique)" : " (accessible — un contenu complet et bien structuré peut ranker)"}` : "inconnue"}
+Intention de recherche: ${keywordData.main_intent ?? "inconnue"}${keywordData.main_intent === "transactional" || keywordData.main_intent === "commercial" ? " — le lecteur est proche de l'action : mets le CTA plus tôt et sois concret sur les prix, conditions et étapes" : keywordData.main_intent === "informational" ? " — le lecteur cherche à comprendre : réponds d'abord, le CTA vient naturellement en fin de section pertinente" : ""}
 
 ${serpBlock}
 
@@ -1029,9 +1047,10 @@ Format: [anchor text](/van-business-academy/presentation)`;
   }
 
   // Scale max tokens to target word count.
-  // Formula: content tokens (≈1.5 tokens/word) + safety margin (2000).
-  // Minimum of 6000 to ensure full content fits.
-  const maxTokensForBody = Math.max(6000, Math.min(16000, Math.ceil(targetWords * 1.5) + 2000));
+  // Sonnet 5 : nouveau tokenizer (~30% de tokens en plus pour le même texte)
+  // + thinking adaptatif décompté du max_tokens → marge élargie.
+  // Le streaming dans callClaude permet de dépasser 16K sans timeout.
+  const maxTokensForBody = Math.max(8000, Math.min(24000, Math.ceil(targetWords * 2.2) + 3000));
   const { text: rawBody, usage: bodyUsage } = await callClaude(bodyPrompt, { maxTokens: maxTokensForBody });
   claudeUsage.push(bodyUsage);
 
@@ -1193,6 +1212,30 @@ function injectImagesIntoContent(
   return result;
 }
 
+// ── Requête image anglaise (Pexels marche mal en français) ────────────────────
+async function buildEnglishImageQuery(keyword: string, title: string): Promise<string | null> {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) return null;
+  try {
+    const raw = await callGemini(
+      apiKey,
+      `Translate this French blog topic into a SHORT English stock-photo search query (2-4 words, visual and concrete, no quotes, no SEO jargon).
+Topic: "${keyword}" (article: "${title}")
+Examples: "louer van pays basque" -> "campervan coast france" ; "aménagement lit van" -> "campervan bed interior".
+Reply with ONLY the query.`,
+      { maxTokens: 30 }
+    );
+    const query = raw.trim().replace(/^["']|["']$/g, "").slice(0, 60);
+    if (query && /^[a-zA-Z0-9 -]+$/.test(query)) {
+      console.log(`  [Cover] English Pexels query: "${query}"`);
+      return query;
+    }
+    return null;
+  } catch {
+    return null; // non bloquant — fallback sur le mot-clé français
+  }
+}
+
 // ── Cover image via SerpAPI (primary) or Pexels (fallback) ────────────────────
 async function uploadCoverImage(
   article: ArticleQueueItem
@@ -1244,8 +1287,14 @@ async function uploadCoverImage(
   }
 
   // ── Fallback: Pexels ───────────────────────────────────────────────────────
+  // La banque Pexels répond bien mieux aux requêtes visuelles en anglais
+  // qu'aux mots-clés SEO français — on traduit d'abord via Gemini flash.
   console.log(`  [Cover] Falling back to Pexels for: "${article.targetKeyword}"...`);
-  const photo = await searchPexelsPhoto(article.targetKeyword) ?? await searchPexelsPhoto(article.title);
+  const englishQuery = await buildEnglishImageQuery(article.targetKeyword, article.title);
+  const photo =
+    (englishQuery ? await searchPexelsPhoto(englishQuery) : null) ??
+    (await searchPexelsPhoto(article.targetKeyword)) ??
+    (await searchPexelsPhoto(article.title));
   if (!photo) throw new Error(`No cover image found for "${article.targetKeyword}"`);
 
   console.log(`  [Cover] Pexels photo #${photo.id} by ${photo.photographer}`);

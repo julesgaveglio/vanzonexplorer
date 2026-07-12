@@ -179,8 +179,11 @@ async function callClaude(prompt: string): Promise<ClaudeResponse> {
 async function callClaudeSonnet(prompt: string): Promise<ClaudeResponse> {
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
   const message = await client.messages.create({
-    model: "claude-sonnet-4-6",
+    model: "claude-sonnet-5",
     max_tokens: 2000,
+    // thinking désactivé : sur Sonnet 5 le thinking adaptatif est actif par
+    // défaut et serait décompté du petit budget (réécritures courtes)
+    thinking: { type: "disabled" },
     messages: [{ role: "user", content: prompt }],
   });
   const content = message.content[0];
