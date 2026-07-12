@@ -3,7 +3,7 @@ import { createSupabaseAdmin } from "@/lib/supabase/server";
 import {
   getSigmaSession,
   createSigmaSessionToken,
-  hashPassword,
+  verifyPasswordHash,
   SIGMA_COOKIE_NAME,
   SIGMA_COOKIE_MAX_AGE,
 } from "../_helpers/auth";
@@ -35,8 +35,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Identifiants incorrects" }, { status: 401 });
   }
 
-  const hash = hashPassword(password);
-  if (hash !== user.password_hash) {
+  if (!verifyPasswordHash(password, user.password_hash)) {
     return NextResponse.json({ error: "Identifiants incorrects" }, { status: 401 });
   }
 

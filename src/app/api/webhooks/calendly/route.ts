@@ -9,6 +9,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { createHmac, timingSafeEqual } from "crypto";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
@@ -205,9 +206,37 @@ async function notifyTelegram(data: {
 
 // ── Route ──
 
+// Vérifie la signature Calendly (header "Calendly-Webhook-Signature: t=...,v1=...")
+// Activée uniquement si CALENDLY_WEBHOOK_SIGNING_KEY est définie — la clé se
+// récupère à la création du webhook via l'API Calendly (webhook_subscriptions).
+function verifyCalendlySignature(rawBody: string, header: string | null, signingKey: string): boolean {
+  if (!header) return false;
+  const parts = Object.fromEntries(
+    header.split(",").map((p) => p.split("=", 2) as [string, string])
+  );
+  const { t: timestamp, v1: signature } = parts;
+  if (!timestamp || !signature) return false;
+  const expected = createHmac("sha256", signingKey)
+    .update(`${timestamp}.${rawBody}`)
+    .digest("hex");
+  const a = Buffer.from(expected, "hex");
+  const b = Buffer.from(signature, "hex");
+  return a.length === b.length && timingSafeEqual(a, b);
+}
+
 export async function POST(req: NextRequest) {
   try {
-    const body = (await req.json()) as CalendlyPayload;
+    const rawBody = await req.text();
+
+    const signingKey = process.env.CALENDLY_WEBHOOK_SIGNING_KEY;
+    if (signingKey) {
+      const header = req.headers.get("calendly-webhook-signature");
+      if (!verifyCalendlySignature(rawBody, header, signingKey)) {
+        return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
+      }
+    }
+
+    const body = JSON.parse(rawBody) as CalendlyPayload;
 
     // Validate payload structure
     if (!body?.event || !body?.payload?.email || !body?.payload?.scheduled_event) {

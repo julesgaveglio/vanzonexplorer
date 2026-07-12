@@ -2,7 +2,17 @@ import { cookies } from "next/headers";
 import crypto from "crypto";
 import { NextResponse } from "next/server";
 
-const SECRET = process.env.SUPABASE_SERVICE_ROLE_KEY ?? "dev-fallback-secret-key-32chars";
+const SECRET = process.env.SUPABASE_SERVICE_ROLE_KEY ?? "";
+if (!SECRET) {
+  throw new Error("SUPABASE_SERVICE_ROLE_KEY manquante — requise pour signer les sessions /ads");
+}
+
+// Comparaison en temps constant (évite les attaques par timing sur les hex digests)
+function safeEqualHex(a: string, b: string): boolean {
+  const ba = Buffer.from(a, "hex");
+  const bb = Buffer.from(b, "hex");
+  return ba.length === bb.length && crypto.timingSafeEqual(ba, bb);
+}
 const COOKIE_NAME = "ads_session";
 const MAX_AGE = 30 * 24 * 60 * 60; // 30 days
 
@@ -33,7 +43,7 @@ function verify(token: string): SessionPayload | null {
   if (parts.length !== 2) return null;
   const [data, sig] = parts;
   const expected = crypto.createHmac("sha256", SECRET).update(data).digest("hex");
-  if (sig !== expected) return null;
+  if (!safeEqualHex(sig, expected)) return null;
   try {
     const payload = JSON.parse(Buffer.from(data, "base64url").toString()) as SessionPayload;
     if (payload.exp < Date.now() / 1000) return null;
@@ -58,7 +68,8 @@ export function createSessionToken(email: string): string {
 
 export function validateCredentials(email: string, password: string): boolean {
   const hash = crypto.createHash("sha256").update(password).digest("hex");
-  return USERS[email]?.hash === hash;
+  const expected = USERS[email]?.hash;
+  return !!expected && safeEqualHex(hash, expected);
 }
 
 export function getUserRole(email: string): AdsRole {

@@ -32,6 +32,14 @@ function parseSMS(text: string): ReservationInfo | null {
 }
 
 export async function POST(req: NextRequest) {
+  // Secret partagé avec le Raccourci iPhone (header "x-webhook-secret").
+  // Vérifié uniquement si YESCAPA_WEBHOOK_SECRET est définie — sans ça,
+  // n'importe qui peut déclencher des messages WhatsApp sortants.
+  const expectedSecret = process.env.YESCAPA_WEBHOOK_SECRET;
+  if (expectedSecret && req.headers.get("x-webhook-secret") !== expectedSecret) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const body = await req.json();
     const smsText = body.message || body.text || body.sms || "";
