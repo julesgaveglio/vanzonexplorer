@@ -12,8 +12,11 @@ export const revalidate = 3600;
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const vanSlugs = await sanityFetch<{ slug: string; updatedAt?: string }[]>(getAllVanSlugsQuery) ?? [];
   const articleSlugs = await sanityFetch<{ slug: string; updatedAt?: string }[]>(getAllArticleSlugsQuery) ?? [];
-  // Date dynamique : dernier déploiement ou build
-  const now = new Date();
+  // Date stable pour les pages statiques : un lastmod qui change à chaque
+  // régénération (ISR 1h) est ignoré par Google. Mettre à jour manuellement
+  // lors d'une refonte significative des pages statiques.
+  const STATIC_PAGES_LAST_UPDATE = new Date("2026-07-12");
+  const now = STATIC_PAGES_LAST_UPDATE;
 
   const staticPages: MetadataRoute.Sitemap = [
     { url: BASE_URL, lastModified: now, changeFrequency: "weekly", priority: 1 },
@@ -56,14 +59,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const vanPages: MetadataRoute.Sitemap = vanSlugs.map(({ slug, updatedAt }) => ({
     url: `${BASE_URL}/location/${slug}`,
-    lastModified: updatedAt ? new Date(updatedAt) : new Date(),
+    lastModified: updatedAt ? new Date(updatedAt) : STATIC_PAGES_LAST_UPDATE,
     changeFrequency: "weekly",
     priority: 0.8,
   }));
 
   const articlePages: MetadataRoute.Sitemap = articleSlugs.map(({ slug, updatedAt }) => ({
     url: `${BASE_URL}/articles/${slug}`,
-    lastModified: updatedAt ? new Date(updatedAt) : new Date(),
+    lastModified: updatedAt ? new Date(updatedAt) : STATIC_PAGES_LAST_UPDATE,
     changeFrequency: "monthly",
     priority: 0.7,
   }));
@@ -75,7 +78,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const marketplaceVanPages: MetadataRoute.Sitemap = (marketplaceVans ?? []).map((van) => ({
     url: `${BASE_URL}/location/${slugify(van.location_city)}/${van.id}`,
-    lastModified: van.updated_at ? new Date(van.updated_at) : new Date(),
+    lastModified: van.updated_at ? new Date(van.updated_at) : STATIC_PAGES_LAST_UPDATE,
     changeFrequency: "weekly" as const,
     priority: 0.8,
   }));

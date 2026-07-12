@@ -40,7 +40,7 @@ import BudgetFilter from '../../_components/BudgetFilter'
 // ISR
 export const revalidate = 86400
 
-// Pre-build toutes les combos (16 au total, dont 4 noindex /1-jour/*)
+// Pre-build toutes les combos (16 au total, toutes indexables)
 export async function generateStaticParams() {
   return ALL_DURATION_SLUGS.flatMap((duration) =>
     ALL_GROUP_TYPES.map((groupType) => ({ duration, groupType }))

@@ -21,14 +21,20 @@ There is no `basePath` configured — all routes are served at `/` (not `/vanzon
 
 ## Route Groups
 
-Three distinct route groups, each with its own layout:
+Each route group has its own layout:
 
 | Group | Path prefix | Auth |
 |---|---|---|
 | `(site)` | All public pages | None (dashboard needs Clerk) |
 | `(tunnel)` | `/van-business-academy/*` | None (tunnel de vente VBA) |
+| `(ads)` | `/ads/*` | Cookie session (`src/lib/ads-auth.ts`, login `/ads-login`) — dashboard Meta Ads/closing interne, partagé avec le media buyer |
+| `(sigma-ads)` | `/sigma/*` | Cookie session (`src/app/api/sigma/_helpers/auth.ts`, login `/sigma-login`, table `sigma_users`) — **projet distinct Sigma Factory** (immobilier, Mario), hébergé dans le même repo |
 | `admin/(protected)` | `/admin/*` | Clerk — hardcoded to `gavegliojules@gmail.com` |
 | `studio` | `/studio` | Sanity built-in |
+
+## Club Vanzon — supprimé (juillet 2026)
+
+Le Club (routes publiques `(club)`, codes promo partenaires, admin `/admin/club`, API `/api/admin/club/*`) **n'existe plus nulle part**. `/club/*` renvoie 410 via le middleware. Ne jamais recréer de référence au club. Les tables Supabase `products`/`brands`/`prospects` existent toujours (compteur de marques sur `/a-propos`, assistant Telegram). Le webhook Clerk → Supabase vit à `/api/clerk-webhook` ; l'alias `/api/club/clerk-webhook` reste tant que l'URL n'est pas changée dans le dashboard Clerk.
 
 ## Architecture
 
@@ -46,13 +52,15 @@ Three distinct route groups, each with its own layout:
 **2. Supabase** (`src/lib/supabase/server.ts`)
 - `createSupabaseAdmin()` — service_role key, bypasses RLS, server-only
 - `createSupabaseAnon()` — public read
-- Key tables: `profiles`, `products`, `brands`, `vans_location`, `prospects`, `vba_competitors`, `vba_keywords`, `backlink_prospects`, `backlink_outreach`, `backlink_scrape_sessions`, `facebook_groups`, `facebook_outreach_schedule`, `road_trip_requests`, `cmo_reports`, `marketplace_leads`, `funnel_events`, `vba_modules`, `vba_lessons`, `vba_progress`, `finance_transactions`, `finance_categories`, `shopping_lists`, `shopping_items`
+- Key tables: `profiles`, `products`, `brands`, `vans_location`, `marketplace_vans`, `prospects`, `vba_competitors`, `vba_keywords`, `backlink_prospects`, `backlink_outreach`, `backlink_scrape_sessions`, `facebook_groups`, `facebook_outreach_schedule`, `road_trip_requests`, `cmo_reports`, `marketplace_leads`, `funnel_events`, `vba_modules`, `vba_lessons`, `vba_progress`, `finance_transactions`, `finance_categories`, `shopping_lists`, `shopping_items`, `closing_calls`, `sigma_users`
 - `profiles.plan = "vba_member"` controls VBA access
 
 **3. Clerk** — authentication
-- Protected routes declared in `src/middleware.ts` (only `/dashboard` currently)
+- ⚠️ **L'instance Clerk en prod est encore une instance de DÉVELOPPEMENT** (`pk_test_`/`sk_test_` dans les env Vercel). Fix définitif en attente : créer l'instance de production dans le dashboard Clerk et remplacer les clés.
+- **Règle SEO critique** (`src/middleware.ts`) : `clerkMiddleware` ne doit être invoqué QUE sur les routes listées dans `needsClerk` (/dashboard, /user, /admin, /proprietaire/*, /formations, /api, /trpc). Sur une instance dev, Clerk répond aux navigations sans cookie par un 307 handshake vers accounts.dev → Googlebot classe tout en "Redirect error". **Ne jamais faire passer une page publique par Clerk.**
 - Admin panel uses Clerk but adds an email allowlist check in `admin/(protected)/layout.tsx`
 - `userId` from Clerk is stored as `clerk_id` FK in Supabase `profiles`
+- Webhook Clerk → Supabase `profiles` : `/api/clerk-webhook` (signature svix vérifiée)
 
 ### Key component patterns
 
@@ -113,7 +121,7 @@ Sends emails from `jules@vanzonexplorer.com` via Gmail API OAuth2. Automatically
 
 22 agents registered in `scripts/agents/registry.json` (visible at `/admin/agents`). Key agents:
 
-- `blog-writer-agent.ts` — 3 articles SEO/semaine via Gemini → Sanity. **Markdown tables are forbidden in prompts** — use bullet lists instead. **PAUSE depuis le 3 mai 2026** — attente indexation Google.
+- `blog-writer-agent.ts` — 2 articles SEO/semaine (lundi + jeudi) via Gemini → Sanity. **Markdown tables are forbidden in prompts** — use bullet lists instead. Réactivé en juin 2026 après la pause indexation.
 - `backlinks-daily-outreach.ts` — Mar-Ven 9h30 Paris. 4 phases : reply detection (Gmail threads + Groq sentiment) → follow-up J+4 → 5 nouveaux outreach/jour (email discovery + Groq email + Gmail API) → label BACKLINKS + Telegram recap.
 - `backlinks-weekly-agent.ts` — Lundi 8h. Decouvre prospects via Tavily (rotation 4 methodes), score Groq >=5, insere dans `backlink_prospects`.
 - `road-trip-publisher-agent.ts` — Toutes les 4h. Transforme les road trips generes en articles SEO Sanity.
@@ -131,16 +139,19 @@ Source unique de verite pour le contexte metier : `Vanzon Memory Database/` a la
 
 ### Admin panel (`/admin`)
 
-Sections: Dashboard, SEO Analytics, Mots-Cles, Performance (PSI), Blog, Vans, Marques, Produits, Spots, Media, Prospection, Road Trips, Backlinks, Agents, Marketing (CMO), VBA (Formation), Tunnel VBA (Funnel Analytics), Finances.
+Sections (sidebar `src/app/admin/_components/AdminSidebar.tsx`) : Médiathèque, Réservations, Closing Calls, Finances · Formation (VBA Modules, Accès, Ads/Funnel) · Marketplace (Fiches, Leads Propriétaires, Prospection Location, Messages) · Contenu (Blog IA, File d'articles, Articles publiés, Éditeur, Road Trips, POI, Vans, Témoignages, Spots) · SEO & Analytics (SEO, Mots-Clés, Performance, Rapport SEO) · Marketing (CMO, Backlinks, Pinterest, Facebook Outreach) · VBA (Cartes, Concurrents, Mots-Clés) · Système (Agents IA, Architecture, Coûts, Paramètres).
 
-**Prospection** (`/admin/prospection`) — internal CRM for partner brand outreach. Separate `prospects` Supabase table (distinct from `brands`). Three AI-powered API routes using SSE streaming:
-- `/api/admin/prospect/discover` — Tavily search + Groq analysis
-- `/api/admin/prospect/enrich` — Jina AI site scraping + Groq contact extraction
-- `/api/admin/prospect/generate-email` — Groq personalized email generation
+**Prospection** — trois sections actives dans la sidebar admin :
+- `/admin/location-prospection` — prospection location locale
+- `/admin/marketplace-prospection` — messages/templates marketplace (`/api/admin/marketplace-templates`)
+- `/admin/van-owner-leads` — leads propriétaires de vans
+(L'ancien CRM `/admin/club/prospection` + `/api/admin/club/prospect/*` a été supprimé avec le Club en juillet 2026.)
 
 **Backlinks SEO** (`/admin/backlinks`) — Kanban board for backlink prospect management. Columns: decouvert → contacte → relance → obtenu / rejete. Features: AI-powered prospect discovery (SSE), email generation + sending via Gmail API, drag & drop status. Tables: `backlink_prospects`, `backlink_outreach`, `backlink_scrape_sessions`. Automated by `backlinks-daily-outreach.ts` and `backlinks-weekly-agent.ts`.
 
-**Marketplace MVP-0** (`/proprietaire`) — Landing page for van owner pre-registration. Simple form → Supabase `marketplace_leads` table.
+**Marketplace** — deux niveaux :
+- `/proprietaire` — landing publique (dans le sitemap, ne passe PAS par Clerk) → formulaire → table `marketplace_leads`. Les sous-chemins (`/proprietaire/inscription`, `/proprietaire/connexion`) passent par Clerk.
+- Vans marketplace publiés : table `marketplace_vans` (status `approved`) → pages publiques `/location/[ville]/[vanId]` (dans le sitemap), gérées depuis `/admin/marketplace`. Upload photo public rate-limité (`/api/marketplace/upload-photo`).
 
 **Road Trip Personnalise** (`/road-trip-personnalise`) — AI-powered itinerary generator. Wizard collects region/duration/interests/profile → Tavily search + Groq (llama-3.3-70b) → Resend email. Stores requests in Supabase `road_trip_requests` table. Rate limited (3 req/IP/hour). Admin at `/admin/road-trips`. Utilise comme CTA de capture email sur toutes les pages ville.
 
@@ -269,6 +280,21 @@ BUNNY_API_KEY=                  # API key pour library VBA
 # Google Places (avis)
 GOOGLE_PLACES_API_KEY=
 GOOGLE_PLACE_ID=
+# Stripe (paiement VBA)
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
+# Webhooks entrants
+CLERK_WEBHOOK_SECRET=          # svix — /api/clerk-webhook
+SANITY_WEBHOOK_SECRET=         # /api/revalidate + /api/webhooks/sanity-media
+TELEGRAM_WEBHOOK_SECRET=       # /api/telegram/webhook
+FB_WEBHOOK_VERIFY_TOKEN=       # /api/facebook-webhook (+ FB_APP_SECRET optionnel)
+CALENDLY_WEBHOOK_SIGNING_KEY=  # optionnel — active la vérification de signature Calendly
+YESCAPA_WEBHOOK_SECRET=        # optionnel — protège /api/webhooks/yescapa-sms (header x-webhook-secret)
+# Crons Vercel
+CRON_SECRET=
+# Qonto + Airtable (sync finances)
+QONTO_API_SECRET=
+AIRTABLE_API_KEY=
 ```
 
 ## Design System
@@ -282,6 +308,29 @@ GOOGLE_PLACE_ID=
 - **Images**: `next/image` with `unoptimized: true`. Allowed hostnames in `next.config.mjs`. Use `imagePresets` from `src/lib/sanity/client.ts` for Sanity images.
 - **Google avis** : toujours afficher "5/5 sur Google" sans nombre d'avis (decision mai 2026)
 
+## SEO & Indexation — règles critiques
+
+Historique : le site a été non indexé ~5 mois (jan-juil 2026) à cause de 3 causes empilées : header `X-Robots-Tag: noindex` injecté par Vercel (corrigé mai 2026, contré par le header `index, follow` dans `vercel.json`), HTML vide via CSR bailout, et handshake Clerk dev sur les pages publiques. Récupération en cours depuis juillet 2026. Règles pour ne JAMAIS reproduire :
+
+1. **Jamais de `useSearchParams()`** dans un composant qui enveloppe le contenu principal d'un layout — ça vide le `<body>` HTML de tout contenu statique (CSR bailout silencieux : le build passe, les meta restent, seul le texte disparaît). Lire `window.location.search` dans un `useEffect` à la place.
+2. **Jamais de page publique dans le middleware Clerk** (voir section Clerk).
+3. **Sitemap** (`src/app/sitemap.ts`) : les pages statiques utilisent la constante `STATIC_PAGES_LAST_UPDATE` — la mettre à jour manuellement lors d'une refonte significative. Ne pas remettre `new Date()` (un lastmod qui change à chaque régénération ISR est ignoré par Google).
+4. **Vérification post-déploiement** : `curl -s <url>` puis extraire le texte hors `<script>` — doit être > 1000 caractères sur les pages de contenu, avec `<h1>` présent.
+5. Anciennes URLs WordPress + `/club` → 410 via middleware (`GONE_PREFIXES`) ; redirects legacy dans `next.config.mjs`.
+6. `robots.ts`, `feed.xml`, `llms.txt` existent à la racine de `src/app/`.
+
+## Sécurité — état et conventions
+
+- Toutes les routes `/api/admin/*` passent par `requireAdmin()` (`src/lib/auth.ts`), sauf `sync-qonto` (protégé par `CRON_SECRET` en query) et `vba/lesson-content` (allowlist Clerk propre, email `vanzonexplorer@gmail.com`).
+- Webhooks avec vérification de signature : Clerk (svix), Stripe (`constructEvent`), Sanity media (HMAC), Telegram (header secret), Facebook (verify token + `X-Hub-Signature-256` si `FB_APP_SECRET`), Calendly (si `CALENDLY_WEBHOOK_SIGNING_KEY` définie), Yescapa SMS (header `x-webhook-secret` si `YESCAPA_WEBHOOK_SECRET` définie).
+- Crons Vercel (`vercel.json`) : tous vérifient `Authorization: Bearer CRON_SECRET`.
+- Sessions `/ads` et `/sigma` : cookies HMAC signés avec `SUPABASE_SERVICE_ROLE_KEY` (pas de fallback), comparaisons en temps constant.
+- ⚠️ Le code promo VBA gratuit `OFFREDELANCEMENT` est en dur dans `/api/stripe/free-access` et visible dans le bundle client — à désactiver quand l'offre de lancement se termine.
+- Headers sécurité dans `next.config.mjs` (HSTS, X-Frame-Options DENY, nosniff…). `vercel.json` force `X-Robots-Tag: index, follow` sur tout le site — ne pas retirer (contre le noindex Vercel historique).
+
 ## Deployment
 
 Auto-deploy via Vercel on every push to `main`. No manual step needed.
+Crons Vercel (`vercel.json`) : gmail-style-learning (2h), vba-followup (8h), whatsapp-closing-calls (7h), sync-qonto (6h), ads-monitor (20h).
+Agents GitHub Actions : voir `.github/workflows/` (blog, backlinks, CMO, road trips, SEO...).
+`scripts/archive/` contient les scripts one-shot historiques (non référencés, supprimables).
