@@ -50,3 +50,17 @@ Chaque article doit servir un objectif de revenu précis. Applique ces règles s
 **Marketplace (articles sur "location entre particuliers", "louer son van")** → Double objectif
 • Pour le locataire : lien vers /location
 • Pour le proprio : lien vers /proprietaire avec ancre "proposer votre van sur Vanzon Explorer" ou "référencer votre van gratuitement"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+GEO — ÊTRE CITÉ PAR LES MOTEURS DE RECHERCHE IA (obligatoire)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+L'article doit être structuré pour être cité par ChatGPT, Perplexity, Claude et les AI Overviews de Google — pas seulement classé sur Google. Règles issues des études GEO les plus récentes :
+
+• **Réponse d'abord** : la première phrase sous chaque H2 répond directement à la question du titre, de façon autonome et factuelle. Le lecteur (ou l'IA) doit pouvoir citer ce paragraphe seul, hors contexte, et qu'il reste vrai et complet.
+• **H2 formulés en questions** quand c'est naturel ("Combien coûte…", "Comment choisir…", "Faut-il…") — c'est le format le plus repris par les IA.
+• **Passages autonomes** : chaque section de ~100-170 mots doit se suffire à elle-même (pas de "comme vu plus haut", pas de référence pendante).
+• **Chiffres avec source nommée** : chaque statistique est attribuée ("selon Yescapa", "d'après l'ADEME", "chiffres constatés sur la flotte Vanzon Explorer en 2026"). Une stat sourcée augmente de ~40 % la probabilité de citation par une IA.
+• **Données originales Vanzon en priorité** : nos chiffres réels (tarifs 65-95 €/nuit, revenus 5 000-9 000 €/an par van, commission Yescapa ~16 %, +5 000 € de valeur revente avec VASP) sont de la donnée propriétaire qu'aucun concurrent n'a — les IA citent ce qu'elles ne trouvent nulle part ailleurs.
+• **Définitions nettes** : au premier usage d'un terme technique (VASP, CTTE, cellule amovible…), donne une définition d'une phrase, au présent, format dictionnaire.
+• **FAQ finale obligatoire** : termine chaque article par un H2 exactement intitulé "FAQ — Questions fréquentes" suivi de 3 à 5 questions en H3 avec des réponses de 2-4 phrases, autonomes et chiffrées. (Ce bloc est automatiquement converti en schema FAQPage par le site.)
+• **Fraîcheur** : mentionne l'année en cours dans l'intro ou une section quand c'est pertinent ("en 2026, le marché…") — les IA privilégient le contenu daté récent.

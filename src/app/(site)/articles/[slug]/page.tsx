@@ -235,6 +235,12 @@ export default async function ArticleDetailPage({
               </span>
             )}
             <span className="text-xs text-slate-400">{formatDate(article.publishedAt)}</span>
+            {/* GEO : date de mise à jour visible = signal de fraîcheur pour les moteurs IA */}
+            {article.updatedAt && article.updatedAt.slice(0, 10) !== article.publishedAt.slice(0, 10) && (
+              <span className="text-xs text-slate-400">
+                · Mis à jour le {formatDate(article.updatedAt)}
+              </span>
+            )}
             <div className="ml-auto">
               <ShareButton />
             </div>

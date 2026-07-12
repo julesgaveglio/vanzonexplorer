@@ -319,6 +319,18 @@ Historique : le site a été non indexé ~5 mois (jan-juil 2026) à cause de 3 c
 5. Anciennes URLs WordPress + `/club` → 410 via middleware (`GONE_PREFIXES`) ; redirects legacy dans `next.config.mjs`.
 6. `robots.ts`, `feed.xml`, `llms.txt` existent à la racine de `src/app/`.
 
+## GEO — Generative Engine Optimization (juillet 2026)
+
+Le site est optimisé pour être cité par les moteurs de recherche IA (ChatGPT, Perplexity, Claude, AI Overviews). Ne pas défaire ces éléments :
+
+- `src/app/robots.ts` : les crawlers IA (GPTBot, OAI-SearchBot, ClaudeBot, Claude-SearchBot, PerplexityBot, Google-Extended…) sont **explicitement autorisés**.
+- `src/app/llms.txt/route.ts` : carte du site pour les IA, générée dynamiquement (articles Sanity inclus). Pas de doublon statique dans `public/`.
+- **IndexNow** (`src/lib/indexnow.ts`, clé `public/vanzon-indexnow-key-2026.txt`) : pingé à chaque publication (blog-writer, road-trip publisher, webhook `/api/revalidate`). ChatGPT search s'appuie sur l'index Bing → IndexNow est le canal le plus rapide. Soumission en masse : `npx tsx scripts/indexnow-submit-all.ts`.
+- **JSON-LD** : LocalBusiness+CarRental global enrichi (`makesOffer` = 3 cibles : louer/acheter/se former, `knowsAbout`, `@id`), Course sur /formation, ItemList+Product+Vehicle sur /achat, BlogPosting+auteur+FAQPage sur les articles. Objectif : ≥3 types de schema par page clé.
+- **`GeoFaqSection`** (`src/components/seo/GeoFaqSection.tsx`) : FAQ visible + schema FAQPage, utilisée sur /formation (accent gold) et /achat. Réponses autonomes et chiffrées.
+- **Règles de contenu GEO** (aussi dans `scripts/agents/prompts/blog-writer.md`) : réponse-d'abord sous chaque H2, titres en questions, passages autonomes de 100-170 mots, stats avec source nommée, données propriétaires Vanzon en priorité, FAQ finale "FAQ — Questions fréquentes" (H2) + questions H3 (convertie automatiquement en schema par `extractFAQ`).
+- Les articles affichent "Mis à jour le …" quand `updatedAt` diffère de `publishedAt` (signal de fraîcheur).
+
 ## Sécurité — état et conventions
 
 - Toutes les routes `/api/admin/*` passent par `requireAdmin()` (`src/lib/auth.ts`), sauf `sync-qonto` (protégé par `CRON_SECRET` en query) et `vba/lesson-content` (allowlist Clerk propre, email `vanzonexplorer@gmail.com`).

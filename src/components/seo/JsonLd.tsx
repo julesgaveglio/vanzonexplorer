@@ -57,9 +57,51 @@ const BASE_URL = "https://vanzonexplorer.com";
 const schema = {
   "@context": "https://schema.org",
   "@type": ["LocalBusiness", "CarRental"],
+  "@id": `${BASE_URL}/#organization`,
   name: "Vanzon Explorer",
   description: "Location de vans aménagés tout équipés au Pays Basque. Assurance incluse, départ Cambo-les-Bains. Achat et formation vanlife.",
+  slogan: "Rendre accessible à tous le goût de la liberté",
   url: BASE_URL,
+  // GEO : les 3 offres = les 3 cibles (louer / acheter / se former)
+  makesOffer: [
+    {
+      "@type": "Offer",
+      name: "Location de vans aménagés au Pays Basque",
+      description:
+        "Vans tout équipés au départ de Cambo-les-Bains, de 65 € à 95 €/nuit selon la saison. Réservation via Yescapa ou Wikicampers, assurance tous risques incluse.",
+      url: `${BASE_URL}/location`,
+      priceSpecification: {
+        "@type": "PriceSpecification",
+        minPrice: 65,
+        maxPrice: 95,
+        priceCurrency: "EUR",
+        unitText: "par nuit",
+      },
+    },
+    {
+      "@type": "Offer",
+      name: "Vente de vans aménagés",
+      description:
+        "Vans aménagés par Vanzon Explorer, exploités en location puis revendus avec historique complet. Remise en main propre à Cambo-les-Bains.",
+      url: `${BASE_URL}/achat`,
+    },
+    {
+      "@type": "Offer",
+      name: "Formation Van Business Academy",
+      description:
+        "Formation en ligne pour acheter, aménager et rentabiliser un van aménagé : location saisonnière et achat-revente.",
+      url: `${BASE_URL}/formation`,
+    },
+  ],
+  knowsAbout: [
+    "location van aménagé Pays Basque",
+    "aménagement de van",
+    "homologation VASP",
+    "location de van sur Yescapa",
+    "achat-revente de vans aménagés",
+    "vanlife au Pays Basque",
+    "road trip en van",
+  ],
   telephone: "+33745553719",
   email: "contact@vanzonexplorer.com",
   image: "https://cdn.sanity.io/images/lewexa74/production/1f483103ef15ee3549eab14ba2801d11b32a9055-313x313.png?auto=format&q=82",
@@ -98,7 +140,12 @@ const schema = {
   ],
   foundingDate: "2024-01-01",
   founder: [
-    { "@type": "Person", name: "Jules Gaveglio" },
+    {
+      "@type": "Person",
+      name: "Jules Gaveglio",
+      jobTitle: "Fondateur",
+      url: `${BASE_URL}/a-propos`,
+    },
   ],
 };
 
@@ -137,6 +184,8 @@ export function WebSiteJsonLd() {
     "@type": "WebSite",
     name: "Vanzon Explorer",
     url: BASE_URL,
+    inLanguage: "fr-FR",
+    publisher: { "@id": `${BASE_URL}/#organization` },
   };
   return (
     <script

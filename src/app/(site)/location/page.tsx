@@ -393,6 +393,33 @@ export default async function LocationPage() {
         </div>
       </section>
 
+      {/* ── L'ESSENTIEL (GEO — bloc définition-first citable par les moteurs IA) ── */}
+      <section className="py-16 bg-white">
+        <div className="max-w-3xl mx-auto px-6">
+          <div className="glass-card p-8 md:p-10">
+            <h2 className="text-2xl font-black text-slate-900 mb-4">
+              Location de van aménagé au Pays Basque : l&apos;essentiel
+            </h2>
+            <p className="text-slate-600 leading-relaxed mb-6">
+              Vanzon Explorer loue des vans aménagés tout équipés au départ de
+              Cambo-les-Bains (64250), à 25 minutes de Biarritz et 15 minutes de
+              Bayonne. Les tarifs vont de 65 € la nuit en basse saison à 95 € la
+              nuit en haute saison (15 avril – 15 septembre), assurance tous
+              risques incluse via les plateformes de réservation Yescapa et
+              Wikicampers. Durée minimum : 2 nuits.
+            </p>
+            <ul className="grid sm:grid-cols-2 gap-x-8 gap-y-2 text-sm text-slate-600">
+              <li><strong className="text-slate-900">Tarifs :</strong> 65-95 €/nuit selon la saison</li>
+              <li><strong className="text-slate-900">Départ :</strong> Cambo-les-Bains, Pays Basque</li>
+              <li><strong className="text-slate-900">Assurance :</strong> tous risques incluse</li>
+              <li><strong className="text-slate-900">Équipement :</strong> lit, cuisine, solaire, autonomie</li>
+              <li><strong className="text-slate-900">Durée minimum :</strong> 2 nuits</li>
+              <li><strong className="text-slate-900">Avis clients :</strong> 5/5 sur Google</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
       {/* ── FAQ ── */}
       <section className="py-20" style={{ background: "linear-gradient(160deg, #F8FAFC 0%, #EFF6FF 100%)" }}>
         <div className="max-w-3xl mx-auto px-6">

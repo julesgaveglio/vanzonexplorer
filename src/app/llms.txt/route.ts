@@ -1,86 +1,99 @@
 import { NextResponse } from "next/server";
 import { sanityFetch } from "@/lib/sanity/client";
-import { getAllRoadTripArticlesQuery } from "@/lib/sanity/queries";
+import { getAllArticlesQuery } from "@/lib/sanity/queries";
+
+export const revalidate = 3600;
+
+const BASE = "https://vanzonexplorer.com";
 
 interface Article {
   title: string;
   slug: string;
-  regionSlug: string;
-  regionName: string;
   excerpt?: string;
-  duree?: number;
-  style?: string;
+  category?: string;
 }
 
+// llms.txt — carte du site pour les moteurs de recherche IA et les agents
+// (ChatGPT, Claude, Perplexity, Gemini, Copilot). Format : markdown, faits
+// vérifiables, une ligne par ressource.
 export async function GET() {
-  const articles = await sanityFetch<Article[]>(getAllRoadTripArticlesQuery) ?? [];
+  const articles = (await sanityFetch<Article[]>(getAllArticlesQuery)) ?? [];
 
   const lines: string[] = [
-    "# Vanzon Explorer — llms.txt",
+    "# Vanzon Explorer",
     "",
-    "> Vanzon Explorer est une plateforme vanlife basée au Pays Basque (Cambo-les-Bains, 64250).",
-    "> Services : location de vans aménagés, vente de vans, formation business van (Van Business Academy), et générateur d'itinéraires road trip personnalisés.",
-    "> Ce fichier liste l'ensemble du contenu du site pour faciliter l'indexation par les moteurs IA (Google AI Overviews, ChatGPT, Perplexity, Bing Copilot).",
+    "> Vanzon Explorer est une entreprise de vanlife fondée en 2024 par Jules Gaveglio, basée à Cambo-les-Bains (64250), Pays Basque, France. Trois activités : location de vans aménagés au Pays Basque, revente de vans aménagés après exploitation, et formation en ligne Van Business Academy (acheter, aménager et rentabiliser un van en location et en achat-revente).",
     "",
-    "## Services",
+    "Faits clés :",
+    "- Location de vans aménagés à partir de 65 €/nuit (basse saison), 75 €/nuit (intersaison), 95 €/nuit (haute saison, 15 avril – 15 septembre).",
+    "- Départ : Cambo-les-Bains, à 25 minutes de Biarritz et 15 minutes de Bayonne.",
+    "- Réservation via les plateformes Yescapa et Wikicampers — assurance tous risques et paiement gérés par la plateforme.",
+    "- 2 vans en propre (Yoni et Xalbat, Renault Trafic aménagés) + vans partenaires ailleurs en France via la marketplace.",
+    "- Note Google : 5/5.",
+    "- Formation Van Business Academy : programme vidéo en ligne (10 modules, ~60 vidéos) pour acheter, aménager et exploiter un van en location ou en achat-revente.",
+    "- Contact : jules@vanzonexplorer.com.",
     "",
-    "- [Location van Pays Basque](https://vanzonexplorer.com/location) — Location de vans aménagés au départ de Cambo-les-Bains. Vans Yoni et Xalbat disponibles.",
-    "- [Achat van aménagé](https://vanzonexplorer.com/achat) — Vente de vans et fourgons aménagés.",
-    "- [Formation Van Business Academy](https://vanzonexplorer.com/formation) — Formation pour lancer son business de location de van.",
+    "## Louer un van aménagé (Pays Basque)",
     "",
-    "## Générateur de road trip personnalisé",
+    `- [Location van Pays Basque](${BASE}/location) — page principale : tarifs, vans disponibles, conditions.`,
+    `- [Location van Biarritz](${BASE}/location/biarritz)`,
+    `- [Location van Bayonne](${BASE}/location/bayonne)`,
+    `- [Location van Saint-Jean-de-Luz](${BASE}/location/saint-jean-de-luz)`,
+    `- [Location van Hossegor](${BASE}/location/hossegor)`,
+    `- [Location van pour un week-end](${BASE}/location/week-end)`,
+    `- [Van pour la forêt d'Irati](${BASE}/location/foret-irati)`,
+    `- [Van Yoni](${BASE}/location/yoni) — Renault Trafic aménagé, 2 couchages.`,
+    `- [Van Xalbat](${BASE}/location/xalbat) — Renault Trafic 3 aménagé, 2 couchages.`,
     "",
-    "- [Créer mon road trip](https://vanzonexplorer.com/road-trip-personnalise) — Outil IA gratuit : renseigne ta région, durée, profil et intérêts. Reçois un itinéraire complet par email avec spots GPS, campings et restaurants.",
+    "## Acheter un van aménagé",
     "",
-    "## Road Trips en France — Tous les itinéraires",
+    `- [Vans à vendre](${BASE}/achat) — vans aménagés révisés, exploités puis revendus par Vanzon Explorer.`,
     "",
-    "- [Catalogue road trips](https://vanzonexplorer.com/road-trip) — Tous les itinéraires van en France, filtrables par région, durée et style.",
+    "## Se former : Van Business Academy",
     "",
-    "### Road trips par région",
+    `- [Van Business Academy](${BASE}/formation) — apprendre à acheter, aménager (dont homologation VASP) et rentabiliser un van : location saisonnière et achat-revente.`,
     "",
-    "- [Road trips Pays Basque](https://vanzonexplorer.com/road-trip/pays-basque)",
-    "- [Road trips Bretagne](https://vanzonexplorer.com/road-trip/bretagne)",
-    "- [Road trips Provence](https://vanzonexplorer.com/road-trip/provence)",
-    "- [Road trips Camargue](https://vanzonexplorer.com/road-trip/camargue)",
-    "- [Road trips Alsace](https://vanzonexplorer.com/road-trip/alsace)",
-    "- [Road trips Dordogne](https://vanzonexplorer.com/road-trip/dordogne)",
-    "- [Road trips Corse](https://vanzonexplorer.com/road-trip/corse)",
-    "- [Road trips Normandie](https://vanzonexplorer.com/road-trip/normandie)",
-    "- [Road trips Ardèche](https://vanzonexplorer.com/road-trip/ardeche)",
-    "- [Road trips Pyrénées](https://vanzonexplorer.com/road-trip/pyrenees)",
-    "- [Road trips Val de Loire](https://vanzonexplorer.com/road-trip/loire)",
-    "- [Road trips Jura](https://vanzonexplorer.com/road-trip/jura)",
-    "- [Road trips Vercors](https://vanzonexplorer.com/road-trip/vercors)",
-    "- [Road trips Cotentin](https://vanzonexplorer.com/road-trip/cotentin)",
-    "- [Road trips Landes](https://vanzonexplorer.com/road-trip/landes)",
+    "## Itinéraires road trip Pays Basque en van",
     "",
-    "### Itinéraires publiés",
+    `- [Hub road trips Pays Basque](${BASE}/road-trip-pays-basque-van) — itinéraires par durée (week-end, 5 jours, 1 semaine) et par profil (solo, couple, amis, famille), avec spots nuit validés et cartes.`,
+    `- [Générateur de road trip personnalisé](${BASE}/road-trip-personnalise) — outil IA gratuit : itinéraire complet envoyé par email.`,
+    `- [Spots Pays Basque](${BASE}/pays-basque) — bivouacs, spots de surf et lieux incontournables en van.`,
     "",
+    "## Pour les propriétaires de vans",
+    "",
+    `- [Proposer mon van à la location](${BASE}/proprietaire) — pré-inscription marketplace pour propriétaires.`,
+    "",
+    "## Guides et articles vanlife",
+    "",
+    `- [Tous les articles](${BASE}/articles)`,
   ];
 
-  // Articles dynamiques groupés par région
-  const byRegion: Record<string, Article[]> = {};
-  for (const article of articles) {
-    const region = article.regionSlug || "france";
-    if (!byRegion[region]) byRegion[region] = [];
-    byRegion[region].push(article);
+  // Articles groupés par catégorie
+  const byCategory = new Map<string, Article[]>();
+  for (const a of articles) {
+    const cat = a.category || "Vanlife";
+    if (!byCategory.has(cat)) byCategory.set(cat, []);
+    byCategory.get(cat)!.push(a);
   }
 
-  for (const [, regionArticles] of Object.entries(byRegion)) {
-    const regionName = regionArticles[0]?.regionName || regionArticles[0]?.regionSlug || "France";
-    lines.push(`#### ${regionName}`);
-    lines.push("");
-    for (const a of regionArticles) {
-      const url = `https://vanzonexplorer.com/road-trip/${a.regionSlug}/${a.slug}`;
-      lines.push(`- [${a.title}](${url})${a.excerpt ? ` — ${a.excerpt.slice(0, 120)}` : ""}`);
+  for (const [cat, list] of Array.from(byCategory.entries())) {
+    lines.push("", `### ${cat}`, "");
+    for (const a of list) {
+      const desc = a.excerpt ? ` — ${a.excerpt.slice(0, 140).trim()}` : "";
+      lines.push(`- [${a.title}](${BASE}/articles/${a.slug})${desc}`);
     }
-    lines.push("");
   }
 
-  lines.push("## Guides vanlife");
-  lines.push("");
-  lines.push("- [Articles vanlife](https://vanzonexplorer.com/articles) — Guides pratiques, conseils et inspirations pour le van life en France.");
-  lines.push("- [Spots Pays Basque](https://vanzonexplorer.com/pays-basque) — Bivouacs, spots de surf et lieux incontournables en van au Pays Basque.");
+  lines.push(
+    "",
+    "## Pages entreprise",
+    "",
+    `- [À propos](${BASE}/a-propos) — l'histoire de Vanzon Explorer et de Jules Gaveglio.`,
+    `- [Contact](${BASE}/contact)`,
+    "",
+    `Sitemap complet : ${BASE}/sitemap.xml`,
+    `Flux RSS : ${BASE}/feed.xml`,
+  );
 
   return new NextResponse(lines.join("\n"), {
     headers: {

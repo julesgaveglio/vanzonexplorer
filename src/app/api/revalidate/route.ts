@@ -1,5 +1,8 @@
 import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
+import { pingIndexNow } from "@/lib/indexnow";
+
+const BASE_URL = "https://vanzonexplorer.com";
 
 export async function POST(request: NextRequest) {
   const secret = request.headers.get("x-webhook-secret");
@@ -10,6 +13,9 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const type = body?._type as string | undefined;
+    // Slug si le webhook Sanity le projette (string ou {current})
+    const slug: string | undefined =
+      typeof body?.slug === "string" ? body.slug : body?.slug?.current;
 
     switch (type) {
       case "van":
@@ -23,8 +29,17 @@ export async function POST(request: NextRequest) {
       case "spotPaysBasque":
         revalidatePath("/pays-basque");
         break;
+      case "article":
+        revalidatePath("/articles");
+        if (slug) revalidatePath(`/articles/${slug}`);
+        break;
       default:
         revalidatePath("/");
+    }
+
+    // GEO : notifier IndexNow (Bing → ChatGPT search) de l'article modifié
+    if (type === "article" && slug) {
+      pingIndexNow([`${BASE_URL}/articles/${slug}`]).catch(() => {});
     }
 
     // ── Vercel deploy hook optionnel (pour rebuild complet si besoin) ──

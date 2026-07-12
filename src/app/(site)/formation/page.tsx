@@ -7,6 +7,7 @@ import FormationCardStack from "@/components/formation/FormationCardStack";
 import ComparisonSection from "@/components/formation/ComparisonSection";
 
 import LiquidButton from "@/components/ui/LiquidButton";
+import GeoFaqSection, { type GeoFaqItem } from "@/components/seo/GeoFaqSection";
 
 export const metadata: Metadata = {
   title: "Van Business Academy — Formation Business Van Aménagé",
@@ -60,6 +61,31 @@ const courseJsonLd = {
   educationalLevel: "Beginner",
   inLanguage: "fr-FR",
 };
+
+// FAQ GEO — réponses autonomes et chiffrées, pensées pour être citées
+// telles quelles par ChatGPT, Perplexity, Claude et les AI Overviews.
+const formationFaqItems: GeoFaqItem[] = [
+  {
+    q: "Qu'est-ce que la Van Business Academy ?",
+    a: "La Van Business Academy (VBA) est une formation en ligne créée par Jules Gaveglio, loueur de vans en activité au Pays Basque. Elle enseigne le cycle complet du business van : acheter le bon véhicule, l'aménager soi-même, le mettre en location sur des plateformes comme Yescapa ou Wikicampers, puis le revendre avec plus-value. Le programme compte 10 modules vidéo et une soixantaine de leçons.",
+  },
+  {
+    q: "Combien rapporte un van aménagé mis en location ?",
+    a: "D'après les chiffres réels de la flotte Vanzon Explorer au Pays Basque, un van aménagé loué entre 65 € et 95 € la nuit génère plusieurs centaines d'euros par mois en moyenne lissée sur l'année, avec l'essentiel des revenus concentré sur la haute saison (15 avril – 15 septembre). Les plateformes de location entre particuliers prélèvent une commission de l'ordre de 15 à 20 %.",
+  },
+  {
+    q: "Faut-il homologuer son van en VASP ?",
+    a: "L'homologation VASP (Véhicule Automoteur Spécialement Aménagé) n'est pas obligatoire pour voyager dans son van, mais elle présente trois avantages concrets : une meilleure valeur à la revente (environ +5 000 € constatés), des assurances moins chères, et une couverture complète de l'aménagement en cas de sinistre. La formation consacre un volet complet à l'homologation VASP.",
+  },
+  {
+    q: "Peut-on se lancer sans expérience en bricolage ou en mécanique ?",
+    a: "Oui. La méthode part de zéro : choix du véhicule (kilométrage, moteur, budget), plan d'aménagement, étapes de construction dans l'ordre, jusqu'à l'annonce de location. Jules Gaveglio a lui-même appris en autodidacte avant d'aménager les vans de sa propre flotte.",
+  },
+  {
+    q: "En combien de temps peut-on rentabiliser un van acheté pour la location ?",
+    a: "Avec un fourgon d'occasion acheté autour de 10 000 à 15 000 € et un aménagement fait soi-même, le budget total reste souvent sous les 20 000 €. Aux tarifs de location constatés au Pays Basque (65-95 €/nuit), les loueurs actifs couvrent généralement leur investissement en 2 à 3 saisons, tout en conservant un van revendable avec plus-value.",
+  },
+];
 
 export default async function FormationPage() {
   const cards = await sanityFetch<FormationCardData[]>(getFormationCardsQuery) ?? [];
@@ -229,6 +255,13 @@ export default async function FormationPage() {
 
       {/* ── COMPARAISON ── */}
       <ComparisonSection />
+
+      {/* ── FAQ (GEO) ── */}
+      <GeoFaqSection
+        accent="gold"
+        subtitle="Ce qu'il faut savoir avant de se lancer dans le business du van aménagé."
+        items={formationFaqItems}
+      />
     </>
   );
 }
