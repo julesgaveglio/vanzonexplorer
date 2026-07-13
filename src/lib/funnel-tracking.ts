@@ -5,6 +5,7 @@
 import { trackEvent } from "@/lib/meta-pixel";
 
 const SESSION_KEY = "vba_session_id";
+const FIRST_TOUCH_KEY = "vba_first_touch";
 
 function getSessionId(): string {
   if (typeof window === "undefined") return "";
@@ -14,6 +15,41 @@ function getSessionId(): string {
     sessionStorage.setItem(SESSION_KEY, id);
   }
   return id;
+}
+
+interface FirstTouch {
+  utm_source?: string;
+  utm_medium?: string;
+  utm_campaign?: string;
+  utm_content?: string;
+  utm_term?: string;
+  referrer?: string;
+}
+
+// Attribution first-touch : au premier passage, on capture les UTMs de l'URL
+// et le referrer externe, puis on les mémorise pour toute la session — sinon
+// ils se perdent dès que le visiteur navigue dans le tunnel.
+function getFirstTouch(): FirstTouch {
+  if (typeof window === "undefined") return {};
+  try {
+    const stored = sessionStorage.getItem(FIRST_TOUCH_KEY);
+    if (stored) return JSON.parse(stored) as FirstTouch;
+
+    const params = new URLSearchParams(window.location.search);
+    const ft: FirstTouch = {};
+    for (const k of ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"] as const) {
+      const v = params.get(k);
+      if (v) ft[k] = v;
+    }
+    // Ne retenir que les referrers externes (les internes n'apportent rien)
+    if (document.referrer && !document.referrer.includes(window.location.hostname)) {
+      ft.referrer = document.referrer;
+    }
+    sessionStorage.setItem(FIRST_TOUCH_KEY, JSON.stringify(ft));
+    return ft;
+  } catch {
+    return {};
+  }
 }
 
 // ViewContent fires for EVERYONE on the inscription page (before form)
@@ -77,18 +113,20 @@ export function trackFunnel(
   }
 
   // 2. Supabase — all events (powers /admin/funnel dashboard)
+  // Priorité : options explicites > first-touch mémorisé (URL + referrer d'origine)
+  const ft = getFirstTouch();
   const payload = {
     session_id: getSessionId(),
     event,
     page,
     email: options.email,
     firstname: options.firstname,
-    utm_source: options.utm_source,
-    utm_medium: options.utm_medium,
-    utm_campaign: options.utm_campaign,
-    utm_content: options.utm_content,
-    utm_term: options.utm_term,
-    referrer: document.referrer || undefined,
+    utm_source: options.utm_source ?? ft.utm_source,
+    utm_medium: options.utm_medium ?? ft.utm_medium,
+    utm_campaign: options.utm_campaign ?? ft.utm_campaign,
+    utm_content: options.utm_content ?? ft.utm_content,
+    utm_term: options.utm_term ?? ft.utm_term,
+    referrer: ft.referrer ?? (document.referrer || undefined),
     metadata: options.metadata,
   };
 
