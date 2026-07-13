@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { VANS_LANDING as VANS } from "@/lib/data/vans";
 import OtherServices from "@/components/ui/OtherServices";
-import RoadTripCTA from "@/components/ui/RoadTripCTA";
 import LiquidButton from "@/components/ui/LiquidButton";
 
 export default function AchatLanding() {
@@ -144,7 +143,6 @@ export default function AchatLanding() {
         </div>
       </section>
 
-      <RoadTripCTA />
       <OtherServices current="achat" bgColor="#F7F6F3" />
     </div>
   );

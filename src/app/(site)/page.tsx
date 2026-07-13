@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import MarketplaceVansSection from "@/components/marketplace/MarketplaceVansSection";
-import RoadTripCTA from "@/components/ui/RoadTripCTA";
 import LiquidButton from "@/components/ui/LiquidButton";
 
 export const revalidate = 3600;
@@ -101,13 +100,19 @@ export default async function HomePage() {
               <span className="text-white/90 text-sm font-medium">5/5 sur Google</span>
             </a>
 
-            <p className="text-4xl sm:text-4xl md:text-6xl lg:text-7xl font-black text-white leading-[1.08] mb-7" aria-hidden="true">
-              Rendre accessible à tous le goût de la <span className="bg-gradient-to-r from-blue-400 to-sky-300 bg-clip-text text-transparent">liberté</span>
+            <p className="text-white/60 text-sm sm:text-base font-medium italic mb-4">
+              Rendre accessible à tous le goût de la liberté
             </p>
 
-            <h1 className="text-lg sm:text-xl text-white/75 leading-relaxed mb-10 max-w-xl">
-              Location de vans aménagés en France dès 65€/nuit. Assurance incluse, départ Pays Basque.
+            <h1 className="text-4xl sm:text-4xl md:text-6xl lg:text-7xl font-black text-white leading-[1.08] mb-7">
+              Location de <span className="bg-gradient-to-r from-blue-400 to-sky-300 bg-clip-text text-transparent">vans aménagés</span> au Pays Basque
             </h1>
+
+            <p className="text-lg sm:text-xl text-white/75 leading-relaxed mb-10 max-w-xl">
+              Louez un van tout équipé dès <strong className="text-white">65€/nuit</strong>, achetez
+              un van révisé de notre flotte, ou formez-vous pour créer votre
+              propre activité de location.
+            </p>
 
             <div className="flex flex-col sm:flex-row sm:items-center gap-3">
               <div className="flex w-full sm:w-auto">
@@ -116,8 +121,8 @@ export default async function HomePage() {
                 </LiquidButton>
               </div>
               <div className="flex w-full sm:w-auto">
-                <LiquidButton href="/proprietaire" variant="slate" size="responsive" shineDelay={1.9} fullWidth>
-                  Proposer mon van →
+                <LiquidButton href="/achat" variant="slate" size="responsive" shineDelay={1.9} fullWidth>
+                  Acheter un van →
                 </LiquidButton>
               </div>
             </div>
@@ -138,7 +143,7 @@ export default async function HomePage() {
           </div>
         </div>
 
-        <a href="#location" className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 text-white/50 hover:text-white/80 transition-colors animate-bounce">
+        <a href="#parcours" className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 text-white/50 hover:text-white/80 transition-colors animate-bounce">
           <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
             <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
           </svg>
@@ -162,6 +167,74 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* ── AIGUILLAGE — les 3 parcours (conversion : chaque cible trouve sa
+          porte d'entrée dès le premier écran de scroll) ── */}
+      <section id="parcours" className="bg-white py-16 scroll-mt-20">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-2">
+              Que cherchez-vous ?
+            </h2>
+            <p className="text-slate-500 text-lg">
+              Trois façons de vivre le van avec Vanzon Explorer.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              {
+                href: "/location",
+                emoji: "🚐",
+                title: "Louer un van",
+                desc: "Vans tout équipés au départ de Cambo-les-Bains, à 25 min de Biarritz. Assurance tous risques incluse.",
+                highlight: "dès 65€/nuit",
+                cta: "Voir les vans disponibles",
+                accent: "#4D5FEC",
+              },
+              {
+                href: "/achat",
+                emoji: "🔑",
+                title: "Acheter un van",
+                desc: "Nos vans aménagés par nos soins, exploités puis revendus avec historique et carnet d'entretien complets.",
+                highlight: "23 500 € · essai sur place",
+                cta: "Voir les vans à vendre",
+                accent: "#0F153A",
+              },
+              {
+                href: "/formation",
+                emoji: "🎓",
+                title: "Créer votre business van",
+                desc: "Apprenez à acheter, aménager et rentabiliser un van en location : la méthode complète de la Van Business Academy.",
+                highlight: "formation 100% en ligne",
+                cta: "Découvrir la formation",
+                accent: "#B9945F",
+              },
+            ].map((path) => (
+              <Link
+                key={path.href}
+                href={path.href}
+                className="group glass-card p-8 flex flex-col transition-all duration-200 hover:-translate-y-1 hover:shadow-xl"
+              >
+                <span className="text-4xl mb-4">{path.emoji}</span>
+                <h3 className="text-xl font-black text-slate-900 mb-2">{path.title}</h3>
+                <p className="text-slate-500 text-sm leading-relaxed mb-4 flex-1">{path.desc}</p>
+                <p className="text-sm font-bold mb-5" style={{ color: path.accent }}>
+                  {path.highlight}
+                </p>
+                <span
+                  className="inline-flex items-center gap-2 text-sm font-semibold transition-transform duration-200 group-hover:translate-x-1"
+                  style={{ color: path.accent }}
+                >
+                  {path.cta}
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
 
       <MarketplaceVansSection />
 
@@ -372,12 +445,11 @@ export default async function HomePage() {
           </div>
 
           <p className="text-white/40 text-sm mt-6">
-            Questions ? <Link href="/contact" className="text-white/60 hover:text-white underline underline-offset-2 transition-colors">Contactez-nous ici</Link>
+            Envie d&apos;inspiration ? <Link href="/road-trip-personnalise" className="text-white/60 hover:text-white underline underline-offset-2 transition-colors">Générez votre itinéraire gratuit</Link>
+            {" "}· Questions ? <Link href="/contact" className="text-white/60 hover:text-white underline underline-offset-2 transition-colors">Contactez-nous</Link>
           </p>
         </div>
       </section>
-
-      <RoadTripCTA />
     </>
   );
 }

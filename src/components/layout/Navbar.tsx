@@ -15,11 +15,20 @@ interface NavLink {
   children?: { label: string; href: string; desc: string; emoji: string }[]
 }
 
+// Les 3 métiers — toujours visibles sur desktop (conversion : comprendre
+// l'activité et trouver sa porte d'entrée sans ouvrir de menu)
+const primaryLinks = [
+  { label: "Location", href: "/location" },
+  { label: "Achat", href: "/achat" },
+  { label: "Formation", href: "/formation" },
+];
+
 const navLinks: NavLink[] = [
-  { label: "Location", href: "/location", desc: "Louer un van aménagé", emoji: "🚐" },
-  { label: "Achat", href: "/achat", desc: "Acheter un fourgon", emoji: "🔑" },
-  { label: "Formation", href: "/formation", desc: "Van Business Academy", emoji: "🎓" },
-{ label: "Pays Basque", href: "/pays-basque", desc: "Vantrips & spots", emoji: "🏄" },
+  // Les 3 métiers d'abord
+  { label: "Location", href: "/location", desc: "Louer un van aménagé dès 65€/nuit", emoji: "🚐" },
+  { label: "Achat", href: "/achat", desc: "Nos vans révisés à vendre", emoji: "🔑" },
+  { label: "Formation", href: "/formation", desc: "Créer votre business van", emoji: "🎓" },
+  // Découverte ensuite
   {
     label: "Road Trips", href: "/road-trip-pays-basque-van", desc: "Itinéraires van", emoji: "🗺️",
     children: [
@@ -27,6 +36,7 @@ const navLinks: NavLink[] = [
       { label: "Générateur IA", href: "/road-trip-personnalise", desc: "Itinéraire ultra-personnalisé", emoji: "✨" },
     ],
   },
+  { label: "Pays Basque", href: "/pays-basque", desc: "Spots & bivouacs", emoji: "🏄" },
   { label: "Articles", href: "/articles", desc: "Guides vanlife", emoji: "📖" },
   { label: "À propos", href: "/a-propos", desc: "Notre histoire", emoji: "👋" },
   { label: "Contact", href: "/contact", desc: "Contactez-nous", emoji: "✉️" },
@@ -314,8 +324,32 @@ export default function Navbar() {
               />
             </Link>
 
-            {/* ── Desktop right side: CTA + Burger ── */}
-            <div className="hidden lg:flex items-center gap-3">
+            {/* ── Desktop: liens métiers visibles + CTA + Burger ── */}
+            <div className="hidden lg:flex items-center gap-1">
+              {primaryLinks.map((link) => {
+                const active = pathname.startsWith(link.href);
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={`text-sm font-semibold px-4 py-2 rounded-xl transition-colors ${
+                      active
+                        ? "text-accent-blue bg-blue-50"
+                        : "text-slate-700 hover:text-slate-900 hover:bg-slate-50"
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
+              <div className="w-px h-6 bg-slate-200 mx-2" />
+              <Link
+                href="/location"
+                className="text-sm font-bold text-white px-5 py-2.5 rounded-xl transition-all hover:opacity-90 hover:-translate-y-px mr-1"
+                style={{ background: "linear-gradient(135deg, #4D5FEC 0%, #6B7CFF 100%)" }}
+              >
+                Louer un van
+              </Link>
               <Link
                 href="/dashboard"
                 className="text-sm font-medium text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-300 px-4 py-2 rounded-xl hover:bg-slate-50 transition-all"
@@ -324,7 +358,7 @@ export default function Navbar() {
               </Link>
               <button
                 onClick={() => setDesktopOpen(!desktopOpen)}
-                className="flex items-center justify-center w-11 h-11 rounded-xl border border-slate-200 hover:bg-slate-50 active:bg-slate-100 transition-colors"
+                className="flex items-center justify-center w-11 h-11 rounded-xl border border-slate-200 hover:bg-slate-50 active:bg-slate-100 transition-colors ml-1"
                 aria-label={desktopOpen ? "Fermer le menu" : "Ouvrir le menu"}
                 aria-expanded={desktopOpen}
               >
