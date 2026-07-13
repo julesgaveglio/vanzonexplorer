@@ -39,9 +39,9 @@ export default function PracticalInfoSection({ title, rows, image, imageAlt }: P
                   key={row.label}
                   className="group flex gap-4 bg-slate-50 hover:bg-blue-50/60 rounded-2xl p-4 transition-colors"
                 >
-                  <div className="w-1 rounded-full bg-gradient-to-b from-[#4D5FEC] to-[#4BC3E3] flex-shrink-0 self-stretch min-h-[2rem]" />
+                  <div className="w-1 rounded-full bg-gradient-to-b from-[var(--accent)] to-[var(--accent-soft)] flex-shrink-0 self-stretch min-h-[2rem]" />
                   <div className="min-w-0">
-                    <p className="text-[10px] font-bold text-[#4D5FEC] uppercase tracking-widest mb-1">
+                    <p className="text-[10px] font-bold text-[var(--accent)] uppercase tracking-widest mb-1">
                       {row.label}
                     </p>
                     <p className="text-sm text-slate-700 leading-relaxed">{row.value}</p>

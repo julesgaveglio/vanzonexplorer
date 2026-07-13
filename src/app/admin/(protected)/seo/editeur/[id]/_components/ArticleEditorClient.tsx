@@ -210,7 +210,7 @@ export default function ArticleEditorClient({ draft }: Props) {
         <button
           onClick={handlePublish}
           disabled={publishing}
-          className="px-4 py-2 bg-[#4D5FEC] hover:bg-[#3B4FD4] text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2 shadow-sm"
+          className="px-4 py-2 bg-[var(--accent)] hover:bg-[#3B4FD4] text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2 shadow-sm"
         >
           {publishing ? (
             <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
@@ -468,7 +468,7 @@ export default function ArticleEditorClient({ draft }: Props) {
               L&apos;article est maintenant en ligne sur Vanzon Explorer.
             </p>
             <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 mb-6">
-              <svg className="w-4 h-4 text-[#4D5FEC] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <svg className="w-4 h-4 text-[var(--accent)] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
               </svg>
               <span className="text-xs text-slate-600 font-mono truncate flex-1">{publishedUrl}</span>
@@ -493,7 +493,7 @@ export default function ArticleEditorClient({ draft }: Props) {
                 href={publishedUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 px-4 py-2.5 bg-[#4D5FEC] hover:bg-[#3B4FD4] text-white text-sm font-semibold rounded-xl transition-colors text-center"
+                className="flex-1 px-4 py-2.5 bg-[var(--accent)] hover:bg-[#3B4FD4] text-white text-sm font-semibold rounded-xl transition-colors text-center"
               >
                 Voir l&apos;article →
               </a>

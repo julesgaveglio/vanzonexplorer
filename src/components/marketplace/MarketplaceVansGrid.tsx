@@ -108,7 +108,7 @@ export default function MarketplaceVansGrid({
           <button
             onClick={() => setShowAllMobile(true)}
             className="text-sm font-semibold transition-colors"
-            style={{ color: "#4D5FEC" }}
+            style={{ color: "var(--accent)" }}
           >
             Voir plus →
           </button>

@@ -71,7 +71,7 @@ export default function SylvainTestimonial() {
         <button
           onClick={() => setOpen((v) => !v)}
           className="mt-4 text-xs font-semibold tracking-wide uppercase transition-colors"
-          style={{ color: "#B9945F" }}
+          style={{ color: "var(--gold)" }}
         >
           {open ? "Réduire ↑" : "Lire la suite ↓"}
         </button>
@@ -80,7 +80,7 @@ export default function SylvainTestimonial() {
         <div className="mt-6 pt-5 border-t flex items-center gap-3" style={{ borderColor: "rgba(185,148,95,0.15)" }}>
           <div
             className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0"
-            style={{ background: "linear-gradient(135deg, #B9945F, #8B6B3D)" }}
+            style={{ background: "linear-gradient(135deg, var(--gold), #8B6B3D)" }}
           >
             S
           </div>

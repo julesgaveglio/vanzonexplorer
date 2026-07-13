@@ -94,7 +94,7 @@ export default function BookingClient() {
             className="text-xs font-semibold px-3 py-1.5 rounded-full"
             style={{
               background: "rgba(185,148,95,0.08)",
-              color: "#B9945F",
+              color: "var(--gold)",
               border: "1px solid rgba(185,148,95,0.15)",
             }}
           >

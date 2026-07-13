@@ -88,7 +88,7 @@ export default function DynamicTitle() {
           <span
             key={i}
             style={{
-              background: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
+              background: "linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
             }}

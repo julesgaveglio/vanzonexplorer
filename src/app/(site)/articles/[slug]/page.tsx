@@ -207,9 +207,9 @@ export default async function ArticleDetailPage({
 
           {/* Breadcrumb */}
           <nav aria-label="Fil d'Ariane" className="flex items-center gap-2 text-sm text-slate-400 mb-8">
-            <Link href="/" className="hover:text-[#4D5FEC] transition-colors">Accueil</Link>
+            <Link href="/" className="hover:text-[var(--accent)] transition-colors">Accueil</Link>
             <span aria-hidden>/</span>
-            <Link href="/articles" className="hover:text-[#4D5FEC] transition-colors">Articles</Link>
+            <Link href="/articles" className="hover:text-[var(--accent)] transition-colors">Articles</Link>
             <span aria-hidden>/</span>
             <span className="text-slate-600 truncate max-w-[200px]">{article.title}</span>
           </nav>
@@ -252,7 +252,7 @@ export default async function ArticleDetailPage({
           </h1>
 
           {/* PAS intro */}
-          <div className="relative pl-5 border-l-4 border-[#4D5FEC] bg-blue-50/40 py-5 pr-5 rounded-r-2xl mb-10">
+          <div className="relative pl-5 border-l-4 border-[var(--accent)] bg-blue-50/40 py-5 pr-5 rounded-r-2xl mb-10">
             <p className="text-[17px] text-slate-700 leading-[1.75] font-[450]">
               {article.excerpt}
             </p>
@@ -266,7 +266,7 @@ export default async function ArticleDetailPage({
                 {headings.filter((h: TOCHeading) => h.level === 2).map((h: TOCHeading, i: number) => (
                   <li key={h.id} className="flex items-start gap-3">
                     <span className="text-xs font-bold text-[#4D5FEC]/60 mt-0.5 flex-shrink-0 w-5">{i + 1}.</span>
-                    <a href={`#${h.id}`} className="text-sm text-slate-600 hover:text-[#4D5FEC] transition-colors leading-snug">
+                    <a href={`#${h.id}`} className="text-sm text-slate-600 hover:text-[var(--accent)] transition-colors leading-snug">
                       {h.text}
                     </a>
                   </li>
@@ -325,11 +325,11 @@ export default async function ArticleDetailPage({
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-bold text-slate-900 text-sm leading-none mb-1">Jules Gaveglio</p>
-                  <p className="text-xs text-[#4D5FEC] font-semibold mb-2">Fondateur · Vanzon Explorer</p>
+                  <p className="text-xs text-[var(--accent)] font-semibold mb-2">Fondateur · Vanzon Explorer</p>
                   <p className="text-xs text-slate-500 leading-relaxed">
                     Passionné de vanlife et du Pays Basque depuis 2022. Il a aménagé sa flotte de vans en autodidacte, lancé la location et créé la Van Business Academy — il partage ici tout ce qu&apos;il a appris sur le terrain.
                   </p>
-                  <Link href="/a-propos" className="text-xs font-semibold text-[#4D5FEC] hover:underline mt-2 inline-block">
+                  <Link href="/a-propos" className="text-xs font-semibold text-[var(--accent)] hover:underline mt-2 inline-block">
                     En savoir plus →
                   </Link>
                 </div>
@@ -348,9 +348,9 @@ export default async function ArticleDetailPage({
                   <li key={a._id}>
                     <Link
                       href={`/articles/${a.slug}`}
-                      className="group flex items-start gap-3 text-sm text-slate-600 hover:text-[#4D5FEC] transition-colors"
+                      className="group flex items-start gap-3 text-sm text-slate-600 hover:text-[var(--accent)] transition-colors"
                     >
-                      <span className="mt-0.5 w-1.5 h-1.5 rounded-full bg-[#4D5FEC]/40 flex-shrink-0 group-hover:bg-[#4D5FEC] transition-colors" />
+                      <span className="mt-0.5 w-1.5 h-1.5 rounded-full bg-[#4D5FEC]/40 flex-shrink-0 group-hover:bg-[var(--accent)] transition-colors" />
                       {a.title}
                     </Link>
                   </li>

@@ -11,7 +11,7 @@ const VARIANTS = {
     textColor: "text-white",
   },
   gold: {
-    gradient: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
+    gradient: "linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%)",
     glow: "0 4px 18px rgba(185, 148, 95, 0.55), 0 1px 4px rgba(228, 211, 152, 0.30)",
     textColor: "text-white",
   },

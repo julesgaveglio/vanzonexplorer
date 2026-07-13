@@ -9,7 +9,7 @@ const TAG_STYLES: Record<string, { bg: string; text: string; label: string }> = 
   pdf: { bg: "rgba(239,68,68,0.08)", text: "#EF4444", label: "PDF" },
   bonus: { bg: "rgba(16,185,129,0.08)", text: "#10B981", label: "Bonus" },
   outil: { bg: "rgba(245,158,11,0.08)", text: "#F59E0B", label: "Outil" },
-  nouveau: { bg: "rgba(185,148,95,0.08)", text: "#B9945F", label: "Nouveau" },
+  nouveau: { bg: "rgba(185,148,95,0.08)", text: "var(--gold)", label: "Nouveau" },
   filmé: { bg: "rgba(16,185,129,0.08)", text: "#10B981", label: "Filmé ✓" },
 };
 
@@ -40,7 +40,7 @@ export default function ModuleAccordion({ modules, isBonusSection }: { modules: 
               <span className="text-2xl sm:text-3xl flex-shrink-0 mt-0.5">{mod.emoji}</span>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-xs font-bold uppercase tracking-wider" style={{ color: "#B9945F" }}>
+                  <span className="text-xs font-bold uppercase tracking-wider" style={{ color: "var(--gold)" }}>
                     {isBonusSection ? "Bonus" : `Module ${mod.number}`}
                   </span>
                   {mod.badge && (
@@ -58,7 +58,7 @@ export default function ModuleAccordion({ modules, isBonusSection }: { modules: 
                           ? "#F59E0B"
                           : mod.badge === "NOUVEAU"
                             ? "#10B981"
-                            : "#B9945F",
+                            : "var(--gold)",
                       }}
                     >
                       {mod.badge === "EN TOURNAGE" ? "🎥 En tournage" : mod.badge}

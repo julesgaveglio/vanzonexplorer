@@ -77,7 +77,7 @@ function ArticleCard({ article, index }: { article: MappedArticle; index: number
         <span className={`self-start text-xs font-semibold px-2.5 py-1 rounded-full mb-3 ${CATEGORY_COLOR[article.category]}`}>
           {article.category}
         </span>
-        <h3 className={`font-black text-base leading-snug mb-2 flex-1 transition-colors duration-200 ${isComing ? "text-slate-500" : "text-slate-900 group-hover:text-[#4D5FEC]"}`}>
+        <h3 className={`font-black text-base leading-snug mb-2 flex-1 transition-colors duration-200 ${isComing ? "text-slate-500" : "text-slate-900 group-hover:text-[var(--accent)]"}`}>
           {article.title}
         </h3>
         <p className="text-slate-500 text-sm leading-relaxed line-clamp-2 mb-4">
@@ -88,7 +88,7 @@ function ArticleCard({ article, index }: { article: MappedArticle; index: number
             Disponible prochainement
           </span>
         ) : (
-          <span className="inline-flex items-center gap-1.5 text-sm font-semibold mt-auto transition-all" style={{ color: "#4D5FEC" }}>
+          <span className="inline-flex items-center gap-1.5 text-sm font-semibold mt-auto transition-all" style={{ color: "var(--accent)" }}>
             Lire l&apos;article
             <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
               <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
@@ -453,7 +453,7 @@ export default function ArticlesPageClient({ sanityArticles = [] }: { sanityArti
         <div className="relative z-10 max-w-7xl mx-auto px-6 pt-10 pb-16">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 border border-white/15 bg-white/5 backdrop-blur-sm rounded-full px-4 py-2 mb-6">
-              <span className="w-2 h-2 rounded-full bg-[#4BC3E3] animate-pulse" />
+              <span className="w-2 h-2 rounded-full bg-[var(--accent-soft)] animate-pulse" />
               <span className="text-white/70 text-xs font-semibold uppercase tracking-widest">Vanzon Explorer · Magazine</span>
             </div>
             <h1 className="text-5xl md:text-6xl font-black text-white leading-tight mb-5">
@@ -516,11 +516,11 @@ export default function ArticlesPageClient({ sanityArticles = [] }: { sanityArti
                         <span className="text-xs text-slate-400">{featuredArticle.readTime} de lecture</span>
                       )}
                     </div>
-                    <h2 className="text-2xl md:text-3xl font-black text-slate-900 leading-snug mb-4 group-hover:text-[#4D5FEC] transition-colors duration-200">
+                    <h2 className="text-2xl md:text-3xl font-black text-slate-900 leading-snug mb-4 group-hover:text-[var(--accent)] transition-colors duration-200">
                       {featuredArticle.title}
                     </h2>
                     <p className="text-slate-500 leading-relaxed mb-8 text-base">{featuredArticle.description}</p>
-                    <div className="inline-flex items-center gap-2 text-base font-bold transition-colors" style={{ color: "#4D5FEC" }}>
+                    <div className="inline-flex items-center gap-2 text-base font-bold transition-colors" style={{ color: "var(--accent)" }}>
                       Lire l&apos;article complet
                       <svg className="w-5 h-5 transition-transform group-hover:translate-x-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
@@ -551,8 +551,8 @@ export default function ArticlesPageClient({ sanityArticles = [] }: { sanityArti
                   onClick={() => setActiveCategory(label)}
                   className={`group flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-sm font-semibold border transition-all duration-200 cursor-pointer ${
                     isActive
-                      ? "bg-[#4D5FEC] text-white border-[#4D5FEC] shadow-md shadow-[#4D5FEC]/20"
-                      : "bg-white text-slate-600 border-slate-200 hover:border-[#4D5FEC]/40 hover:text-[#4D5FEC] hover:bg-blue-50/50"
+                      ? "bg-[var(--accent)] text-white border-[var(--accent)] shadow-md shadow-[#4D5FEC]/20"
+                      : "bg-white text-slate-600 border-slate-200 hover:border-[#4D5FEC]/40 hover:text-[var(--accent)] hover:bg-blue-50/50"
                   }`}
                 >
                   <span className="text-base leading-none">{icon}</span>
@@ -585,7 +585,7 @@ export default function ArticlesPageClient({ sanityArticles = [] }: { sanityArti
             {activeCategory !== "Tous" && (
               <button
                 onClick={() => setActiveCategory("Tous")}
-                className="text-xs text-slate-400 hover:text-[#4D5FEC] transition-colors flex items-center gap-1 font-medium"
+                className="text-xs text-slate-400 hover:text-[var(--accent)] transition-colors flex items-center gap-1 font-medium"
               >
                 <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -613,7 +613,7 @@ export default function ArticlesPageClient({ sanityArticles = [] }: { sanityArti
                 <button
                   onClick={() => setActiveCategory("Tous")}
                   className="mt-4 text-sm font-semibold transition-colors"
-                  style={{ color: "#4D5FEC" }}
+                  style={{ color: "var(--accent)" }}
                 >
                   Voir tous les articles →
                 </button>

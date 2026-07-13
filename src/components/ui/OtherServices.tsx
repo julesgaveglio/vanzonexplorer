@@ -17,8 +17,8 @@ const SERVICES: Record<ServiceKey, {
     desc: "Partez explorer le Pays Basque à bord d'un van entièrement équipé. Liberté totale, sans contrainte, dès 1 jour.",
     zone: "Pays Basque",
     href: "/location",
-    gradient: "from-[#4D5FEC] to-[#4BC3E3]",
-    accent: "#4D5FEC",
+    gradient: "from-[var(--accent)] to-[var(--accent-soft)]",
+    accent: "var(--accent)",
   },
   achat: {
     label: "Achat",
@@ -26,8 +26,8 @@ const SERVICES: Record<ServiceKey, {
     desc: "Deux Renault Trafic aménagés par nos soins, issus de notre flotte. Historique complet, remise en main propre.",
     zone: "Cambo-les-Bains",
     href: "/achat",
-    gradient: "from-[#4D5FEC] to-[#0EA5E9]",
-    accent: "#4D5FEC",
+    gradient: "from-[var(--accent)] to-[#0EA5E9]",
+    accent: "var(--accent)",
   },
   formation: {
     label: "Formation",
@@ -35,8 +35,8 @@ const SERVICES: Record<ServiceKey, {
     desc: "Aménagement, homologation VASP, mise en location rentable. Un programme complet de A à Z avec Jules.",
     zone: "Toute la France",
     href: "/formation",
-    gradient: "from-[#CDA77B] to-[#B9945F]",
-    accent: "#B9945F",
+    gradient: "from-[#CDA77B] to-[var(--gold)]",
+    accent: "var(--gold)",
   },
 };
 

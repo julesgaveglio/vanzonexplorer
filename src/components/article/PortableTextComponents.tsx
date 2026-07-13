@@ -85,7 +85,7 @@ export function makePortableComponents(headingIds: Map<string, string>) {
         );
       },
       blockquote: ({ children }: { children?: React.ReactNode }) => (
-        <blockquote className="my-8 pl-5 border-l-4 border-[#4D5FEC] bg-blue-50/50 py-4 pr-5 rounded-r-xl italic text-slate-600 text-[17px] leading-relaxed">
+        <blockquote className="my-8 pl-5 border-l-4 border-[var(--accent)] bg-blue-50/50 py-4 pr-5 rounded-r-xl italic text-slate-600 text-[17px] leading-relaxed">
           {children}
         </blockquote>
       ),
@@ -178,7 +178,7 @@ export function makePortableComponents(headingIds: Map<string, string>) {
           href={value?.href}
           target={value?.blank ? "_blank" : undefined}
           rel={value?.blank ? "noopener noreferrer" : undefined}
-          className="text-[#4D5FEC] underline underline-offset-2 hover:text-[#3B4FD4] transition-colors"
+          className="text-[var(--accent)] underline underline-offset-2 hover:text-[#3B4FD4] transition-colors"
         >
           {children}
         </a>

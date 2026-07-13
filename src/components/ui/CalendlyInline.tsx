@@ -31,7 +31,7 @@ export default function CalendlyInline({ url = CALENDLY_URL, height = 700, prefi
       <div className="flex flex-col items-center justify-center gap-4" style={{ height }}>
         <div
           className="w-10 h-10 rounded-full border-[3px] animate-spin"
-          style={{ borderColor: "#E4D398", borderTopColor: "#B9945F" }}
+          style={{ borderColor: "var(--gold-light)", borderTopColor: "var(--gold)" }}
         />
         <p className="text-slate-400 text-sm">Chargement du calendrier...</p>
       </div>

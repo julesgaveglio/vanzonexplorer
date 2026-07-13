@@ -194,7 +194,7 @@ export default async function LocationPage() {
 
             <h1 className="text-4xl sm:text-4xl md:text-6xl lg:text-7xl font-black text-white leading-[1.08] mb-7">
               Location van aménagé<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4BC3E3] to-[#4D5FEC]">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--accent-soft)] to-[var(--accent)]">
                 au Pays Basque
               </span>
             </h1>
@@ -263,7 +263,7 @@ export default async function LocationPage() {
       <section id="nos-vans" className="py-20 bg-white scroll-mt-20">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-14">
-            <span className="badge-glass !px-4 !py-1.5 text-sm font-semibold mb-4 inline-block" style={{ color: "#4D5FEC" }}>
+            <span className="badge-glass !px-4 !py-1.5 text-sm font-semibold mb-4 inline-block" style={{ color: "var(--accent)" }}>
               Nos vans
             </span>
             <h2 className="text-4xl font-black text-slate-900 mb-3">
@@ -292,7 +292,7 @@ export default async function LocationPage() {
       <section className="py-20" style={{ background: "linear-gradient(160deg, #EFF6FF 0%, #F0FDFF 100%)" }}>
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-14">
-            <span className="badge-glass !px-4 !py-1.5 text-sm font-semibold mb-4 inline-block" style={{ color: "#4D5FEC" }}>
+            <span className="badge-glass !px-4 !py-1.5 text-sm font-semibold mb-4 inline-block" style={{ color: "var(--accent)" }}>
               Destinations
             </span>
             <h2 className="text-4xl font-black text-slate-900 mb-3">
@@ -363,7 +363,7 @@ export default async function LocationPage() {
       <section className="py-20 bg-white">
         <div className="max-w-5xl mx-auto px-6">
           <div className="text-center mb-10">
-            <span className="badge-glass !px-4 !py-1.5 text-sm font-semibold mb-4 inline-block" style={{ color: "#4D5FEC" }}>
+            <span className="badge-glass !px-4 !py-1.5 text-sm font-semibold mb-4 inline-block" style={{ color: "var(--accent)" }}>
               Point de départ
             </span>
             <h2 className="text-3xl font-black text-slate-900 mb-3">

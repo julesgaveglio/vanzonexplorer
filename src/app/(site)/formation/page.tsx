@@ -114,7 +114,7 @@ export default async function FormationPage() {
         />
         <div
           className="absolute top-60 right-0 w-96 h-96 rounded-full opacity-[0.10] blur-3xl"
-          style={{ background: "#B9945F" }}
+          style={{ background: "var(--gold)" }}
         />
 
         <div className="relative max-w-4xl mx-auto px-6 pt-24 pb-10 md:pt-36 md:pb-12 text-center">
@@ -124,7 +124,7 @@ export default async function FormationPage() {
             style={{
               background: "rgba(205,167,123,0.12)",
               border: "1px solid rgba(205,167,123,0.35)",
-              color: "#B9945F",
+              color: "var(--gold)",
             }}
           >
             Van Business Academy
@@ -138,7 +138,7 @@ export default async function FormationPage() {
               className="bg-clip-text text-transparent"
               style={{
                 backgroundImage:
-                  "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
+                  "linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%)",
               }}
             >
               Construis ta liberté van par van.
@@ -191,7 +191,7 @@ export default async function FormationPage() {
       <section className="py-16 md:py-20 bg-white">
         <div className="max-w-5xl mx-auto px-6">
           <div className="text-center mb-12">
-            <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "#B9945F" }}>
+            <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "var(--gold)" }}>
               La méthode
             </p>
             <h2 className="text-3xl md:text-4xl font-black text-slate-900 leading-tight">
@@ -210,7 +210,7 @@ export default async function FormationPage() {
               { num: "04", title: "Revendre avec plus-value", desc: "Un van bien aménagé et homologué se revend plus cher qu'il ne t'a coûté. Puis tu recommences — en plus grand." },
             ].map((step) => (
               <div key={step.num} className="bg-white p-6 md:p-8">
-                <span className="text-xs font-bold tracking-widest" style={{ color: "#B9945F" }}>{step.num}</span>
+                <span className="text-xs font-bold tracking-widest" style={{ color: "var(--gold)" }}>{step.num}</span>
                 <h3 className="text-lg font-black text-slate-900 mt-3 mb-2">{step.title}</h3>
                 <p className="text-slate-500 text-sm leading-relaxed">{step.desc}</p>
               </div>
@@ -236,7 +236,7 @@ export default async function FormationPage() {
               "La peur n°1 qui bloque tout le monde (« les locataires vont tout casser ») et ce que 2 ans de location nous ont vraiment coûté : 15 €.",
             ].map((item) => (
               <li key={item} className="flex items-start gap-4 bg-white rounded-2xl px-6 py-5" style={{ border: "1px solid rgba(185,148,95,0.15)" }}>
-                <svg className="w-5 h-5 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="#B9945F" strokeWidth="2">
+                <svg className="w-5 h-5 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="var(--gold)" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
                 <span className="text-slate-700 text-sm md:text-base leading-relaxed">{item}</span>
@@ -284,7 +284,7 @@ export default async function FormationPage() {
                     className="flex-shrink-0 w-8 h-8 rounded-xl flex items-center justify-center text-base mt-0.5"
                     style={{ background: "rgba(185,148,95,0.10)" }}
                   >
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="#B9945F" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="var(--gold)" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
                   </span>
                   <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
                     <strong>Le point de départ :</strong> un utilitaire acheté 9 000 €,
@@ -298,7 +298,7 @@ export default async function FormationPage() {
                     className="flex-shrink-0 w-8 h-8 rounded-xl flex items-center justify-center text-base mt-0.5"
                     style={{ background: "rgba(185,148,95,0.10)" }}
                   >
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="#B9945F" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="var(--gold)" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
                   </span>
                   <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
                     <strong>8 mois de location plus tard :</strong> +5 500 € nets
@@ -312,7 +312,7 @@ export default async function FormationPage() {
                     className="flex-shrink-0 w-8 h-8 rounded-xl flex items-center justify-center text-base mt-0.5"
                     style={{ background: "rgba(185,148,95,0.10)" }}
                   >
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="#B9945F" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="var(--gold)" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
                   </span>
                   <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
                     <strong>La formation :</strong> exactement cette méthode,

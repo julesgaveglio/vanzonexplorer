@@ -51,7 +51,7 @@ export default function ArticleTOC({ headings }: { headings: TOCHeading[] }) {
                   "block text-sm leading-snug py-0.5 pl-4 border-l-2 -ml-px transition-all duration-150",
                   level === 3 ? "pl-7" : "",
                   activeId === id
-                    ? "border-[#4D5FEC] text-[#4D5FEC] font-semibold"
+                    ? "border-[var(--accent)] text-[var(--accent)] font-semibold"
                     : "border-transparent text-slate-500 hover:text-slate-800 hover:border-slate-300",
                 ].join(" ")}
               >
@@ -73,7 +73,7 @@ export default function ArticleTOC({ headings }: { headings: TOCHeading[] }) {
         </LiquidButton>
         <a
           href="/achat"
-          className="mt-2.5 block text-center text-xs text-slate-400 hover:text-[#4D5FEC] transition-colors"
+          className="mt-2.5 block text-center text-xs text-slate-400 hover:text-[var(--accent)] transition-colors"
         >
           Acheter votre van →
         </a>

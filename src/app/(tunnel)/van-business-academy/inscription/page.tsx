@@ -46,7 +46,7 @@ export default function OptinPage() {
               <li key={text} className="flex items-start gap-3">
                 <span
                   className="mt-0.5 text-lg flex-shrink-0"
-                  style={{ color: "#B9945F" }}
+                  style={{ color: "var(--gold)" }}
                 >
                   ✓
                 </span>

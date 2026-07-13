@@ -346,7 +346,7 @@ export default function Navbar() {
               <Link
                 href="/location"
                 className="text-sm font-bold text-white px-5 py-2.5 rounded-xl transition-all hover:opacity-90 hover:-translate-y-px mr-1"
-                style={{ background: "linear-gradient(135deg, #4D5FEC 0%, #6B7CFF 100%)" }}
+                style={{ background: "linear-gradient(135deg, var(--accent) 0%, #6B7CFF 100%)" }}
               >
                 Louer un van
               </Link>

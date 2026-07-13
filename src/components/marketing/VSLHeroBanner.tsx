@@ -19,7 +19,7 @@ export default function VSLHeroBanner({ articleSlug }: VSLHeroBannerProps) {
           className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center"
           style={{ background: "rgba(185,148,95,0.12)" }}
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#B9945F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <polygon points="5 3 19 12 5 21 5 3" />
           </svg>
         </div>
@@ -30,7 +30,7 @@ export default function VSLHeroBanner({ articleSlug }: VSLHeroBannerProps) {
           <Link
             href={buildVslUrl(1, articleSlug)}
             className="inline-block mt-2 text-sm font-semibold transition-colors"
-            style={{ color: "#B9945F" }}
+            style={{ color: "var(--gold)" }}
           >
             Regarder maintenant →
           </Link>

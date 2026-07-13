@@ -166,7 +166,7 @@ export default async function FormationLessonPage({
               className="mt-2 px-6 py-2.5 rounded-xl text-sm font-semibold text-white transition-all active:scale-95"
               style={{
                 background:
-                  "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
+                  "linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%)",
               }}
             >
               Découvrir la formation complète

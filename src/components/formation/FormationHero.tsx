@@ -17,17 +17,17 @@ export default function FormationHero({ cards = [] }: { cards?: FormationCardDat
       style={{ background: "linear-gradient(160deg, #FFFFFF 0%, #FAF6F0 60%, #F5EDE5 100%)" }}
     >
       <div className="absolute top-20 -left-40 w-[500px] h-[500px] rounded-full opacity-[0.12] blur-3xl" style={{ background: '#CDA77B' }} />
-      <div className="absolute top-60 right-0 w-96 h-96 rounded-full opacity-[0.10] blur-3xl" style={{ background: '#B9945F' }} />
+      <div className="absolute top-60 right-0 w-96 h-96 rounded-full opacity-[0.10] blur-3xl" style={{ background: 'var(--gold)' }} />
 
       <div className="relative max-w-5xl mx-auto px-6 pt-24 pb-10 md:pt-36 md:pb-12 text-center">
-        <span className="inline-flex items-center gap-2 badge-glass !px-5 !py-2 text-sm font-medium mb-8" style={{ background: 'rgba(205,167,123,0.12)', border: '1px solid rgba(205,167,123,0.35)', color: '#B9945F' }}>
+        <span className="inline-flex items-center gap-2 badge-glass !px-5 !py-2 text-sm font-medium mb-8" style={{ background: 'rgba(205,167,123,0.12)', border: '1px solid rgba(205,167,123,0.35)', color: 'var(--gold)' }}>
           🎓 Van Business Academy
         </span>
 
         <h1 className="text-5xl md:text-7xl font-black text-slate-900 leading-[1.05] tracking-tight">
           De 0 à tes premiers revenus
           <br />
-          <span className="bg-clip-text text-transparent" style={{ backgroundImage: 'linear-gradient(135deg, #B9945F 0%, #E4D398 100%)' }}>
+          <span className="bg-clip-text text-transparent" style={{ backgroundImage: 'linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%)' }}>
             de location.
           </span>
         </h1>

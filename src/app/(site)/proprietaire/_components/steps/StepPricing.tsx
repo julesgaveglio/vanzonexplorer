@@ -195,7 +195,7 @@ export default function StepPricing() {
         <button
           type="button"
           onClick={() => append({ url: "" })}
-          className="mt-2.5 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold text-[#4D5FEC] bg-blue-50 hover:bg-blue-100 transition-colors"
+          className="mt-2.5 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold text-[var(--accent)] bg-blue-50 hover:bg-blue-100 transition-colors"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />

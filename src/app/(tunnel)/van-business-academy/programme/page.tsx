@@ -279,7 +279,7 @@ export default function ProgrammePage() {
         <div className="relative z-10 max-w-4xl mx-auto px-5 pt-20 pb-12 md:pt-28 md:pb-16 text-center">
           <div
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold tracking-wider uppercase mb-6"
-            style={{ background: "rgba(185,148,95,0.08)", border: "1px solid rgba(185,148,95,0.25)", color: "#B9945F" }}
+            style={{ background: "rgba(185,148,95,0.08)", border: "1px solid rgba(185,148,95,0.25)", color: "var(--gold)" }}
           >
             🎓 Programme détaillé
           </div>
@@ -296,7 +296,7 @@ export default function ProgrammePage() {
               { value: `${TOTAL_HOURS}h${REMAINING_MINUTES > 0 ? `${REMAINING_MINUTES.toString().padStart(2, "0")}` : ""}`, label: "de contenu" },
             ].map((stat) => (
               <div key={stat.label} className="text-center">
-                <div className="text-2xl sm:text-3xl font-black bg-clip-text text-transparent" style={{ backgroundImage: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)" }}>
+                <div className="text-2xl sm:text-3xl font-black bg-clip-text text-transparent" style={{ backgroundImage: "linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%)" }}>
                   {stat.value}
                 </div>
                 <div className="text-xs text-slate-400 mt-1 uppercase tracking-wider font-medium">{stat.label}</div>
@@ -315,7 +315,7 @@ export default function ProgrammePage() {
           <div className="text-center mb-6">
             <span
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold tracking-wider uppercase"
-              style={{ background: "rgba(185,148,95,0.08)", border: "1px solid rgba(185,148,95,0.25)", color: "#B9945F" }}
+              style={{ background: "rgba(185,148,95,0.08)", border: "1px solid rgba(185,148,95,0.25)", color: "var(--gold)" }}
             >
               🎁 Module bonus
             </span>
@@ -334,7 +334,7 @@ export default function ProgrammePage() {
             </span>
             <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mt-5">
               Ce que tu obtiens{" "}
-              <span className="bg-clip-text text-transparent" style={{ backgroundImage: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)" }}>
+              <span className="bg-clip-text text-transparent" style={{ backgroundImage: "linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%)" }}>
                 en plus des vidéos
               </span>
             </h2>

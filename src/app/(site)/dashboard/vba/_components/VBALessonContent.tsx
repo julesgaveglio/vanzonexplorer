@@ -271,7 +271,7 @@ export default function VBALessonContent({
 }
 
 const COLORS = [
-  { label: "Or", value: "#B9945F" },
+  { label: "Or", value: "var(--gold)" },
   { label: "Bleu", value: "#2563eb" },
   { label: "Vert", value: "#16a34a" },
   { label: "Rouge", value: "#dc2626" },

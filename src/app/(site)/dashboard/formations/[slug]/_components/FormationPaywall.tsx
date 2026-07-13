@@ -110,7 +110,7 @@ export default function FormationPaywall({
               className="w-full flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-50 active:scale-[0.98]"
               style={{
                 background:
-                  "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
+                  "linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%)",
               }}
             >
               {stripeLoading ? (

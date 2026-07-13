@@ -122,7 +122,7 @@ export default function CheckoutClient() {
           style={{
             background: "rgba(205,167,123,0.12)",
             border: "1px solid rgba(205,167,123,0.35)",
-            color: "#B9945F",
+            color: "var(--gold)",
           }}
         >
           Van Business Academy
@@ -224,7 +224,7 @@ export default function CheckoutClient() {
                   className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
                   style={{ background: "rgba(185,148,95,0.10)" }}
                 >
-                  <f.icon className="w-4 h-4" style={{ color: "#B9945F" }} />
+                  <f.icon className="w-4 h-4" style={{ color: "var(--gold)" }} />
                 </div>
                 <span className="text-sm text-slate-700">{f.text}</span>
               </div>
@@ -276,7 +276,7 @@ export default function CheckoutClient() {
                   placeholder="Code promo"
                   className="flex-1 px-4 py-3 rounded-xl border text-sm text-slate-800 placeholder:text-slate-400 outline-none transition-all"
                   style={{ borderColor: promoError ? "#EF4444" : "rgba(0,0,0,0.10)", background: "#FAFAFA" }}
-                  onFocus={(e) => (e.target.style.borderColor = "#B9945F")}
+                  onFocus={(e) => (e.target.style.borderColor = "var(--gold)")}
                   onBlur={(e) => (e.target.style.borderColor = promoError ? "#EF4444" : "rgba(0,0,0,0.10)")}
                 />
                 <button

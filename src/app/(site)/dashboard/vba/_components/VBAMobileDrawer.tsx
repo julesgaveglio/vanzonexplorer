@@ -27,7 +27,7 @@ export default function VBAMobileDrawer({
         onClick={() => setOpen(true)}
         className="fixed bottom-5 right-5 z-50 flex items-center gap-2 px-4 py-3 rounded-full text-sm font-semibold text-white shadow-lg active:scale-95 transition-transform"
         style={{
-          background: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
+          background: "linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%)",
           boxShadow: "0 4px 20px rgba(185, 148, 95, 0.45)",
         }}
       >

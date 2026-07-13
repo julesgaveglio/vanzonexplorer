@@ -19,12 +19,12 @@ export default function AchatLanding() {
           </div>
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-slate-900 leading-none tracking-tight mb-5">
             Vans aménagés<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4D5FEC] to-[#4BC3E3]">à vendre</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--accent)] to-[var(--accent-soft)]">à vendre</span>
           </h1>
           <p className="text-slate-500 text-lg md:text-xl leading-relaxed max-w-2xl mx-auto mb-3">
             Deux Renault Trafic entièrement aménagés par nos soins, issus de notre flotte de location au Pays Basque. Historique complet, remise en main propre à Cambo-les-Bains.
           </p>
-          <p className="text-slate-400 text-sm">Prix ferme · 23 500 € chaque van</p>
+          <p className="text-slate-400 text-sm">Prix ferme · 19 900 € chaque van</p>
         </div>
       </section>
 
@@ -62,7 +62,7 @@ export default function AchatLanding() {
               <div className="p-6 flex flex-col flex-1">
                 <div className="flex items-start justify-between mb-3">
                   <div>
-                    <h2 className="text-2xl font-black text-slate-900 group-hover:text-[#4D5FEC] transition-colors">{van.name}</h2>
+                    <h2 className="text-2xl font-black text-slate-900 group-hover:text-[var(--accent)] transition-colors">{van.name}</h2>
                     <p className="text-slate-400 text-sm font-medium">{van.model}</p>
                   </div>
                   <div className="text-right">
@@ -81,7 +81,7 @@ export default function AchatLanding() {
                 <ul className="flex flex-wrap gap-2 mb-5">
                   {van.highlights.map((h) => (
                     <li key={h} className="text-xs font-medium text-slate-600 bg-slate-50 border border-slate-100 px-2.5 py-1 rounded-lg flex items-center gap-1.5">
-                      <svg className="w-3 h-3 text-[#4D5FEC] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                      <svg className="w-3 h-3 text-[var(--accent)] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                       </svg>
                       {h}
@@ -90,7 +90,7 @@ export default function AchatLanding() {
                 </ul>
 
                 {/* CTA */}
-                <div className="mt-auto inline-flex items-center gap-2 text-sm font-bold text-[#4D5FEC] group-hover:gap-3 transition-all">
+                <div className="mt-auto inline-flex items-center gap-2 text-sm font-bold text-[var(--accent)] group-hover:gap-3 transition-all">
                   Voir le van en détail
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />

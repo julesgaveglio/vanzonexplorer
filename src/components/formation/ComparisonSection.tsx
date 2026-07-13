@@ -9,7 +9,7 @@ export default function ComparisonSection() {
             style={{
               background: "rgba(185,148,95,0.08)",
               border: "1px solid rgba(185,148,95,0.25)",
-              color: "#B9945F",
+              color: "var(--gold)",
             }}
           >
             💰 Comparatif réel
@@ -113,7 +113,7 @@ export default function ComparisonSection() {
         <div className="mt-10 text-center">
           <p className="text-slate-500 text-sm">
             Économie moyenne constatée :{" "}
-            <span className="font-bold" style={{ color: "#B9945F" }}>
+            <span className="font-bold" style={{ color: "var(--gold)" }}>
               8 600 € + un van qui génère des revenus
             </span>
           </p>

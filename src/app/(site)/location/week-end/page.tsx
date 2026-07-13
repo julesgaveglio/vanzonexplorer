@@ -123,7 +123,7 @@ export default async function LocationWeekEndPage() {
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-white leading-[1.05] mb-5">
               Week-end en van
               <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4BC3E3] to-[#4D5FEC]">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--accent-soft)] to-[var(--accent)]">
                 au Pays Basque
               </span>
             </h1>
@@ -178,7 +178,7 @@ export default async function LocationWeekEndPage() {
         <div className="max-w-3xl mx-auto px-6 text-center">
           <span
             className="badge-glass !px-4 !py-1.5 text-sm font-semibold mb-4 inline-block"
-            style={{ color: "#4D5FEC" }}
+            style={{ color: "var(--accent)" }}
           >
             Votre itinéraire sur-mesure
           </span>
@@ -208,7 +208,7 @@ export default async function LocationWeekEndPage() {
           <div className="text-center mb-12">
             <span
               className="badge-glass !px-4 !py-1.5 text-sm font-semibold mb-4 inline-block"
-              style={{ color: "#4D5FEC" }}
+              style={{ color: "var(--accent)" }}
             >
               FAQ
             </span>
@@ -223,9 +223,9 @@ export default async function LocationWeekEndPage() {
                 key={item.q}
                 className="glass-card group rounded-2xl overflow-hidden"
               >
-                <summary className="flex items-center justify-between gap-4 p-5 cursor-pointer list-none font-bold text-slate-900 hover:text-[#4D5FEC] transition-colors">
+                <summary className="flex items-center justify-between gap-4 p-5 cursor-pointer list-none font-bold text-slate-900 hover:text-[var(--accent)] transition-colors">
                   <span>{item.q}</span>
-                  <span className="text-[#4BC3E3] flex-shrink-0 group-open:rotate-45 transition-transform duration-200 text-xl leading-none">
+                  <span className="text-[var(--accent-soft)] flex-shrink-0 group-open:rotate-45 transition-transform duration-200 text-xl leading-none">
                     +
                   </span>
                 </summary>

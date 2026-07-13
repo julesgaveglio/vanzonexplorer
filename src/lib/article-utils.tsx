@@ -149,7 +149,7 @@ export function renderInlineMarkdown(text: string): React.ReactNode[] {
           href={href}
           target={isExternal ? "_blank" : undefined}
           rel={isExternal ? "noopener noreferrer" : undefined}
-          className="text-[#4D5FEC] underline underline-offset-2 hover:text-[#3B4FD4] transition-colors"
+          className="text-[var(--accent)] underline underline-offset-2 hover:text-[#3B4FD4] transition-colors"
         >
           {match[3]}
         </a>

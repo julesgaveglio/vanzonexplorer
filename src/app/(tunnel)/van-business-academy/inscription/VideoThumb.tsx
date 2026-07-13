@@ -36,7 +36,7 @@ export default function VideoThumb() {
         <div
           className="w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform opacity-70"
           style={{
-            background: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
+            background: "linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%)",
           }}
         >
           <svg

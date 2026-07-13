@@ -213,7 +213,7 @@ export default function ProposerVotreVanPage() {
       <section className="py-20" style={{ background: "linear-gradient(160deg, #EFF6FF 0%, #F0FDFF 100%)" }}>
         <div className="max-w-4xl mx-auto px-6">
           <div className="text-center mb-14">
-            <span className="badge-glass !px-4 !py-1.5 text-sm font-semibold mb-4 inline-block" style={{ color: "#4D5FEC" }}>
+            <span className="badge-glass !px-4 !py-1.5 text-sm font-semibold mb-4 inline-block" style={{ color: "var(--accent)" }}>
               Comment ça marche
             </span>
             <h2 className="text-3xl md:text-4xl font-black text-slate-900">

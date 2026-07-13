@@ -8,7 +8,7 @@ export const SECTION_CTAS = [
     sub: "Disponible dès 65€/nuit — livraison Pays Basque possible",
     href: "/location",
     cta: "Voir les vans disponibles →",
-    accent: "bg-[#4D5FEC] hover:bg-[#3B4FD4]",
+    accent: "bg-[var(--accent)] hover:bg-[#3B4FD4]",
     icon: "🚐",
   },
   {

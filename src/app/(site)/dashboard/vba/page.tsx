@@ -132,7 +132,7 @@ export default async function VBAPage() {
             className="text-lg sm:text-xl font-bold bg-clip-text text-transparent"
             style={{
               backgroundImage:
-                "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
+                "linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%)",
             }}
           >
             Van Business Academy
@@ -147,7 +147,7 @@ export default async function VBAPage() {
             style={{
               width: `${progressPercent}%`,
               background:
-                "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
+                "linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%)",
             }}
           />
         </div>
@@ -256,13 +256,13 @@ export default async function VBAPage() {
                     rel="noopener noreferrer"
                     className="flex items-center gap-3 px-4 sm:px-5 py-3 hover:bg-amber-50/40 transition-colors active:bg-amber-50/60 border-t border-slate-100"
                   >
-                    <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="#B9945F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                       <polyline points="14 2 14 8 20 8" />
                       <line x1="12" y1="18" x2="12" y2="12" />
                       <polyline points="9 15 12 18 15 15" />
                     </svg>
-                    <span className="text-sm flex-1" style={{ color: "#B9945F" }}>
+                    <span className="text-sm flex-1" style={{ color: "var(--gold)" }}>
                       Fiche recap — Module {mod.order}
                     </span>
                     <span className="text-xs text-slate-400">PDF</span>

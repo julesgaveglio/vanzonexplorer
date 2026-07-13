@@ -196,7 +196,7 @@ export default async function HomePage() {
                 num: "02",
                 title: "Acheter un van",
                 desc: "Des vans aménagés par nos soins, exploités en location puis revendus avec historique et carnet d'entretien complets.",
-                highlight: "23 500 € — essai sur place",
+                highlight: "19 900 € — essai sur place",
                 cta: "Voir les vans à vendre",
               },
               {
@@ -319,7 +319,7 @@ export default async function HomePage() {
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm font-medium transition-colors"
-              style={{ color: '#4D5FEC' }}
+              style={{ color: 'var(--accent)' }}
             >
               5/5 sur Google Maps • Voir tous les avis →
             </a>
@@ -386,7 +386,7 @@ export default async function HomePage() {
 
               <h2 className="text-4xl md:text-5xl font-black text-slate-900 leading-tight mb-4">
                 Van Business<br />
-                <span className="bg-clip-text text-transparent" style={{ backgroundImage: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)" }}>
+                <span className="bg-clip-text text-transparent" style={{ backgroundImage: "linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%)" }}>
                   Academy
                 </span>
               </h2>

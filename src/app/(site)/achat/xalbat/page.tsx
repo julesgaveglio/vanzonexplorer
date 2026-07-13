@@ -6,7 +6,7 @@ import { VANS } from "@/lib/data/vans";
 export const metadata: Metadata = {
   title: "Xalbat — Renault Trafic aménagé 2025 à vendre",
   description:
-    "Xalbat, Renault Trafic III aménagé par nos soins en 2025. 54 000 km, le van le plus récent de notre flotte. Lit fixe, cuisine coulissante, panneau solaire. 23 500 €. Cambo-les-Bains.",
+    "Xalbat, Renault Trafic III aménagé par nos soins en 2025. 190 000 km, entretien suivi par nos soins. Lit fixe, cuisine coulissante, panneau solaire. 19 900 €. Cambo-les-Bains.",
   keywords: [
     "renault trafic aménagé occasion",
     "van aménagé 2025 vente",
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     canonical: "https://vanzonexplorer.com/achat/xalbat",
   },
   openGraph: {
-    title: "Xalbat — Renault Trafic aménagé 2025, 23 500 €",
+    title: "Xalbat — Renault Trafic aménagé 2025, 19 900 €",
     description: "Notre dernier aménagement, le van le plus récent de notre flotte. Historique complet, remise à Cambo-les-Bains.",
   },
 };

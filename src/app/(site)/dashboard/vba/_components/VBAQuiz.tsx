@@ -98,7 +98,7 @@ export default function VBAQuiz({ questions }: VBAQuizProps) {
       <div className="h-1.5 bg-slate-100">
         <div
           className="h-full transition-all duration-300"
-          style={{ width: `${((current + 1) / questions.length) * 100}%`, background: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)" }}
+          style={{ width: `${((current + 1) / questions.length) * 100}%`, background: "linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%)" }}
         />
       </div>
 
@@ -137,7 +137,7 @@ export default function VBAQuiz({ questions }: VBAQuizProps) {
                 cls += "border-slate-200 bg-slate-50 text-slate-400";
               }
             } else if (isSelected) {
-              cls += "border-[#B9945F] text-white ";
+              cls += "border-[var(--gold)] text-white ";
               // gold gradient applied via inline style below
             } else {
               cls +=
@@ -149,7 +149,7 @@ export default function VBAQuiz({ questions }: VBAQuizProps) {
                 key={i}
                 onClick={() => toggle(i)}
                 className={cls}
-                style={!submitted && isSelected ? { background: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)" } : undefined}
+                style={!submitted && isSelected ? { background: "linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%)" } : undefined}
               >
                 <div className="flex items-center gap-3">
                   <span className="w-6 h-6 flex-shrink-0 rounded-full border border-current flex items-center justify-center text-xs font-medium">

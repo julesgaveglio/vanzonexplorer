@@ -7,7 +7,7 @@
  * sur vanzonexplorer.com/articles/[slug]. Modifier ce fichier met à jour
  * toutes les pages de preview de l'éditeur admin.
  *
- * Accent color officielle : #4D5FEC
+ * Accent color officielle : var(--accent)
  * Typo corps : Georgia/serif 18px, line-height 1.75
  * Typo titres : Inter/sans-serif, font-black
  */
@@ -109,9 +109,9 @@ export default function ArticleTemplate({
 
           {/* Breadcrumb */}
           <nav className="flex items-center gap-2 text-sm text-slate-400 mb-8">
-            <Link href="/" className="hover:text-[#4D5FEC] transition-colors">Accueil</Link>
+            <Link href="/" className="hover:text-[var(--accent)] transition-colors">Accueil</Link>
             <span>/</span>
-            <Link href="/articles" className="hover:text-[#4D5FEC] transition-colors">Articles</Link>
+            <Link href="/articles" className="hover:text-[var(--accent)] transition-colors">Articles</Link>
             <span>/</span>
             <span className="text-slate-600 truncate max-w-[220px]">{title}</span>
           </nav>
@@ -135,7 +135,7 @@ export default function ArticleTemplate({
                 href={target_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs text-[#4D5FEC] hover:underline ml-auto"
+                className="text-xs text-[var(--accent)] hover:underline ml-auto"
               >
                 {target_url.replace("https://", "")}
               </a>
@@ -149,7 +149,7 @@ export default function ArticleTemplate({
 
           {/* Excerpt — encadré bleu */}
           {excerpt && (
-            <div className="relative pl-5 border-l-4 border-[#4D5FEC] bg-blue-50/40 py-5 pr-5 rounded-r-2xl mb-10">
+            <div className="relative pl-5 border-l-4 border-[var(--accent)] bg-blue-50/40 py-5 pr-5 rounded-r-2xl mb-10">
               <p className="text-[17px] text-slate-700 leading-[1.75] font-[450]">
                 {excerpt}
               </p>
@@ -164,7 +164,7 @@ export default function ArticleTemplate({
                 {h2Items.map((h, i) => (
                   <li key={h.id} className="flex items-start gap-3">
                     <span className="text-xs font-bold text-[#4D5FEC]/60 mt-0.5 flex-shrink-0 w-5">{i + 1}.</span>
-                    <a href={`#${h.id}`} className="text-sm text-slate-600 hover:text-[#4D5FEC] transition-colors leading-snug">
+                    <a href={`#${h.id}`} className="text-sm text-slate-600 hover:text-[var(--accent)] transition-colors leading-snug">
                       {h.text}
                     </a>
                   </li>
@@ -197,11 +197,11 @@ export default function ArticleTemplate({
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-bold text-slate-900 text-sm leading-none mb-1">Jules Gaveglio</p>
-                  <p className="text-xs text-[#4D5FEC] font-semibold mb-2">Fondateur · Vanzon Explorer</p>
+                  <p className="text-xs text-[var(--accent)] font-semibold mb-2">Fondateur · Vanzon Explorer</p>
                   <p className="text-xs text-slate-500 leading-relaxed">
                     Passionné de vanlife et du Pays Basque depuis 2022. Il a aménagé sa flotte de vans en autodidacte, lancé la location et créé la Van Business Academy — il partage ici tout ce qu&apos;il a appris sur le terrain.
                   </p>
-                  <Link href="/a-propos" className="text-xs font-semibold text-[#4D5FEC] hover:underline mt-2 inline-block">
+                  <Link href="/a-propos" className="text-xs font-semibold text-[var(--accent)] hover:underline mt-2 inline-block">
                     En savoir plus →
                   </Link>
                 </div>
@@ -215,7 +215,7 @@ export default function ArticleTemplate({
             <div className="flex flex-col sm:flex-row gap-3">
               <Link
                 href="/location"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-[#4D5FEC] hover:bg-[#3B4FD4] text-white font-bold rounded-xl transition-colors text-sm"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-[var(--accent)] hover:bg-[#3B4FD4] text-white font-bold rounded-xl transition-colors text-sm"
               >
                 <span className="flex flex-col items-start leading-tight">
                   <span>🚐 Louer un van au Pays Basque</span>
@@ -242,7 +242,7 @@ export default function ArticleTemplate({
                   <a
                     key={h.id}
                     href={`#${h.id}`}
-                    className={`block text-sm transition-colors hover:text-[#4D5FEC] leading-snug ${
+                    className={`block text-sm transition-colors hover:text-[var(--accent)] leading-snug ${
                       h.level === 2 ? "text-slate-600 font-medium" : "text-slate-400 pl-3 text-xs"
                     }`}
                   >
@@ -316,7 +316,7 @@ export default function ArticleTemplate({
           color: #64748b;
         }
         .vanzon-article-body a {
-          color: #4D5FEC;
+          color: var(--accent);
           text-decoration: underline;
           text-underline-offset: 2px;
           transition: color 0.15s;
@@ -327,7 +327,7 @@ export default function ArticleTemplate({
         .vanzon-article-body blockquote {
           margin: 2rem 0;
           padding: 1rem 1.25rem;
-          border-left: 4px solid #4D5FEC;
+          border-left: 4px solid var(--accent);
           background: rgba(239, 246, 255, 0.5);
           border-radius: 0 0.75rem 0.75rem 0;
           font-style: italic;

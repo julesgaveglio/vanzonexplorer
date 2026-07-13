@@ -141,7 +141,7 @@ export default function ProfileTab({ profile, userEmail, userName }: Props) {
               <div
                 className="w-20 h-20 rounded-full flex items-center justify-center text-white text-2xl font-bold"
                 style={{
-                  background: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
+                  background: "linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%)",
                 }}
               >
                 {(displayName || userName || "?")[0]?.toUpperCase()}

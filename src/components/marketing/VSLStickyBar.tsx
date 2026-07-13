@@ -57,7 +57,7 @@ export default function VSLStickyBar({ articleSlug }: VSLStickyBarProps) {
         }}
       >
         <div className="flex items-center gap-2 flex-1 min-w-0">
-          <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="#E4D398" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="var(--gold-light)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <polygon points="5 3 19 12 5 21 5 3" />
           </svg>
           <span className="text-xs text-white/80 truncate">
@@ -69,7 +69,7 @@ export default function VSLStickyBar({ articleSlug }: VSLStickyBarProps) {
           href={buildVslUrl(4, articleSlug)}
           className="flex-shrink-0 px-4 py-2 rounded-full text-xs font-bold text-white transition-all"
           style={{
-            background: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
+            background: "linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%)",
           }}
         >
           Regarder

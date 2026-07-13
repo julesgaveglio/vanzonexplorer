@@ -86,7 +86,7 @@ export default function ArticlePreviewClient({ draft }: { draft: Draft }) {
             <button
               onClick={handlePublish}
               disabled={isPending}
-              className="flex items-center gap-2 px-4 py-2 bg-[#4D5FEC] hover:bg-[#3B4FD4] text-white text-sm font-semibold rounded-lg transition-colors shadow-sm disabled:opacity-60"
+              className="flex items-center gap-2 px-4 py-2 bg-[var(--accent)] hover:bg-[#3B4FD4] text-white text-sm font-semibold rounded-lg transition-colors shadow-sm disabled:opacity-60"
             >
               {isPending ? (
                 <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">

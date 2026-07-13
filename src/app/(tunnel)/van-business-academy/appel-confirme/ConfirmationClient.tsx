@@ -98,7 +98,7 @@ export default function ConfirmationClient() {
                 className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center mt-0.5"
                 style={{ background: "rgba(185,148,95,0.12)" }}
               >
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#B9945F" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M20 6L9 17l-5-5" />
                 </svg>
               </span>

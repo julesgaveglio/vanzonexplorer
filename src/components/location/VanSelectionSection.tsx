@@ -53,7 +53,7 @@ export default async function VanSelectionSection({ destination }: VanSelectionS
           </div>
           <Link
             href="/location"
-            className="text-sm font-semibold text-[#4D5FEC] hover:underline flex-shrink-0"
+            className="text-sm font-semibold text-[var(--accent)] hover:underline flex-shrink-0"
           >
             Voir tous les détails →
           </Link>

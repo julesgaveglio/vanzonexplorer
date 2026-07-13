@@ -28,7 +28,7 @@ function ImageGallery({ images, name }: { images: string[]; name: string }) {
             onClick={() => setActive(i)}
             className={`relative aspect-[4/3] rounded-xl overflow-hidden border-2 transition-all duration-200 ${
               i === active
-                ? "border-[#4D5FEC] scale-[1.02]"
+                ? "border-[var(--accent)] scale-[1.02]"
                 : "border-transparent opacity-55 hover:opacity-85 hover:scale-[1.01]"
             }`}
           >
@@ -102,7 +102,7 @@ function VanListing({ van, reversed }: { van: (typeof VANS)[0]; reversed?: boole
             <ul className="grid grid-cols-1 gap-1.5">
               {van.features.map((f) => (
                 <li key={f} className="flex items-center gap-2 text-sm text-slate-600">
-                  <svg className="w-4 h-4 flex-shrink-0 text-[#4D5FEC]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                  <svg className="w-4 h-4 flex-shrink-0 text-[var(--accent)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                   </svg>
                   {f}
@@ -141,7 +141,7 @@ export default function AchatClient({ vanId }: { vanId?: string }) {
         <div className="max-w-5xl mx-auto">
           {/* Back link for detail pages */}
           {vanId && (
-            <Link href="/achat" className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-[#4D5FEC] transition-colors mb-8 font-medium">
+            <Link href="/achat" className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-[var(--accent)] transition-colors mb-8 font-medium">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
               </svg>
@@ -167,7 +167,7 @@ export default function AchatClient({ vanId }: { vanId?: string }) {
             </div>
             <div className="flex gap-3 flex-shrink-0">
               <div className="bg-white rounded-2xl px-5 py-4 text-center border border-slate-100 shadow-sm">
-                <p className="text-2xl font-black text-slate-900">23 500€</p>
+                <p className="text-2xl font-black text-slate-900">19 900€</p>
                 <p className="text-xs text-slate-400 font-medium">prix ferme</p>
               </div>
               <div className="bg-white rounded-2xl px-5 py-4 text-center border border-slate-100 shadow-sm">

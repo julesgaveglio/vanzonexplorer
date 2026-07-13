@@ -2,16 +2,40 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ━━━ Design tokens Vanzon — Thème blanc ━━━ */
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   🎨 PANNEAU DE CONTRÔLE CHARTE VANZON
+   C'est ICI (et dans src/app/layout.tsx pour le fichier de police)
+   qu'on change la charte de TOUT le site. Chaque couleur existe en
+   2 formats : hex (styles inline, SVG) + triplet RGB (opacités
+   Tailwind type accent-blue/30). Modifier LES DEUX lignes ensemble.
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 :root {
+  /* ① Police des titres (fichier : src/app/layout.tsx → localFont) */
+  /*    h1-h6 + classes font-heading/font-display l'utilisent partout */
+
+  /* ② Bleu Vanzon — univers voyage (location, achat, site) */
+  --accent: #4D5FEC;
+  --accent-rgb: 77 95 236;
+  --accent-soft: #4BC3E3;
+  --accent-soft-rgb: 75 195 227;
+
+  /* ③ Doré Vanzon — univers business (formation VBA) */
+  --gold: #B9945F;
+  --gold-rgb: 185 148 95;
+  --gold-light: #E4D398;
+  --gold-light-rgb: 228 211 152;
+
+  /* ④ Fonds, textes, bordures */
   --bg-primary: #FFFFFF;
   --bg-secondary: #F8FAFC;
-  --accent-blue: #3B82F6;
   --text-primary: #0F172A;
   --text-secondary: #334155;
   --text-muted: #64748B;
   --text-light: #94A3B8;
   --border-default: rgba(0, 0, 0, 0.06);
+
+  /* (legacy — utilisé par quelques anciens composants) */
+  --accent-blue: var(--accent);
 }
 
 html {
@@ -23,9 +47,12 @@ body {
   background: var(--bg-primary);
 }
 
-/* ━━━ Typographie Vanzon — Rubik titres, Inter body ━━━ */
+/* ━━━ Typographie Vanzon — Recoleta titres, Inter body ━━━
+   Changer la police des titres = remplacer le fichier dans layout.tsx.
+   Cette règle propage automatiquement à tous les titres du site. ━━━ */
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-rubik), sans-serif;
+  font-family: var(--font-heading), Georgia, serif;
+  font-synthesis-weight: none;
 }
 
 /* ━━━ Classes utilitaires Glass — Thème blanc ━━━ */

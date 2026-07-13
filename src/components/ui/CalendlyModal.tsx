@@ -74,7 +74,7 @@ export default function CalendlyModal({ children, className = "", style, asChild
             {/* Header doré */}
             <div
               className="relative flex items-center justify-between px-6 py-5 overflow-hidden"
-              style={{ background: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)" }}
+              style={{ background: "linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%)" }}
             >
               {/* Shimmer décoratif */}
               <div
@@ -120,7 +120,7 @@ export default function CalendlyModal({ children, className = "", style, asChild
                 <div className="flex flex-col items-center justify-center h-full gap-4">
                   <div
                     className="w-10 h-10 rounded-full border-[3px] animate-spin"
-                    style={{ borderColor: "#E4D398", borderTopColor: "#B9945F" }}
+                    style={{ borderColor: "var(--gold-light)", borderTopColor: "var(--gold)" }}
                   />
                   <p className="text-slate-400 text-sm">Chargement du calendrier…</p>
                 </div>

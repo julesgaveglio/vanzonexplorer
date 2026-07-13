@@ -42,7 +42,7 @@ export default function OptinPageV2() {
           >
             <span
               className="text-xs sm:text-sm font-semibold uppercase tracking-wider leading-snug"
-              style={{ color: "#B9945F" }}
+              style={{ color: "var(--gold)" }}
             >
               Pour les passionnés de vans qui veulent plus
               <br className="sm:hidden" /> de liberté et créer un business rentable
@@ -54,7 +54,7 @@ export default function OptinPageV2() {
             La méthode complète pour créer un{" "}
             <span
               style={{
-                background: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
+                background: "linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
               }}
@@ -65,7 +65,7 @@ export default function OptinPageV2() {
             de{" "}
             <span
               style={{
-                background: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
+                background: "linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
               }}
@@ -84,7 +84,7 @@ export default function OptinPageV2() {
               <li key={text} className="flex items-start gap-3">
                 <span
                   className="mt-0.5 text-lg flex-shrink-0"
-                  style={{ color: "#B9945F" }}
+                  style={{ color: "var(--gold)" }}
                 >
                   ✓
                 </span>

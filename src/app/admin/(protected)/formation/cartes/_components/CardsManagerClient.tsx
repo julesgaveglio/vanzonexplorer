@@ -443,7 +443,7 @@ export default function CardsManagerClient() {
         <button
           onClick={openCreate}
           className="inline-flex items-center gap-2 font-semibold text-white text-sm px-5 py-2.5 rounded-xl transition-all"
-          style={{ background: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)", boxShadow: "0 4px 14px rgba(185,148,95,0.35)" }}
+          style={{ background: "linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%)", boxShadow: "0 4px 14px rgba(185,148,95,0.35)" }}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M12 5v14M5 12h14" />
@@ -457,7 +457,7 @@ export default function CardsManagerClient() {
             disabled={saving}
             className="inline-flex items-center gap-2 font-semibold text-sm px-5 py-2.5 rounded-xl border-2 transition-all disabled:opacity-60"
             style={{
-              borderColor: "#B9945F",
+              borderColor: "var(--gold)",
               color: "#92692E",
               background: "rgba(185,148,95,0.08)",
             }}
@@ -532,7 +532,7 @@ export default function CardsManagerClient() {
       {modal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(15,21,58,0.6)", backdropFilter: "blur(8px)" }}>
           <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
-            <div className="px-6 py-5 flex-shrink-0" style={{ background: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)" }}>
+            <div className="px-6 py-5 flex-shrink-0" style={{ background: "linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%)" }}>
               <h2 className="text-xl font-black text-white">
                 {modal === "create" ? "Ajouter une carte" : "Modifier la carte"}
               </h2>
@@ -574,7 +574,7 @@ export default function CardsManagerClient() {
                 <button type="button" onClick={closeModal} className="flex-1 rounded-xl border border-slate-200 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors">
                   Annuler
                 </button>
-                <button type="submit" disabled={loading} className="flex-1 rounded-xl py-2.5 text-sm font-semibold text-white transition-all disabled:opacity-60" style={{ background: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)" }}>
+                <button type="submit" disabled={loading} className="flex-1 rounded-xl py-2.5 text-sm font-semibold text-white transition-all disabled:opacity-60" style={{ background: "linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%)" }}>
                   {loading ? "Enregistrement…" : modal === "create" ? "Créer" : "Enregistrer"}
                 </button>
               </div>

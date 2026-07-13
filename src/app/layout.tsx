@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Rubik } from "next/font/google";
+import { Inter } from "next/font/google";
+import localFont from "next/font/local";
 import { ClerkProvider } from "@clerk/nextjs";
 import { frFR } from "@clerk/localizations";
 import { sanityFetch } from "@/lib/sanity/client";
@@ -11,16 +12,21 @@ import { LocalBusinessJsonLd, WebSiteJsonLd } from "@/components/seo/JsonLd";
 import "./globals.css";
 import "maplibre-gl/dist/maplibre-gl.css";
 
+// ━━━ POLICE DES TITRES — pour changer la typo des titres de TOUT le site,
+// remplace uniquement le fichier src ci-dessous (et le nom si tu veux). ━━━
+const heading = localFont({
+  src: "../fonts/Recoleta-Bold.woff2",
+  // Plage déclarée large : tous les font-bold/font-black utilisent ce
+  // fichier tel quel, sans faux-gras synthétique du navigateur.
+  weight: "100 900",
+  variable: "--font-heading",
+  display: "swap",
+  fallback: ["Georgia", "serif"],
+});
+
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
-  display: "swap",
-});
-
-const rubik = Rubik({
-  subsets: ["latin"],
-  weight: ["500", "600", "700", "800"],
-  variable: "--font-rubik",
   display: "swap",
 });
 
@@ -96,7 +102,7 @@ export default async function RootLayout({
           />
         </head>
         <body
-          className={`${inter.variable} ${rubik.variable} font-sans antialiased bg-bg-primary text-text-primary min-h-screen`}
+          className={`${inter.variable} ${heading.variable} font-sans antialiased bg-bg-primary text-text-primary min-h-screen`}
         >
           <LocalBusinessJsonLd
             ratingValue={placeStats.ratingDisplay}

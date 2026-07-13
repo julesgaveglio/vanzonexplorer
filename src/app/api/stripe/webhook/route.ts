@@ -240,7 +240,7 @@ async function sendWelcomeViaResend(
           Ton paiement a bien été reçu. Ta formation Van Business Academy est prête.
           Clique ci-dessous pour créer ton mot de passe et accéder à tes modules.
         </p>
-        <a href="${siteUrl}/sign-in" style="display: inline-block; padding: 14px 28px; background: linear-gradient(135deg, #B9945F 0%, #E4D398 100%); color: white; font-weight: 700; font-size: 15px; text-decoration: none; border-radius: 12px;">
+        <a href="${siteUrl}/sign-in" style="display: inline-block; padding: 14px 28px; background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%); color: white; font-weight: 700; font-size: 15px; text-decoration: none; border-radius: 12px;">
           Créer mon mot de passe →
         </a>
         <p style="font-size: 12px; color: #94A3B8; margin-top: 20px;">

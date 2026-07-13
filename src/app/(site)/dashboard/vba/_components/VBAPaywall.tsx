@@ -11,7 +11,7 @@ export default function VBAPaywall() {
         <div
           className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6"
           style={{
-            background: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
+            background: "linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%)",
           }}
         >
           <GraduationCap className="w-8 h-8 text-white" />
@@ -21,7 +21,7 @@ export default function VBAPaywall() {
           className="text-2xl font-bold mb-3 bg-clip-text text-transparent"
           style={{
             backgroundImage:
-              "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
+              "linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%)",
           }}
         >
           Van Business Academy

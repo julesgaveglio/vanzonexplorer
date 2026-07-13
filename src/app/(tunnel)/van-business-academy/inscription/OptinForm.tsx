@@ -293,7 +293,7 @@ export default function OptinForm() {
           className="h-full rounded-full transition-all duration-500 ease-out"
           style={{
             width: `${progress}%`,
-            background: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
+            background: "linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%)",
           }}
         />
       </div>
@@ -321,7 +321,7 @@ export default function OptinForm() {
                   border: isSelected
                     ? "1px solid rgba(185,148,95,0.6)"
                     : "1px solid rgba(255,255,255,0.10)",
-                  color: isSelected ? "#E4D398" : "rgba(255,255,255,0.8)",
+                  color: isSelected ? "var(--gold-light)" : "rgba(255,255,255,0.8)",
                 }}
               >
                 {opt}
@@ -421,7 +421,7 @@ export default function OptinForm() {
             disabled={loading}
             className="w-full mt-1 px-6 py-4 rounded-xl text-white font-bold text-sm sm:text-base uppercase tracking-wide transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
             style={{
-              background: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
+              background: "linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%)",
               boxShadow: "0 4px 20px rgba(185,148,95,0.4)",
             }}
           >

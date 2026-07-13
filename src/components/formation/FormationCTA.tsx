@@ -11,18 +11,18 @@ export default function FormationCTA() {
     <section id="reserver" className="bg-white py-20 relative">
       <div
         className="absolute top-0 left-0 right-0 h-1"
-        style={{ background: "linear-gradient(90deg, #E4D398, #B9945F)" }}
+        style={{ background: "linear-gradient(90deg, var(--gold-light), var(--gold))" }}
       />
 
       <div className="max-w-3xl mx-auto px-6 text-center">
-        <span className="inline-flex items-center gap-2 badge-glass !px-5 !py-2 text-sm font-medium mb-8" style={{ background: 'rgba(205,167,123,0.12)', border: '1px solid rgba(205,167,123,0.35)', color: '#B9945F' }}>
+        <span className="inline-flex items-center gap-2 badge-glass !px-5 !py-2 text-sm font-medium mb-8" style={{ background: 'rgba(205,167,123,0.12)', border: '1px solid rgba(205,167,123,0.35)', color: 'var(--gold)' }}>
           🎯 Prochaine session disponible
         </span>
 
         <h2 className="text-4xl md:text-5xl font-black text-slate-900 leading-tight">
           Prêt à construire
           <br />
-          <span className="bg-clip-text text-transparent" style={{ backgroundImage: 'linear-gradient(90deg, #CDA77B, #B9945F)' }}>
+          <span className="bg-clip-text text-transparent" style={{ backgroundImage: 'linear-gradient(90deg, #CDA77B, var(--gold))' }}>
             ta liberté ?
           </span>
         </h2>

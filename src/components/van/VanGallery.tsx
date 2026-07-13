@@ -159,7 +159,7 @@ export default function VanGallery({ images, vanName }: VanGalleryProps) {
               onClick={() => setDesktopActive(i)}
               className={`relative flex-shrink-0 w-20 h-14 rounded-xl overflow-hidden border-2 transition-all duration-200 ${
                 i === desktopActive
-                  ? "border-[#4D5FEC] opacity-100 scale-[1.03]"
+                  ? "border-[var(--accent)] opacity-100 scale-[1.03]"
                   : "border-transparent opacity-60 hover:opacity-100 hover:scale-[1.03]"
               }`}
               aria-label={`Photo ${i + 1}`}
@@ -257,7 +257,7 @@ export default function VanGallery({ images, vanName }: VanGalleryProps) {
                     className="h-[3px] rounded-full transition-all duration-200"
                     style={{
                       width: isActive ? "28px" : "0px",
-                      background: isActive ? "#4D5FEC" : "transparent",
+                      background: isActive ? "var(--accent)" : "transparent",
                     }}
                   />
                 </div>

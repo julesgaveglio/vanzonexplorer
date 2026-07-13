@@ -8,13 +8,13 @@ const BASE_URL = "https://vanzonexplorer.com";
 export const metadata: Metadata = {
   title: "Van aménagé à vendre au Pays Basque — Yoni & Xalbat",
   description:
-    "Deux Renault Trafic entièrement aménagés à vendre au Pays Basque. Issus de notre flotte de location, historique complet depuis l'origine. Remise en main propre à Cambo-les-Bains. 23 500 € chacun.",
+    "Deux Renault Trafic entièrement aménagés à vendre au Pays Basque. Issus de notre flotte de location, historique complet depuis l'origine. Remise en main propre à Cambo-les-Bains. 19 900 € chacun.",
   alternates: {
     canonical: "https://vanzonexplorer.com/achat",
   },
   openGraph: {
     title: "Vans aménagés à vendre — Pays Basque",
-    description: "Yoni & Xalbat — deux Renault Trafic aménagés par nos soins, issus de notre flotte. 23 500 € chacun, remise à Cambo-les-Bains.",
+    description: "Yoni & Xalbat — deux Renault Trafic aménagés par nos soins, issus de notre flotte. 19 900 € chacun, remise à Cambo-les-Bains.",
   },
 };
 
@@ -84,7 +84,7 @@ const breadcrumbJsonLd = {
 const achatFaqItems: GeoFaqItem[] = [
   {
     q: "Quels vans aménagés sont à vendre chez Vanzon Explorer ?",
-    a: "Vanzon Explorer vend deux Renault Trafic III L2H1 aménagés : Yoni (2024, 68 000 km) et Xalbat (2025, 54 000 km), au prix ferme de 23 500 € chacun. Équipement identique : lit fixe 2 personnes, cuisine coulissante avec réchaud gaz, panneau solaire 100W, batterie 100Ah, isolation laine de mouton et toilette sèche. Remise en main propre à Cambo-les-Bains, au Pays Basque.",
+    a: "Vanzon Explorer vend deux Renault Trafic III L2H1 aménagés : Yoni (2024) et Xalbat (2025), 190 000 km, au prix ferme de 19 900 € chacun. Équipement identique : lit fixe 2 personnes, cuisine coulissante avec réchaud gaz, panneau solaire 100W, batterie 100Ah, isolation laine de mouton et toilette sèche. Remise en main propre à Cambo-les-Bains, au Pays Basque.",
   },
   {
     q: "Pourquoi acheter un van issu d'une flotte de location ?",
@@ -92,7 +92,7 @@ const achatFaqItems: GeoFaqItem[] = [
   },
   {
     q: "Quel budget prévoir pour un van aménagé d'occasion en France ?",
-    a: "En 2026, un fourgon aménagé d'occasion se négocie généralement entre 15 000 € et 40 000 € selon l'âge du véhicule, le kilométrage et la qualité de l'aménagement. Les vans Vanzon Explorer sont positionnés à 23 500 € — véhicules récents (2024-2025), kilométrage modéré et aménagement professionnel complet.",
+    a: "En 2026, un fourgon aménagé d'occasion se négocie généralement entre 15 000 € et 40 000 € selon l'âge du véhicule, le kilométrage et la qualité de l'aménagement. Les vans Vanzon Explorer sont positionnés à 19 900 € — aménagement professionnel complet, historique d'entretien suivi et remise en main propre avec essai.",
   },
   {
     q: "Peut-on essayer le van avant l'achat ?",

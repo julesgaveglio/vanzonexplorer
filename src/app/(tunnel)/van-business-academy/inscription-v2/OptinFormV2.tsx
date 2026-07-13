@@ -86,7 +86,7 @@ export default function OptinFormV2() {
         disabled={loading}
         className="w-full mt-1 px-6 py-4 rounded-xl text-white font-bold text-sm sm:text-base uppercase tracking-wide transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
         style={{
-          background: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
+          background: "linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%)",
           boxShadow: "0 4px 20px rgba(185,148,95,0.4)",
         }}
       >

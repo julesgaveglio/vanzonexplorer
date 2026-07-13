@@ -295,7 +295,7 @@ export default function VSLClient({ videoId, vslVersionId }: VSLClientProps) {
 
       {/* Greeting */}
       {firstname && (
-        <p className="text-center text-sm font-semibold mb-2" style={{ color: "#B9945F" }}>
+        <p className="text-center text-sm font-semibold mb-2" style={{ color: "var(--gold)" }}>
           Bienvenue {firstname} !
         </p>
       )}
@@ -303,14 +303,14 @@ export default function VSLClient({ videoId, vslVersionId }: VSLClientProps) {
       {/* Title */}
       <h1 className="text-center leading-tight mb-3">
         <span className="block text-xl sm:text-2xl md:text-3xl font-semibold text-white">
-          Donne-moi <span style={{ backgroundImage: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)" }} className="bg-clip-text text-transparent">13 minutes</span> et je te partage (vraiment) tout le process pour générer{" "}
-          <span style={{ backgroundImage: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)" }} className="bg-clip-text text-transparent">600&euro;/mois</span> de revenu locatif avec un van aménagé
+          Donne-moi <span style={{ backgroundImage: "linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%)" }} className="bg-clip-text text-transparent">13 minutes</span> et je te partage (vraiment) tout le process pour générer{" "}
+          <span style={{ backgroundImage: "linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%)" }} className="bg-clip-text text-transparent">600&euro;/mois</span> de revenu locatif avec un van aménagé
         </span>
       </h1>
 
       {/* Instruction */}
       <div className="flex items-center justify-center gap-2 mb-8">
-        <svg className="sound-pulse" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B9945F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg className="sound-pulse" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
           <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
           <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
@@ -350,7 +350,7 @@ export default function VSLClient({ videoId, vslVersionId }: VSLClientProps) {
           <div className="absolute inset-0 flex items-center justify-center bg-black/20 transition-opacity">
             <div
               className="w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center"
-              style={{ background: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)", boxShadow: "0 4px 20px rgba(185,148,95,0.5)" }}
+              style={{ background: "linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%)", boxShadow: "0 4px 20px rgba(185,148,95,0.5)" }}
             >
               <svg className="w-7 h-7 sm:w-8 sm:h-8 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M8 5v14l11-7z" />

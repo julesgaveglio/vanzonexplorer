@@ -60,7 +60,7 @@ function UserAvatar({
     <div
       className={`${dimensions} rounded-full flex-shrink-0 flex items-center justify-center font-semibold text-white`}
       style={{
-        background: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
+        background: "linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%)",
       }}
     >
       {initials || "?"}
@@ -165,7 +165,7 @@ function CommentInput({
           style={{
             background:
               content.trim() && !isPending
-                ? "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)"
+                ? "linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%)"
                 : "#cbd5e1",
           }}
         >

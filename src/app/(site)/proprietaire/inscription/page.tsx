@@ -15,7 +15,7 @@ export default function InscriptionPage() {
         <div className="text-center mb-10">
           <span
             className="badge-glass !px-4 !py-1.5 text-sm font-semibold mb-5 inline-block"
-            style={{ color: "#4D5FEC" }}
+            style={{ color: "var(--accent)" }}
           >
             Créer votre fiche
           </span>

@@ -19,7 +19,7 @@ export default function VSLCalloutBlock({ articleSlug }: VSLCalloutBlockProps) {
             className="w-8 h-8 rounded-lg flex items-center justify-center"
             style={{ background: "rgba(185,148,95,0.20)" }}
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E4D398" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold-light)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polygon points="5 3 19 12 5 21 5 3" />
             </svg>
           </div>
@@ -50,7 +50,7 @@ export default function VSLCalloutBlock({ articleSlug }: VSLCalloutBlockProps) {
           href={buildVslUrl(3, articleSlug)}
           className="block w-full text-center font-bold text-white py-4 rounded-xl text-base transition-all hover:scale-[1.02] hover:shadow-lg"
           style={{
-            background: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
+            background: "linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%)",
             boxShadow: "0 4px 18px rgba(185, 148, 95, 0.45)",
           }}
         >

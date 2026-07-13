@@ -170,7 +170,7 @@ export default function ProgrammeAccordion() {
     <section id="programme" className="bg-white py-20">
       <div className="max-w-4xl mx-auto px-6">
         <div className="text-center mb-12">
-          <span className="badge-glass !px-4 !py-2 text-sm font-medium" style={{ background: 'rgba(205,167,123,0.12)', border: '1px solid rgba(205,167,123,0.35)', color: '#B9945F' }}>
+          <span className="badge-glass !px-4 !py-2 text-sm font-medium" style={{ background: 'rgba(205,167,123,0.12)', border: '1px solid rgba(205,167,123,0.35)', color: 'var(--gold)' }}>
             Accès immédiat · 9 modules · 50+ vidéos
           </span>
           <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mt-6">
@@ -188,7 +188,7 @@ export default function ProgrammeAccordion() {
                   className="w-full flex items-center gap-4 px-5 py-4 text-left hover:bg-slate-50/60 transition-colors"
                   aria-expanded={isOpen}
                 >
-                  <span className="flex-shrink-0 w-8 h-8 rounded-lg bg-[#F5EDE5] text-[#B9945F] flex items-center justify-center text-sm font-bold">
+                  <span className="flex-shrink-0 w-8 h-8 rounded-lg bg-[#F5EDE5] text-[var(--gold)] flex items-center justify-center text-sm font-bold">
                     {mod.number}
                   </span>
                   <span className="text-xl flex-shrink-0">{mod.icon}</span>
@@ -220,7 +220,7 @@ export default function ProgrammeAccordion() {
                         <ul className="space-y-2">
                           {mod.lessons.map((lesson, j) => (
                             <li key={j} className="flex items-start gap-2 text-sm text-slate-600">
-                              <span className="mt-0.5 flex-shrink-0" style={{ color: '#B9945F' }}>✓</span>
+                              <span className="mt-0.5 flex-shrink-0" style={{ color: 'var(--gold)' }}>✓</span>
                               {lesson}
                             </li>
                           ))}
