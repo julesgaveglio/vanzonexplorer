@@ -198,7 +198,7 @@ export default async function FormationPage() {
               Un cycle, quatre étapes.
             </h2>
             <p className="text-slate-500 text-lg mt-3 max-w-xl mx-auto">
-              Le même que celui qu'on applique à notre propre flotte depuis 4 ans.
+              Le même que celui qu&apos;on applique à notre propre flotte depuis 4 ans.
             </p>
           </div>
 
