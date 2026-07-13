@@ -164,6 +164,10 @@ export async function POST(req: NextRequest) {
       case "booking_confirmed":
         msg = `📞 <b>Call booké !</b>\n${identityLine}${src}\n${sourceLine}`;
         break;
+      case "appel_confirme":
+        // Filet de sécurité : notifie même si le webhook Calendly est en panne
+        msg = `📞 <b>Call réservé !</b> (page confirmation)\n${identityLine}\n${sourceLine}`;
+        break;
       case "checkout":
         msg = `💳 <b>Page paiement ouverte</b>\n${identityLine}\n${sourceLine}`;
         break;
