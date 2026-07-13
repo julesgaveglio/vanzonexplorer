@@ -41,6 +41,7 @@
     "@tiptap/pm": "^3.22.5",
     "@tiptap/react": "^3.22.5",
     "@tiptap/starter-kit": "^3.22.5",
+    "@vercel/functions": "^3.7.5",
     "@xyflow/react": "^12.10.2",
     "cheerio": "^1.2.0",
     "class-variance-authority": "^0.7.1",

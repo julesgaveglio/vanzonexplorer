@@ -10,9 +10,15 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { createHmac, timingSafeEqual } from "crypto";
+import { waitUntil } from "@vercel/functions";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
+// L'envoi WhatsApp au prospect est différé de 10 min après la réservation
+// (waitUntil) — la fonction doit pouvoir vivre plus longtemps que le délai.
+export const maxDuration = 800;
+
+const WELCOME_DELAY_MS = 10 * 60 * 1000; // 10 minutes
 
 // ── Types ──
 
@@ -101,7 +107,7 @@ async function sendWhatsApp(
 ) {
   const firstName = name.split(" ")[0];
   const formatted = formatDateFR(scheduledAt);
-  const message = `Salut ${firstName} ! C'est Jules de Vanzon, merci d'avoir réservé ton appel avec moi. Je te confirme notre créneau le ${formatted} ! À très vite !`;
+  const message = `Salut ${firstName}, je viens de voir que tu as réservé un appel pour ${formatted}, je te confirme que je serai au rendez-vous ! Au plaisir d'échanger ! 😁`;
   const recipient = formatPhoneForWhatsApp(phone);
 
   try {
@@ -313,10 +319,21 @@ export async function POST(req: NextRequest) {
       scheduledAt: payload.scheduled_event.start_time,
     }).catch((err) => console.warn("[calendly] Jules WhatsApp notify failed:", err));
 
-    // Send WhatsApp confirmation to prospect
+    // WhatsApp de confirmation au prospect — envoyé 10 MINUTES après la
+    // réservation (plus humain qu'une réponse instantanée de robot).
+    // waitUntil garde la fonction en vie après la réponse à Calendly ;
+    // si l'envoi échoue malgré tout, le cron de 7h le rattrape
+    // (whatsapp_sent_at reste null dans closing_calls).
     if (phone) {
-      sendWhatsApp(payload.name, phone, payload.scheduled_event.start_time, supabase).catch(
-        (err) => console.warn("[calendly] WhatsApp send failed:", err)
+      const prospectName = payload.name;
+      const prospectPhone = phone;
+      const startTime = payload.scheduled_event.start_time;
+      waitUntil(
+        (async () => {
+          await new Promise((resolve) => setTimeout(resolve, WELCOME_DELAY_MS));
+          await sendWhatsApp(prospectName, prospectPhone, startTime, supabase);
+          console.log(`[calendly] WhatsApp différé (10 min) envoyé à ${prospectName}`);
+        })().catch((err) => console.warn("[calendly] WhatsApp différé échoué:", err))
       );
     }
 
