@@ -3,7 +3,6 @@ import Link from "next/link";
 type ServiceKey = "location" | "achat" | "formation";
 
 const SERVICES: Record<ServiceKey, {
-  emoji: string;
   label: string;
   title: string;
   desc: string;
@@ -13,7 +12,6 @@ const SERVICES: Record<ServiceKey, {
   accent: string;
 }> = {
   location: {
-    emoji: "🚐",
     label: "Location",
     title: "Louer un van aménagé",
     desc: "Partez explorer le Pays Basque à bord d'un van entièrement équipé. Liberté totale, sans contrainte, dès 1 jour.",
@@ -23,7 +21,6 @@ const SERVICES: Record<ServiceKey, {
     accent: "#4D5FEC",
   },
   achat: {
-    emoji: "🔑",
     label: "Achat",
     title: "Acheter votre van",
     desc: "Deux Renault Trafic aménagés par nos soins, issus de notre flotte. Historique complet, remise en main propre.",
@@ -33,7 +30,6 @@ const SERVICES: Record<ServiceKey, {
     accent: "#4D5FEC",
   },
   formation: {
-    emoji: "🎓",
     label: "Formation",
     title: "Van Business Academy",
     desc: "Aménagement, homologation VASP, mise en location rentable. Un programme complet de A à Z avec Jules.",
@@ -83,9 +79,8 @@ export default function OtherServices({ current, bgColor = "#F8FAFC" }: OtherSer
               <div className={`h-1 w-full bg-gradient-to-r ${s.gradient}`} />
 
               <div className="p-6 flex flex-col flex-1">
-                {/* Icon + label */}
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="text-2xl">{s.emoji}</span>
+                {/* Label */}
+                <div className="flex items-center mb-4">
                   <span
                     className="text-xs font-bold uppercase tracking-widest"
                     style={{ color: s.accent }}
@@ -105,7 +100,7 @@ export default function OtherServices({ current, bgColor = "#F8FAFC" }: OtherSer
                 {/* Footer */}
                 <div className="flex items-center justify-between mt-5 pt-4 border-t border-slate-100">
                   <span className="text-xs font-semibold text-slate-400 bg-slate-50 px-2.5 py-1 rounded-full">
-                    📍 {s.zone}
+                    {s.zone}
                   </span>
                   <span
                     className="text-sm font-bold flex items-center gap-1 group-hover:gap-2 transition-all"

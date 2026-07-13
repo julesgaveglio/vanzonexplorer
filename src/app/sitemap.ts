@@ -2,8 +2,6 @@ import type { MetadataRoute } from "next";
 import { sanityFetch } from "@/lib/sanity/client";
 import { getAllVanSlugsQuery, getAllArticleSlugsQuery } from "@/lib/sanity/queries";
 import { VANS } from "@/lib/data/vans";
-import { createSupabaseAnon } from "@/lib/supabase/server";
-import { slugify } from "@/lib/slugify";
 
 const BASE_URL = "https://vanzonexplorer.com";
 
@@ -71,17 +69,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  const { data: marketplaceVans } = await createSupabaseAnon()
-    .from("marketplace_vans")
-    .select("id, location_city, updated_at")
-    .eq("status", "approved");
-
-  const marketplaceVanPages: MetadataRoute.Sitemap = (marketplaceVans ?? []).map((van) => ({
-    url: `${BASE_URL}/location/${slugify(van.location_city)}/${van.id}`,
-    lastModified: van.updated_at ? new Date(van.updated_at) : STATIC_PAGES_LAST_UPDATE,
-    changeFrequency: "weekly" as const,
-    priority: 0.8,
-  }));
-
-  return [...staticPages, ...vanPages, ...articlePages, ...marketplaceVanPages];
+  // Marketplace en PAUSE (juillet 2026) — les pages vans partenaires restent
+  // accessibles par URL directe mais ne sont plus promues dans le sitemap.
+  return [...staticPages, ...vanPages, ...articlePages];
 }

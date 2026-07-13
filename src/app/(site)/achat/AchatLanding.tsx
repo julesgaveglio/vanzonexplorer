@@ -107,14 +107,16 @@ export default function AchatLanding() {
         <div className="max-w-4xl mx-auto">
           <div className="bg-white rounded-2xl border border-slate-100 px-6 py-5 flex flex-wrap justify-center gap-6 text-xs font-semibold text-slate-500">
             {[
-              { icon: "🔧", label: "Aménagés par nos soins" },
-              { icon: "📋", label: "Historique d'entretien complet" },
-              { icon: "📍", label: "Remise à Cambo-les-Bains" },
-              { icon: "🏄", label: "Flotte de location Pays Basque" },
-            ].map((t) => (
-              <span key={t.label} className="flex items-center gap-2">
-                <span>{t.icon}</span>
-                {t.label}
+              "Aménagés par nos soins",
+              "Historique d'entretien complet",
+              "Remise à Cambo-les-Bains",
+              "Flotte de location Pays Basque",
+            ].map((label) => (
+              <span key={label} className="flex items-center gap-2">
+                <svg className="w-4 h-4 text-emerald-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                {label}
               </span>
             ))}
           </div>

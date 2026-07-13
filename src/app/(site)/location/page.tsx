@@ -4,6 +4,7 @@ import Link from "next/link";
 import { sanityFetch } from "@/lib/sanity/client";
 import { getAllLocationVansQuery } from "@/lib/sanity/queries";
 import LiquidButton from "@/components/ui/LiquidButton";
+import { IconShield, IconPin, IconStar, IconEuro, IconWrench, IconPhone } from "@/components/ui/LineIcons";
 import type { VanCard as VanCardType } from "@/lib/sanity/types";
 import VanCard from "@/components/van/VanCard";
 import { getGooglePlaceStats } from "@/lib/google-places";
@@ -57,42 +58,36 @@ const destMeta = [
   {
     href: "/location/biarritz",
     label: "Biarritz",
-    emoji: "🌊",
     desc: "Surf, plages et couchers de soleil",
     img: "https://www.destination-biarritz.fr/app/uploads/2024/05/img-1959.webp",
   },
   {
     href: "/location/hossegor",
     label: "Hossegor",
-    emoji: "🏄",
     desc: "La Mecque du surf européen",
     img: "https://hossegor-surf.fr/wp-content/uploads/2022/04/vague-hossegor.jpeg",
   },
   {
     href: "/location/bayonne",
     label: "Bayonne",
-    emoji: "🏰",
     desc: "Culture basque et gastronomie",
     img: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/14/99/72/c2/les-tours-jumelles-de.jpg?w=1200&h=1200&s=1",
   },
   {
     href: "/location/saint-jean-de-luz",
     label: "Saint-Jean-de-Luz",
-    emoji: "⛵",
     desc: "Village basque face à l'océan",
     img: "https://www.saint-jean-de-luz.com/wp-content/uploads/2021/04/p1190705-1600x690.jpg",
   },
   {
     href: "/location/week-end",
     label: "Week-end",
-    emoji: "🗓️",
     desc: "2 nuits au minimum, idée d'itinéraire incluse",
     img: "https://www.vanlifemag.fr/wp-content/uploads/2020/12/AdobeStock_369527107.jpg",
   },
   {
     href: "/location/foret-irati",
     label: "Forêt d'Irati",
-    emoji: "🌲",
     desc: "Bivouac, randonnée et nature sauvage",
     img: "https://media.sudouest.fr/16227503/1000x625/sudouest-photo-1-3807448-1600.jpg?v=1754848800",
   },
@@ -100,22 +95,22 @@ const destMeta = [
 
 const whyItems = [
   {
-    icon: "🛡️",
+    icon: <IconShield className="w-6 h-6" />,
     title: "Assurance tous risques incluse",
     desc: "Pas de franchise surprise. Partez l'esprit libre, on gère l'administratif.",
   },
   {
-    icon: "🔧",
+    icon: <IconWrench className="w-6 h-6" />,
     title: "Vans 100% équipés",
     desc: "Cuisine coulissante, literie, douche, électricité solaire — prêt à partir.",
   },
   {
-    icon: "📍",
+    icon: <IconPin className="w-6 h-6" />,
     title: "Basé au Pays Basque",
     desc: "On connaît chaque spot, chaque parking, chaque coin secret de la région.",
   },
   {
-    icon: "📞",
+    icon: <IconPhone className="w-6 h-6" />,
     title: "Support 7j/7",
     desc: "Un problème sur la route ? On répond, en français, tous les jours.",
   },
@@ -250,13 +245,13 @@ export default async function LocationPage() {
         <div className="max-w-5xl mx-auto px-6">
           <div className="flex flex-wrap justify-center md:justify-between items-center gap-y-4 gap-x-8 text-white/60 text-sm font-medium">
             {[
-              { icon: "📍", text: "Départ Cambo-les-Bains, Pays Basque" },
-              { icon: "🛡️", text: "Assurance tous risques incluse" },
-              { icon: "💰", text: "Dès 65€/nuit" },
-              { icon: "⭐", text: `${placeStats.ratingDisplay}/5 sur ${placeStats.reviewCount} avis Google` },
+              { icon: <IconPin />, text: "Départ Cambo-les-Bains, Pays Basque" },
+              { icon: <IconShield />, text: "Assurance tous risques incluse" },
+              { icon: <IconEuro />, text: "Dès 65€/nuit" },
+              { icon: <IconStar />, text: `${placeStats.ratingDisplay}/5 sur ${placeStats.reviewCount} avis Google` },
             ].map((item) => (
-              <div key={item.text} className="flex items-center gap-2">
-                <span>{item.icon}</span>
+              <div key={item.text} className="flex items-center gap-2.5">
+                <span className="text-white/40">{item.icon}</span>
                 <span>{item.text}</span>
               </div>
             ))}
@@ -324,7 +319,6 @@ export default async function LocationPage() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/30 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-5">
-                  <p className="text-2xl mb-1">{dest.emoji}</p>
                   <h3 className="text-white font-black text-xl leading-tight">{dest.label}</h3>
                   <p className="text-white/70 text-sm mt-1">{dest.desc}</p>
                 </div>
@@ -354,7 +348,9 @@ export default async function LocationPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {whyItems.map((item) => (
               <div key={item.title} className="glass-card p-6 text-center hover:shadow-glass-hover transition-all duration-300">
-                <div className="text-4xl mb-4">{item.icon}</div>
+                <div className="w-11 h-11 mx-auto mb-4 rounded-xl bg-blue-50 text-accent-blue flex items-center justify-center">
+                  {item.icon}
+                </div>
                 <h3 className="font-bold text-slate-900 mb-2">{item.title}</h3>
                 <p className="text-slate-500 text-sm leading-relaxed">{item.desc}</p>
               </div>
@@ -368,7 +364,7 @@ export default async function LocationPage() {
         <div className="max-w-5xl mx-auto px-6">
           <div className="text-center mb-10">
             <span className="badge-glass !px-4 !py-1.5 text-sm font-semibold mb-4 inline-block" style={{ color: "#4D5FEC" }}>
-              📍 Point de départ
+              Point de départ
             </span>
             <h2 className="text-3xl font-black text-slate-900 mb-3">
               Où récupérer le van ?

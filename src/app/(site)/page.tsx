@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import MarketplaceVansSection from "@/components/marketplace/MarketplaceVansSection";
 import LiquidButton from "@/components/ui/LiquidButton";
+import VanCard from "@/components/van/VanCard";
+import { sanityFetch } from "@/lib/sanity/client";
+import { getAllLocationVansQuery } from "@/lib/sanity/queries";
+import type { VanCard as VanCardType } from "@/lib/sanity/types";
+import { IconShield, IconPin, IconStar } from "@/components/ui/LineIcons";
 
 export const revalidate = 3600;
 
@@ -36,28 +40,24 @@ const destMeta = [
   {
     href: "/location/biarritz",
     label: "Biarritz",
-    emoji: "🌊",
     desc: "Surf, plages et couchers de soleil",
     img: "https://www.destination-biarritz.fr/app/uploads/2024/05/img-1959.webp",
   },
   {
     href: "/location/hossegor",
     label: "Hossegor",
-    emoji: "🏄",
     desc: "La Mecque du surf européen",
     img: "https://hossegor-surf.fr/wp-content/uploads/2022/04/vague-hossegor.jpeg",
   },
   {
     href: "/location/bayonne",
     label: "Bayonne",
-    emoji: "🏰",
     desc: "Culture basque et gastronomie",
     img: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/14/99/72/c2/les-tours-jumelles-de.jpg?w=1200&h=1200&s=1",
   },
   {
     href: "/location/saint-jean-de-luz",
     label: "Saint-Jean-de-Luz",
-    emoji: "⛵",
     desc: "Village basque face à l'océan",
     img: "https://www.saint-jean-de-luz.com/wp-content/uploads/2021/04/p1190705-1600x690.jpg",
   },
@@ -72,6 +72,8 @@ function getSeasonLabel(): string {
 }
 
 export default async function HomePage() {
+  const fleetVans = (await sanityFetch<VanCardType[]>(getAllLocationVansQuery)) ?? [];
+
   return (
     <>
       <section className="relative -mt-16 min-h-[620px] lg:min-h-screen flex items-start lg:items-end overflow-hidden">
@@ -154,12 +156,12 @@ export default async function HomePage() {
         <div className="max-w-5xl mx-auto px-6">
           <div className="flex flex-wrap justify-center md:justify-between items-center gap-y-4 gap-x-8 text-white/60 text-sm font-medium">
             {[
-              { icon: "🛡️", text: "Assurance incluse via Yescapa" },
-              { icon: "📍", text: "Basé au Pays Basque" },
-              { icon: "⭐", text: "5/5 sur Google" },
+              { icon: <IconShield />, text: "Assurance tous risques incluse" },
+              { icon: <IconPin />, text: "Départ Cambo-les-Bains, Pays Basque" },
+              { icon: <IconStar />, text: "5/5 sur Google" },
             ].map((item) => (
-              <div key={item.text} className="flex items-center gap-2">
-                <span>{item.icon}</span>
+              <div key={item.text} className="flex items-center gap-2.5">
+                <span className="text-white/40">{item.icon}</span>
                 <span>{item.text}</span>
               </div>
             ))}
@@ -167,66 +169,57 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── AIGUILLAGE — les 3 parcours (conversion : chaque cible trouve sa
-          porte d'entrée dès le premier écran de scroll) ── */}
-      <section id="parcours" className="bg-white py-16 scroll-mt-20">
+      {/* ── NOS SERVICES — aiguillage éditorial des 3 cibles ── */}
+      <section id="parcours" className="bg-white py-16 md:py-20 scroll-mt-20 border-b border-slate-100">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-2">
-              Que cherchez-vous ?
-            </h2>
-            <p className="text-slate-500 text-lg">
-              Trois façons de vivre le van avec Vanzon Explorer.
+          <div className="max-w-2xl mb-10 md:mb-14">
+            <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">
+              Nos services
             </p>
+            <h2 className="text-3xl md:text-4xl font-black text-slate-900 leading-tight">
+              Louer, acheter, ou créer votre propre activité de location.
+            </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-slate-200 rounded-2xl overflow-hidden border border-slate-200">
             {[
               {
                 href: "/location",
-                emoji: "🚐",
+                num: "01",
                 title: "Louer un van",
-                desc: "Vans tout équipés au départ de Cambo-les-Bains, à 25 min de Biarritz. Assurance tous risques incluse.",
-                highlight: "dès 65€/nuit",
+                desc: "Vans tout équipés au départ de Cambo-les-Bains, à 25 minutes de Biarritz. Assurance tous risques incluse.",
+                highlight: "Dès 65 € / nuit",
                 cta: "Voir les vans disponibles",
-                accent: "#4D5FEC",
               },
               {
                 href: "/achat",
-                emoji: "🔑",
+                num: "02",
                 title: "Acheter un van",
-                desc: "Nos vans aménagés par nos soins, exploités puis revendus avec historique et carnet d'entretien complets.",
-                highlight: "23 500 € · essai sur place",
+                desc: "Des vans aménagés par nos soins, exploités en location puis revendus avec historique et carnet d'entretien complets.",
+                highlight: "23 500 € — essai sur place",
                 cta: "Voir les vans à vendre",
-                accent: "#0F153A",
               },
               {
                 href: "/formation",
-                emoji: "🎓",
+                num: "03",
                 title: "Créer votre business van",
-                desc: "Apprenez à acheter, aménager et rentabiliser un van en location : la méthode complète de la Van Business Academy.",
-                highlight: "formation 100% en ligne",
+                desc: "La méthode complète pour acheter, aménager et rentabiliser un van en location : la Van Business Academy.",
+                highlight: "Formation 100 % en ligne",
                 cta: "Découvrir la formation",
-                accent: "#B9945F",
               },
             ].map((path) => (
               <Link
                 key={path.href}
                 href={path.href}
-                className="group glass-card p-8 flex flex-col transition-all duration-200 hover:-translate-y-1 hover:shadow-xl"
+                className="group bg-white p-8 md:p-10 flex flex-col transition-colors duration-200 hover:bg-slate-50"
               >
-                <span className="text-4xl mb-4">{path.emoji}</span>
-                <h3 className="text-xl font-black text-slate-900 mb-2">{path.title}</h3>
-                <p className="text-slate-500 text-sm leading-relaxed mb-4 flex-1">{path.desc}</p>
-                <p className="text-sm font-bold mb-5" style={{ color: path.accent }}>
-                  {path.highlight}
-                </p>
-                <span
-                  className="inline-flex items-center gap-2 text-sm font-semibold transition-transform duration-200 group-hover:translate-x-1"
-                  style={{ color: path.accent }}
-                >
+                <span className="text-xs font-bold text-slate-300 mb-6 tracking-widest">{path.num}</span>
+                <h3 className="text-xl font-black text-slate-900 mb-3">{path.title}</h3>
+                <p className="text-slate-500 text-sm leading-relaxed mb-6 flex-1">{path.desc}</p>
+                <p className="text-sm font-semibold text-slate-900 mb-5">{path.highlight}</p>
+                <span className="inline-flex items-center gap-2 text-sm font-semibold text-accent-blue transition-transform duration-200 group-hover:translate-x-1">
                   {path.cta}
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                   </svg>
                 </span>
@@ -236,20 +229,48 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <MarketplaceVansSection />
+      {/* ── NOS VANS — la flotte Vanzon (marketplace en pause) ── */}
+      {fleetVans.length > 0 && (
+        <section className="bg-white py-16 md:py-20">
+          <div className="max-w-6xl mx-auto px-6">
+            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10 md:mb-12">
+              <div className="max-w-xl">
+                <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">
+                  Nos vans à la location
+                </p>
+                <h2 className="text-3xl md:text-4xl font-black text-slate-900 leading-tight">
+                  Deux vans, aménagés par nos soins.
+                </h2>
+              </div>
+              <Link
+                href="/location"
+                className="text-sm font-semibold text-accent-blue hover:underline flex-shrink-0"
+              >
+                Tout savoir sur la location →
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+              {fleetVans.map((van) => (
+                <VanCard key={van._id} van={van} mode="location" />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
 
       {/* ── OÙ PARTIR EN VAN ──────────────────────────────────────── */}
       <section className="py-20" style={{ background: "linear-gradient(160deg, #EFF6FF 0%, #F0FDFF 100%)" }}>
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-14">
-            <span className="badge-glass !px-4 !py-1.5 text-sm font-semibold mb-4 inline-block" style={{ color: "#4D5FEC" }}>
-              🗺️ Les destinations
-            </span>
-            <h2 className="text-4xl font-black text-slate-900 mb-3">
+          <div className="max-w-2xl mb-10 md:mb-14">
+            <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">
+              Les destinations
+            </p>
+            <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-3 leading-tight">
               Où partir en van au Pays Basque ?
             </h2>
-            <p className="text-slate-500 text-lg max-w-xl mx-auto">
+            <p className="text-slate-500 text-lg">
               De l&apos;Atlantique aux Pyrénées, chaque destination a ses spots secrets.
             </p>
           </div>
@@ -270,7 +291,6 @@ export default async function HomePage() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/30 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-5">
-                  <p className="text-2xl mb-1">{dest.emoji}</p>
                   <h3 className="text-white font-black text-xl leading-tight">{dest.label}</h3>
                   <p className="text-white/70 text-sm mt-1">{dest.desc}</p>
                 </div>
@@ -288,9 +308,9 @@ export default async function HomePage() {
       <section className="py-20" style={{ background: "linear-gradient(160deg, #F8FAFC 0%, #EFF6FF 100%)" }}>
         <div className="max-w-5xl mx-auto px-6">
           <div className="text-center mb-12">
-            <span className="badge-glass !px-4 !py-1.5 text-sm text-amber-600 font-semibold mb-4 inline-block">
-              ⭐ Avis clients
-            </span>
+            <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">
+              Avis clients
+            </p>
             <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-2">
               Ce qu&apos;ils en disent
             </h2>
@@ -311,19 +331,19 @@ export default async function HomePage() {
                 name: "Joris Darnanville",
                 detail: "Van super bien équipé, exactement comme décrit. Jules est disponible et de bons conseils. On recommande !",
                 initials: "J",
-                color: "bg-blue-500",
+                color: "bg-slate-800",
               },
               {
                 name: "Mathilde Sehil",
                 detail: "Un weekend parfait au Pays Basque. Le van est propre, bien rangé et très pratique. On a adoré la cuisine coulissante.",
                 initials: "M",
-                color: "bg-purple-500",
+                color: "bg-slate-800",
               },
               {
                 name: "Aurélie CEDELLE",
                 detail: "Tout est optimisé pour un séjour parfait. Rien à redire, on repart l'année prochaine avec les enfants !",
                 initials: "A",
-                color: "bg-teal-500",
+                color: "bg-slate-800",
               },
             ].map((review) => (
               <div key={review.name} className="glass-card p-6">
@@ -358,8 +378,8 @@ export default async function HomePage() {
             {/* Texte gauche */}
             <div>
               <div className="flex items-center gap-3 mb-6">
-                <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest bg-amber-50 border border-amber-200 text-amber-700">
-                  🎓 Formation
+                <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest bg-amber-50 border border-amber-200 text-amber-700">
+                  Formation
                 </span>
                 <span className="text-slate-400 text-xs font-medium">100% en ligne</span>
               </div>

@@ -20,10 +20,10 @@ export default async function VanSelectionSection({ destination }: VanSelectionS
 
         {/* Header */}
         <div className="text-center mb-14">
-          <span className="inline-flex items-center gap-2 bg-blue-50 text-[#4D5FEC] text-sm font-bold px-4 py-1.5 rounded-full mb-4">
-            🚐 Nos vans
-          </span>
-          <h2 className="text-4xl font-black text-slate-900 mb-3">
+          <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">
+            Nos vans
+          </p>
+          <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-3">
             Choisissez votre van
           </h2>
           <p className="text-slate-500 text-lg max-w-xl mx-auto">
@@ -42,9 +42,14 @@ export default async function VanSelectionSection({ destination }: VanSelectionS
         {/* Confiance + lien page location */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50 rounded-2xl px-6 py-4">
           <div className="flex flex-wrap justify-center sm:justify-start items-center gap-x-6 gap-y-2 text-sm text-slate-500">
-            <span className="flex items-center gap-1.5">✅ Annulation flexible</span>
-            <span className="flex items-center gap-1.5">🛡️ Assurance tous risques</span>
-            <span className="flex items-center gap-1.5">📍 Départ depuis Cambo-les-Bains</span>
+            {["Annulation flexible", "Assurance tous risques", "Départ depuis Cambo-les-Bains"].map((t) => (
+              <span key={t} className="flex items-center gap-1.5">
+                <svg className="w-4 h-4 text-emerald-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                {t}
+              </span>
+            ))}
           </div>
           <Link
             href="/location"

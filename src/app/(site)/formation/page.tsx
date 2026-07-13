@@ -125,7 +125,7 @@ export default async function FormationPage() {
               color: "#B9945F",
             }}
           >
-            🎓 Van Business Academy
+            Van Business Academy
           </span>
 
           {/* Slogan visuel */}
@@ -205,7 +205,7 @@ export default async function FormationPage() {
                     className="flex-shrink-0 w-8 h-8 rounded-xl flex items-center justify-center text-base mt-0.5"
                     style={{ background: "rgba(185,148,95,0.10)" }}
                   >
-                    🎯
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="#B9945F" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
                   </span>
                   <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
                     Pour celles et ceux qui veulent réaménager leur van,
@@ -220,7 +220,7 @@ export default async function FormationPage() {
                     className="flex-shrink-0 w-8 h-8 rounded-xl flex items-center justify-center text-base mt-0.5"
                     style={{ background: "rgba(185,148,95,0.10)" }}
                   >
-                    🗺️
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="#B9945F" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
                   </span>
                   <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
                     Une méthode progressive : du choix du van à la revente, en
@@ -235,7 +235,7 @@ export default async function FormationPage() {
                     className="flex-shrink-0 w-8 h-8 rounded-xl flex items-center justify-center text-base mt-0.5"
                     style={{ background: "rgba(185,148,95,0.10)" }}
                   >
-                    🔧
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="#B9945F" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
                   </span>
                   <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
                     Une formation 100% terrain, créée par des loueurs de vans en
