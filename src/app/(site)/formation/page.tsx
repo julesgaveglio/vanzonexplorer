@@ -8,6 +8,7 @@ import ComparisonSection from "@/components/formation/ComparisonSection";
 
 import LiquidButton from "@/components/ui/LiquidButton";
 import GeoFaqSection, { type GeoFaqItem } from "@/components/seo/GeoFaqSection";
+import FormationViewTracker from "./FormationViewTracker";
 
 export const metadata: Metadata = {
   title: "Van Business Academy — Formation Business Van Aménagé",
@@ -96,6 +97,7 @@ export default async function FormationPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(courseJsonLd) }}
       />
+      <FormationViewTracker />
 
       {/* ── HERO ── */}
       <section
@@ -151,24 +153,101 @@ export default async function FormationPage() {
 
           {/* CTA visible sans scroll */}
           <div className="mt-8">
-            <LiquidButton variant="gold" size="lg" href="/van-business-academy/presentation">En savoir plus →</LiquidButton>
+            <LiquidButton variant="gold" size="lg" href="/van-business-academy/presentation">Découvrir la méthode (vidéo 12 min) →</LiquidButton>
+            <p className="text-slate-400 text-xs mt-3">
+              Gratuit — puis appel diagnostic offert. Tu sais exactement où tu vas avant de payer quoi que ce soit.
+            </p>
           </div>
+        </div>
+
+        {/* Preuve immédiate — l'autorité dans les 3 premières secondes */}
+        <div className="relative max-w-4xl mx-auto px-6 pb-4">
+          <div
+            className="rounded-2xl px-6 py-5 grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-5 text-center"
+            style={{ background: "rgba(255,255,255,0.7)", border: "1px solid rgba(185,148,95,0.18)" }}
+          >
+            {[
+              { value: "4 ans", label: "de terrain, pas de théorie" },
+              { value: "2 vans", label: "exploités en location" },
+              { value: "5/5", label: "sur Google" },
+              { value: "+12 500 €", label: "sur un cycle complet*" },
+            ].map((s) => (
+              <div key={s.label}>
+                <div className="text-2xl md:text-3xl font-black text-slate-900 leading-none mb-1">{s.value}</div>
+                <div className="text-xs text-slate-500 font-medium leading-snug">{s.label}</div>
+              </div>
+            ))}
+          </div>
+          <p className="text-[11px] text-slate-400 mt-2 text-center">
+            *Van acheté 9 000 €, aménagé pour 5 000 €, loué 8 mois (+5 500 € nets), revente estimée 21 000 €.
+          </p>
         </div>
 
         {/* Card stack formation */}
         {cards.length > 0 && <FormationCardStack cards={cards} />}
       </section>
 
-      {/* ── CTA SECTION ── */}
+      {/* ── LE CYCLE — la promesse découpée en étapes visibles ── */}
       <section className="py-16 md:py-20 bg-white">
-        <div className="max-w-2xl mx-auto px-6 text-center">
-          <p className="text-base sm:text-lg text-slate-600 leading-relaxed mb-8">
-            Un accompagnement terrain pour apprendre à réaménager ton van, le
-            mettre en location, le revendre avec plus-value, et recommencer.
-            Créé par des loueurs en activité au Pays Basque.
-          </p>
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "#B9945F" }}>
+              La méthode
+            </p>
+            <h2 className="text-3xl md:text-4xl font-black text-slate-900 leading-tight">
+              Un cycle, quatre étapes.
+            </h2>
+            <p className="text-slate-500 text-lg mt-3 max-w-xl mx-auto">
+              Le même que celui qu'on applique à notre propre flotte depuis 4 ans.
+            </p>
+          </div>
 
-          <LiquidButton variant="gold" size="lg" href="/van-business-academy/presentation">En savoir plus →</LiquidButton>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-slate-200 rounded-2xl overflow-hidden border border-slate-200">
+            {[
+              { num: "01", title: "Acheter malin", desc: "Trouver le bon fourgon au bon prix — kilométrage, moteur, négociation. C'est ici que se joue ta marge." },
+              { num: "02", title: "Aménager toi-même", desc: "De zéro compétence à un aménagement solide, homologable VASP. Sans savoir planter un clou au départ." },
+              { num: "03", title: "Louer", desc: "Mettre ton van en location et optimiser ton taux d'occupation, ton annonce et tes tarifs saison par saison." },
+              { num: "04", title: "Revendre avec plus-value", desc: "Un van bien aménagé et homologué se revend plus cher qu'il ne t'a coûté. Puis tu recommences — en plus grand." },
+            ].map((step) => (
+              <div key={step.num} className="bg-white p-6 md:p-8">
+                <span className="text-xs font-bold tracking-widest" style={{ color: "#B9945F" }}>{step.num}</span>
+                <h3 className="text-lg font-black text-slate-900 mt-3 mb-2">{step.title}</h3>
+                <p className="text-slate-500 text-sm leading-relaxed">{step.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── CURIOSITÉ SPÉCIFIQUE — ce que la vidéo révèle ── */}
+      <section className="py-16 md:py-20" style={{ background: "#FAF6F0" }}>
+        <div className="max-w-3xl mx-auto px-6">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl md:text-4xl font-black text-slate-900 leading-tight">
+              Dans la vidéo, tu vas découvrir :
+            </h2>
+          </div>
+
+          <ul className="space-y-4 mb-10">
+            {[
+              "Pourquoi 90 % des aménagements amateurs perdent 5 000 € à la revente — et le document administratif qui inverse la donne.",
+              "Le vrai chiffre que rapporte un van en location au Pays Basque (pas celui des vendeurs de rêve — le nôtre, relevés bancaires à l'appui).",
+              "Comment on a acheté un utilitaire 9 000 € et pourquoi il en vaut 21 000 aujourd'hui — étape par étape.",
+              "La peur n°1 qui bloque tout le monde (« les locataires vont tout casser ») et ce que 2 ans de location nous ont vraiment coûté : 15 €.",
+            ].map((item) => (
+              <li key={item} className="flex items-start gap-4 bg-white rounded-2xl px-6 py-5" style={{ border: "1px solid rgba(185,148,95,0.15)" }}>
+                <svg className="w-5 h-5 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="#B9945F" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <span className="text-slate-700 text-sm md:text-base leading-relaxed">{item}</span>
+              </li>
+            ))}
+          </ul>
+
+          <div className="text-center">
+            <LiquidButton variant="gold" size="lg" href="/van-business-academy/presentation">Regarder la vidéo (12 min) →</LiquidButton>
+            <p className="text-slate-400 text-xs mt-3">Sans inscription payante. Sans engagement.</p>
+          </div>
         </div>
       </section>
 
@@ -208,9 +287,8 @@ export default async function FormationPage() {
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="#B9945F" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
                   </span>
                   <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
-                    Pour celles et ceux qui veulent réaménager leur van,
-                    l&apos;exploiter intelligemment et construire leur liberté
-                    projet après projet.
+                    <strong>Le point de départ :</strong> un utilitaire acheté 9 000 €,
+                    zéro compétence en bricolage, zéro diplôme technique.
                   </p>
                 </div>
 
@@ -223,9 +301,8 @@ export default async function FormationPage() {
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="#B9945F" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
                   </span>
                   <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
-                    Une méthode progressive : du choix du van à la revente, en
-                    passant par l&apos;aménagement, l&apos;homologation et
-                    l&apos;exploitation.
+                    <strong>8 mois de location plus tard :</strong> +5 500 € nets
+                    encaissés, un van estimé 21 000 € à la revente.
                   </p>
                 </div>
 
@@ -238,15 +315,16 @@ export default async function FormationPage() {
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="#B9945F" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
                   </span>
                   <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
-                    Une formation 100% terrain, créée par des loueurs de vans en
-                    activité au Pays Basque.
+                    <strong>La formation :</strong> exactement cette méthode,
+                    documentée étape par étape par des loueurs en activité au
+                    Pays Basque — pas par des théoriciens.
                   </p>
                 </div>
               </div>
 
               {/* CTA */}
               <div className="mt-8">
-                <LiquidButton variant="gold" size="lg" href="/van-business-academy/presentation" fullWidth>En savoir plus →</LiquidButton>
+                <LiquidButton variant="gold" size="lg" href="/van-business-academy/presentation" fullWidth>Voir comment (vidéo 12 min) →</LiquidButton>
               </div>
             </div>
           </div>
