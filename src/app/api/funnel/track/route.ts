@@ -135,6 +135,15 @@ export async function POST(req: NextRequest) {
     }
 
     const sourceLine = formatSource(attr);
+
+    // Géolocalisation IP (headers Vercel, gratuits) + appareil
+    const city = decodeURIComponent(req.headers.get("x-vercel-ip-city") ?? "");
+    const country = req.headers.get("x-vercel-ip-country") ?? "";
+    const ua = req.headers.get("user-agent") ?? "";
+    const device = /iPhone|iPad|Android|Mobile/i.test(ua) ? "mobile" : "ordinateur";
+    const geoLine = [city, country].filter(Boolean).join(", ");
+    const contextLine = `🌍 ${geoLine || "localisation inconnue"} · ${device}`;
+
     const name = bestName || "—";
     const identityLine = `${name} — ${bestEmail || "visiteur anonyme"}`;
     const src = attr.source ? ` (${attr.source})` : "";
@@ -142,13 +151,13 @@ export async function POST(req: NextRequest) {
     let msg = "";
     switch (event) {
       case "vsl_view":
-        msg = `🎥 <b>VSL lancée</b>\n${identityLine}\n${sourceLine}`;
+        msg = `🎥 <b>VSL lancée</b>\n${identityLine}\n${sourceLine}\n${contextLine}`;
         break;
       case "vsl_50":
-        msg = `⏱ <b>VSL 50%</b>\n${identityLine}\n${sourceLine}`;
+        msg = `⏱ <b>VSL 50%</b>\n${identityLine}\n${sourceLine}\n${contextLine}`;
         break;
       case "vsl_100":
-        msg = `✅ <b>VSL terminée !</b>\n${identityLine}\n${sourceLine}`;
+        msg = `✅ <b>VSL terminée !</b>\n${identityLine}\n${sourceLine}\n${contextLine}`;
         break;
       case "vsl_exit": {
         const secs = metadata?.seconds ?? 0;
@@ -158,25 +167,27 @@ export async function POST(req: NextRequest) {
         const totalMin = Math.floor(dur / 60);
         const totalSec = String(Math.round(dur % 60)).padStart(2, "0");
         const pct = dur > 0 ? Math.round((secs / dur) * 100) : 0;
-        msg = `⏹ <b>VSL quittée</b>\n${identityLine}\n⏱ ${watchMin}min${watchSec}s / ${totalMin}min${totalSec}s (${pct}%)\n${sourceLine}`;
+        msg = `⏹ <b>VSL quittée</b>\n${identityLine}\n⏱ ${watchMin}min${watchSec}s / ${totalMin}min${totalSec}s (${pct}%)\n${sourceLine}\n${contextLine}`;
         break;
       }
       case "booking_confirmed":
-        msg = `📞 <b>Call booké !</b>\n${identityLine}${src}\n${sourceLine}`;
+        msg = `📞 <b>Call booké !</b>\n${identityLine}${src}\n${sourceLine}\n${contextLine}`;
         break;
       case "appel_confirme":
         // Filet de sécurité : notifie même si le webhook Calendly est en panne
-        msg = `📞 <b>Call réservé !</b> (page confirmation)\n${identityLine}\n${sourceLine}`;
+        msg = `📞 <b>Call réservé !</b> (page confirmation)\n${identityLine}\n${sourceLine}\n${contextLine}`;
         break;
       case "checkout":
-        msg = `💳 <b>Page paiement ouverte</b>\n${identityLine}\n${sourceLine}`;
+        msg = `💳 <b>Page paiement ouverte</b>\n${identityLine}\n${sourceLine}\n${contextLine}`;
         break;
       case "purchase":
-        msg = `🎉 <b>ACHAT VBA !</b>\n${identityLine}\n💰 997€\n${sourceLine}`;
+        msg = `🎉 <b>ACHAT VBA !</b>\n${identityLine}\n💰 997€\n${sourceLine}\n${contextLine}`;
         break;
     }
 
-    if (msg) notifyTelegram(msg).catch(() => {});
+    // IMPORTANT : await obligatoire — sans lui, Vercel peut geler la fonction
+    // après la réponse et l'appel Telegram part... ou pas (notifs intermittentes).
+    if (msg) await notifyTelegram(msg).catch(() => {});
 
     return NextResponse.json({ ok: true });
   } catch {
@@ -212,7 +223,12 @@ function formatSource(attr: {
       const host = new URL(attr.referrer).hostname.replace(/^(www|m|l|lm)\./, "");
       if (/facebook\.com/.test(host)) return "🌱 Organique Facebook";
       if (/instagram\.com/.test(host)) return "🌱 Organique Instagram";
-      if (/google\./.test(host)) return "🔍 Google (SEO)";
+      if (/google\./.test(host)) return "🔍 Recherche Google (SEO)";
+      if (/ecosia\.org/.test(host)) return "🔍 Recherche Ecosia (SEO)";
+      if (/bing\.com/.test(host)) return "🔍 Recherche Bing (SEO)";
+      if (/duckduckgo\.com/.test(host)) return "🔍 Recherche DuckDuckGo (SEO)";
+      if (/qwant\.com/.test(host)) return "🔍 Recherche Qwant (SEO)";
+      if (/search\.brave\.com/.test(host)) return "🔍 Recherche Brave (SEO)";
       if (/youtube\.com|youtu\.be/.test(host)) return "🌱 YouTube";
       if (/tiktok\.com/.test(host)) return "🌱 TikTok";
       if (/vanzonexplorer\.com/.test(host)) return "🏠 Navigation interne (site)";
