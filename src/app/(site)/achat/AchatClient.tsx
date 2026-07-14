@@ -84,7 +84,7 @@ function VanListing({ van, reversed }: { van: (typeof VANS)[0]; reversed?: boole
               { label: "Énergie", value: van.energy },
               { label: "Boîte", value: van.gearbox },
               { label: "Places", value: `${van.seats} sièges` },
-              { label: "Aménagement", value: `${van.year}` },
+              { label: "Aménagement", value: `${van.conversionYear}` },
             ].map((spec) => (
               <div key={spec.label} className="bg-slate-50 rounded-xl px-3 py-2.5">
                 <p className="text-xs text-slate-400 font-medium">{spec.label}</p>
