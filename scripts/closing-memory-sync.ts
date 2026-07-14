@@ -218,6 +218,14 @@ function coachingMd(row: ClosingAnalysisRow, prospect: string): string {
         .map((o) => `- **${o.objection}** (${o.note})\n  Ta réponse : ${o.ta_reponse}\n  Mieux : ${o.mieux}`)
         .join("\n")
     : "";
+  const corrections = a?.corrections?.length
+    ? a.corrections
+        .map(
+          (c) =>
+            `- **${c.erreur || "À corriger"}**\n  - ❌ « ${c.tu_as_dit} »\n  - ✅ « ${c.dis_plutot} »${c.pourquoi ? `\n  - _${c.pourquoi}_` : ""}`,
+        )
+        .join("\n")
+    : "";
   const reformulations = a?.reformulations?.length
     ? a.reformulations
         .map((r) => `- ~~« ${r.tu_as_dit} »~~ → « ${r.dis_plutot} »${r.pourquoi ? ` _(${r.pourquoi})_` : ""}`)
@@ -248,7 +256,7 @@ function coachingMd(row: ClosingAnalysisRow, prospect: string): string {
 # 🎯 Axes d'amélioration — ${prospect}
 
 > ${v?.resume ?? ""} ${typeof row.score === "number" ? `**Score : ${row.score}/100**` : ""}
-${section("Tes 3 priorités", priorites)}${section("Rubrique détaillée", criteres)}${section("Points forts", forts)}${section("Points faibles", faibles)}${section("Occasions manquées", occasions)}${section("Traitement des objections", objections)}${section("Reformulations", reformulations)}${section("Ratio de parole", ratio)}${section("Drills à travailler", exercices)}`;
+${section("🔧 À corriger en priorité — tes phrases", corrections)}${section("Tes 3 priorités", priorites)}${section("Rubrique détaillée", criteres)}${section("Points forts", forts)}${section("Points faibles", faibles)}${section("Occasions manquées", occasions)}${section("Traitement des objections", objections)}${section("Reformulations", reformulations)}${section("Ratio de parole", ratio)}${section("Drills à travailler", exercices)}`;
 }
 
 function buildIndex(rows: ClosingAnalysisRow[], folderOf: Map<string, string>): string {

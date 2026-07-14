@@ -66,7 +66,14 @@ export interface ClosingAnalysis {
     mieux: string;
   }[];
   ratio_parole: { estimation: string; verdict: string };
-  reformulations: { tu_as_dit: string; dis_plutot: string; pourquoi: string }[];
+  // Corrections de phrases prioritaires — le cœur du feedback : ce qui compte vraiment.
+  corrections: {
+    tu_as_dit: string; // verbatim EXACT du closer, copié du transcript
+    erreur: string; // le pattern/thème de l'erreur, en quelques mots
+    dis_plutot: string; // la phrase exacte de remplacement
+    pourquoi: string; // pourquoi ça change le résultat (une ligne)
+  }[];
+  reformulations?: { tu_as_dit: string; dis_plutot: string; pourquoi: string }[]; // legacy (anciennes analyses)
   priorites: string[];
   exercices: string[];
 }

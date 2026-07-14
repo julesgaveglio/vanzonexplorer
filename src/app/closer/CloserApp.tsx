@@ -164,6 +164,29 @@ function AnalysisView({ v }: { v: Viewing }) {
         </div>
       </Card>
 
+      {a?.corrections?.length ? (
+        <Section title="🔧 À corriger en priorité — tes phrases">
+          <div className="space-y-2">
+            {a.corrections.map((c, i) => (
+              <Card key={i}>
+                {c.erreur ? (
+                  <span className="mb-2 inline-block rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+                    {c.erreur}
+                  </span>
+                ) : null}
+                <p className="text-sm text-red-600">
+                  <span className="text-slate-400">Tu as dit — </span>« {c.tu_as_dit} »
+                </p>
+                <p className="mt-1.5 text-sm font-semibold text-emerald-700">
+                  <span className="font-normal text-slate-400">Dis plutôt — </span>« {c.dis_plutot} »
+                </p>
+                {c.pourquoi ? <p className="mt-1.5 text-xs text-slate-500">{c.pourquoi}</p> : null}
+              </Card>
+            ))}
+          </div>
+        </Section>
+      ) : null}
+
       {a?.priorites?.length ? (
         <Section title="Tes 3 priorités">
           <ol className="space-y-2">
@@ -284,7 +307,7 @@ function AnalysisView({ v }: { v: Viewing }) {
       {a?.reformulations?.length ? (
         <Section title="Reformulations">
           <div className="space-y-2">
-            {a.reformulations.map((r, i) => (
+            {a.reformulations?.map((r, i) => (
               <Card key={i}>
                 <p className="text-sm text-red-600">
                   <span className="text-slate-400">Tu as dit — </span>« {r.tu_as_dit} »

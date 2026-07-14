@@ -61,11 +61,19 @@ Réponds UNIQUEMENT avec un objet JSON valide, en français, sans texte avant/ap
   "occasions_manquees": [ { "moment": string, "ce_qui_s_est_passe": string, "meilleur_move": string, "exemple_phrase": string } ],
   "objections": [ { "objection": string, "ta_reponse": string, "note": "bien"|"moyen"|"rate", "mieux": string } ],
   "ratio_parole": { "estimation": string, "verdict": string },
-  "reformulations": [ { "tu_as_dit": string, "dis_plutot": string, "pourquoi": string } ],
+  "corrections": [ { "tu_as_dit": string, "erreur": string, "dis_plutot": string, "pourquoi": string } ],
   "priorites": [ string ],
   "exercices": [ string ]
 }
-"priorites" = les 3 chantiers prioritaires (du plus impactant au moins). "exercices" = 2 à 4 drills concrets.`;
+
+"corrections" = LE CHAMP LE PLUS IMPORTANT, celui que le closer regarde en premier. Ce sont 3 à 6 rectifications de phrases à FORT IMPACT UNIQUEMENT — pas une liste exhaustive. Règles strictes :
+- "tu_as_dit" DOIT être une citation EXACTE et VERBATIM tirée du transcript (copie mot pour mot ce que le closer a réellement dit, jamais une paraphrase ni une invention). Si tu ne peux pas citer une vraie phrase, n'inclus pas l'item.
+- "erreur" nomme le pattern en quelques mots, actionnable (ex : "prix annoncé sans ancrage de valeur", "question fermée qui tue la découverte", "tu combles le silence après la demande", "tu argumentes au lieu d'isoler l'objection", "tu donnes la solution avant de chiffrer la douleur").
+- "dis_plutot" = la phrase EXACTE, prête à être dite telle quelle au prochain call.
+- "pourquoi" = une seule ligne sur ce que ça change concrètement.
+- Trie par impact DÉCROISSANT. Mieux vaut 3 corrections qui changent vraiment les résultats que 10 tièdes. Ignore le mineur (tics de langage sans conséquence). Si le closer a très peu parlé ou a bien fait, mets-en moins.
+
+"priorites" = les 3 chantiers stratégiques (plus larges que les corrections de phrases). "exercices" = 2 à 4 drills concrets.`;
 
 export interface AnalyzeInput {
   transcript: string;
