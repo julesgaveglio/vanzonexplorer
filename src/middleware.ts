@@ -4,6 +4,8 @@ import type { NextFetchEvent, NextRequest } from "next/server";
 
 const isAdminRoute = createRouteMatcher(["/admin(.*)"]);
 const isAdminLogin = createRouteMatcher(["/admin/login"]);
+// Vanzon Pulse (PWA analytics) — même auth que l'admin
+const isPulseRoute = createRouteMatcher(["/pulse(.*)"]);
 // Dev-only routes — have their own NODE_ENV guard, no Clerk needed
 const isDevOnlyRoute = createRouteMatcher([
   "/pixel-agents(.*)",
@@ -29,6 +31,7 @@ const needsClerk = createRouteMatcher([
   "/dashboard(.*)",
   "/user(.*)",
   "/admin(.*)",
+  "/pulse(.*)",
   // /proprietaire tout court est une landing publique (dans le sitemap) —
   // seuls les sous-chemins (inscription, connexion, dashboard) passent par Clerk
   "/proprietaire/(.*)",
@@ -73,8 +76,8 @@ const clerkHandler = clerkMiddleware(async (auth, req) => {
   // Admin login page is public
   if (isAdminLogin(req)) return NextResponse.next();
 
-  // Admin routes redirect to dedicated admin login page when unauthenticated
-  if (isAdminRoute(req)) {
+  // Admin + Pulse routes redirect to dedicated admin login page when unauthenticated
+  if (isAdminRoute(req) || isPulseRoute(req)) {
     const { userId } = await auth();
     if (!userId) {
       const loginUrl = new URL("/admin/login", req.url);
