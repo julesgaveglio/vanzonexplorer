@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useState } from "react";
 import LiquidButton from "@/components/ui/LiquidButton";
+import { trackConversion } from "@/lib/analytics";
 
 const schema = z.object({
   prenom: z.string().min(2, "Prenom requis"),
@@ -52,6 +53,7 @@ export default function ResourceDownloadForm({
         setServerError(json.error || "Une erreur est survenue.");
         return;
       }
+      trackConversion("resource_download", { ressource, source });
       triggerDownload(json.fileUrl, json.fileName);
       setDone(true);
     } catch {

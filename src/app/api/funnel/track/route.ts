@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
+import { classifyChannel } from "@/lib/channel-classifier";
 
 const VALID_EVENTS = [
   "page_view",
@@ -16,14 +17,31 @@ const VALID_EVENTS = [
   "appel_confirme",
   "checkout",
   "purchase",
+  // ── Conversions site-wide (Phase 2 analytics) ──
+  "booking_click",     // clic vers Yescapa/Wikicampers depuis une page location
+  "whatsapp_click",    // clic WhatsApp depuis une fiche achat
+  "roadtrip_lead",     // soumission du générateur de road trip
+  "resource_download", // téléchargement d'une ressource PDF
+  "vsl_cta_click",     // clic vers la VSL depuis /formation
+  "contact_submit",    // formulaire de contact
 ] as const;
+
+// Events de conversion site-wide : pas de notif Telegram, juste de la data
+const SITEWIDE_CONVERSIONS = [
+  "booking_click",
+  "whatsapp_click",
+  "roadtrip_lead",
+  "resource_download",
+  "vsl_cta_click",
+  "contact_submit",
+];
 
 const IGNORED_EMAILS = ["gavegliojules@gmail.com", "mateogb.ads@gmail.com", "jules@vanzonexplorer.com"];
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { session_id, event, page, email, firstname, referrer, metadata, ...utm } = body;
+    const { session_id, event, page, email, firstname, referrer, metadata, first_touch, landing_page, ...utm } = body;
 
     if (!event || !page) {
       return NextResponse.json({ error: "event and page required" }, { status: 400 });
@@ -67,18 +85,32 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Classification du canal d'acquisition à partir du first-touch.
+    // Priorité au first_touch envoyé par le client (analytics.ts), fallback
+    // sur les UTM/referrer de l'événement courant (tunnel VBA legacy).
+    const channel = classifyChannel({
+      utm_source: first_touch?.utm_source ?? utm.utm_source,
+      utm_medium: first_touch?.utm_medium ?? utm.utm_medium,
+      utm_campaign: first_touch?.utm_campaign ?? utm.utm_campaign,
+      referrer: first_touch?.referrer ?? referrer,
+      gclid: first_touch?.gclid,
+      fbclid: first_touch?.fbclid,
+    });
+
     const { error } = await supabase.from("funnel_events").insert({
       session_id: session_id || null,
       email: email || null,
       firstname: firstname || null,
       event,
       page,
-      utm_source: utm.utm_source || null,
-      utm_medium: utm.utm_medium || null,
-      utm_campaign: utm.utm_campaign || null,
-      utm_content: utm.utm_content || null,
-      utm_term: utm.utm_term || null,
-      referrer: referrer || null,
+      utm_source: utm.utm_source || first_touch?.utm_source || null,
+      utm_medium: utm.utm_medium || first_touch?.utm_medium || null,
+      utm_campaign: utm.utm_campaign || first_touch?.utm_campaign || null,
+      utm_content: utm.utm_content || first_touch?.utm_content || null,
+      utm_term: utm.utm_term || first_touch?.utm_term || null,
+      referrer: referrer || first_touch?.referrer || null,
+      channel,
+      landing_page: landing_page || first_touch?.landing_page || null,
       metadata: metadata || {},
     });
 
@@ -91,7 +123,11 @@ export async function POST(req: NextRequest) {
     // Skip: page_view (trop de bruit), optin (géré par /api/formation/tunnel/optin)
     // Skip: vsl_exit si déjà vsl_100
     const skipEvents = ["page_view", "formation_view", "optin", "vsl_25", "vsl_75", "booking_start"];
-    if (skipEvents.includes(event) || (event === "vsl_exit" && skipExitNotif)) {
+    if (
+      skipEvents.includes(event) ||
+      SITEWIDE_CONVERSIONS.includes(event) ||
+      (event === "vsl_exit" && skipExitNotif)
+    ) {
       return NextResponse.json({ ok: true });
     }
 

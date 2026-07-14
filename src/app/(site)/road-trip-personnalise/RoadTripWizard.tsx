@@ -17,6 +17,7 @@ import type {
   RoadTripScope,
 } from '@/types/roadtrip'
 import { DURATION_SLUG_TO_KEY, type DurationSlug } from '@/types/road-trip-pb'
+import { trackConversion } from '@/lib/analytics'
 
 // ─── SVG icon helper ────────────────────────────────────────────────────────
 const I = ({ d, cls }: { d: string; cls?: string }) => (
@@ -293,6 +294,7 @@ export default function RoadTripWizard() {
               if (event.type === 'progress' && event.message) addLine(event.message)
               else if (event.type === 'done') {
                 receivedTerminalEvent = true
+                trackConversion('roadtrip_lead', { scope: data.scope, duration: data.duration, groupType: data.groupType })
                 setTerminalLines((prev) => prev.map((l) => ({ ...l, done: true })))
                 setTimeout(() => router.push('/road-trip-personnalise/confirmation'), 1000)
                 return

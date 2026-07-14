@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { VANS } from "@/lib/data/vans";
+import { trackConversion } from "@/lib/analytics";
 
 function ImageGallery({ images, name }: { images: string[]; name: string }) {
   const [active, setActive] = useState(0);
@@ -117,6 +118,7 @@ function VanListing({ van, reversed }: { van: (typeof VANS)[0]; reversed?: boole
               href={van.whatsapp}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => trackConversion("whatsapp_click", { van: van.id, context: "achat" })}
               className="w-full inline-flex items-center justify-center gap-2.5 bg-[#25D366] text-white font-bold px-5 py-4 rounded-xl hover:bg-[#20bd5a] transition-colors text-sm"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">

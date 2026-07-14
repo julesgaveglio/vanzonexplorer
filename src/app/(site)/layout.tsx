@@ -3,6 +3,7 @@ import Footer from "@/components/layout/Footer";
 import FloatingCTA from "@/components/layout/FloatingCTA";
 import AdLandingGuard from "@/components/layout/AdLandingGuard";
 import MainWithPadding from "@/components/layout/MainWithPadding";
+import AnalyticsTracker from "@/components/analytics/AnalyticsTracker";
 import { ArticleCategoryProvider } from "@/lib/contexts/ArticleCategoryContext";
 
 export default function SiteLayout({
@@ -12,6 +13,7 @@ export default function SiteLayout({
 }) {
   return (
     <ArticleCategoryProvider>
+      <AnalyticsTracker />
       <AdLandingGuard>
         <Navbar />
       </AdLandingGuard>
