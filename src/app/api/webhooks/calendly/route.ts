@@ -21,7 +21,6 @@ export const runtime = "nodejs";
 // d'enregistrer la réservation, et l'envoi différé est déclenché par
 // /api/cron/send-pending-whatsapp-confirmations, appelé toutes les 2 min
 // par calendly-poller.mjs sur la VM (même mécanisme que le poller Calendly).
-const WELCOME_DELAY_MS = 10 * 60 * 1000; // 10 minutes
 
 // ── Types ──
 
@@ -91,49 +90,6 @@ function formatDateFR(dateStr: string): string {
     timeZone: "Europe/Paris",
   });
   return `${date} à ${time}`;
-}
-
-// ── WhatsApp ──
-
-function formatPhoneForWhatsApp(phone: string): string {
-  let cleaned = phone.replace(/[\s\-\.]/g, "");
-  if (cleaned.startsWith("+")) cleaned = cleaned.slice(1);
-  if (cleaned.startsWith("0")) cleaned = "33" + cleaned.slice(1);
-  return cleaned;
-}
-
-async function sendWhatsApp(
-  name: string,
-  phone: string,
-  scheduledAt: string,
-  supabase: ReturnType<typeof createSupabaseAdmin>
-) {
-  const firstName = name.split(" ")[0];
-  const formatted = formatDateFR(scheduledAt);
-  const message = `Salut ${firstName}, je viens de voir que tu as réservé un appel pour ${formatted}, je te confirme que je serai au rendez-vous ! Au plaisir d'échanger ! 😁`;
-  const recipient = formatPhoneForWhatsApp(phone);
-
-  try {
-    const res = await fetch("https://vanzon-wa.unhinged-lab.com/api/send", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ recipient, message }),
-      signal: AbortSignal.timeout(5000),
-    });
-
-    if (res.ok) {
-      // Mark as sent in DB
-      await supabase
-        .from("closing_calls")
-        .update({ whatsapp_sent_at: new Date().toISOString(), whatsapp_message: message })
-        .eq("email", name) // Will be caught by cron if this fails
-        .eq("phone", phone);
-      console.log(`[calendly] WhatsApp sent to ${recipient}`);
-    }
-  } catch {
-    // Bridge unreachable — cron at 7am will retry
-    console.warn(`[calendly] WhatsApp bridge unreachable for ${recipient}`);
-  }
 }
 
 // ── WhatsApp notification to Jules ──
