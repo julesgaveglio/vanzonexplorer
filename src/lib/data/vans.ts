@@ -73,6 +73,9 @@ export const VANS: VanData[] = [
     seats: 3,
     ref: "VZN-XALBAT-02",
     images: [
+      "https://cdn.sanity.io/images/lewexa74/production/e9664378c5fdc652c33ae7342dfc52cc4960c8bf-1080x750.png",
+      "https://cdn.sanity.io/images/lewexa74/production/e07cf63507850084bee14fca9a91b4efe5b7d18a-1080x750.png",
+      "https://cdn.sanity.io/images/lewexa74/production/04d93973d30c5eede51f954d1432a50a5f82ef9b-1080x750.png",
       "/images/vans/xalbat-vente/xalbat-interieur-jour.jpg",
       "/images/vans/xalbat-vente/xalbat-exterieur-coucher-soleil.jpg",
       "/images/vans/xalbat-vente/xalbat-interieur-led-rouge.jpg",
