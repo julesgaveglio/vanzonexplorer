@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.vanzonexplorer.closer",
+      "sha256_cert_fingerprints": [
+        "21:13:3E:E8:C8:1E:B1:CA:25:D8:AA:16:AA:34:B8:99:2E:FA:92:8D:F1:48:0A:6F:E9:2F:B2:AF:A7:01:78:74"
+      ]
+    }
+  }
+]
