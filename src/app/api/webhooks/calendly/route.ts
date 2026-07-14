@@ -10,14 +10,17 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { createHmac, timingSafeEqual } from "crypto";
-import { waitUntil } from "@vercel/functions";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
-// L'envoi WhatsApp au prospect est différé de 10 min après la réservation
-// (waitUntil) — la fonction doit pouvoir vivre plus longtemps que le délai.
-export const maxDuration = 800;
 
+// Le WhatsApp de confirmation au prospect part 10 minutes après la
+// réservation (plus humain qu'une réponse instantanée de robot). Le plan
+// Vercel Hobby plafonne maxDuration à 300s — impossible d'attendre 10 min
+// dans la fonction elle-même. À la place : le webhook se contente
+// d'enregistrer la réservation, et l'envoi différé est déclenché par
+// /api/cron/send-pending-whatsapp-confirmations, appelé toutes les 2 min
+// par calendly-poller.mjs sur la VM (même mécanisme que le poller Calendly).
 const WELCOME_DELAY_MS = 10 * 60 * 1000; // 10 minutes
 
 // ── Types ──
@@ -319,23 +322,9 @@ export async function POST(req: NextRequest) {
       scheduledAt: payload.scheduled_event.start_time,
     }).catch((err) => console.warn("[calendly] Jules WhatsApp notify failed:", err));
 
-    // WhatsApp de confirmation au prospect — envoyé 10 MINUTES après la
-    // réservation (plus humain qu'une réponse instantanée de robot).
-    // waitUntil garde la fonction en vie après la réponse à Calendly ;
-    // si l'envoi échoue malgré tout, le cron de 7h le rattrape
-    // (whatsapp_sent_at reste null dans closing_calls).
-    if (phone) {
-      const prospectName = payload.name;
-      const prospectPhone = phone;
-      const startTime = payload.scheduled_event.start_time;
-      waitUntil(
-        (async () => {
-          await new Promise((resolve) => setTimeout(resolve, WELCOME_DELAY_MS));
-          await sendWhatsApp(prospectName, prospectPhone, startTime, supabase);
-          console.log(`[calendly] WhatsApp différé (10 min) envoyé à ${prospectName}`);
-        })().catch((err) => console.warn("[calendly] WhatsApp différé échoué:", err))
-      );
-    }
+    // Le WhatsApp de confirmation au prospect n'est PAS envoyé ici — voir le
+    // commentaire en haut de fichier. /api/cron/send-pending-whatsapp-confirmations
+    // le prendra dans 10 minutes (whatsapp_sent_at reste null pour l'instant).
 
     return NextResponse.json({ ok: true, action: "created", email: payload.email });
   } catch (err) {
