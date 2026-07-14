@@ -1,5 +1,5 @@
-// Type canonique du retour d'analyse de closing (partagé API <-> UI).
-// Le contenu textuel est en français (transcripts en français).
+// Types canoniques pour Closer Coach (partagés API <-> UI <-> script de sync).
+// Contenu textuel en français (transcripts en français).
 
 export type ClosingOutcome = "signe" | "perdu" | "a_suivre" | "indetermine";
 
@@ -9,47 +9,81 @@ export interface ClosingCriterion {
   commentaire: string; // pourquoi cette note, avec preuve
 }
 
+// La "fiche" : contexte concret extrait de l'appel (qui, situation, chiffres).
+// Sert à ranger la donnée dans la mémoire Obsidian et à la retrouver plus tard.
+export interface ClosingContext {
+  prenom: string | null;
+  nom: string | null;
+  age: number | null;
+  ville: string | null;
+  region: string | null;
+  pays: string | null;
+  metier: string | null;
+  situation: string | null; // résumé de la situation perso/pro
+  projet: string | null; // ce qu'il veut faire (voyage / business / location)
+  objectif_business: boolean | null; // true = intention business, false = perso
+  budget_vehicule: string | null;
+  budget_amenagement: string | null;
+  // D'où vient le prospect (attribution marketing, déduite du transcript).
+  acquisition: {
+    canal: string | null; // "Meta Ads" | "Google Ads" | "SEO / Google organique" | "Facebook (organique)" | "Instagram" | "TikTok" | "Bouche-à-oreille" | "Autre" | "Inconnu"
+    type: "payant" | "organique" | "inconnu" | null;
+    detail: string | null; // précision
+    indice: string | null; // verbatim/indice du transcript qui le justifie
+  } | null;
+  canal: string | null; // canal de contact : WhatsApp, téléphone...
+  statut: string | null; // signé | perdu | en réflexion | à suivre
+  resultat: string | null; // résultat en une ligne
+  offre_proposee: string | null;
+  montant: string | null; // montant discuté / payé
+  objections: string[];
+  signaux_achat: string[];
+  chiffres_cles: string[];
+  verbatims: string[]; // citations importantes
+  next_steps: string[];
+  resume: string | null; // 2-3 phrases de synthèse du prospect
+}
+
 export interface ClosingAnalysis {
   verdict: {
     outcome: ClosingOutcome;
-    score: number; // 0 à 100, note globale honnête
-    resume: string; // une phrase franche : ce qui a fait gagner/perdre l'appel
+    score: number; // 0 à 100
+    resume: string; // une phrase franche
   };
   criteres: ClosingCriterion[];
   points_forts: { point: string; extrait: string }[];
   points_faibles: { point: string; extrait: string; impact: string }[];
   occasions_manquees: {
-    moment: string; // à quel moment de l'appel
+    moment: string;
     ce_qui_s_est_passe: string;
     meilleur_move: string;
-    exemple_phrase: string; // phrase exacte à dire la prochaine fois
+    exemple_phrase: string;
   }[];
   objections: {
-    objection: string; // l'objection réellement soulevée
-    ta_reponse: string; // comment le closer a répondu
+    objection: string;
+    ta_reponse: string;
     note: "bien" | "moyen" | "rate";
-    mieux: string; // meilleure réponse + exemple
+    mieux: string;
   }[];
-  ratio_parole: {
-    estimation: string; // ex: "~70% closer / 30% prospect"
-    verdict: string; // trop, pas assez, idéal
-  };
-  reformulations: {
-    tu_as_dit: string; // citation du transcript
-    dis_plutot: string; // meilleure formulation
-    pourquoi: string;
-  }[];
-  priorites: string[]; // les 3 chantiers prioritaires, du plus impactant au moins
-  exercices: string[]; // drills concrets pour progresser
+  ratio_parole: { estimation: string; verdict: string };
+  reformulations: { tu_as_dit: string; dis_plutot: string; pourquoi: string }[];
+  priorites: string[];
+  exercices: string[];
 }
 
-// Ligne stockée en base (table closing_analyses)
+// Ligne stockée en base (table closing_analyses) — source de vérité.
 export interface ClosingAnalysisRow {
   id: string;
   title: string | null;
   prospect: string | null;
+  closer: string | null;
+  call_date: string | null; // YYYY-MM-DD
+  ville: string | null;
+  statut: string | null;
   transcript: string;
   analysis: ClosingAnalysis;
+  context: ClosingContext | null;
   score: number | null;
+  closing_call_id: string | null; // lien vers la réservation Calendly (closing_calls)
   created_at: string;
 }

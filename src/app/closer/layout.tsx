@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
   appleWebApp: {
     capable: true,
-    statusBarStyle: "black-translucent",
+    statusBarStyle: "default",
     title: "Closer",
   },
   icons: {
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0b0f19",
+  themeColor: "#FFFFFF",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
@@ -39,6 +39,6 @@ export default async function CloserLayout({ children }: { children: React.React
   if (!ALLOWED_EMAILS.includes(email)) redirect("/");
 
   return (
-    <div className="min-h-[100dvh] bg-[#0b0f19] text-slate-100 antialiased">{children}</div>
+    <div className="min-h-[100dvh] bg-slate-50 text-slate-900 antialiased">{children}</div>
   );
 }
