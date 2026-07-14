@@ -56,6 +56,14 @@ function safeName(s: string): string {
   return s.replace(/[\\/:*?"<>|]/g, "-").replace(/\s+/g, " ").trim() || "Sans nom";
 }
 
+/** Lit une clé simple du frontmatter YAML (ex: date, prospect). */
+function frontmatterValue(raw: string, key: string): string | null {
+  const fm = raw.match(/^---\n([\s\S]*?)\n---/);
+  if (!fm) return null;
+  const m = fm[1].match(new RegExp(`^${key}\\s*:\\s*(.+)$`, "m"));
+  return m ? m[1].trim().replace(/^["']|["']$/g, "") || null : null;
+}
+
 /** Récupère le transcript verbatim d'un fichier .md (marqueurs prioritaires, sinon nettoyage). */
 function extractTranscript(raw: string): string {
   const s = raw.indexOf(T_START);
@@ -344,8 +352,12 @@ async function importFromVault(existingHashes: Set<string>) {
     if (existingHashes.has(hash)) continue; // déjà en base (déjà analysé) → skip
 
     const folder = path.basename(path.dirname(file));
-    // Devine le prénom depuis le nom de dossier (avant une éventuelle date entre parenthèses).
-    const guessedName = folder.replace(/\s*\([^)]*\)\s*$/, "").trim();
+    // Nom : frontmatter `prospect:` en priorité, sinon nom du dossier (sans date entre parenthèses).
+    const guessedName =
+      frontmatterValue(raw, "prospect") || folder.replace(/\s*\([^)]*\)\s*$/, "").trim();
+    // Date réelle de l'appel : frontmatter `date:` du fichier legacy, sinon aujourd'hui.
+    const fmDate = frontmatterValue(raw, "date");
+    const callDate = fmDate && /^\d{4}-\d{2}-\d{2}$/.test(fmDate) ? fmDate : new Date().toISOString().slice(0, 10);
 
     console.log(`  🔍 Analyse de « ${folder} »…`);
     if (DRY) {
@@ -367,7 +379,7 @@ async function importFromVault(existingHashes: Set<string>) {
         title: `Import vault — ${folder}`,
         prospect: displayProspect,
         closer: "Jules",
-        call_date: new Date().toISOString().slice(0, 10),
+        call_date: callDate,
         ville: context?.ville ?? null,
         statut: context?.statut ?? analysis?.verdict?.outcome ?? null,
         transcript,
