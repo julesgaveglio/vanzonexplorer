@@ -129,6 +129,26 @@ const clerkHandler = clerkMiddleware(async (auth, req) => {
 });
 
 export default function middleware(req: NextRequest, event: NextFetchEvent) {
+  // Digital Asset Links pour l'app Android Closer Coach (TWA). Servi ici car
+  // Next ne sert pas les dotfolders de public/. Public, jamais via Clerk.
+  if (req.nextUrl.pathname === "/.well-known/assetlinks.json") {
+    return NextResponse.json(
+      [
+        {
+          relation: ["delegate_permission/common.handle_all_urls"],
+          target: {
+            namespace: "android_app",
+            package_name: "com.vanzonexplorer.closer",
+            sha256_cert_fingerprints: [
+              "21:13:3E:E8:C8:1E:B1:CA:25:D8:AA:16:AA:34:B8:99:2E:FA:92:8D:F1:48:0A:6F:E9:2F:B2:AF:A7:01:78:74",
+            ],
+          },
+        },
+      ],
+      { headers: { "cache-control": "public, max-age=3600" } },
+    );
+  }
+
   // Old WordPress URLs + /club — 410 Gone (tell Google to stop crawling)
   if (isGonePath(req.nextUrl.pathname)) {
     return new NextResponse("Gone", { status: 410 });
