@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ChevronDown, CheckCircle2, Circle, Play } from "lucide-react";
+import { ChevronDown, CheckCircle2, Circle, Play, Hourglass } from "lucide-react";
 
 interface Module {
   id: string;
@@ -165,9 +165,9 @@ export default function VBASidebar({
                             key={lesson.id}
                             className="flex items-center gap-2 pl-10 pr-4 py-2 text-sm opacity-40 cursor-default"
                           >
-                            <Circle className="w-4 h-4 text-slate-200 flex-shrink-0" />
+                            <Hourglass className="w-4 h-4 text-amber-400 flex-shrink-0" />
                             <span className="flex-1 leading-snug text-slate-400">{lesson.title}</span>
-                            <span className="text-[10px] text-amber-500 font-medium flex-shrink-0">Bientôt</span>
+                            <span className="text-[10px] text-amber-500 font-medium flex-shrink-0">Bientôt disponible</span>
                           </div>
                         );
                       }
