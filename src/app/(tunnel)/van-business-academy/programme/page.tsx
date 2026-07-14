@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import ModuleAccordion from "./ModuleAccordion";
 
 export const metadata: Metadata = {
@@ -352,6 +353,8 @@ export default function ProgrammePage() {
                     Tu maîtrises <span className="text-slate-900 font-semibold">100% de ton budget</span> avant même de commencer les travaux — zéro surprise.
                   </>
                 ),
+                image: "/images/vba/airtable-liste-materiel-vasp.jpg",
+                imageAlt: "Aperçu du tableur Airtable — liste de matériel VASP avec photos, descriptions et prix",
               },
               {
                 emoji: "📋",
@@ -434,11 +437,22 @@ export default function ProgrammePage() {
                   >
                     {bonus.emoji}
                   </div>
-                  <div>
+                  <div className="min-w-0 flex-1">
                     <h3 className="text-base sm:text-lg font-bold text-slate-900">{bonus.title}</h3>
                     <p className="text-sm text-slate-500 mt-1.5 leading-relaxed">{bonus.text}</p>
                   </div>
                 </div>
+                {"image" in bonus && bonus.image && (
+                  <div className="mt-4 rounded-xl overflow-hidden border border-slate-100">
+                    <Image
+                      src={bonus.image}
+                      alt={bonus.imageAlt || bonus.title}
+                      width={1400}
+                      height={800}
+                      className="w-full h-auto"
+                    />
+                  </div>
+                )}
               </div>
             ))}
           </div>
