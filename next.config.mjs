@@ -6,6 +6,13 @@ const nextConfig = {
   },
   async redirects() {
     return [
+      // ── Ancien slug membre /dashboard → /espace-membre (renommé juil. 2026) ─
+      // Fait au niveau routage Vercel (fiable, évalué avant tout rendu/404 et
+      // insensible au cache 404 du middleware). Double avec le garde-fou
+      // middleware. Rend inoffensif le drift des vars Clerk encore sur /dashboard.
+      { source: "/dashboard", destination: "/espace-membre", permanent: true },
+      { source: "/dashboard/:path*", destination: "/espace-membre/:path*", permanent: true },
+
       // ── Forêt d'Iraty ──────────────────────────────────────────────────────
       { source: "/blogs/bivouac-van-iraty/:path*", destination: "/articles/foret-irati-van", permanent: true },
       { source: "/blogs/spots-bivouac-van-iraty/:path*", destination: "/articles/foret-irati-van", permanent: true },
