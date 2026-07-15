@@ -505,29 +505,29 @@
   },
   {
     "id": "sync-reservations-calendar",
-    "name": "Agent Sync Réservations → Calendar",
+    "name": "Agent Sync Réservations → Calendar (n8n)",
     "emoji": "📅",
     "status": "active",
-    "description": "Toutes les 15 min : parse les emails Yescapa/Wikicampers, upsert dans Supabase, crée les événements Google Calendar (all-day, colorés par van). Gère aussi les annulations (suppression Calendar). Notification Telegram si changements.",
-    "trigger": "cron",
-    "schedule": "Toutes les 15 minutes",
-    "cronExpression": "*/15 * * * *",
-    "file": "scripts/agents/sync-reservations-calendar.ts",
-    "workflow": ".github/workflows/sync-reservations-calendar.yml",
+    "description": "Workflow n8n : Gmail Trigger (poll 2min) détecte les confirmations Yescapa/Wikicampers, parse les détails, crée un événement Google Calendar all-day (violet=Yescapa, orange=Wikicampers) et envoie une notification Telegram. Remplace l'ancien agent TypeScript + GitHub Actions (désactivé le 2026-06-23).",
+    "trigger": "n8n",
+    "schedule": "Gmail Trigger — poll toutes les 2 minutes",
+    "cronExpression": null,
+    "file": "scripts/n8n/vanzon-reservations-calendar.json",
+    "workflow": "n8n — https://n8n-jules.unhinged-lab.com",
     "apis": [
       "Gmail API",
       "Google Calendar API",
-      "Supabase",
       "Telegram Bot API"
     ],
     "output": "Événements Google Calendar + notification Telegram",
-    "manualCommand": "npx tsx scripts/agents/sync-reservations-calendar.ts",
+    "manualCommand": "Exécuter manuellement depuis l'UI n8n",
     "tags": [
       "Location",
       "Calendar",
       "Gmail",
+      "n8n",
       "Automatique"
     ],
-    "pipeline": "Gmail emails → Supabase reservations → Google Calendar events"
+    "pipeline": "Gmail Trigger → Parse email → Google Calendar → Telegram"
   }
 ]
