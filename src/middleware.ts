@@ -16,11 +16,14 @@ const isMarketplaceInscription = createRouteMatcher(["/proprietaire/inscription(
 const isMarketplaceConnexion = createRouteMatcher(["/proprietaire/connexion(.*)"]);
 const isOldMarketplaceDashboard = createRouteMatcher(["/proprietaire/dashboard(.*)"]);
 
-const isFormationRoute = createRouteMatcher(["/dashboard/formations(.*)"]);
+const isFormationRoute = createRouteMatcher(["/espace-membre/formations(.*)"]);
 const isProtectedRoute = createRouteMatcher([
-  "/dashboard/vba(.*)",
+  "/espace-membre/vba(.*)",
   "/user(.*)",
 ]);
+// Ancien slug /dashboard -> /espace-membre (renommé juillet 2026).
+// Redirection 301 pour préserver bookmarks membres + retours Clerk.
+const isLegacyDashboard = createRouteMatcher(["/dashboard(.*)"]);
 
 // Routes qui ont réellement besoin de Clerk côté serveur. Tout le reste
 // (pages publiques SEO) ne doit JAMAIS passer par clerkMiddleware : en
@@ -28,7 +31,7 @@ const isProtectedRoute = createRouteMatcher([
 // un 307 handshake vers accounts.dev — invisible pour un humain, mais
 // Googlebot le reçoit et classe toutes les pages en "Redirect error".
 const needsClerk = createRouteMatcher([
-  "/dashboard(.*)",
+  "/espace-membre(.*)",
   "/user(.*)",
   "/admin(.*)",
   "/pulse(.*)",
@@ -87,16 +90,16 @@ const clerkHandler = clerkMiddleware(async (auth, req) => {
     return NextResponse.next();
   }
 
-  // Old /proprietaire/dashboard → permanent redirect to /dashboard
+  // Old /proprietaire/dashboard → permanent redirect to /espace-membre
   if (isOldMarketplaceDashboard(req)) {
-    return NextResponse.redirect(new URL("/dashboard", req.url), 301);
+    return NextResponse.redirect(new URL("/espace-membre", req.url), 301);
   }
 
-  // Marketplace — already signed in → skip connexion page → go to dashboard
+  // Marketplace — already signed in → skip connexion page → go to espace-membre
   if (isMarketplaceConnexion(req)) {
     const { userId } = await auth();
     if (userId) {
-      return NextResponse.redirect(new URL("/dashboard", req.url));
+      return NextResponse.redirect(new URL("/espace-membre", req.url));
     }
     return NextResponse.next();
   }
@@ -114,8 +117,8 @@ const clerkHandler = clerkMiddleware(async (auth, req) => {
   if (isFormationRoute(req)) {
     const { userId } = await auth();
     if (!userId) {
-      // Extract slug from /dashboard/formations/[slug]/...
-      const slugMatch = req.nextUrl.pathname.match(/\/dashboard\/formations\/([^/]+)/);
+      // Extract slug from /espace-membre/formations/[slug]/...
+      const slugMatch = req.nextUrl.pathname.match(/\/espace-membre\/formations\/([^/]+)/);
       const slug = slugMatch?.[1] ?? "homologation-vasp";
       const inscriptionUrl = new URL(`/formations/${slug}/inscription`, req.url);
       return NextResponse.redirect(inscriptionUrl);
@@ -155,6 +158,14 @@ export default function middleware(req: NextRequest, event: NextFetchEvent) {
   }
   if (isWordPressGhost(req.nextUrl.pathname, req.nextUrl.search)) {
     return new NextResponse("Gone", { status: 410 });
+  }
+
+  // Ancien slug /dashboard -> /espace-membre (renommé juillet 2026).
+  // 301 avant Clerk : préserve bookmarks membres et retours Clerk legacy.
+  if (isLegacyDashboard(req)) {
+    const url = req.nextUrl.clone();
+    url.pathname = url.pathname.replace(/^\/dashboard/, "/espace-membre");
+    return NextResponse.redirect(url, 301);
   }
 
   // Pages publiques : ne jamais invoquer Clerk (cf. commentaire needsClerk)

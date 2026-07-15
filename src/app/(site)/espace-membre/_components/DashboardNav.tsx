@@ -43,8 +43,8 @@ export default function DashboardNav({ hasVBA, formations }: DashboardNavProps) 
   }, [pathname]);
 
   const isFormationsActive =
-    pathname.startsWith("/dashboard/vba") ||
-    pathname.startsWith("/dashboard/formations");
+    pathname.startsWith("/espace-membre/vba") ||
+    pathname.startsWith("/espace-membre/formations");
 
   const navLinkClass = (href: string, exact?: boolean) => {
     const isActive = exact ? pathname === href : pathname.startsWith(href);
@@ -58,14 +58,14 @@ export default function DashboardNav({ hasVBA, formations }: DashboardNavProps) 
   return (
     <nav className="flex gap-0.5 sm:gap-1 -mb-px">
       {/* Mon profil */}
-      <Link href="/dashboard" className={navLinkClass("/dashboard", true)}>
+      <Link href="/espace-membre" className={navLinkClass("/espace-membre", true)}>
         <User className="w-4 h-4" />
         <span className="hidden sm:inline">Mon profil</span>
         <span className="sm:hidden">Profil</span>
       </Link>
 
       {/* Mes annonces */}
-      <Link href="/dashboard/annonces" className={navLinkClass("/dashboard/annonces")}>
+      <Link href="/espace-membre/annonces" className={navLinkClass("/espace-membre/annonces")}>
         <Image
           src="https://cdn.sanity.io/images/lewexa74/production/1f483103ef15ee3549eab14ba2801d11b32a9055-313x313.png?w=200&h=200&fit=crop&auto=format"
           alt=""
@@ -108,7 +108,7 @@ export default function DashboardNav({ hasVBA, formations }: DashboardNavProps) 
             {/* VBA */}
             {hasVBA ? (
               <Link
-                href="/dashboard/vba"
+                href="/espace-membre/vba"
                 className="flex items-center gap-2 px-4 py-3 hover:bg-slate-50 transition-colors"
               >
                 <span className="text-sm font-medium text-slate-900 flex-1">
@@ -134,7 +134,7 @@ export default function DashboardNav({ hasVBA, formations }: DashboardNavProps) 
               f.hasAccess ? (
                 <Link
                   key={f.slug}
-                  href={`/dashboard/formations/${f.slug}`}
+                  href={`/espace-membre/formations/${f.slug}`}
                   className="flex items-center gap-2 px-4 py-3 hover:bg-slate-50 transition-colors"
                 >
                   <span className="text-sm font-medium text-slate-900 flex-1">

@@ -31,7 +31,7 @@ export default function FormationSignUp({
         <div className="flex justify-center">
           <SignUp
             routing="hash"
-            forceRedirectUrl={`/dashboard/formations/${formationSlug}`}
+            forceRedirectUrl={`/espace-membre/formations/${formationSlug}`}
             appearance={{
               elements: {
                 footer: "hidden",

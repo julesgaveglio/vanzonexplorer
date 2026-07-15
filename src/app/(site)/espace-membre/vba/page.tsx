@@ -89,7 +89,7 @@ export default async function VBAPage() {
       .single();
 
     if (firstLesson) {
-      redirect(`/dashboard/vba/${firstModule.slug}/${firstLesson.slug}`);
+      redirect(`/espace-membre/vba/${firstModule.slug}/${firstLesson.slug}`);
     }
   }
 
@@ -217,7 +217,7 @@ export default async function VBAPage() {
                     return (
                       <Link
                         key={lesson.id}
-                        href={`/dashboard/vba/${mod.slug}/${lesson.slug}`}
+                        href={`/espace-membre/vba/${mod.slug}/${lesson.slug}`}
                         className={`flex items-center gap-3 px-4 sm:px-5 py-3 hover:bg-slate-50 transition-colors active:bg-slate-100 ${
                           isCurrent ? "bg-amber-50/50" : ""
                         }`}

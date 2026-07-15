@@ -51,7 +51,7 @@ const ARTICLE_CATEGORY_CTA: Record<string, CTAConfig> = {
 function getCTAConfig(pathname: string): CTAConfig | null {
   // ── Pages sans FloatingCTA (le CTA n'apporte rien ou conflit UX) ──
   // Dashboard / espace membre — l'utilisateur navigue déjà, conflit avec le FAB VBA mobile
-  if (pathname.startsWith("/dashboard") || pathname.startsWith("/user")) return null;
+  if (pathname.startsWith("/espace-membre") || pathname.startsWith("/user")) return null;
   // Auth — ne pas distraire l'utilisateur pendant la connexion
   if (pathname.startsWith("/sign-in") || pathname.startsWith("/sign-up")) return null;
   // Tunnel VBA — a ses propres CTAs (VSLStickyBar, boutons tunnel)

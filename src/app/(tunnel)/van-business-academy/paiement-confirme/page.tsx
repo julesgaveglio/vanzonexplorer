@@ -48,7 +48,7 @@ export default function PaiementConfirmePage() {
       </p>
 
       <Link
-        href="/dashboard/vba"
+        href="/espace-membre/vba"
         className="inline-block font-bold text-white py-4 px-10 rounded-xl text-base sm:text-lg transition-all hover:scale-[1.02] hover:shadow-lg"
         style={{
           background: "linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%)",

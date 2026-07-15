@@ -175,7 +175,7 @@ export default function VBASidebar({
                       return (
                         <Link
                           key={lesson.id}
-                          href={`/dashboard/vba/${mod.slug}/${lesson.slug}`}
+                          href={`/espace-membre/vba/${mod.slug}/${lesson.slug}`}
                           className={`flex items-center gap-2 pl-10 pr-4 py-2 text-sm transition-colors ${
                             isCurrent
                               ? "bg-amber-50 text-slate-900 font-medium"

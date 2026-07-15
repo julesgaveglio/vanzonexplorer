@@ -176,7 +176,7 @@ export default async function FormationLessonPage({
 
         <div className="text-center">
           <Link
-            href={`/dashboard/formations/${slug}`}
+            href={`/espace-membre/formations/${slug}`}
             className="text-sm text-slate-500 hover:text-slate-700 transition-colors"
           >
             ← Retour à la formation
@@ -257,7 +257,7 @@ export default async function FormationLessonPage({
       .length,
   };
 
-  const basePath = `/dashboard/formations/${slug}`;
+  const basePath = `/espace-membre/formations/${slug}`;
 
   return (
     <div className="flex -mx-6 -my-8 lg:-mx-6 lg:-my-8 min-h-[calc(100vh-140px)]">

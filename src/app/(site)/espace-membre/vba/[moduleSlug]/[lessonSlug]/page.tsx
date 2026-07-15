@@ -176,21 +176,24 @@ export default async function LessonPage({
   };
 
   return (
-    <div className="flex -mx-6 -my-8 lg:-mx-6 lg:-my-8 min-h-[calc(100vh-140px)]">
+    <div className="flex -mx-4 sm:-mx-6 -my-4 sm:-my-8 min-h-[calc(100vh-140px)]">
       {/* Desktop sidebar — hidden on mobile */}
       <div className="hidden lg:block">
         <VBASidebar {...sidebarProps} />
       </div>
 
-      {/* Mobile drawer — hidden on desktop */}
-      <VBAMobileDrawer>
-        <VBASidebar {...sidebarProps} />
-      </VBAMobileDrawer>
-
       {/* Main content */}
       <div className="flex-1 overflow-y-auto min-w-0">
-        {/* Top bar */}
-        <div className="flex items-center gap-3 px-4 sm:px-6 py-3 border-b border-slate-100 bg-white">
+        {/* Nav mobile (barre sticky "Sommaire" + bottom-sheet) — masquée en desktop */}
+        <VBAMobileDrawer
+          moduleTitle={currentModule.title}
+          lessonTitle={currentLesson.title}
+        >
+          <VBASidebar {...sidebarProps} />
+        </VBAMobileDrawer>
+
+        {/* Top bar desktop — le contexte module est dans la barre sticky en mobile */}
+        <div className="hidden lg:flex items-center gap-3 px-4 sm:px-6 py-3 border-b border-slate-100 bg-white">
           <span className="text-sm text-slate-400 truncate">{currentModule.title}</span>
         </div>
 
@@ -283,7 +286,7 @@ export default async function LessonPage({
           <div className="flex items-center justify-between gap-3 border-t border-slate-100 pt-4 sm:pt-6 pb-20 lg:pb-6">
             {prevLesson ? (
               <Link
-                href={`/dashboard/vba/${prevLesson.moduleSlug}/${prevLesson.slug}`}
+                href={`/espace-membre/vba/${prevLesson.moduleSlug}/${prevLesson.slug}`}
                 className="inline-flex items-center gap-2 px-4 py-3 sm:py-2 rounded-xl text-sm font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors active:scale-95"
               >
                 <ArrowLeft className="w-4 h-4" />
@@ -295,7 +298,7 @@ export default async function LessonPage({
             )}
             {nextLesson ? (
               <Link
-                href={`/dashboard/vba/${nextLesson.moduleSlug}/${nextLesson.slug}`}
+                href={`/espace-membre/vba/${nextLesson.moduleSlug}/${nextLesson.slug}`}
                 className="btn-gold inline-flex items-center gap-2 px-5 py-3 sm:py-2 rounded-xl text-sm font-semibold text-white transition-all active:scale-95"
               >
                 Suivant

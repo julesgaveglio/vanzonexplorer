@@ -4,7 +4,7 @@ const BASE_URL = "https://vanzonexplorer.com";
 
 // Chemins privés — jamais crawlés, ni par Google ni par les IA
 const PRIVATE_PATHS = [
-  "/dashboard/",
+  "/espace-membre/",
   "/user/",
   "/sign-in/",
   "/sign-up/",

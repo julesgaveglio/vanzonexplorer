@@ -74,7 +74,7 @@ export default function FormationSidebar({
 
   const progressPercent =
     totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
-  const basePath = `/dashboard/formations/${formationSlug}`;
+  const basePath = `/espace-membre/formations/${formationSlug}`;
 
   return (
     <aside className="w-full lg:w-[340px] flex-shrink-0 bg-white lg:border-r border-slate-100 overflow-y-auto">

@@ -70,8 +70,8 @@ export async function POST(req: Request) {
           quantity: 1,
         },
       ],
-      success_url: `${siteUrl}/dashboard/formations/${formation.slug}?success=1`,
-      cancel_url: `${siteUrl}/dashboard/formations/${formation.slug}`,
+      success_url: `${siteUrl}/espace-membre/formations/${formation.slug}?success=1`,
+      cancel_url: `${siteUrl}/espace-membre/formations/${formation.slug}`,
       ...(name ? { payment_intent_data: { description: `${formation.name} - ${name}` } } : {}),
     });
 

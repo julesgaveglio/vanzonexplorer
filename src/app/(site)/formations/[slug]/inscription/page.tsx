@@ -17,7 +17,7 @@ export default async function FormationInscriptionPage({
   // Already logged in → go straight to formation dashboard
   const { userId } = await auth();
   if (userId) {
-    redirect(`/dashboard/formations/${slug}`);
+    redirect(`/espace-membre/formations/${slug}`);
   }
 
   // Fetch formation for branding

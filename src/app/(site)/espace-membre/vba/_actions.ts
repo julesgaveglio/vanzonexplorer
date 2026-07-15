@@ -45,7 +45,7 @@ export async function markLessonComplete(lessonId: string) {
     { onConflict: "user_id,lesson_id" }
   );
 
-  revalidatePath("/dashboard/vba");
+  revalidatePath("/espace-membre/vba");
 }
 
 export async function markLessonIncomplete(lessonId: string) {
@@ -64,7 +64,7 @@ export async function markLessonIncomplete(lessonId: string) {
     { onConflict: "user_id,lesson_id" }
   );
 
-  revalidatePath("/dashboard/vba");
+  revalidatePath("/espace-membre/vba");
 }
 
 // ---------- VBA Comments ----------
@@ -88,7 +88,7 @@ export async function addComment(lessonId: string, content: string, parentId?: s
 
   if (error) throw new Error("Erreur lors de l'ajout du commentaire");
 
-  revalidatePath("/dashboard/vba");
+  revalidatePath("/espace-membre/vba");
 }
 
 export async function deleteComment(commentId: string) {
@@ -119,5 +119,5 @@ export async function deleteComment(commentId: string) {
 
   if (error) throw new Error("Erreur lors de la suppression");
 
-  revalidatePath("/dashboard/vba");
+  revalidatePath("/espace-membre/vba");
 }

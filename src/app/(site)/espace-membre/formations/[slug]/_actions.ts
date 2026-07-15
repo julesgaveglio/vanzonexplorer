@@ -43,7 +43,7 @@ export async function markFormationLessonComplete(lessonId: string) {
     { onConflict: "user_id,lesson_id" }
   );
 
-  revalidatePath("/dashboard/formations");
+  revalidatePath("/espace-membre/formations");
 }
 
 export async function markFormationLessonIncomplete(lessonId: string) {
@@ -61,5 +61,5 @@ export async function markFormationLessonIncomplete(lessonId: string) {
     { onConflict: "user_id,lesson_id" }
   );
 
-  revalidatePath("/dashboard/formations");
+  revalidatePath("/espace-membre/formations");
 }

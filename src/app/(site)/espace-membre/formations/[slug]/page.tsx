@@ -86,5 +86,5 @@ export default async function FormationPage({
 
   if (!moduleSlug || !lessonSlug) notFound();
 
-  redirect(`/dashboard/formations/${slug}/${moduleSlug}/${lessonSlug}`);
+  redirect(`/espace-membre/formations/${slug}/${moduleSlug}/${lessonSlug}`);
 }

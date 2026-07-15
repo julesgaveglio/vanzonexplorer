@@ -351,7 +351,7 @@ export default function Navbar() {
                 Louer un van
               </Link>
               <Link
-                href="/dashboard"
+                href="/espace-membre"
                 className="text-sm font-medium text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-300 px-4 py-2 rounded-xl hover:bg-slate-50 transition-all"
               >
                 Espace membre
@@ -504,7 +504,19 @@ export default function Navbar() {
                   ))}
                 </div>
 
-                <div className="px-2 pb-2 pt-1" />
+                {/* Espace membre — visible sur mobile pour se connecter à la VBA */}
+                <div className="px-2 pb-2 pt-2 border-t border-slate-100">
+                  <Link
+                    href="/espace-membre"
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl text-sm font-semibold text-slate-700 bg-slate-50 hover:bg-slate-100 active:bg-slate-200 border border-slate-200 transition-colors"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                    </svg>
+                    Espace membre
+                  </Link>
+                </div>
               </div>
             </motion.div>
           )}
