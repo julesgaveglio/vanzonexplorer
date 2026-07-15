@@ -149,31 +149,16 @@ const schema = {
   ],
 };
 
-export function LocalBusinessJsonLd({
-  ratingValue,
-  reviewCount,
-}: {
-  ratingValue?: string;
-  reviewCount?: number;
-}) {
-  const fullSchema = {
-    ...schema,
-    ...(ratingValue && reviewCount
-      ? {
-          aggregateRating: {
-            "@type": "AggregateRating",
-            ratingValue,
-            reviewCount,
-            bestRating: "5",
-            worstRating: "1",
-          },
-        }
-      : {}),
-  };
+// Pas d'aggregateRating ici : une note "auto-décernée" sur sa propre
+// LocalBusiness/Organization est interdite par les règles Google (Review
+// snippets), et elle ne correspondait pas au "5/5 sur Google" affiché
+// (mismatch markup ↔ contenu visible). Retirée juillet 2026 pour résoudre
+// l'erreur GSC "L'avis contient plusieurs notes cumulées" (WNC-10030322).
+export function LocalBusinessJsonLd() {
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(fullSchema) }}
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
     />
   );
 }

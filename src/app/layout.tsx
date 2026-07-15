@@ -5,7 +5,6 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { frFR } from "@clerk/localizations";
 import { sanityFetch } from "@/lib/sanity/client";
 import { getSiteSettingsQuery } from "@/lib/sanity/queries";
-import { getGooglePlaceStats } from "@/lib/google-places";
 import CookieBanner from "@/components/ui/CookieBanner";
 import MetaPixel from "@/components/analytics/MetaPixel";
 import { LocalBusinessJsonLd, WebSiteJsonLd } from "@/components/seo/JsonLd";
@@ -87,8 +86,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const placeStats = await getGooglePlaceStats();
-
   return (
     <ClerkProvider localization={frFR} signInUrl="/sign-in" signUpUrl="/sign-up">
       <html lang="fr">
@@ -104,10 +101,7 @@ export default async function RootLayout({
         <body
           className={`${inter.variable} ${heading.variable} font-sans antialiased bg-bg-primary text-text-primary min-h-screen`}
         >
-          <LocalBusinessJsonLd
-            ratingValue={placeStats.ratingDisplay}
-            reviewCount={placeStats.reviewCount}
-          />
+          <LocalBusinessJsonLd />
           <WebSiteJsonLd />
           {children}
           <CookieBanner />
