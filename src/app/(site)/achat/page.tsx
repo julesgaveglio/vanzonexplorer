@@ -6,15 +6,16 @@ import GeoFaqSection, { type GeoFaqItem } from "@/components/seo/GeoFaqSection";
 const BASE_URL = "https://vanzonexplorer.com";
 
 export const metadata: Metadata = {
-  title: "Van aménagé à vendre au Pays Basque — Yoni & Xalbat",
+  title: "Vans aménagés à vendre — occasion vérifiée | Vanzon Explorer",
   description:
-    "Deux Renault Trafic entièrement aménagés à vendre au Pays Basque. Issus de notre flotte de location, historique complet depuis l'origine. Remise en main propre à Cambo-les-Bains. 19 900 € chacun.",
+    "Achetez un van aménagé d'occasion en toute confiance : véhicules révisés, historique d'entretien complet, essai sur place avant achat. Annonces au Pays Basque (64), remise en main propre à Cambo-les-Bains.",
   alternates: {
     canonical: "https://vanzonexplorer.com/achat",
   },
   openGraph: {
-    title: "Vans aménagés à vendre — Pays Basque",
-    description: "Yoni & Xalbat — deux Renault Trafic aménagés par nos soins, issus de notre flotte. 19 900 € chacun, remise à Cambo-les-Bains.",
+    title: "Vans aménagés à vendre — occasion vérifiée",
+    description:
+      "Marketplace de vans aménagés : véhicules révisés, historique complet, essai sur place. Remise en main propre au Pays Basque.",
   },
 };
 
@@ -93,6 +94,10 @@ const achatFaqItems: GeoFaqItem[] = [
   {
     q: "Quel budget prévoir pour un van aménagé d'occasion en France ?",
     a: "En 2026, un fourgon aménagé d'occasion se négocie généralement entre 15 000 € et 40 000 € selon l'âge du véhicule, le kilométrage et la qualité de l'aménagement. Les vans Vanzon Explorer sont positionnés à 19 900 € — aménagement professionnel complet, historique d'entretien suivi et remise en main propre avec essai.",
+  },
+  {
+    q: "Les vans vendus sont-ils homologués VASP ?",
+    a: "Non — Yoni et Xalbat sont vendus avec leur carte grise d'origine (non VASP) : l'aménagement, réalisé par nos soins, n'est pas homologué camping-car. Une homologation VASP reste possible après l'achat si vous le souhaitez, et Vanzon Explorer peut vous accompagner dans ces démarches administratives.",
   },
   {
     q: "Peut-on essayer le van avant l'achat ?",

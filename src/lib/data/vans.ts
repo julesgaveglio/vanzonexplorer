@@ -14,6 +14,10 @@ export interface VanData {
   energy: string;
   gearbox: string;
   seats: number;
+  /** Homologation VASP (carte grise camping-car) — false = carte grise d'origine */
+  vasp: boolean;
+  /** Lieu de vente (remise en main propre) */
+  location: { city: string; dept: string };
   ref: string;
   images: string[];
   features: string[];
@@ -36,6 +40,8 @@ export const VANS: VanData[] = [
     energy: "Diesel",
     gearbox: "Manuelle 6V",
     seats: 3,
+    vasp: false,
+    location: { city: "Cambo-les-Bains", dept: "64" },
     ref: "VZN-YONI-01",
     images: [
       "https://cdn.sanity.io/images/lewexa74/production/2e9214211ef5a235dcf2aa639d0feafcc867c88f-1080x750.png",
@@ -71,6 +77,8 @@ export const VANS: VanData[] = [
     energy: "Diesel",
     gearbox: "Manuelle 6V",
     seats: 3,
+    vasp: false,
+    location: { city: "Cambo-les-Bains", dept: "64" },
     ref: "VZN-XALBAT-02",
     images: [
       "https://cdn.sanity.io/images/lewexa74/production/e9664378c5fdc652c33ae7342dfc52cc4960c8bf-1080x750.png",
@@ -109,8 +117,16 @@ export interface VanLandingData {
   year: number;
   mileage: string;
   price: string;
+  status: string;
+  energy: string;
+  gearbox: string;
+  seats: number;
+  vasp: boolean;
+  /** Ex. "Cambo-les-Bains (64)" */
+  locationLabel: string;
   tag: string;
-  image: string;
+  /** Toutes les photos de l'annonce (carrousel sur la page listing) */
+  images: string[];
   highlights: string[];
   href: string;
 }
@@ -122,8 +138,14 @@ export const VANS_LANDING: VanLandingData[] = VANS.map((v) => ({
   year: v.year,
   mileage: v.mileage,
   price: v.price,
+  status: v.status,
+  energy: v.energy,
+  gearbox: v.gearbox,
+  seats: v.seats,
+  vasp: v.vasp,
+  locationLabel: `${v.location.city} (${v.location.dept})`,
   tag: `Aménagé ${v.conversionYear}`,
-  image: v.images[0],
+  images: v.images,
   highlights: v.highlights,
   href: `/achat/${v.id}`,
 }));

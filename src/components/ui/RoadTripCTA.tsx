@@ -4,62 +4,40 @@ export default function RoadTripCTA() {
   return (
     <section className="px-4 sm:px-6 py-10">
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-          {/* Top strip */}
-          <div
-            className="px-8 py-2 border-b border-slate-100 flex items-center gap-2"
-            style={{
-              background: "linear-gradient(135deg, #eff6ff 0%, #fefce8 50%, #f0fdf4 100%)",
-            }}
-          >
-            <span>🤖</span>
-            <span className="text-xs font-bold uppercase tracking-widest text-blue-600">
-              Outil gratuit · Généré par IA
-            </span>
+        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm px-6 py-6 md:px-8 md:py-7 flex flex-col sm:flex-row sm:items-center gap-6">
+          {/* Icône */}
+          <div className="w-12 h-12 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0">
+            <svg className="w-5 h-5 text-[var(--accent)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+            </svg>
           </div>
 
-          {/* Body */}
-          <div className="px-8 py-7 flex flex-col sm:flex-row items-center gap-6">
-            {/* Icon */}
-            <div
-              className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0 border border-blue-100"
-              style={{ background: "linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)" }}
+          {/* Texte */}
+          <div className="flex-1 min-w-0">
+            <p className="text-[11px] font-bold uppercase tracking-widest text-[var(--accent)] mb-1">
+              Outil gratuit
+            </p>
+            <h2 className="font-sans text-lg font-bold text-slate-900 tracking-tight">
+              Créez votre road trip van personnalisé
+            </h2>
+            <p className="text-sm text-slate-500 leading-relaxed mt-1">
+              Indiquez votre région, votre durée et vos envies — nous générons
+              votre itinéraire complet : étapes, spots nature, parkings et activités.
+            </p>
+          </div>
+
+          {/* CTA */}
+          <div className="shrink-0 flex flex-col items-start sm:items-center gap-2">
+            <Link
+              href="/road-trip-personnalise"
+              className="inline-flex items-center justify-center gap-2 bg-[var(--accent)] text-white font-bold text-sm px-6 py-3 rounded-xl hover:opacity-90 transition-opacity"
             >
-              <svg className="w-7 h-7 text-accent-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+              Créer mon itinéraire
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
               </svg>
-            </div>
-
-            {/* Text */}
-            <div className="flex-1 text-center sm:text-left">
-              <h2 className="text-lg font-extrabold text-slate-900 mb-1">
-                Crée ton road trip van personnalisé
-              </h2>
-              <p className="text-sm text-slate-500 leading-relaxed">
-                Dis-nous ta région, ta durée, ce qui te fait vibrer. On génère ton itinéraire
-                complet&nbsp;: étapes, spots nature, parkings et activités.
-              </p>
-            </div>
-
-            {/* CTA */}
-            <div className="flex-shrink-0 flex flex-col items-center gap-2">
-              <Link
-                href="/road-trip-personnalise"
-                className="inline-flex items-center justify-center gap-2 text-white font-bold text-sm px-6 py-3 rounded-full transition-all hover:shadow-lg active:scale-95"
-                style={{
-                  background: "linear-gradient(135deg, #2563eb 0%, #0ea5e9 100%)",
-                  boxShadow: "0 4px 14px rgba(37,99,235,0.3)",
-                }}
-              >
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2l2.09 6.26L20 10l-5.91 1.74L12 18l-2.09-6.26L4 10l5.91-1.74z"/><path d="M19 15l1.04 3.13L23 19l-2.96.87L19 23l-1.04-3.13L15 19l2.96-.87z" opacity=".6"/></svg>
-                Créer mon itinéraire gratuit →
-              </Link>
-              <div className="flex gap-3 text-xs text-slate-400">
-                <span>✓ IA</span>
-                <span>✓ 60 sec</span>
-                <span>✓ Gratuit</span>
-              </div>
-            </div>
+            </Link>
+            <p className="text-xs text-slate-400">Généré en 60 secondes · gratuit</p>
           </div>
         </div>
       </div>

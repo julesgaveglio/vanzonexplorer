@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { sanityFetch } from "@/lib/sanity/client";
 import { getFormationCardsQuery } from "@/lib/sanity/queries";
 import type { FormationCardData } from "@/components/formation/FormationCardStack";
@@ -99,86 +100,91 @@ export default async function FormationPage() {
       />
       <FormationViewTracker />
 
-      {/* ── HERO ── */}
+      {/* ── HERO (bandeau académie) ── */}
       <section
-        className="relative overflow-hidden"
+        className="border-b"
         style={{
-          background:
-            "linear-gradient(160deg, #FFFFFF 0%, #FAF6F0 60%, #F5EDE5 100%)",
+          background: "linear-gradient(180deg, #FFFFFF 0%, #FAF6F0 100%)",
+          borderColor: "rgba(185,148,95,0.18)",
         }}
       >
-        {/* Blobs décoratifs */}
-        <div
-          className="absolute top-20 -left-40 w-[500px] h-[500px] rounded-full opacity-[0.12] blur-3xl"
-          style={{ background: "#CDA77B" }}
-        />
-        <div
-          className="absolute top-60 right-0 w-96 h-96 rounded-full opacity-[0.10] blur-3xl"
-          style={{ background: "var(--gold)" }}
-        />
+        <div className="max-w-4xl mx-auto px-6 pt-10 pb-10">
+          {/* Fil d'ariane */}
+          <nav aria-label="Fil d'ariane" className="flex items-center gap-1.5 text-xs font-medium text-slate-400 mb-6">
+            <Link href="/" className="hover:text-slate-600 transition-colors">Accueil</Link>
+            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+            </svg>
+            <span className="text-slate-600">Formation</span>
+          </nav>
 
-        <div className="relative max-w-4xl mx-auto px-6 pt-24 pb-10 md:pt-36 md:pb-12 text-center">
-          {/* Badge */}
-          <span
-            className="inline-flex items-center gap-2 badge-glass !px-5 !py-2 text-sm font-medium mb-8"
-            style={{
-              background: "rgba(205,167,123,0.12)",
-              border: "1px solid rgba(205,167,123,0.35)",
-              color: "var(--gold)",
-            }}
-          >
-            Van Business Academy
-          </span>
+          <div className="flex flex-wrap items-end justify-between gap-6">
+            <div className="max-w-xl">
+              <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: "var(--gold)" }}>
+                Van Business Academy
+              </p>
+              <h1 className="font-sans text-3xl md:text-4xl font-black text-slate-900 tracking-tight leading-tight">
+                Formation aménagement van &amp; business de la location
+              </h1>
+              <p className="text-slate-500 text-base leading-relaxed mt-3">
+                Apprenez à acheter, aménager, louer puis revendre un van avec
+                plus-value — la méthode complète, enseignée sur le terrain par des
+                loueurs en activité au Pays Basque.
+              </p>
 
-          {/* Slogan visuel */}
-          <p className="text-4xl sm:text-5xl md:text-6xl font-black text-slate-900 leading-[1.08] tracking-tight" aria-hidden="true">
-            Réaménage. Loue. Revends. Recommence.
-            <br />
-            <span
-              className="bg-clip-text text-transparent"
-              style={{
-                backgroundImage:
-                  "linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%)",
-              }}
-            >
-              Construis ta liberté van par van.
-            </span>
-          </p>
+              {/* Le cycle en 4 étapes */}
+              <div className="flex flex-wrap gap-2 mt-5">
+                {["Acheter", "Aménager", "Louer", "Revendre"].map((step, i) => (
+                  <span
+                    key={step}
+                    className="flex items-center gap-1.5 bg-white text-xs font-semibold text-slate-600 px-3 py-1.5 rounded-full"
+                    style={{ border: "1px solid rgba(185,148,95,0.3)" }}
+                  >
+                    <span className="font-bold" style={{ color: "var(--gold)" }}>
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    {step}
+                  </span>
+                ))}
+              </div>
+            </div>
 
-          {/* H1 SEO */}
-          <h1 className="text-lg sm:text-xl text-slate-500 mt-6 max-w-2xl mx-auto leading-relaxed">
-            Formation aménagement van : apprenez à réaménager, louer et revendre un van avec plus-value.
-            Accompagnement terrain par des loueurs en activité au Pays Basque.
-          </h1>
+            <div className="hidden md:block text-right pb-1">
+              <p className="font-sans text-4xl font-black text-slate-900 leading-none">10</p>
+              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mt-1">
+                modules · 60 leçons vidéo
+              </p>
+            </div>
+          </div>
 
-          {/* CTA visible sans scroll */}
-          <div className="mt-8">
+          {/* CTA */}
+          <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3">
             <LiquidButton variant="gold" size="lg" href="/van-business-academy/presentation">Découvrir la méthode (vidéo 12 min) →</LiquidButton>
-            <p className="text-slate-400 text-xs mt-3">
-              Gratuit — puis appel diagnostic offert. Tu sais exactement où tu vas avant de payer quoi que ce soit.
+            <p className="text-slate-400 text-xs max-w-xs leading-relaxed">
+              Gratuit — puis appel diagnostic offert. Tu sais exactement où tu vas
+              avant de payer quoi que ce soit.
             </p>
           </div>
-        </div>
 
-        {/* Preuve immédiate — l'autorité dans les 3 premières secondes */}
-        <div className="relative max-w-4xl mx-auto px-6 pb-4">
-          <div
-            className="rounded-2xl px-6 py-5 grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-5 text-center"
-            style={{ background: "rgba(255,255,255,0.7)", border: "1px solid rgba(185,148,95,0.18)" }}
-          >
+          {/* Preuve immédiate */}
+          <div className="mt-7 grid grid-cols-2 md:grid-cols-4 gap-3">
             {[
               { value: "4 ans", label: "de terrain, pas de théorie" },
               { value: "2 vans", label: "exploités en location" },
               { value: "5/5", label: "sur Google" },
               { value: "+12 500 €", label: "sur un cycle complet*" },
             ].map((s) => (
-              <div key={s.label}>
-                <div className="text-2xl md:text-3xl font-black text-slate-900 leading-none mb-1">{s.value}</div>
-                <div className="text-xs text-slate-500 font-medium leading-snug">{s.label}</div>
+              <div
+                key={s.label}
+                className="bg-white rounded-xl px-4 py-3.5"
+                style={{ border: "1px solid rgba(185,148,95,0.18)" }}
+              >
+                <p className="font-sans text-xl md:text-2xl font-black text-slate-900 leading-none">{s.value}</p>
+                <p className="text-xs text-slate-500 font-medium mt-1.5 leading-snug">{s.label}</p>
               </div>
             ))}
           </div>
-          <p className="text-[11px] text-slate-400 mt-2 text-center">
+          <p className="text-[11px] text-slate-400 mt-2">
             *Van acheté 9 000 €, aménagé pour 5 000 €, loué 8 mois (+5 500 € nets), revente estimée 21 000 €.
           </p>
         </div>

@@ -447,7 +447,7 @@ export default async function HomePage() {
             <span className="text-white/90 text-sm font-medium">{getSeasonLabel()}</span>
           </div>
 
-          <h2 className="text-4xl md:text-5xl font-black text-white mb-5 leading-tight">
+          <h2 className="font-sans text-4xl md:text-5xl font-black text-white mb-5 leading-tight tracking-tight">
             Votre prochaine aventure<br />
             commence ici.
           </h2>

@@ -9,6 +9,7 @@ import type { VanCard as VanCardType } from "@/lib/sanity/types";
 import VanCard from "@/components/van/VanCard";
 import { getGooglePlaceStats } from "@/lib/google-places";
 import RoadTripCTA from "@/components/ui/RoadTripCTA";
+import FinalBookingCTA from "@/components/location/FinalBookingCTA";
 
 const BASE_URL = "https://vanzonexplorer.com";
 
@@ -460,41 +461,12 @@ export default async function LocationPage() {
       </section>
 
       {/* ── CTA final ── */}
-      <section className="relative py-28 overflow-hidden">
-        <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, #0F153A 0%, #1e2d6b 100%)" }} />
-        <div className="relative z-10 max-w-3xl mx-auto px-6 text-center">
-          <h2 className="text-4xl md:text-5xl font-black text-white mb-5 leading-tight">
-            Prêt à explorer<br />le Pays Basque en van ?
-          </h2>
-          <p className="text-white/70 text-xl mb-10">
-            Dès <strong className="text-white">65€/nuit</strong> — assurance incluse, van tout équipé,
-            récupération à Cambo-les-Bains.
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <a
-              href="https://www.yescapa.fr/campers/89215"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 bg-white text-slate-900 font-bold px-10 py-5 rounded-2xl hover:bg-blue-50 transition-colors text-lg shadow-2xl"
-            >
-              Réserver Yoni — Yescapa
-            </a>
-            <a
-              href="https://www.wikicampers.com/rental/fourgon/cambo-les-bains/renault-vanzon-explorer-trafic-iii/380874"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-md border border-white/30 text-white font-bold px-10 py-5 rounded-2xl hover:bg-white/20 transition-colors text-lg"
-            >
-              Réserver Xalbat — Wikicampers
-            </a>
-          </div>
-          <p className="text-white/40 text-sm mt-6">
-            <Link href="/road-trip-pays-basque-van" className="hover:text-white/60 transition-colors underline underline-offset-2">
-              Voir notre itinéraire road trip Pays Basque →
-            </Link>
-          </p>
-        </div>
-      </section>
+      <FinalBookingCTA
+        title={<>Prêt à explorer<br />le Pays Basque en van ?</>}
+        subtitle={<>Dès <strong className="text-white">65€/nuit</strong> — assurance incluse, van tout équipé, récupération à Cambo-les-Bains.</>}
+        linkHref="/road-trip-pays-basque-van"
+        linkLabel="Voir notre itinéraire road trip Pays Basque →"
+      />
 
       <RoadTripCTA />
     </>
