@@ -138,13 +138,15 @@ export default function VBASidebar({
                     <Circle className="w-4 h-4 text-slate-200 flex-shrink-0" />
                   )}
                   <div className="flex-1 leading-snug">
+                    {moduleNumber && (
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">
+                        Module {section === "non_vasp" ? mod.order - 20 : mod.order}
+                      </span>
+                    )}
                     <span className="text-sm font-bold text-slate-800 flex items-center gap-1.5">
-                      {moduleNumber ? `Module ${section === "non_vasp" ? mod.order - 20 : mod.order}` : moduleSubtitle}
+                      {moduleSubtitle}
                       {allCompleted && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 inline-block" />}
                     </span>
-                    {moduleNumber && (
-                      <span className="text-xs text-slate-500 block">{moduleSubtitle}</span>
-                    )}
                     {!hasLessons && (
                       <span className="text-[10px] text-amber-500 font-medium block mt-0.5">Arrive très prochainement</span>
                     )}
