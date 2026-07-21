@@ -13,6 +13,8 @@ import VBAQuiz, { type QuizQuestion } from "../../_components/VBAQuiz";
 import VBAVideoPlayer from "../../_components/VBAVideoPlayer";
 import VBALessonContent from "../../_components/VBALessonContent";
 import VBAComments from "../../_components/VBAComments";
+import VBAProductsSection from "../../_components/VBAProductsSection";
+import { getLessonProducts, lessonVideoTag } from "@/lib/airtable/vba-products";
 
 interface Resource {
   type: "pdf" | "image" | "link";
@@ -175,6 +177,12 @@ export default async function LessonPage({
     completedCount: completedSet.size,
   };
 
+  // Produits liés (matériel + outils) depuis Airtable — section masquée si
+  // aucun produit n'est tagué pour cette vidéo dans « LISTE DE COURSE PERSO ».
+  const lessonProducts = await getLessonProducts(
+    lessonVideoTag(currentModule.order, currentModule.section, currentLesson.title)
+  );
+
   return (
     <div className="flex -mx-4 sm:-mx-6 -my-4 sm:-my-8 min-h-[calc(100vh-140px)]">
       {/* Desktop sidebar — hidden on mobile */}
@@ -244,6 +252,12 @@ export default async function LessonPage({
               isAdmin={!!email && ADMIN_EMAILS.includes(email)}
             />
           </div>
+
+          {/* Matériel & outils liés (Airtable) — masqué si vide */}
+          <VBAProductsSection
+            materials={lessonProducts.materials}
+            tools={lessonProducts.tools}
+          />
 
           {/* Resources */}
           {resources.length > 0 && (
