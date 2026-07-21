@@ -11,13 +11,16 @@ import { LocalBusinessJsonLd, WebSiteJsonLd } from "@/components/seo/JsonLd";
 import "./globals.css";
 import "maplibre-gl/dist/maplibre-gl.css";
 
-// ━━━ POLICE DES TITRES — pour changer la typo des titres de TOUT le site,
-// remplace uniquement le fichier src ci-dessous (et le nom si tu veux). ━━━
+// ━━━ POLICE DES TITRES — Recoleta, deux graisses.
+// Regular (≤ 600) pour les titres secondaires (font-normal/medium/semibold),
+// Bold (700–900) réservé aux gros titres (font-bold/black — h1/h2).
+// Le navigateur choisit automatiquement la bonne graisse selon le font-weight ;
+// aucun faux-gras (font-synthesis-weight: none dans globals.css). ━━━
 const heading = localFont({
-  src: "../fonts/Recoleta-Bold.woff2",
-  // Plage déclarée large : tous les font-bold/font-black utilisent ce
-  // fichier tel quel, sans faux-gras synthétique du navigateur.
-  weight: "100 900",
+  src: [
+    { path: "../fonts/Recoleta-Regular.woff2", weight: "100 600", style: "normal" },
+    { path: "../fonts/Recoleta-Bold.woff2", weight: "700 900", style: "normal" },
+  ],
   variable: "--font-heading",
   display: "swap",
   fallback: ["Georgia", "serif"],

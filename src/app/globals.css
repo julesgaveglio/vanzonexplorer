@@ -49,10 +49,20 @@ body {
 
 /* ━━━ Typographie Vanzon — Recoleta titres, Inter body ━━━
    Changer la police des titres = remplacer le fichier dans layout.tsx.
-   Cette règle propage automatiquement à tous les titres du site. ━━━ */
+   Deux graisses Recoleta (voir layout.tsx) :
+   • Gros titres (h1, h2) → Bold.
+   • Titres secondaires (h3–h6) → Regular (plus léger).
+   Chaque titre peut forcer sa graisse via les classes Tailwind
+   (font-normal…font-black) qui priment sur ce défaut. ━━━ */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading), Georgia, serif;
   font-synthesis-weight: none;
+}
+h1, h2 {
+  font-weight: 700;
+}
+h3, h4, h5, h6 {
+  font-weight: 400;
 }
 
 /* ━━━ Classes utilitaires Glass — Thème blanc ━━━ */
