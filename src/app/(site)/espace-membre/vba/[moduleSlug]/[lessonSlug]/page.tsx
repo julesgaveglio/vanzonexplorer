@@ -226,7 +226,7 @@ export default async function LessonPage({
 
           {/* Title + mark complete */}
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
-            <h1 className="text-lg sm:text-xl font-bold text-slate-900">
+            <h1 className="text-xl sm:text-2xl font-semibold text-slate-900">
               {currentLesson.title}
             </h1>
             <MarkCompleteButton

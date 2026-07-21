@@ -62,7 +62,7 @@ function ProductRow({
     <div>
       <div className="flex items-center gap-2 mb-3">
         <span className="text-[var(--gold)]">{icon}</span>
-        <h3 className="text-sm font-bold text-slate-800">{title}</h3>
+        <h3 className="text-base font-semibold text-slate-800">{title}</h3>
         <span className="text-xs font-medium text-slate-400">({products.length})</span>
       </div>
       <div className="flex gap-3 overflow-x-auto snap-x pb-2 -mx-1 px-1 [scrollbar-width:thin]">
