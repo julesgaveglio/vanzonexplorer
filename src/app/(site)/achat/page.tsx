@@ -19,8 +19,12 @@ export const metadata: Metadata = {
   },
 };
 
-// GEO : chaque van à vendre est décrit en Product+Vehicle pour que les
-// moteurs IA puissent citer prix, modèle, année et kilométrage exacts.
+// GEO : chaque van à vendre est décrit en Vehicle pour que les moteurs IA
+// puissent citer prix, modèle, année et kilométrage exacts.
+// Pas de type "Product" : Google classe alors la page en Extraits de
+// produits et réclame aggregateRating/review — des vans d'occasion uniques
+// n'ont pas d'avis "produit", et en fabriquer reproduirait l'erreur déjà
+// corrigée sur le LocalBusiness (note auto-décernée, GSC WNC-10030322).
 const vansItemListJsonLd = {
   "@context": "https://schema.org",
   "@type": "ItemList",
@@ -30,7 +34,7 @@ const vansItemListJsonLd = {
     "@type": "ListItem",
     position: i + 1,
     item: {
-      "@type": ["Product", "Vehicle"],
+      "@type": "Vehicle",
       name: `${van.name} — ${van.model} aménagé`,
       description: van.description,
       image: van.images[0],

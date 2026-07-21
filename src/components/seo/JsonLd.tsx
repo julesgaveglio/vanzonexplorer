@@ -2,14 +2,18 @@ import type { VanData } from "@/lib/data/vans";
 
 const SITE_URL = "https://vanzonexplorer.com";
 
+// Type "Service" (une location, pas un bien vendu), pas "Product" : Google
+// classe sinon la page en Extraits de produits et réclame aggregateRating/
+// review. Fabriquer une note reproduirait l'erreur déjà corrigée sur le
+// LocalBusiness (note auto-décernée, GSC WNC-10030322).
 export function LocationRentalJsonLd({ destination, url }: { destination: string; url: string }) {
   const schema = {
     "@context": "https://schema.org",
-    "@type": "Product",
+    "@type": "Service",
     name: `Location van aménagé — ${destination}`,
     description: `Louez un van aménagé tout équipé pour explorer ${destination} au départ de Cambo-les-Bains. Assurance incluse.`,
     url,
-    brand: { "@type": "Brand", name: "Vanzon Explorer" },
+    provider: { "@type": "Organization", name: "Vanzon Explorer", url: SITE_URL },
     offers: {
       "@type": "AggregateOffer",
       lowPrice: "65",
@@ -180,26 +184,47 @@ export function WebSiteJsonLd() {
   );
 }
 
+// Type "Vehicle", pas "Product" : Google classe sinon la page en Extraits
+// de produits et réclame aggregateRating/review. Un van d'occasion unique
+// n'a pas d'avis "produit" à donner sans les fabriquer — ce qui reproduirait
+// l'erreur déjà corrigée sur le LocalBusiness (note auto-décernée, GSC
+// WNC-10030322). Vehicle reste riche en propriétés pour la citation GEO.
 export function VanProductJsonLd({ van }: { van: VanData }) {
-  const productSchema = {
+  const vehicleSchema = {
     "@context": "https://schema.org",
-    "@type": "Product",
+    "@type": "Vehicle",
     "name": `${van.name} — ${van.model} aménagé`,
     "description": van.description,
     "image": van.images[0],
     "url": `${BASE_URL}/achat/${van.id}`,
+    "sku": van.ref,
+    "brand": { "@type": "Brand", "name": "Renault" },
+    "model": van.model,
+    "vehicleModelDate": String(van.year),
+    "mileageFromOdometer": {
+      "@type": "QuantitativeValue",
+      "value": parseInt(van.mileage.replace(/\D/g, ""), 10),
+      "unitCode": "KMT",
+    },
+    "fuelType": van.energy,
+    "vehicleTransmission": van.gearbox,
+    "seatingCapacity": van.seats,
+    "itemCondition": "https://schema.org/UsedCondition",
     "offers": {
       "@type": "Offer",
       "price": van.price.replace(/[^\d]/g, ""),
       "priceCurrency": "EUR",
-      "availability": "https://schema.org/InStock",
-      "seller": { "@type": "Organization", "name": "Vanzon Explorer" }
-    }
+      "availability":
+        van.status === "Disponible"
+          ? "https://schema.org/InStock"
+          : "https://schema.org/SoldOut",
+      "seller": { "@type": "Organization", "name": "Vanzon Explorer", "url": BASE_URL },
+    },
   };
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(vehicleSchema) }}
     />
   );
 }
