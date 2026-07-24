@@ -233,12 +233,6 @@ export default async function LocationPage() {
             ))}
           </div>
         </div>
-
-        <a href="#nos-vans" className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 text-white/50 hover:text-white/80 transition-colors animate-bounce">
-          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-          </svg>
-        </a>
       </section>
 
       {/* ── Barre de réassurance ── */}
