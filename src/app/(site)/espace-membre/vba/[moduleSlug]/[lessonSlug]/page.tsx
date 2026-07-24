@@ -14,7 +14,9 @@ import VBAVideoPlayer from "../../_components/VBAVideoPlayer";
 import VBALessonContent from "../../_components/VBALessonContent";
 import VBAComments from "../../_components/VBAComments";
 import VBAProductsSection from "../../_components/VBAProductsSection";
+import VBALessonPlan3D from "../../_components/VBALessonPlan3D";
 import { getLessonProducts, lessonVideoTag } from "@/lib/airtable/vba-products";
+import { findLessonPlan, listLessonPlans } from "@/lib/lesson-plan-3d";
 
 interface Resource {
   type: "pdf" | "image" | "link";
@@ -150,6 +152,8 @@ export default async function LessonPage({
   const videoId = currentLesson.bunny_video_id || "";
 
   const resources = (currentLesson.resources ?? []) as Resource[];
+  // Plan 3D rattaché par convention de nom au slug de la leçon
+  const plan3d = findLessonPlan(lessonSlug);
   // chapters data kept in DB but not displayed
 
   // Detect quiz lesson: description starts with "QUIZ:"
@@ -175,6 +179,7 @@ export default async function LessonPage({
     currentModuleSlug: moduleSlug,
     totalLessons: allLessons.length,
     completedCount: completedSet.size,
+    plan3dSlugs: listLessonPlans(),
   };
 
   // Produits liés (matériel + outils) depuis Airtable — section masquée si
@@ -223,6 +228,9 @@ export default async function LessonPage({
               </p>
             </div>
           )}
+
+          {/* Plan 3D — présent si un dossier public/plans-3d/<slug> existe */}
+          {plan3d && <VBALessonPlan3D src={plan3d} />}
 
           {/* Title + mark complete */}
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">

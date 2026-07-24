@@ -31,6 +31,8 @@ interface SidebarProps {
   currentModuleSlug: string;
   totalLessons: number;
   completedCount: number;
+  /** Leçons disposant d'un plan 3D : accessibles même sans vidéo. */
+  plan3dSlugs?: string[];
 }
 
 function formatDuration(seconds: number | null): string {
@@ -48,6 +50,7 @@ export default function VBASidebar({
   currentModuleSlug,
   totalLessons,
   completedCount,
+  plan3dSlugs = [],
 }: SidebarProps) {
   // Open the current module by default
   const [openModules, setOpenModules] = useState<Set<string>>(() => {
@@ -159,7 +162,10 @@ export default function VBASidebar({
                       const isCompleted = completedLessonIds.has(lesson.id);
                       const isCurrent = lesson.id === currentLessonId;
                       const isQuiz = lesson.description?.startsWith("QUIZ:");
-                      const isComingSoon = !lesson.bunny_video_id && !isQuiz;
+                      // Une leçon sans vidéo reste ouverte si elle porte un
+                      // plan 3D : c'est déjà du contenu consultable.
+                      const isComingSoon =
+                        !lesson.bunny_video_id && !isQuiz && !plan3dSlugs.includes(lesson.slug);
 
                       if (isComingSoon) {
                         return (
