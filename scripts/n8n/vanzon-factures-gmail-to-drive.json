@@ -1,0 +1,213 @@
+{
+  "name": "Vanzon — Factures Gmail → Drive",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute",
+              "value": 5
+            }
+          ]
+        },
+        "filters": {
+          "q": "has:attachment (facture OR invoice OR reçu OR commande) -label:FACTURES-TRAITEES"
+        },
+        "options": {
+          "simple": true
+        }
+      },
+      "id": "gmail-trigger",
+      "name": "Gmail Trigger",
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "MIkZsd2kSp1aPaPL",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst results = [];\n\nfor (const item of items) {\n  const subject = (item.json.subject || '').toLowerCase();\n  const from = (item.json.from || '').toLowerCase();\n  const text = (item.json.text || item.json.snippet || '').toLowerCase();\n  const att = item.json.attachments || [];\n\n  const pdfAtt = att.find(a => {\n    const n = (a.filename || a.name || '').toLowerCase();\n    const m = (a.mimeType || '').toLowerCase();\n    return m.includes('pdf') || m.includes('image') || n.endsWith('.pdf') || n.endsWith('.png') || n.endsWith('.jpg');\n  });\n\n  if (!pdfAtt) continue;\n\n  const invoiceKw = ['facture', 'invoice', 'reçu', 'commande', 'order', 'receipt', 'montant', 'total', 'paiement', 'ttc', 'ht'];\n  const spamKw = ['newsletter', 'unsubscribe', 'désabonner', 'promo', 'soldes'];\n  const hasInv = invoiceKw.some(k => subject.includes(k) || text.includes(k));\n  const hasSpam = spamKw.some(k => subject.includes(k) || text.includes(k));\n  const known = ['amazon', 'leroy', 'dispano', 'heode', 'oscaro', 'roady', 'ikea', 'castorama', 'facture', 'billing', 'commande'];\n  const isKnown = known.some(s => from.includes(s));\n\n  if ((hasInv || isKnown) && !hasSpam) {\n    results.push({\n      json: {\n        ...item.json,\n        attachmentName: pdfAtt.filename || pdfAtt.name,\n        emailId: item.json.id,\n        isInvoice: true\n      }\n    });\n  }\n}\n\nreturn results;"
+      },
+      "id": "detect-invoice",
+      "name": "Détecter facture",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [500, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "is-invoice",
+              "leftValue": "={{ $json.isInvoice }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "if-invoice",
+      "name": "Est-ce une facture ?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [750, 300]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "messageId": "={{ $json.emailId }}",
+        "options": {
+          "downloadAttachments": true,
+          "dataPropertyAttachmentsPrefixName": "attachment_"
+        }
+      },
+      "id": "gmail-download",
+      "name": "Gmail — Télécharger PJ",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2,
+      "position": [1000, 200],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "MIkZsd2kSp1aPaPL",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "={{ $('Détecter facture').first().json.attachmentName || 'facture.pdf' }}",
+        "folderId": {
+          "__rl": true,
+          "value": "1q7o8oe07UvhqwNm1VKjhK0Vht832P3Pg",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "id": "drive-upload",
+      "name": "Google Drive — Upload inbox",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [1250, 200],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "DapzbBJzvvAMCwor",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $('Détecter facture').first().json.emailId }}",
+        "labelIds": ["FACTURES-TRAITEES"]
+      },
+      "id": "gmail-label",
+      "name": "Gmail — Label traité",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2,
+      "position": [1500, 200],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "MIkZsd2kSp1aPaPL",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "noop-skip",
+      "name": "Skip (pas une facture)",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [1000, 400]
+    }
+  ],
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Détecter facture",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Détecter facture": {
+      "main": [
+        [
+          {
+            "node": "Est-ce une facture ?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Est-ce une facture ?": {
+      "main": [
+        [
+          {
+            "node": "Gmail — Télécharger PJ",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Skip (pas une facture)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail — Télécharger PJ": {
+      "main": [
+        [
+          {
+            "node": "Google Drive — Upload inbox",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive — Upload inbox": {
+      "main": [
+        [
+          {
+            "node": "Gmail — Label traité",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [
+    {
+      "name": "Vanzon — Factures"
+    }
+  ]
+}

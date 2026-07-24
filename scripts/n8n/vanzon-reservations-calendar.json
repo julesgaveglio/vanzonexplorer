@@ -1,0 +1,192 @@
+{
+  "name": "Vanzon — Réservations → Google Calendar + Telegram",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute",
+              "value": 2
+            }
+          ]
+        },
+        "filters": {
+          "q": "(from:notifications@yescapa.com subject:\"réservation instantanée\") OR (from:contact@infos.wikicampers.fr subject:\"confirmée par le locataire\")"
+        },
+        "options": {
+          "simple": true
+        }
+      },
+      "id": "gmail-trigger",
+      "name": "Gmail Trigger",
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "",
+          "name": "Gmail — vanzonexplorer@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ═══════════════════════════════════════════════════════════════\n// Parse Yescapa & Wikicampers reservation confirmation emails\n// ═══════════════════════════════════════════════════════════════\n\nconst FRENCH_MONTHS = {\n  janvier: '01', 'février': '02', mars: '03', avril: '04',\n  mai: '05', juin: '06', juillet: '07', 'août': '08',\n  septembre: '09', octobre: '10', novembre: '11', 'décembre': '12'\n};\n\nfunction strip(html) {\n  return html\n    .replace(/<br\\s*\\/?>/gi, ' ')\n    .replace(/<\\/?(p|div|td|th|tr|li|ul|ol|h[1-6])[^>]*>/gi, ' ')\n    .replace(/<[^>]+>/g, '')\n    .replace(/&nbsp;/g, ' ')\n    .replace(/&amp;/g, '&')\n    .replace(/&#8364;/g, '€')\n    .replace(/&euro;/g, '€')\n    .replace(/\\s+/g, ' ')\n    .trim();\n}\n\nfunction parseFrenchDate(t) {\n  const m = t.match(/(\\d{1,2})\\s+([\\wéûà]+)\\s+(\\d{4})/i);\n  if (!m) return null;\n  const mo = FRENCH_MONTHS[m[2].toLowerCase()];\n  return mo ? `${m[3]}-${mo}-${m[1].padStart(2, '0')}` : null;\n}\n\nfunction parseDdMm(t) {\n  const m = t.match(/(\\d{2})\\/(\\d{2})\\/(\\d{4})/);\n  return m ? `${m[3]}-${m[2]}-${m[1]}` : null;\n}\n\nfunction addOneDay(dateStr) {\n  const d = new Date(dateStr + 'T00:00:00');\n  d.setDate(d.getDate() + 1);\n  return d.toISOString().slice(0, 10);\n}\n\nconst results = [];\n\nfor (const item of $input.all()) {\n  const from = (item.json.from || '').toLowerCase();\n  const subject = (item.json.subject || '').toLowerCase();\n  const html = item.json.html || item.json.textHtml || '';\n\n  let parsed = null;\n\n  // ── Yescapa ──────────────────────────────────────────────\n  if (from.includes('yescapa.com') && subject.includes('réservation')) {\n    const ref = html.match(/réservation\\s*(?::\\s*)?#(\\d{5,})/i) || html.match(/#(\\d{5,})/);\n    if (!ref) continue;\n\n    const getVal = (label) => {\n      const rx = new RegExp(`<th[^>]*>[^<]*${label}[^<]*</th>\\\\s*<td[^>]*>([\\\\s\\\\S]*?)</td>`, 'i');\n      return (html.match(rx) || [])[1] || '';\n    };\n    const strong = (s) => (s.match(/<strong[^>]*>([\\s\\S]*?)<\\/strong>/i) || [])[1] || '';\n\n    const startDate = parseFrenchDate(strip(strong(getVal('Départ'))));\n    const endDate = parseFrenchDate(strip(strong(getVal('Retour'))));\n    if (!startDate || !endDate) continue;\n\n    const vanLink = getVal('Véhicule').match(/<a[^>]*>([^<]+)<\\/a>/i);\n    const vanName = vanLink ? vanLink[1].trim() : strip(strong(getVal('Véhicule'))) || 'Van';\n    const revText = strip(strong(getVal('Rémunération')));\n    const revMatch = revText.match(/([\\d\\s,]+)\\s*€/);\n    const revenue = revMatch ? parseFloat(revMatch[1].replace(/\\s/g, '').replace(',', '.')) : null;\n    const insurance = strip(strong(getVal('Assurance'))) || null;\n\n    parsed = {\n      platform: 'yescapa',\n      platformLabel: 'Yescapa',\n      ref: ref[1],\n      vanName,\n      startDate,\n      endDate,\n      endDateExclusive: addOneDay(endDate),\n      revenue,\n      insurance,\n      colorId: '3'\n    };\n  }\n\n  // ── Wikicampers ──────────────────────────────────────────\n  else if (from.includes('wikicampers.fr') && subject.includes('confirmée')) {\n    const text = strip(html);\n    const ref = text.match(/N°\\s*de\\s*réservation\\s*(\\d+)/i);\n    if (!ref) continue;\n\n    const veh = text.match(/Véhicule\\s+(.+?)\\s+Départ/i);\n    const dep = text.match(/Départ\\s+(\\d{2}\\/\\d{2}\\/\\d{4})/i);\n    const ret = text.match(/Retour\\s+(\\d{2}\\/\\d{2}\\/\\d{4})/i);\n    const gain = text.match(/Votre gain\\s+([\\d\\s,]+)\\s*€/i);\n\n    const startDate = dep ? parseDdMm(dep[1]) : null;\n    const endDate = ret ? parseDdMm(ret[1]) : null;\n    if (!startDate || !endDate) continue;\n\n    parsed = {\n      platform: 'wikicampers',\n      platformLabel: 'Wikicampers',\n      ref: ref[1],\n      vanName: veh ? veh[1].trim() : 'Van',\n      startDate,\n      endDate,\n      endDateExclusive: addOneDay(endDate),\n      revenue: gain ? parseFloat(gain[1].replace(/\\s/g, '').replace(',', '.')) : null,\n      insurance: null,\n      colorId: '6'\n    };\n  }\n\n  if (!parsed) continue;\n\n  // Prepare outputs for Calendar + Telegram\n  const revenueStr = parsed.revenue ? `${parsed.revenue.toFixed(2).replace('.', ',')}€` : 'N/A';\n\n  results.push({\n    json: {\n      ...parsed,\n      calendarTitle: `\\uD83D\\uDE90 ${parsed.vanName} — ${parsed.platformLabel} #${parsed.ref}`,\n      calendarDescription: [\n        `Plateforme: ${parsed.platformLabel}`,\n        `Ref: #${parsed.ref}`,\n        parsed.revenue ? `Revenu: ${revenueStr}` : null,\n        parsed.insurance ? `Assurance: ${parsed.insurance}` : null\n      ].filter(Boolean).join('\\n'),\n      telegramMessage: `\\uD83D\\uDCC5 Nouvelle réservation ${parsed.platformLabel}!\\n\\uD83D\\uDE90 ${parsed.vanName}\\n\\uD83D\\uDCC6 ${parsed.startDate} → ${parsed.endDate}\\n\\uD83D\\uDCB0 ${revenueStr}\\n\\uD83D\\uDD16 Ref #${parsed.ref}`\n    }\n  });\n}\n\nreturn results;"
+      },
+      "id": "parse-email",
+      "name": "Parse Reservation Email",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [500, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "check-start-date",
+              "leftValue": "={{ $json.startDate }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "isNotEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "if-valid",
+      "name": "Reservation valide ?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [750, 300]
+    },
+    {
+      "parameters": {
+        "resource": "event",
+        "calendar": {
+          "__rl": true,
+          "value": "vanzonexplorer@gmail.com",
+          "mode": "id"
+        },
+        "start": "={{ $json.startDate }}",
+        "end": "={{ $json.endDateExclusive }}",
+        "useDefaultReminders": true,
+        "additionalFields": {
+          "allday": "yes",
+          "summary": "={{ $json.calendarTitle }}",
+          "description": "={{ $json.calendarDescription }}",
+          "color": "={{ $json.colorId }}"
+        }
+      },
+      "id": "google-calendar",
+      "name": "Google Calendar — Créer événement",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1,
+      "position": [1000, 200],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "",
+          "name": "Google Calendar — vanzonexplorer"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env.TELEGRAM_CHAT_ID || '' }}",
+        "text": "={{ $json.telegramMessage }}",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "telegram-notify",
+      "name": "Telegram — Notification",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [1250, 200],
+      "credentials": {
+        "telegramApi": {
+          "id": "",
+          "name": "Telegram Bot — Vanzon"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "noop-skip",
+      "name": "Skip (pas une réservation)",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [1000, 400]
+    }
+  ],
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Parse Reservation Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Reservation Email": {
+      "main": [
+        [
+          {
+            "node": "Reservation valide ?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reservation valide ?": {
+      "main": [
+        [
+          {
+            "node": "Google Calendar — Créer événement",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Skip (pas une réservation)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Calendar — Créer événement": {
+      "main": [
+        [
+          {
+            "node": "Telegram — Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "name": "Vanzon — Réservations"
+    }
+  ]
+}
