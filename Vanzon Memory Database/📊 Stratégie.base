@@ -1,0 +1,29 @@
+filters:
+  and:
+    - file.hasTag("strategie")
+    - file.ext == "md"
+formulas:
+  derniere_modif: file.mtime.format("DD/MM/YYYY HH:mm")
+  anciennete: (now() - file.mtime).days.round(0).toString() + "j"
+properties:
+  file.name:
+    displayName: Document
+  status:
+    displayName: Statut
+  formula.derniere_modif:
+    displayName: Dernière modif
+  formula.anciennete:
+    displayName: Ancienneté
+views:
+  - type: table
+    name: Documents stratégiques
+    order:
+      - file.name
+      - status
+      - formula.derniere_modif
+      - formula.anciennete
+  - type: list
+    name: Liste rapide
+    order:
+      - file.name
+      - status
