@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Équipement & Accessoires — Vanzon Explorer</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      color: #1e293b;
+      background: white;
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 48px 40px;
+      line-height: 1.6;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 36px;
+      padding-bottom: 24px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+
+    .header h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 4px;
+    }
+
+    .header p {
+      font-size: 13px;
+      color: #94a3b8;
+    }
+
+    .section {
+      margin-bottom: 28px;
+    }
+
+    .section-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-title .icon {
+      font-size: 18px;
+    }
+
+    .items {
+      list-style: none;
+      padding-left: 4px;
+    }
+
+    .items li {
+      font-size: 13px;
+      color: #475569;
+      padding: 6px 0;
+      padding-left: 20px;
+      position: relative;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .items li:last-child {
+      border-bottom: none;
+    }
+
+    .items li::before {
+      content: "•";
+      position: absolute;
+      left: 4px;
+      color: #3B82F6;
+      font-weight: bold;
+    }
+
+    .supplement {
+      margin-top: 28px;
+      padding: 20px;
+      border: 2px solid #3B82F6;
+      border-radius: 10px;
+      background: #eff6ff;
+    }
+
+    .supplement-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #3B82F6;
+      margin-bottom: 4px;
+    }
+
+    .supplement-price {
+      font-size: 22px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 8px;
+    }
+
+    .supplement-items {
+      list-style: none;
+      padding: 0;
+    }
+
+    .supplement-items li {
+      font-size: 13px;
+      color: #475569;
+      padding: 4px 0;
+      padding-left: 20px;
+      position: relative;
+    }
+
+    .supplement-items li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: #3B82F6;
+      font-weight: bold;
+    }
+
+    .supplement-note {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-top: 10px;
+      font-style: italic;
+    }
+
+    .footer {
+      margin-top: 36px;
+      padding-top: 20px;
+      border-top: 2px solid #e2e8f0;
+      text-align: center;
+    }
+
+    .footer p {
+      font-size: 11px;
+      color: #94a3b8;
+    }
+
+    .footer .brand {
+      font-weight: 600;
+      color: #64748b;
+    }
+
+    @page {
+      margin: 20mm 15mm;
+    }
+
+    @media print {
+      body { padding: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>Équipement & Accessoires</h1>
+    <p>Inclus dans chaque location de van</p>
+  </div>
+
+  <!-- Cuisine -->
+  <div class="section">
+    <div class="section-title">
+      <span class="icon">🍴</span> Cuisine & Vaisselle
+    </div>
+    <ul class="items">
+      <li>2 fourchettes, 2 couteaux, 2 cuillères (en plastique)</li>
+      <li>2 assiettes (en plastique)</li>
+      <li>2 tasses (en plastique)</li>
+      <li>1 casserole + 1 poêle</li>
+      <li>1 planche à découper</li>
+      <li>Gazinière</li>
+      <li>Sacs poubelle</li>
+      <li>Liquide vaisselle, éponge, chiffon</li>
+      <li>Glacière électrique</li>
+    </ul>
+  </div>
+
+  <!-- Eau & Douche -->
+  <div class="section">
+    <div class="section-title">
+      <span class="icon">💧</span> Eau & Douche
+    </div>
+    <ul class="items">
+      <li>Robinet à pression à air avec réservoir de 5L (rempli d'eau propre)</li>
+      <li>4 jerricans de 10L (remplis d'eau propre)</li>
+      <li>Douche à pression à air (10L)</li>
+      <li>Cabine de douche</li>
+    </ul>
+  </div>
+
+  <!-- Confort extérieur -->
+  <div class="section">
+    <div class="section-title">
+      <span class="icon">🏕️</span> Confort extérieur
+    </div>
+    <ul class="items">
+      <li>2 chaises de camping</li>
+    </ul>
+  </div>
+
+  <!-- Couchage -->
+  <div class="section">
+    <div class="section-title">
+      <span class="icon">🛏️</span> Couchage
+    </div>
+    <ul class="items">
+      <li>Matelas 150 × 180 cm</li>
+    </ul>
+  </div>
+
+  <!-- Toilettes -->
+  <div class="section">
+    <div class="section-title">
+      <span class="icon">🚽</span> Toilettes
+    </div>
+    <ul class="items">
+      <li>Toilettes sèches avec sciure</li>
+    </ul>
+  </div>
+
+  <!-- Supplément literie -->
+  <div class="supplement">
+    <div class="supplement-title">Option Literie</div>
+    <div class="supplement-price">+ 25 €</div>
+    <ul class="supplement-items">
+      <li>2 oreillers avec housses</li>
+      <li>1 couette avec housse</li>
+      <li>1 drap housse</li>
+    </ul>
+    <p class="supplement-note">
+      Sans cette option, merci de prévoir votre propre literie (oreillers, couette, draps).
+    </p>
+  </div>
+
+  <div class="footer">
+    <p class="brand">Vanzon Explorer</p>
+    <p>vanzonexplorer.com</p>
+  </div>
+
+</body>
+</html>

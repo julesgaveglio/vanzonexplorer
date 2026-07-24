@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="500.0mm" height="895.0mm" viewBox="-60 -60 500.0 895.0">
+<polygon points="0.0,0.0 280.0,0.0 380.0,100.0 380.0,775.0 0.0,775.0" fill="#dddddd" stroke="#000" stroke-width="1.5"/>
+
+    <line x1="0" y1="810" x2="380" y2="810" stroke="#000" stroke-width="1.2"/>
+    <line x1="0" y1="804" x2="0" y2="816" stroke="#000" stroke-width="1"/>
+    <line x1="380" y1="804" x2="380" y2="816" stroke="#000" stroke-width="1"/>
+    <line x1="0" y1="775" x2="0" y2="810" stroke="#000" stroke-width="0.5" stroke-dasharray="4,3"/>
+    <line x1="380" y1="775" x2="380" y2="810" stroke="#000" stroke-width="0.5" stroke-dasharray="4,3"/>
+    <text x="190.0" y="824" font-size="16" font-family="Inter,Arial,sans-serif" font-weight="bold" text-anchor="middle" fill="#000">380</text>
+    
+    <line x1="-40" y1="0" x2="-40" y2="775" stroke="#000" stroke-width="1.2"/>
+    <line x1="-46" y1="0" x2="-34" y2="0" stroke="#000" stroke-width="1"/>
+    <line x1="-46" y1="775" x2="-34" y2="775" stroke="#000" stroke-width="1"/>
+    <line x1="0" y1="0" x2="-40" y2="0" stroke="#000" stroke-width="0.5" stroke-dasharray="4,3"/>
+    <line x1="0" y1="775" x2="-40" y2="775" stroke="#000" stroke-width="0.5" stroke-dasharray="4,3"/>
+    <text x="-48" y="392.5" font-size="16" font-family="Inter,Arial,sans-serif" font-weight="bold" text-anchor="middle" fill="#000" transform="rotate(-90,-48,392.5)">775</text>
+    
+    <line x1="0" y1="-35" x2="280" y2="-35" stroke="#000" stroke-width="1.2"/>
+    <line x1="0" y1="-41" x2="0" y2="-29" stroke="#000" stroke-width="1"/>
+    <line x1="280" y1="-41" x2="280" y2="-29" stroke="#000" stroke-width="1"/>
+    <line x1="0" y1="0" x2="0" y2="-35" stroke="#000" stroke-width="0.5" stroke-dasharray="4,3"/>
+    <line x1="280" y1="0" x2="280" y2="-35" stroke="#000" stroke-width="0.5" stroke-dasharray="4,3"/>
+    <text x="140.0" y="-43" font-size="16" font-family="Inter,Arial,sans-serif" font-weight="bold" text-anchor="middle" fill="#000">280</text>
+    
+    <line x1="280" y1="120" x2="380" y2="120" stroke="#000" stroke-width="1.2"/>
+    <line x1="280" y1="114" x2="280" y2="126" stroke="#000" stroke-width="1"/>
+    <line x1="380" y1="114" x2="380" y2="126" stroke="#000" stroke-width="1"/>
+    <line x1="280" y1="100" x2="280" y2="120" stroke="#000" stroke-width="0.5" stroke-dasharray="4,3"/>
+    <line x1="380" y1="100" x2="380" y2="120" stroke="#000" stroke-width="0.5" stroke-dasharray="4,3"/>
+    <text x="330.0" y="134" font-size="16" font-family="Inter,Arial,sans-serif" font-weight="bold" text-anchor="middle" fill="#000">100</text>
+    
+    <line x1="410" y1="0" x2="410" y2="100" stroke="#000" stroke-width="1.2"/>
+    <line x1="404" y1="0" x2="416" y2="0" stroke="#000" stroke-width="1"/>
+    <line x1="404" y1="100" x2="416" y2="100" stroke="#000" stroke-width="1"/>
+    <line x1="380" y1="0" x2="410" y2="0" stroke="#000" stroke-width="0.5" stroke-dasharray="4,3"/>
+    <line x1="380" y1="100" x2="410" y2="100" stroke="#000" stroke-width="0.5" stroke-dasharray="4,3"/>
+    <text x="418" y="55.0" font-size="16" font-family="Inter,Arial,sans-serif" font-weight="bold" text-anchor="middle" fill="#000" transform="rotate(-90,418,55.0)">100</text>
+    <text x="325" y="45" font-size="11" fill="#666">chanfrein</text></svg>

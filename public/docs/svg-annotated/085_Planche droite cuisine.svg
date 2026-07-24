@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="410.0mm" height="1085.0mm" viewBox="-50 -50 410.0 1085.0">
+<rect x="0" y="0" width="310.0" height="985.0" fill="#dddddd" stroke="#000" stroke-width="1.5"/>
+
+    <line x1="0" y1="-35" x2="310.0" y2="-35" stroke="#000" stroke-width="1.2"/>
+    <line x1="0" y1="-41" x2="0" y2="-29" stroke="#000" stroke-width="1"/>
+    <line x1="310.0" y1="-41" x2="310.0" y2="-29" stroke="#000" stroke-width="1"/>
+    <line x1="0" y1="0" x2="0" y2="-35" stroke="#000" stroke-width="0.5" stroke-dasharray="4,3"/>
+    <line x1="310.0" y1="0" x2="310.0" y2="-35" stroke="#000" stroke-width="0.5" stroke-dasharray="4,3"/>
+    <text x="155.0" y="-43" font-size="16" font-family="Inter,Arial,sans-serif" font-weight="bold" text-anchor="middle" fill="#000">310</text>
+    
+    <line x1="-40" y1="0" x2="-40" y2="985.0" stroke="#000" stroke-width="1.2"/>
+    <line x1="-46" y1="0" x2="-34" y2="0" stroke="#000" stroke-width="1"/>
+    <line x1="-46" y1="985.0" x2="-34" y2="985.0" stroke="#000" stroke-width="1"/>
+    <line x1="0" y1="0" x2="-40" y2="0" stroke="#000" stroke-width="0.5" stroke-dasharray="4,3"/>
+    <line x1="0" y1="985.0" x2="-40" y2="985.0" stroke="#000" stroke-width="0.5" stroke-dasharray="4,3"/>
+    <text x="-48" y="497.5" font-size="16" font-family="Inter,Arial,sans-serif" font-weight="bold" text-anchor="middle" fill="#000" transform="rotate(-90,-48,497.5)">985</text>
+    </svg>

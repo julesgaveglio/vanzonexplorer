@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="485.0mm" height="1990.0mm" viewBox="-60 -60 485.0 1990.0">
+<polygon points="0.0,0.0 365.0,0.0 365.0,870.0 44.0,870.0 44.0,1705.0 365.0,1705.0 365.0,1870.0 0.0,1870.0" fill="#dddddd" stroke="#000" stroke-width="1.5"/>
+
+    <line x1="0" y1="-40" x2="365" y2="-40" stroke="#000" stroke-width="1.2"/>
+    <line x1="0" y1="-46" x2="0" y2="-34" stroke="#000" stroke-width="1"/>
+    <line x1="365" y1="-46" x2="365" y2="-34" stroke="#000" stroke-width="1"/>
+    <line x1="0" y1="0" x2="0" y2="-40" stroke="#000" stroke-width="0.5" stroke-dasharray="4,3"/>
+    <line x1="365" y1="0" x2="365" y2="-40" stroke="#000" stroke-width="0.5" stroke-dasharray="4,3"/>
+    <text x="182.5" y="-48" font-size="16" font-family="Inter,Arial,sans-serif" font-weight="bold" text-anchor="middle" fill="#000">365</text>
+    
+    <line x1="-50" y1="0" x2="-50" y2="1870" stroke="#000" stroke-width="1.2"/>
+    <line x1="-56" y1="0" x2="-44" y2="0" stroke="#000" stroke-width="1"/>
+    <line x1="-56" y1="1870" x2="-44" y2="1870" stroke="#000" stroke-width="1"/>
+    <line x1="0" y1="0" x2="-50" y2="0" stroke="#000" stroke-width="0.5" stroke-dasharray="4,3"/>
+    <line x1="0" y1="1870" x2="-50" y2="1870" stroke="#000" stroke-width="0.5" stroke-dasharray="4,3"/>
+    <text x="-58" y="940.0" font-size="16" font-family="Inter,Arial,sans-serif" font-weight="bold" text-anchor="middle" fill="#000" transform="rotate(-90,-58,940.0)">1870</text>
+    
+    <line x1="0" y1="1325" x2="44" y2="1325" stroke="#000" stroke-width="1.2"/>
+    <line x1="0" y1="1319" x2="0" y2="1331" stroke="#000" stroke-width="1"/>
+    <line x1="44" y1="1319" x2="44" y2="1331" stroke="#000" stroke-width="1"/>
+    <line x1="0" y1="1300" x2="0" y2="1325" stroke="#000" stroke-width="0.5" stroke-dasharray="4,3"/>
+    <line x1="44" y1="1300" x2="44" y2="1325" stroke="#000" stroke-width="0.5" stroke-dasharray="4,3"/>
+    <text x="22.0" y="1317" font-size="16" font-family="Inter,Arial,sans-serif" font-weight="bold" text-anchor="middle" fill="#000">44</text>
+    
+    <line x1="400" y1="870" x2="400" y2="1705" stroke="#000" stroke-width="1.2"/>
+    <line x1="394" y1="870" x2="406" y2="870" stroke="#000" stroke-width="1"/>
+    <line x1="394" y1="1705" x2="406" y2="1705" stroke="#000" stroke-width="1"/>
+    <line x1="365" y1="870" x2="400" y2="870" stroke="#000" stroke-width="0.5" stroke-dasharray="4,3"/>
+    <line x1="365" y1="1705" x2="400" y2="1705" stroke="#000" stroke-width="0.5" stroke-dasharray="4,3"/>
+    <text x="408" y="1292.5" font-size="16" font-family="Inter,Arial,sans-serif" font-weight="bold" text-anchor="middle" fill="#000" transform="rotate(-90,408,1292.5)">835</text>
+    
+    <line x1="19" y1="0" x2="19" y2="870" stroke="#000" stroke-width="1.2"/>
+    <line x1="13" y1="0" x2="25" y2="0" stroke="#000" stroke-width="1"/>
+    <line x1="13" y1="870" x2="25" y2="870" stroke="#000" stroke-width="1"/>
+    <line x1="44" y1="0" x2="19" y2="0" stroke="#000" stroke-width="0.5" stroke-dasharray="4,3"/>
+    <line x1="44" y1="870" x2="19" y2="870" stroke="#000" stroke-width="0.5" stroke-dasharray="4,3"/>
+    <text x="27" y="440.0" font-size="16" font-family="Inter,Arial,sans-serif" font-weight="bold" text-anchor="middle" fill="#000" transform="rotate(-90,27,440.0)">870</text>
+    </svg>
