@@ -13,7 +13,6 @@ import ArticleTOC from "./_components/ArticleTOC";
 import SidebarVanSaleAd from "./_components/SidebarVanSaleAd";
 import ReadingProgressBar from "./_components/ReadingProgressBar";
 import ArticleFAQ from "./_components/ArticleFAQ";
-import ArticleCategorySync from "./_components/ArticleCategorySync";
 import ShareButton from "./_components/ShareButton";
 import RoadTripCTA from "@/components/ui/RoadTripCTA";
 import VSLHeroBanner from "@/components/marketing/VSLHeroBanner";
@@ -155,7 +154,6 @@ export default async function ArticleDetailPage({
   return (
     <main className="min-h-screen bg-white">
       <ReadingProgressBar />
-      <ArticleCategorySync category={article.category} />
       <ArticleJsonLd article={{ ...article, updatedAt: article.updatedAt }} faqItems={faqItems} />
 
       {/* ── Hero cover image ── */}

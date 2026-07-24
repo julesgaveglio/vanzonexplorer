@@ -90,6 +90,26 @@ export default function Navbar() {
 
   const logoSrc = getNavLogo(pathname);
 
+  // Univers Formation (VBA) : le menu passe en doré, comme le logo. Le CTA
+  // principal cesse de pointer vers la location pour mener à la VSL — sur la
+  // page Formation, le visiteur veut découvrir la méthode, pas louer un van.
+  const isFormation = pathname.startsWith("/formation");
+  const cta = isFormation
+    ? {
+        href: "/van-business-academy/presentation",
+        label: "Découvrir la méthode",
+        gradient: "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)",
+      }
+    : {
+        href: "/location",
+        label: "Louer un van",
+        gradient: "linear-gradient(135deg, #60A5FA 0%, #7DD3FC 100%)",
+      };
+  const activeLink = isFormation ? "text-[#A9844F] bg-amber-50" : "text-accent-blue bg-blue-50";
+  const idleLink = isFormation
+    ? "text-slate-700 hover:text-[#A9844F] hover:bg-amber-50"
+    : "text-slate-700 hover:text-slate-900 hover:bg-slate-50";
+
   // Close menus on route change
   useEffect(() => {
     setMobileOpen(false);
@@ -333,9 +353,7 @@ export default function Navbar() {
                     key={link.href}
                     href={link.href}
                     className={`text-sm font-semibold px-4 py-2 rounded-xl transition-colors ${
-                      active
-                        ? "text-accent-blue bg-blue-50"
-                        : "text-slate-700 hover:text-slate-900 hover:bg-slate-50"
+                      active ? activeLink : idleLink
                     }`}
                   >
                     {link.label}
@@ -344,11 +362,11 @@ export default function Navbar() {
               })}
               <div className="w-px h-6 bg-slate-200 mx-2" />
               <Link
-                href="/location"
-                className="text-sm font-bold text-white px-5 py-2.5 rounded-xl transition-all hover:opacity-90 hover:-translate-y-px mr-1"
-                style={{ background: "linear-gradient(135deg, var(--accent) 0%, #6B7CFF 100%)" }}
+                href={cta.href}
+                className="text-sm font-bold text-white px-5 py-2.5 rounded-full shadow-sm transition-transform duration-200 ease-out hover:scale-105 mr-1"
+                style={{ backgroundImage: cta.gradient, textShadow: "0 1px 1px rgba(0,0,0,0.18)" }}
               >
-                Louer un van
+                {cta.label}
               </Link>
               <Link
                 href="/espace-membre"

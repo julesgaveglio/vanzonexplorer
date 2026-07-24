@@ -7,6 +7,8 @@ import { sanityFetch } from "@/lib/sanity/client";
 import { getAllLocationVansQuery } from "@/lib/sanity/queries";
 import type { VanCard as VanCardType } from "@/lib/sanity/types";
 import { IconShield, IconPin, IconStar } from "@/components/ui/LineIcons";
+import GoogleReviewsSection from "@/components/reviews/GoogleReviewsSection";
+import { getGooglePlaceData } from "@/lib/google-places";
 
 export const revalidate = 3600;
 
@@ -72,7 +74,10 @@ function getSeasonLabel(): string {
 }
 
 export default async function HomePage() {
-  const fleetVans = (await sanityFetch<VanCardType[]>(getAllLocationVansQuery)) ?? [];
+  const [fleetVans, googlePlace] = await Promise.all([
+    sanityFetch<VanCardType[]>(getAllLocationVansQuery).then((v) => v ?? []),
+    getGooglePlaceData(),
+  ]);
 
   return (
     <>
@@ -99,7 +104,9 @@ export default async function HomePage() {
               className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-2 mb-8 transition-transform hover:scale-105 cursor-pointer"
             >
               <span className="text-amber-400">★★★★★</span>
-              <span className="text-white/90 text-sm font-medium">5/5 sur Google</span>
+              <span className="text-white/90 text-sm font-medium">
+                {googlePlace?.reviewCount ?? 33} avis Google · {googlePlace?.ratingDisplay ?? "4.9"}/5
+              </span>
             </a>
 
             <p className="text-white/60 text-sm sm:text-base font-medium italic mb-4">
@@ -133,8 +140,11 @@ export default async function HomePage() {
           <div className="hidden lg:flex gap-4 absolute bottom-20 right-6">
             {[
               { value: "65€", label: "/ nuit", sub: "à partir de" },
-              { value: "2", label: "vans", sub: "exclusifs" },
-              { value: "5★", label: "Google", sub: "sur 5" },
+              {
+                value: `${googlePlace?.ratingDisplay ?? "4.9"}★`,
+                label: "Google",
+                sub: `${googlePlace?.reviewCount ?? 33} avis`,
+              },
             ].map((stat) => (
               <div key={stat.label} className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-5 py-4 text-center min-w-[100px]">
                 <div className="text-xs text-white/60 font-medium mb-0.5">{stat.sub}</div>
@@ -158,7 +168,10 @@ export default async function HomePage() {
             {[
               { icon: <IconShield />, text: "Assurance tous risques incluse" },
               { icon: <IconPin />, text: "Départ Cambo-les-Bains, Pays Basque" },
-              { icon: <IconStar />, text: "5/5 sur Google" },
+              {
+                icon: <IconStar />,
+                text: `${googlePlace?.ratingDisplay ?? "4.9"}/5 sur ${googlePlace?.reviewCount ?? 33} avis Google`,
+              },
             ].map((item) => (
               <div key={item.text} className="flex items-center gap-2.5">
                 <span className="text-white/40">{item.icon}</span>
@@ -187,6 +200,8 @@ export default async function HomePage() {
                 href: "/location",
                 num: "01",
                 title: "Louer un van",
+                image: "/images/services/location.jpg",
+                imageAlt: "Intérieur d'un van aménagé Vanzon face à une plage du Pays Basque",
                 desc: "Vans tout équipés au départ de Cambo-les-Bains, à 25 minutes de Biarritz. Assurance tous risques incluse.",
                 highlight: "Dès 65 € / nuit",
                 cta: "Voir les vans disponibles",
@@ -195,6 +210,8 @@ export default async function HomePage() {
                 href: "/achat",
                 num: "02",
                 title: "Acheter un van",
+                image: "/images/services/achat.jpg",
+                imageAlt: "Renault Trafic aménagé Vanzon proposé à la vente",
                 desc: "Des vans aménagés par nos soins, exploités en location puis revendus avec historique et carnet d'entretien complets.",
                 highlight: "19 900 € — essai sur place",
                 cta: "Voir les vans à vendre",
@@ -203,6 +220,8 @@ export default async function HomePage() {
                 href: "/formation",
                 num: "03",
                 title: "Créer votre business van",
+                image: "/images/services/formation-amenagement-van-vanzon-explorer.jpg",
+                imageAlt: "Aménagement d'un van en cours pendant la formation Van Business Academy de Vanzon Explorer",
                 desc: "La méthode complète pour acheter, aménager et rentabiliser un van en location : la Van Business Academy.",
                 highlight: "Formation 100 % en ligne",
                 cta: "Découvrir la formation",
@@ -211,18 +230,31 @@ export default async function HomePage() {
               <Link
                 key={path.href}
                 href={path.href}
-                className="group bg-white p-8 md:p-10 flex flex-col transition-colors duration-200 hover:bg-slate-50"
+                className="group bg-white flex flex-col transition-colors duration-200 hover:bg-slate-50"
               >
-                <span className="text-xs font-bold text-slate-300 mb-6 tracking-widest">{path.num}</span>
-                <h3 className="text-xl font-black text-slate-900 mb-3">{path.title}</h3>
-                <p className="text-slate-500 text-sm leading-relaxed mb-6 flex-1">{path.desc}</p>
-                <p className="text-sm font-semibold text-slate-900 mb-5">{path.highlight}</p>
-                <span className="inline-flex items-center gap-2 text-sm font-semibold text-accent-blue transition-transform duration-200 group-hover:translate-x-1">
-                  {path.cta}
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                  </svg>
-                </span>
+                <div className="relative aspect-[16/10] w-full overflow-hidden">
+                  <Image
+                    src={path.image}
+                    alt={path.imageAlt}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+                  />
+                  <span className="absolute left-4 top-4 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-xs font-bold text-slate-900 shadow-sm backdrop-blur-sm">
+                    {path.num}
+                  </span>
+                </div>
+                <div className="flex flex-1 flex-col p-8 md:p-10">
+                  <h3 className="text-xl font-black text-slate-900 mb-3">{path.title}</h3>
+                  <p className="text-slate-500 text-sm leading-relaxed mb-6 flex-1">{path.desc}</p>
+                  <p className="text-sm font-semibold text-slate-900 mb-5">{path.highlight}</p>
+                  <span className="inline-flex items-center gap-2 text-sm font-semibold text-accent-blue transition-transform duration-200 group-hover:translate-x-1">
+                    {path.cta}
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                  </span>
+                </div>
               </Link>
             ))}
           </div>
@@ -239,7 +271,7 @@ export default async function HomePage() {
                   Nos vans à la location
                 </p>
                 <h2 className="text-3xl md:text-4xl font-black text-slate-900 leading-tight">
-                  Deux vans, aménagés par nos soins.
+                  Des vans aménagés par nos soins.
                 </h2>
               </div>
               <Link
@@ -305,68 +337,74 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="py-20" style={{ background: "linear-gradient(160deg, #F8FAFC 0%, #EFF6FF 100%)" }}>
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="text-center mb-12">
-            <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">
-              Avis clients
-            </p>
-            <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-2">
-              Ce qu&apos;ils en disent
-            </h2>
-            <a
-              href="https://maps.app.goo.gl/NqyLKueJCSzukQei7"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm font-medium transition-colors"
-              style={{ color: 'var(--accent)' }}
-            >
-              5/5 sur Google Maps • Voir tous les avis →
-            </a>
-          </div>
+      {/* Avis Google réels — connectés à l'API Place Details (max 5 avis côté
+          Google). Repli sur des témoignages statiques si l'API est indisponible. */}
+      {googlePlace && googlePlace.reviews.length > 0 ? (
+        <GoogleReviewsSection data={googlePlace} />
+      ) : (
+        <section className="py-20" style={{ background: "linear-gradient(160deg, #F8FAFC 0%, #EFF6FF 100%)" }}>
+          <div className="max-w-5xl mx-auto px-6">
+            <div className="text-center mb-12">
+              <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">
+                Avis clients
+              </p>
+              <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-2">
+                Ce qu&apos;ils en disent
+              </h2>
+              <a
+                href="https://maps.app.goo.gl/NqyLKueJCSzukQei7"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm font-medium transition-colors"
+                style={{ color: 'var(--accent)' }}
+              >
+                5/5 sur Google Maps • Voir tous les avis →
+              </a>
+            </div>
 
-          <div className="grid md:grid-cols-3 gap-5">
-            {[
-              {
-                name: "Joris Darnanville",
-                detail: "Van super bien équipé, exactement comme décrit. Jules est disponible et de bons conseils. On recommande !",
-                initials: "J",
-                color: "bg-slate-800",
-              },
-              {
-                name: "Mathilde Sehil",
-                detail: "Un weekend parfait au Pays Basque. Le van est propre, bien rangé et très pratique. On a adoré la cuisine coulissante.",
-                initials: "M",
-                color: "bg-slate-800",
-              },
-              {
-                name: "Aurélie CEDELLE",
-                detail: "Tout est optimisé pour un séjour parfait. Rien à redire, on repart l'année prochaine avec les enfants !",
-                initials: "A",
-                color: "bg-slate-800",
-              },
-            ].map((review) => (
-              <div key={review.name} className="glass-card p-6">
-                <div className="flex items-center gap-1 text-amber-400 mb-4">
-                  {[...Array(5)].map((_, i) => <span key={i}>★</span>)}
-                </div>
-                <p className="text-slate-700 font-medium mb-2 text-sm leading-relaxed">
-                  &ldquo;{review.detail}&rdquo;
-                </p>
-                <div className="flex items-center gap-3 mt-4 pt-4 border-t border-slate-100">
-                  <div className={`w-9 h-9 rounded-full ${review.color} flex items-center justify-center text-white font-bold text-sm flex-shrink-0`}>
-                    {review.initials}
+            <div className="grid md:grid-cols-3 gap-5">
+              {[
+                {
+                  name: "Joris Darnanville",
+                  detail: "Van super bien équipé, exactement comme décrit. Jules est disponible et de bons conseils. On recommande !",
+                  initials: "J",
+                  color: "bg-slate-800",
+                },
+                {
+                  name: "Mathilde Sehil",
+                  detail: "Un weekend parfait au Pays Basque. Le van est propre, bien rangé et très pratique. On a adoré la cuisine coulissante.",
+                  initials: "M",
+                  color: "bg-slate-800",
+                },
+                {
+                  name: "Aurélie CEDELLE",
+                  detail: "Tout est optimisé pour un séjour parfait. Rien à redire, on repart l'année prochaine avec les enfants !",
+                  initials: "A",
+                  color: "bg-slate-800",
+                },
+              ].map((review) => (
+                <div key={review.name} className="glass-card p-6">
+                  <div className="flex items-center gap-1 text-amber-400 mb-4">
+                    {[...Array(5)].map((_, i) => <span key={i}>★</span>)}
                   </div>
-                  <div>
-                    <div className="font-semibold text-slate-800 text-sm">{review.name}</div>
-                    <div className="text-xs text-slate-400">Client Google Maps</div>
+                  <p className="text-slate-700 font-medium mb-2 text-sm leading-relaxed">
+                    &ldquo;{review.detail}&rdquo;
+                  </p>
+                  <div className="flex items-center gap-3 mt-4 pt-4 border-t border-slate-100">
+                    <div className={`w-9 h-9 rounded-full ${review.color} flex items-center justify-center text-white font-bold text-sm flex-shrink-0`}>
+                      {review.initials}
+                    </div>
+                    <div>
+                      <div className="font-semibold text-slate-800 text-sm">{review.name}</div>
+                      <div className="text-xs text-slate-400">Client Google Maps</div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* ════════════════════════════════════════════════
           VAN BUSINESS ACADEMY

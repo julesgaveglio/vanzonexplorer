@@ -271,7 +271,7 @@ export default async function LocationPage() {
               Choisissez votre van
             </h2>
             <p className="text-slate-500 text-lg max-w-xl mx-auto">
-              Deux vans aménagés avec soin, tout équipés pour partir à l&apos;aventure au Pays Basque.
+              Des vans aménagés par nos soins, tout équipés pour partir à l&apos;aventure au Pays Basque.
             </p>
           </div>
 

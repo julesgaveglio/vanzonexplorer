@@ -3,57 +3,34 @@
 import { useState } from "react";
 import Link from "next/link";
 
-// ── Palettes Vanzon ───────────────────────────────────────────────────────────
+/**
+ * Bouton du site : plein, sobre, coins légèrement arrondis.
+ *
+ * (Anciennement un bouton « liquid glass » animé multicolore — retiré en
+ * juillet 2026 au profit d'un rendu simple et professionnel. Le composant
+ * garde son nom et son API pour ne pas toucher les ~17 pages qui l'utilisent.)
+ */
+
+// ── Palettes ─────────────────────────────────────────────────────────────────
+// Les deux couleurs signature de Vanzon sont des DÉGRADÉS, repris à l'identique
+// du site : le bleu du H1 « Location de vans aménagés » (blue-400 → sky-300) et
+// le doré du mot « Academy » (--gold → --gold-light). `grad`/`gradHover` priment
+// sur `bg`/`hover` quand ils sont définis.
+const BLUE_GRAD = "linear-gradient(135deg, #60A5FA 0%, #7DD3FC 100%)";
+const GOLD_GRAD = "linear-gradient(135deg, #B9945F 0%, #E4D398 100%)";
+
 const VARIANTS = {
-  blue: {
-    gradient: "linear-gradient(135deg, #3B82F6 0%, #0EA5E9 100%)",
-    glow: "0 4px 18px rgba(59, 130, 246, 0.50), 0 1px 4px rgba(14, 165, 233, 0.30)",
-    textColor: "text-white",
-  },
-  gold: {
-    gradient: "linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%)",
-    glow: "0 4px 18px rgba(185, 148, 95, 0.55), 0 1px 4px rgba(228, 211, 152, 0.30)",
-    textColor: "text-white",
-  },
-  purple: {
-    gradient: "linear-gradient(135deg, #883AE2 0%, #8A80E9 100%)",
-    glow: "0 4px 18px rgba(136, 58, 226, 0.50), 0 1px 4px rgba(138, 128, 233, 0.30)",
-    textColor: "text-white",
-  },
-  slate: {
-    gradient: "linear-gradient(135deg, #334155 0%, #475569 100%)",
-    glow: "0 4px 18px rgba(51, 65, 85, 0.50), 0 1px 4px rgba(71, 85, 105, 0.30)",
-    textColor: "text-white",
-  },
-  rose: {
-    gradient: "linear-gradient(135deg, #E8436C 0%, #FF6B8A 100%)",
-    glow: "0 4px 18px rgba(232, 67, 108, 0.50), 0 1px 4px rgba(255, 107, 138, 0.30)",
-    textColor: "text-white",
-  },
-  // Transparent — fond verre neutre, texte noir (ex: bouton secondaire sur fond clair)
-  ghost: {
-    gradient: "rgba(255,255,255,0.18)",
-    glow: "0 2px 12px rgba(0,0,0,0.08)",
-    textColor: "text-slate-900",
-  },
-  // Wikicampers orange
-  orange: {
-    gradient: "linear-gradient(135deg, #F97316 0%, #FB923C 100%)",
-    glow: "0 4px 18px rgba(249, 115, 22, 0.50), 0 1px 4px rgba(251, 146, 60, 0.30)",
-    textColor: "text-white",
-  },
-  // WhatsApp green
-  green: {
-    gradient: "linear-gradient(135deg, #25D366 0%, #128C7E 100%)",
-    glow: "0 4px 18px rgba(37, 211, 102, 0.50), 0 1px 4px rgba(18, 140, 126, 0.30)",
-    textColor: "text-white",
-  },
-  // backwards-compat alias
-  primary: {
-    gradient: "linear-gradient(135deg, #3B82F6 0%, #0EA5E9 100%)",
-    glow: "0 4px 18px rgba(59, 130, 246, 0.50), 0 1px 4px rgba(14, 165, 233, 0.30)",
-    textColor: "text-white",
-  },
+  blue: { grad: BLUE_GRAD, text: "#ffffff", ring: "#60A5FA", shadow: true },
+  gold: { grad: GOLD_GRAD, text: "#ffffff", ring: "#B9945F", shadow: true },
+  purple: { bg: "#7C3AED", hover: "#6D28D9", text: "#ffffff", ring: "#7C3AED" },
+  slate: { bg: "#334155", hover: "#1E293B", text: "#ffffff", ring: "#334155" },
+  rose: { bg: "#E11D48", hover: "#BE123C", text: "#ffffff", ring: "#E11D48" },
+  orange: { bg: "#EA580C", hover: "#C2410C", text: "#ffffff", ring: "#EA580C" },
+  green: { bg: "#16A34A", hover: "#15803D", text: "#ffffff", ring: "#16A34A" },
+  // Secondaire : fond blanc, bordure, texte foncé (marche sur clair comme sur sombre)
+  ghost: { bg: "#ffffff", hover: "#F1F5F9", text: "#0F172A", ring: "#94A3B8", bordered: true },
+  // alias historique → même bleu Vanzon
+  primary: { grad: BLUE_GRAD, text: "#ffffff", ring: "#60A5FA", shadow: true },
 } as const;
 
 export type LiquidVariant = keyof typeof VARIANTS;
@@ -63,7 +40,7 @@ const SIZE_CLASSES = {
   md: "text-sm px-5 py-2.5",
   lg: "text-base px-8 py-4",
   // S'adapte à toutes les largeurs mobiles (iPhone SE 320px → desktop)
-  responsive: "text-sm px-5 py-3 sm:text-sm sm:px-7 sm:py-3.5 lg:text-base lg:px-8 lg:py-4",
+  responsive: "text-sm px-5 py-3 sm:px-7 sm:py-3.5 lg:text-base lg:px-8 lg:py-4",
 };
 
 interface LiquidButtonProps {
@@ -78,28 +55,8 @@ interface LiquidButtonProps {
   disabled?: boolean;
   ariaLabel?: string;
   fullWidth?: boolean;
-  /** Décalage du reflet en secondes (0 = bouton primaire, 1.9 = bouton secondaire côte à côte) */
+  /** Conservé pour compat API (n'a plus d'effet depuis la refonte). */
   shineDelay?: number;
-}
-
-function GlassFilter() {
-  return (
-    <svg className="absolute w-0 h-0 overflow-hidden" aria-hidden>
-      <defs>
-        <filter
-          id="liquid-btn-glass"
-          x="0%" y="0%" width="100%" height="100%"
-          colorInterpolationFilters="sRGB"
-        >
-          <feTurbulence type="fractalNoise" baseFrequency="0.06 0.06" numOctaves="1" seed="3" result="noise" />
-          <feGaussianBlur in="noise" stdDeviation="1.5" result="blurNoise" />
-          <feDisplacementMap in="SourceGraphic" in2="blurNoise" scale="50" xChannelSelector="R" yChannelSelector="B" result="displaced" />
-          <feGaussianBlur in="displaced" stdDeviation="2.5" result="final" />
-          <feComposite in="final" in2="final" operator="over" />
-        </filter>
-      </defs>
-    </svg>
-  );
 }
 
 export default function LiquidButton({
@@ -114,128 +71,66 @@ export default function LiquidButton({
   disabled,
   ariaLabel,
   fullWidth = false,
-  shineDelay = 0,
 }: LiquidButtonProps) {
-  const [pressed, setPressed] = useState(false);
   const [hovered, setHovered] = useState(false);
-
   const palette = VARIANTS[variant];
-  const sizeClass = SIZE_CLASSES[size];
-  const scale = pressed ? 0.97 : hovered ? 1.03 : 1;
-  // fullWidth (cartes fond blanc) : pas de glow externe → pas de contour fantôme
-  const currentGlow = pressed ? "none" : (fullWidth ? "none" : palette.glow);
-  const glowPulseClass = !pressed && !hovered && !fullWidth ? "liquid-cta-glow-pulse" : "";
-  const widthClass = fullWidth ? "w-full" : "";
+  const bordered = "bordered" in palette && palette.bordered;
+  const gradient = "grad" in palette ? palette.grad : null;
+  const shadow = "shadow" in palette && palette.shadow;
 
-  const pointerHandlers = disabled
+  const stateHandlers = disabled
     ? {}
     : {
-        onPointerDown:  () => setPressed(true),
-        onPointerUp:    () => setPressed(false),
-        onPointerLeave: () => { setPressed(false); setHovered(false); },
         onPointerEnter: () => setHovered(true),
-        onTouchStart:   () => { setHovered(true); setPressed(true); },
-        onTouchEnd:     () => { setPressed(false); setHovered(false); },
-        onTouchCancel:  () => { setPressed(false); setHovered(false); },
+        onPointerLeave: () => setHovered(false),
       };
 
-  const inner = (
-    <span
-      className={`relative inline-flex items-center justify-center gap-2 font-semibold rounded-full whitespace-nowrap ${palette.textColor} select-none overflow-hidden ${sizeClass} ${widthClass} ${className}`}
-      style={{
-        transform: `scale(${scale})`,
-        transition: "transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1)",
-        opacity: disabled ? 0.55 : 1,
-        clipPath: "inset(0 round 9999px)",
-      }}
-      {...pointerHandlers}
-    >
-      {/* Gradient tint */}
-      <span
-        aria-hidden
-        className="absolute inset-0 rounded-full"
-        style={{ background: palette.gradient, opacity: 0.82 }}
-      />
-      {/* Backdrop distortion */}
-      <span
-        aria-hidden
-        className="absolute inset-0 rounded-full"
-        style={{
-          backdropFilter: 'blur(8px) saturate(160%) url("#liquid-btn-glass")',
-          WebkitBackdropFilter: "blur(8px) saturate(160%)",
-        }}
-      />
-      {/* Glass depth shadows */}
-      <span
-        aria-hidden
-        className="absolute inset-0 rounded-full"
-        style={{
-          boxShadow: [
-            "inset 0 1.5px 1px rgba(255,255,255,0.55)",
-            "inset 0 -1px 1px rgba(0,0,0,0.20)",
-            "inset 2px 0 2px rgba(255,255,255,0.10)",
-            "inset -2px 0 2px rgba(0,0,0,0.10)",
-            "inset 0 0 10px rgba(255,255,255,0.14)",
-          ].join(", "),
-        }}
-      />
-      {/* Top sheen */}
-      <span
-        aria-hidden
-        className="absolute left-[12%] top-0 h-[42%] rounded-full pointer-events-none"
-        style={{
-          width: "76%",
-          background: "linear-gradient(180deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0) 100%)",
-          filter: "blur(1px)",
-        }}
-      />
-      {/* Sweep shine */}
-      <span
-        aria-hidden
-        className="liquid-cta-shine absolute top-0 h-full pointer-events-none rounded-full"
-        style={{
-          width: "40%",
-          left: 0,
-          background: "linear-gradient(105deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.38) 45%, rgba(255,255,255,0.55) 55%, rgba(255,255,255,0) 100%)",
-          filter: "blur(2px)",
-          mixBlendMode: "overlay",
-          animationDelay: `${1.2 + shineDelay}s`,
-        }}
-      />
-      {/* Hover brightness */}
-      <span
-        aria-hidden
-        className="absolute inset-0 rounded-full pointer-events-none"
-        style={{
-          background: "rgba(255,255,255,0.08)",
-          opacity: hovered && !pressed ? 1 : 0,
-          transition: "opacity 0.18s ease",
-        }}
-      />
-      {/* Text */}
-      <span className="relative z-10 inline-flex items-center gap-2 tracking-wide drop-shadow-sm">{children}</span>
-    </span>
-  );
-
-  const wrapperStyle = {
-    // fullWidth : pas de borderRadius sur le wrapper (évite contour blanc sur fond clair)
-    borderRadius: fullWidth ? 0 : 9999,
-    transition: "box-shadow 0.25s ease",
+  const active = hovered && !disabled;
+  const solidBg = "bg" in palette ? palette.bg : undefined;
+  const style: React.CSSProperties = {
+    // Dégradé Vanzon (bleu / doré) prioritaire ; sinon couleur pleine.
+    // La couleur ne change PAS au survol : seul un léger zoom réagit.
+    backgroundImage: gradient ? gradient ?? undefined : undefined,
+    backgroundColor: gradient ? undefined : solidBg,
+    color: palette.text,
+    border: bordered ? "1px solid #E2E8F0" : "1px solid transparent",
+    boxShadow: shadow
+      ? active
+        ? "0 8px 22px rgba(0,0,0,0.18)"
+        : "0 4px 14px rgba(0,0,0,0.12)"
+      : bordered
+        ? "0 1px 2px rgba(0,0,0,0.04)"
+        : "0 1px 2px rgba(0,0,0,0.08)",
+    transform: active ? "scale(1.04)" : "scale(1)",
+    // Texte net sur les dégradés clairs (extrémité sky / doré clair).
+    textShadow: gradient ? "0 1px 1px rgba(0,0,0,0.18)" : undefined,
+    opacity: disabled ? 0.5 : 1,
   };
 
-  const wrapperDisplay = fullWidth ? "flex" : "inline-flex";
+  const classes = [
+    "inline-flex items-center justify-center gap-2 rounded-full font-semibold whitespace-nowrap select-none",
+    "transition-transform duration-200 ease-out outline-none",
+    "focus-visible:ring-2 focus-visible:ring-offset-2",
+    "active:scale-[0.98]",
+    SIZE_CLASSES[size],
+    fullWidth ? "w-full" : "",
+    disabled ? "cursor-not-allowed" : "cursor-pointer",
+    className,
+  ].join(" ");
+
+  const ringStyle = { "--tw-ring-color": palette.ring } as React.CSSProperties;
 
   if (href) {
     return (
       <Link
         href={href}
         aria-label={ariaLabel}
-        className={`${wrapperDisplay} flex-shrink-0 ${glowPulseClass} ${widthClass}`}
-        style={{ ...wrapperStyle, boxShadow: currentGlow }}
+        className={classes}
+        style={{ ...style, ...ringStyle }}
+        {...stateHandlers}
         {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
       >
-        {inner}
-        <GlassFilter />
+        {children}
       </Link>
     );
   }
@@ -246,11 +141,11 @@ export default function LiquidButton({
       onClick={onClick}
       disabled={disabled}
       aria-label={ariaLabel}
-      className={`${wrapperDisplay} flex-shrink-0 ${glowPulseClass} ${widthClass}`}
-      style={{ ...wrapperStyle, boxShadow: currentGlow, background: "none", border: "none", padding: 0, cursor: disabled ? "not-allowed" : "pointer" }}
+      className={classes}
+      style={{ ...style, ...ringStyle }}
+      {...stateHandlers}
     >
-      {inner}
-      <GlassFilter />
+      {children}
     </button>
   );
 }
